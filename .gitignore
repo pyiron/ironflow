@@ -1,0 +1,4 @@
+**/*.pyc
+**/*checkpoint.py
+info.log
+pyiron.log

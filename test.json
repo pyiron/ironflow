@@ -1,0 +1,366 @@
+{
+    "scripts": [
+        {
+            "title": "test",
+            "variables": {},
+            "flow": {
+                "algorithm mode": "data",
+                "nodes": [
+                    {
+                        "identifier": "std.ForEach_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "start",
+                                "GID": 8
+                            },
+                            {
+                                "type": "exec",
+                                "label": "reset",
+                                "GID": 9,
+                                "val": "gAROLg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "elements",
+                                "GID": 10,
+                                "dtype": "DType.List",
+                                "dtype state": "gASVLAAAAAAAAAB9lCiMB2RlZmF1bHSUXZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE51Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "loop",
+                                "GID": 11
+                            },
+                            {
+                                "type": "data",
+                                "label": "e",
+                                "GID": 12
+                            },
+                            {
+                                "type": "exec",
+                                "label": "finished",
+                                "GID": 13
+                            }
+                        ],
+                        "GID": 7,
+                        "pos x": 372.5679380649447,
+                        "pos y": 636.5399059706693
+                    },
+                    {
+                        "identifier": "std.Linspace_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "min",
+                                "GID": 15,
+                                "val": "gARLAC4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsAS2SGlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "max",
+                                "GID": 16,
+                                "val": "gARLAi4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwKMA3ZhbJRLAowDZG9jlIwAlIwGYm91bmRzlEsAS2SGlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "steps",
+                                "GID": 17,
+                                "val": "gARLCi4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwqMA3ZhbJRLCowDZG9jlIwAlIwGYm91bmRzlEsBS2SGlHUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "",
+                                "GID": 18
+                            }
+                        ],
+                        "GID": 14,
+                        "pos x": 127.25156901133411,
+                        "pos y": 729.3072246160536
+                    },
+                    {
+                        "identifier": "std.Click_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "",
+                                "GID": 21
+                            }
+                        ],
+                        "GID": 20,
+                        "pos x": 126.2389464598474,
+                        "pos y": 562.8501477768236
+                    },
+                    {
+                        "identifier": "std.JobName_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "base",
+                                "GID": 24,
+                                "val": "gASVCQAAAAAAAACMBWpvYl9zlC4=",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUjARqb2JflIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "float",
+                                "GID": 25,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVOQAAAAAAAAB9lCiMB2RlZmF1bHSUSwCMA3ZhbJRLAIwDZG9jlIwAlIwGYm91bmRzlE6MCGRlY2ltYWxzlEsKdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "",
+                                "GID": 26
+                            }
+                        ],
+                        "GID": 23,
+                        "pos x": 692.0976624625048,
+                        "pos y": 613.8634503017977
+                    },
+                    {
+                        "identifier": "std.Result_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "",
+                                "GID": 29
+                            }
+                        ],
+                        "outputs": [],
+                        "GID": 28,
+                        "pos x": 1003.3814584885149,
+                        "pos y": 708.6922649170793
+                    },
+                    {
+                        "identifier": "std.Lammps_Node",
+                        "version": "v0.1",
+                        "state data": "gASVDgAAAAAAAAB9lIwGYWN0aXZllIhzLg==",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "",
+                                "GID": 32
+                            },
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 33,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 34,
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVMAAAAAAAAAB9lCiMB2RlZmF1bHSUjANqb2KUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 35,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "potential",
+                                "GID": 36,
+                                "val": "gASVFgAAAAAAAACMEkFsX01nX01lbmRlbGV2X2VhbZQu",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVPwAAAAAAAAB9lCiMB2RlZmF1bHSUjBJBbF9NZ19NZW5kZWxldl9lYW2UjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "",
+                                "GID": 37
+                            },
+                            {
+                                "type": "data",
+                                "label": "",
+                                "GID": 38
+                            }
+                        ],
+                        "GID": 31,
+                        "pos x": 1047.7214419805528,
+                        "pos y": 303.1016555697478
+                    },
+                    {
+                        "identifier": "std.Project_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 41,
+                                "val": "gASVCAAAAAAAAACMBHRlc3SULg==",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVLgAAAAAAAAB9lCiMB2RlZmF1bHSUjAEulIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTnUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "",
+                                "GID": 42
+                            }
+                        ],
+                        "GID": 40,
+                        "pos x": 109.74708971674752,
+                        "pos y": 216.5188248340558
+                    },
+                    {
+                        "identifier": "std.BulkStructure_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 44,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "element",
+                                "GID": 45,
+                                "val": "gASVBgAAAAAAAACMAkFslC4=",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVLwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJGZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE51Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "cubic",
+                                "GID": 46,
+                                "val": "gASILg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASVKgAAAAAAAAB9lCiMB2RlZmF1bHSUiIwDdmFslIiMA2RvY5SMAJSMBmJvdW5kc5ROdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "",
+                                "GID": 47
+                            }
+                        ],
+                        "GID": 43,
+                        "pos x": 472.5679380649447,
+                        "pos y": 241.25677647282492
+                    }
+                ],
+                "connections": [
+                    {
+                        "GID": 51,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 5,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 27,
+                        "parent node index": 0,
+                        "output port index": 1,
+                        "connected node": 3,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 19,
+                        "parent node index": 1,
+                        "output port index": 0,
+                        "connected node": 0,
+                        "connected input port index": 2
+                    },
+                    {
+                        "GID": 22,
+                        "parent node index": 2,
+                        "output port index": 0,
+                        "connected node": 0,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 30,
+                        "parent node index": 3,
+                        "output port index": 0,
+                        "connected node": 4,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 39,
+                        "parent node index": 3,
+                        "output port index": 0,
+                        "connected node": 5,
+                        "connected input port index": 2
+                    },
+                    {
+                        "GID": 52,
+                        "parent node index": 5,
+                        "output port index": 0,
+                        "connected node": 0,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 48,
+                        "parent node index": 6,
+                        "output port index": 0,
+                        "connected node": 7,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 50,
+                        "parent node index": 6,
+                        "output port index": 0,
+                        "connected node": 5,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 49,
+                        "parent node index": 7,
+                        "output port index": 0,
+                        "connected node": 5,
+                        "connected input port index": 3
+                    }
+                ],
+                "GID": 6
+            },
+            "GID": 1
+        }
+    ]
+}
