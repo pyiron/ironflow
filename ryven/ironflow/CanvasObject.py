@@ -223,5 +223,12 @@ class CanvasObject:
         for o in self.objects_to_draw:
             if o.selected:
                 self.objects_to_draw.remove(o)
-        # TODO: remove connections
+                self._remove_node_from_flow(o.node)
         self.redraw()
+
+    def _remove_node_from_flow(self, node):
+        for c in self.script.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
+            # TODO: Can we be more efficient than looping over all nodes?
+            if (c.inp.node == node) or (c.out.node == node):
+                self.script.flow.remove_connection(c)
+        self.script.flow.remove_node(node)
