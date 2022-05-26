@@ -10,14 +10,16 @@ import os
 class TestGUI(TestCase):
 
     def tearDown(self) -> None:
-        os.remove("pyiron.log")
+        try:
+            os.remove("pyiron.log")
+        except FileNotFoundError:
+            pass
 
     def test_saving_and_loading(self):
         title = 'foo'
         gui = GUI(script_title=title)
         canvas = gui.canvas_widget
         flow = gui._session.scripts[0].flow
-        print(flow)
 
         canvas.add_node(0, 0, gui._nodes_dict['nodes']['val'])  # Need to create with canvas instead of flow
         canvas.add_node(1, 0, gui._nodes_dict['nodes']['result'])  # because serialization includes xy location

@@ -5,6 +5,7 @@ from IPython.display import display
 
 from .NodeWidget import CanvasLayout, NodeWidget, PortWidget, ButtonNodeWidget
 from .NodeWidgets import NodeWidgets
+from .has_session import HasSession
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -22,10 +23,10 @@ gui_modes = ["(M)ove Node", "Add (C)onnection", "(N)one"]
 mode_move, mode_connect, mode_none = gui_modes
 
 
-class CanvasObject:
-    def __init__(self, gui=None, width=2000, height=1000, script=None):
+class CanvasObject(HasSession):
+    def __init__(self, gui=None, width=2000, height=1000):
         self.gui = gui
-        self.script = script
+        super().__init__(self.gui.session)
         self._width, self._height = width, height
 
         self._col_background = "black"  # "#584f4e"
@@ -91,12 +92,12 @@ class CanvasObject:
         if key == "Delete":
             self.delete_selected()
         elif key == "m":
-            self.gui.mode.value = mode_move
+            self.gui.mode_dropdown.value = mode_move
         elif key == "c":
             self.deselect_all()
-            self.gui.mode.value = mode_connect
+            self.gui.mode_dropdown.value = mode_connect
         elif key == "n":
-            self.gui.mode.value = mode_none
+            self.gui.mode_dropdown.value = mode_none
 
     def set_connection(self, ind_node):
         if self._connection_in is None:
@@ -104,7 +105,7 @@ class CanvasObject:
         else:
             out = self.objects_to_draw[self._connection_in].node.outputs[0]
             inp = self.objects_to_draw[ind_node].node.inputs[-1]
-            if self.script.flow.connect_nodes(inp, out) is None:
+            if self.flow.connect_nodes(inp, out) is None:
                 i_con = self.connections.index([self._connection_in, ind_node])
                 del self.connections[i_con]
             else:
@@ -154,7 +155,7 @@ class CanvasObject:
         if self._last_selected_port is None:
             self._last_selected_port = sel_object.port
         else:
-            self.script.flow.connect_nodes(self._last_selected_port, sel_object.port)
+            self.flow.connect_nodes(self._last_selected_port, sel_object.port)
             self._last_selected_port = None
             self.deselect_all()
 
@@ -168,7 +169,7 @@ class CanvasObject:
         return [o for o in self.objects_to_draw if o.selected]
 
     def handle_mouse_move(self, x, y):
-        if self.gui.mode.value == mode_move:
+        if self.gui.mode_dropdown.value == mode_move:
             # dx = x - self._x0_mouse
             # dy = y - self._y0_mouse
             # self._x0_mouse, self._y0_mouse = x, y
@@ -184,7 +185,7 @@ class CanvasObject:
         with hold_canvas(self._canvas):
             self.canvas_restart()
             [o.draw() for o in self.objects_to_draw]
-            for c in self.script.flow.connections:
+            for c in self.flow.connections:
                 self.draw_connection(c.inp, c.out)
 
     def load_node(self, x, y, node):
@@ -213,7 +214,7 @@ class CanvasObject:
         return s
 
     def add_node(self, x, y, node):
-        n = self.script.flow.create_node(node)
+        n = self.flow.create_node(node)
         print("node: ", n.identifier, n.GLOBAL_ID)
         self.load_node(x, y, n)
 
@@ -227,8 +228,8 @@ class CanvasObject:
         self.redraw()
 
     def _remove_node_from_flow(self, node):
-        for c in self.script.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
+        for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
             # TODO: Can we be more efficient than looping over all nodes?
             if (c.inp.node == node) or (c.out.node == node):
-                self.script.flow.remove_connection(c)
-        self.script.flow.remove_node(node)
+                self.flow.remove_connection(c)
+        self.flow.remove_node(node)
