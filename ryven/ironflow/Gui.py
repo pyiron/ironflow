@@ -139,10 +139,10 @@ class GUI:
         )
 
         self.btn_load = widgets.Button(
-            tooltip="Load", icon="download", layout=widgets.Layout(width="50px")
+            tooltip="Load", icon="upload", layout=widgets.Layout(width="50px")
         )
         self.btn_save = widgets.Button(
-            tooltip="Save", icon="upload", layout=widgets.Layout(width="50px")
+            tooltip="Save", icon="download", layout=widgets.Layout(width="50px")
         )
         self.btn_delete_node = widgets.Button(
             tooltip="Delete Node", icon="trash", layout=widgets.Layout(width="50px")
