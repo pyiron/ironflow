@@ -26,7 +26,7 @@ os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
 
 ryven_location = Path(__file__).parents[1]
-PACKAGES = [os.path.join(ryven_location, *subloc) for subloc in [("std",), ("nodes", "built_in")]]  # , ("mynodes",)
+packages = [os.path.join(ryven_location, *subloc) for subloc in [("std",), ("nodes", "built_in")]]  # , ("mynodes",)
 alg_modes = ["data", "exec"]
 
 
@@ -36,7 +36,7 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 class GUI:
     def __init__(self):  # , onto_dic=onto_dic):
         session = rc.Session()
-        for package in PACKAGES:
+        for package in packages:
             session.register_nodes(
                 import_nodes_package(NodesPackage(directory=package))
             )
