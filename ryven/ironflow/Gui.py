@@ -53,7 +53,7 @@ class GUI(HasSession):
             nodes_dict[node_class][n.title] = n
         self._nodes_dict = nodes_dict
 
-        self.canvas_widget = CanvasObject(self, script=self.script)
+        self.canvas_widget = CanvasObject(gui=self)
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
@@ -88,7 +88,7 @@ class GUI(HasSession):
         self.session.delete_script(self.script)
         self.session.load(data)
 
-        self.canvas_widget = CanvasObject(self, script=self.script)
+        self.canvas_widget = CanvasObject(gui=self)
         self.canvas_widget.canvas_restart()
         all_data = data["scripts"][i_script]["flow"]["nodes"]
         for i, node in enumerate(self.flow.nodes):
