@@ -18,9 +18,7 @@ __status__ = "development"
 __date__ = "May 26, 2022"
 
 from abc import ABC
-from ryvencore import Session, Script, Flow, Node
-from ryvencore.Connection import Connection
-from typing import List, Type
+from ryvencore import Session, Script, Flow
 
 
 class HasSession(ABC):
@@ -42,11 +40,3 @@ class HasSession(ABC):
     @property
     def flow(self) -> Flow:
         return self.script.flow
-
-    @property
-    def nodes(self) -> List[Type[Node]]:
-        return self.flow.nodes
-
-    @property
-    def connections(self) -> List[Type[Connection]]:
-        return self.flow.connections
