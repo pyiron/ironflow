@@ -7,6 +7,7 @@ from IPython.display import display
 from ryven.main.utils import import_nodes_package, load_from_file, NodesPackage
 
 from .CanvasObject import CanvasObject, gui_modes
+from .has_session import HasSession
 
 import ryven.NENV as NENV
 from pathlib import Path
@@ -33,27 +34,26 @@ alg_modes = ["data", "exec"]
 debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
-class GUI:
-    def __init__(self, script_title="test"):  # , onto_dic=onto_dic):
+class GUI(HasSession):
+    def __init__(self, script_title="test", session=None):  # , onto_dic=onto_dic):
+        super().__init__(session=rc.Session() if session is None else session)
         self._script_title = script_title
-        session = rc.Session()
+        self.session.create_script(title=self.script_title)
+
         for package in packages:
-            session.register_nodes(
+            self.session.register_nodes(
                 import_nodes_package(NodesPackage(directory=package))
             )
 
-        self._session = session
-        script = session.create_script(title=self.script_title)
-
         nodes_dict = {}
-        for n in self._session.nodes:
+        for n in self.session.nodes:
             node_class = n.__module__  # n.identifier_prefix
             if node_class not in nodes_dict.keys():
                 nodes_dict[node_class] = {}
             nodes_dict[node_class][n.title] = n
         self._nodes_dict = nodes_dict
 
-        self.canvas_widget = CanvasObject(self, script=script)
+        self.canvas_widget = CanvasObject(self, script=self.script)
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
@@ -69,7 +69,7 @@ class GUI:
             f.write(json.dumps(data, indent=4))
 
     def serialize(self):
-        data = self._session.serialize()
+        data = self.session.serialize()
         i_script = 0
         all_data = data["scripts"][i_script]["flow"]["nodes"]
         for i, node_widget in enumerate(self.canvas_widget.objects_to_draw):
@@ -85,14 +85,13 @@ class GUI:
 
     def load_from_data(self, data):
         i_script = 0
-        self._session.delete_script(self._session.scripts[i_script])
-        self._session.load(data)
+        self.session.delete_script(self.script)
+        self.session.load(data)
 
-        script = self._session.scripts[i_script]
-        self.canvas_widget = CanvasObject(self, script=script)
+        self.canvas_widget = CanvasObject(self, script=self.script)
         self.canvas_widget.canvas_restart()
         all_data = data["scripts"][i_script]["flow"]["nodes"]
-        for i, node in enumerate(script.flow.nodes):
+        for i, node in enumerate(self.flow.nodes):
             self.canvas_widget.load_node(
                 all_data[i]["pos x"], all_data[i]["pos y"], node
             )
