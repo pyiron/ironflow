@@ -34,10 +34,9 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI:
-    def __init__(self, packages=None):  # , onto_dic=onto_dic):
+    def __init__(self):  # , onto_dic=onto_dic):
         session = rc.Session()
-        packages = packages if packages is not None else PACKAGES
-        for package in packages:
+        for package in PACKAGES:
             session.register_nodes(
                 import_nodes_package(NodesPackage(directory=package))
             )
