@@ -91,12 +91,12 @@ class CanvasObject:
         if key == "Delete":
             self.delete_selected()
         elif key == "m":
-            self.gui.mode.value = mode_move
+            self.gui.mode_dropdown.value = mode_move
         elif key == "c":
             self.deselect_all()
-            self.gui.mode.value = mode_connect
+            self.gui.mode_dropdown.value = mode_connect
         elif key == "n":
-            self.gui.mode.value = mode_none
+            self.gui.mode_dropdown.value = mode_none
 
     def set_connection(self, ind_node):
         if self._connection_in is None:
@@ -168,7 +168,7 @@ class CanvasObject:
         return [o for o in self.objects_to_draw if o.selected]
 
     def handle_mouse_move(self, x, y):
-        if self.gui.mode.value == mode_move:
+        if self.gui.mode_dropdown.value == mode_move:
             # dx = x - self._x0_mouse
             # dy = y - self._y0_mouse
             # self._x0_mouse, self._y0_mouse = x, y

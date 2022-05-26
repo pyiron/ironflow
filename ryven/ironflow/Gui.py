@@ -123,7 +123,7 @@ class GUI:
             display(self.canvas_widget._canvas)
 
         module_options = self._nodes_dict.keys()
-        self.modules = widgets.Dropdown(
+        self.modules_dropdown = widgets.Dropdown(
             options=module_options,
             value=list(module_options)[0],
             #     description='Category:',
@@ -131,7 +131,7 @@ class GUI:
             layout=widgets.Layout(width="130px"),
         )
 
-        self.mode = widgets.Dropdown(
+        self.mode_dropdown = widgets.Dropdown(
             options=gui_modes,
             value=gui_modes[0],
             disabled=False,
@@ -148,15 +148,15 @@ class GUI:
             tooltip="Delete Node", icon="trash", layout=widgets.Layout(width="50px")
         )
 
-        self.alg_mode = widgets.Dropdown(
+        self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
             value=alg_modes[0],
             disabled=False,
             layout=widgets.Layout(width="80px"),
         )
 
-        nodes_options = self._nodes_dict[self.modules.value].keys()
-        self.nodes = widgets.RadioButtons(
+        nodes_options = self._nodes_dict[self.modules_dropdown.value].keys()
+        self.node_selector = widgets.RadioButtons(
             options=nodes_options,
             value=list(nodes_options)[0],
             #    layout={'width': 'max-content'}, # If the items' names are long
@@ -167,9 +167,9 @@ class GUI:
 
         self.out_status = widgets.Output(layout={"border": "1px solid black"})
 
-        self.alg_mode.observe(self.on_alg_mode_change, names="value")
-        self.modules.observe(self.on_value_change, names="value")
-        self.nodes.observe(self.on_nodes_change, names="value")
+        self.alg_mode_dropdown.observe(self.on_alg_mode_change, names="value")
+        self.modules_dropdown.observe(self.on_value_change, names="value")
+        self.node_selector.observe(self.on_nodes_change, names="value")
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
@@ -181,16 +181,16 @@ class GUI:
             [
                 widgets.HBox(
                     [
-                        self.modules,
-                        self.mode,
-                        self.alg_mode,
+                        self.modules_dropdown,
+                        self.mode_dropdown,
+                        self.alg_mode_dropdown,
                         self.btn_save,
                         self.btn_load,
                         self.btn_delete_node
                     ]
                 ),
                 widgets.HBox(
-                    [widgets.VBox([self.nodes]), self.out_canvas, self.out_plot]
+                    [widgets.VBox([self.node_selector]), self.out_canvas, self.out_plot]
                 ),
                 self.out_log,
                 self.out_status,
@@ -209,10 +209,10 @@ class GUI:
         self.canvas_widget.delete_selected()
 
     def on_value_change(self, change):
-        self.nodes.options = self._nodes_dict[self.modules.value].keys()
+        self.node_selector.options = self._nodes_dict[self.modules_dropdown.value].keys()
 
     def on_nodes_change(self, change):
-        self._selected_node = self._nodes_dict[self.modules.value][self.nodes.value]
+        self._selected_node = self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
 
     def on_alg_mode_change(self, change):
-        self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode.value)
+        self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
