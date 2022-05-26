@@ -44,9 +44,9 @@ class HasSession(ABC):
         return self.script.flow
 
     @property
-    def node_list(self) -> List[Type[Node]]:
+    def nodes(self) -> List[Type[Node]]:
         return self.flow.nodes
 
     @property
-    def connection_list(self) -> List[Type[Connection]]:
+    def connections(self) -> List[Type[Connection]]:
         return self.flow.connections
