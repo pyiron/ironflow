@@ -1,11 +1,19 @@
+from __future__ import annotations
+
 from ipycanvas import Canvas, hold_canvas
 import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
 
-from .NodeWidget import CanvasLayout, NodeWidget, PortWidget, ButtonNodeWidget
+from .NodeWidget import CanvasLayout, NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
 from .NodeWidgets import NodeWidgets
 from .has_session import HasSession
+
+from typing import TYPE_CHECKING, Optional, Union, List
+if TYPE_CHECKING:
+    from Gui import GUI
+    from ryven.NENV import Node
+    Number = Union[int, float]
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -24,7 +32,7 @@ mode_move, mode_connect, mode_none = gui_modes
 
 
 class CanvasObject(HasSession):
-    def __init__(self, gui=None, width=2000, height=1000):
+    def __init__(self, gui: Optional[GUI] = None, width: int = 2000, height: int = 1000):
         self.gui = gui
         super().__init__(self.gui.session)
         self._width, self._height = width, height
@@ -61,7 +69,7 @@ class CanvasObject(HasSession):
 
         self._object_to_gui_dict = {}
 
-    def draw_connection(self, port_1, port_2):
+    def draw_connection(self, port_1: int, port_2: int) -> None:
         # i_out, i_in = path
         # out = self.objects_to_draw[i_out]
         # inp = self.objects_to_draw[i_in]
@@ -75,7 +83,7 @@ class CanvasObject(HasSession):
         canvas.line_to(inp.x, inp.y)
         canvas.stroke()
 
-    def _built_object_to_gui_dict(self):
+    def _built_object_to_gui_dict(self) -> None:
         self._object_to_gui_dict = {}
         for n in self.objects_to_draw:
             self._object_to_gui_dict[n.node] = n
@@ -83,12 +91,12 @@ class CanvasObject(HasSession):
                 if hasattr(p, "port"):
                     self._object_to_gui_dict[p.port] = p
 
-    def canvas_restart(self):
+    def canvas_restart(self) -> None:
         self._canvas.clear()
         self._canvas.fill_style = self._col_background
         self._canvas.fill_rect(0, 0, self._width, self._height)
 
-    def handle_keyboard_event(self, key, shift_key, ctrl_key, meta_key):
+    def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
         if key == "Delete":
             self.delete_selected()
         elif key == "m":
@@ -99,7 +107,7 @@ class CanvasObject(HasSession):
         elif key == "n":
             self.gui.mode_dropdown.value = mode_none
 
-    def set_connection(self, ind_node):
+    def set_connection(self, ind_node: int) -> None:
         if self._connection_in is None:
             self._connection_in = ind_node
         else:
@@ -114,11 +122,11 @@ class CanvasObject(HasSession):
             self._connection_in = None
             self.deselect_all()
 
-    def deselect_all(self):
+    def deselect_all(self) -> None:
         [o.set_selected(False) for o in self.objects_to_draw if o.selected]
         self.redraw()
 
-    def handle_mouse_down(self, x, y):
+    def handle_mouse_down(self, x: Number, y: Number):
         sel_object = self.get_element_at_xy(x, y)
         self._selected_object = sel_object
         if sel_object is not None:
@@ -145,13 +153,13 @@ class CanvasObject(HasSession):
         self._y0_mouse = y
         self.redraw()
 
-    def _handle_node_select(self, sel_object):
+    def _handle_node_select(self, sel_object: NodeWidget) -> None:
         self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
         with self.gui.out_status:
             self.gui.out_status.clear_output()
-            display(self._node_widget)
+            display(self._node_widget)  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
-    def _handle_port_select(self, sel_object):
+    def _handle_port_select(self, sel_object: PortWidget) -> None:
         if self._last_selected_port is None:
             self._last_selected_port = sel_object.port
         else:
@@ -159,16 +167,16 @@ class CanvasObject(HasSession):
             self._last_selected_port = None
             self.deselect_all()
 
-    def get_element_at_xy(self, x_in, y_in):
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
         for o in self.objects_to_draw:
             if o.is_selected(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 
-    def get_selected_objects(self):
+    def get_selected_objects(self) -> List[BaseCanvasWidget]:
         return [o for o in self.objects_to_draw if o.selected]
 
-    def handle_mouse_move(self, x, y):
+    def handle_mouse_move(self, x: Number, y: Number) -> None:
         if self.gui.mode_dropdown.value == mode_move:
             # dx = x - self._x0_mouse
             # dy = y - self._y0_mouse
@@ -180,7 +188,7 @@ class CanvasObject(HasSession):
                     [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
                     self.redraw()
 
-    def redraw(self):
+    def redraw(self) -> None:
         self.canvas_restart()
         with hold_canvas(self._canvas):
             self.canvas_restart()
@@ -188,7 +196,7 @@ class CanvasObject(HasSession):
             for c in self.flow.connections:
                 self.draw_connection(c.inp, c.out)
 
-    def load_node(self, x, y, node):
+    def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
         #    print ('node: ', node.identifier, node.GLOBAL_ID)
 
         layout = CanvasLayout(
@@ -213,21 +221,21 @@ class CanvasObject(HasSession):
         self.objects_to_draw.append(s)
         return s
 
-    def add_node(self, x, y, node):
+    def add_node(self, x: Number, y: Number, node: Node):
         n = self.flow.create_node(node)
         print("node: ", n.identifier, n.GLOBAL_ID)
         self.load_node(x, y, n)
 
         self.redraw()
 
-    def delete_selected(self):
+    def delete_selected(self) -> None:
         for o in self.objects_to_draw:
             if o.selected:
                 self.objects_to_draw.remove(o)
                 self._remove_node_from_flow(o.node)
         self.redraw()
 
-    def _remove_node_from_flow(self, node):
+    def _remove_node_from_flow(self, node: Node) -> None:
         for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
             # TODO: Can we be more efficient than looping over all nodes?
             if (c.inp.node == node) or (c.out.node == node):

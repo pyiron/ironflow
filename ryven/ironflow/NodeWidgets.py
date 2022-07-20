@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ipywidgets as widgets
 import numpy as np
 
@@ -5,6 +7,11 @@ from .NodeWidget import CanvasLayout
 
 import pickle
 import base64
+
+from typing import TYPE_CHECKING, Dict, Union
+if TYPE_CHECKING:
+    from Gui import GUI
+    from ryven.NENV import Node
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -23,14 +30,14 @@ def deserialize(data):
 
 
 class NodeWidgets:
-    def __init__(self, node, central_gui):
+    def __init__(self, node: Node, central_gui: GUI):
         self._node = node
         self._central_gui = central_gui
         self.gui_object()
         self.input_widgets()
         # self.input = []
 
-    def gui_object(self):
+    def gui_object(self) -> Union[widgets.FloatSlider, widgets.Box]:
         if "slider" in self._node.title.lower():
             self.gui = widgets.FloatSlider(
                 value=self._node.val, min=0, max=10, continuous_update=False
@@ -41,12 +48,12 @@ class NodeWidgets:
             self.gui = widgets.Box()
         return self.gui
 
-    def gui_object_change(self, change):
+    def gui_object_change(self, change: Dict) -> None:
         self._node.set_state({"val": change["new"]}, 0)
         self._node.update_event()
         self._central_gui.canvas_widget.redraw()
 
-    def input_widgets(self):
+    def input_widgets(self) -> None:
         self._input = []
         if not hasattr(self._node, "inputs"):
             return
@@ -99,31 +106,31 @@ class NodeWidgets:
 
             # inp_widget.value = dtype_state['default']
 
-    def input_change(self, i_c, change):
+    def input_change(self, i_c: int, change: Dict) -> None:
         # print (change)
         self._node.inputs[i_c].val = change["new"]
         self._node.update_event()
         self._central_gui.canvas_widget.redraw()
 
-    def input_change_0(self, change):
+    def input_change_0(self, change: Dict) -> None:
         self.input_change(0, change)
 
-    def input_change_1(self, change):
+    def input_change_1(self, change: Dict) -> None:
         self.input_change(1, change)
 
-    def input_change_2(self, change):
+    def input_change_2(self, change: Dict) -> None:
         self.input_change(2, change)
 
-    def input_change_3(self, change):
+    def input_change_3(self, change: Dict) -> None:
         self.input_change(3, change)
 
-    def input_change_4(self, change):
+    def input_change_4(self, change: Dict) -> None:
         self.input_change(3, change)
 
-    def input_change_5(self, change):
+    def input_change_5(self, change: Dict) -> None:
         self.input_change(3, change)
 
-    def draw(self):
+    def draw(self) -> widgets.HBox:
         self.inp_box = widgets.GridBox(
             list(np.array(self._input).flatten()),
             layout=widgets.Layout(
