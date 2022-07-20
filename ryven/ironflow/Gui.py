@@ -12,6 +12,8 @@ from .has_session import HasSession
 import ryven.NENV as NENV
 from pathlib import Path
 
+from typing import Optional, Dict
+
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
     "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
@@ -35,7 +37,7 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI(HasSession):
-    def __init__(self, script_title="test", session=None):  # , onto_dic=onto_dic):
+    def __init__(self, script_title: str = "test", session: Optional[rc.Session] = None):  # , onto_dic=onto_dic):
         super().__init__(session=rc.Session() if session is None else session)
         self._script_title = script_title
         self.session.create_script(title=self.script_title)
@@ -62,13 +64,13 @@ class GUI(HasSession):
     def script_title(self) -> str:
         return self._script_title
 
-    def save(self, file_path):
+    def save(self, file_path: str) -> None:
         data = self.serialize()
 
         with open(file_path, "w") as f:
             f.write(json.dumps(data, indent=4))
 
-    def serialize(self):
+    def serialize(self) -> Dict:
         data = self.session.serialize()
         i_script = 0
         all_data = data["scripts"][i_script]["flow"]["nodes"]
@@ -77,13 +79,13 @@ class GUI(HasSession):
             all_data[i]["pos y"] = node_widget.y
         return data
 
-    def load(self, file_path):
+    def load(self, file_path: str) -> None:
         with open(file_path, "r") as f:
             data = json.loads(f.read())
 
         self.load_from_data(data)
 
-    def load_from_data(self, data):
+    def load_from_data(self, data: Dict) -> None:
         i_script = 0
         self.session.delete_script(self.script)
         self.session.load(data)
@@ -105,14 +107,14 @@ class GUI(HasSession):
         self.out_plot.clear_output()
         self.out_log.clear_output()
 
-    def _print(self, text):
+    def _print(self, text: str) -> None:
         with self.out_log:
             self.gui.out_log.clear_output()
 
             print(text)
 
     @debug_view.capture(clear_output=True)
-    def draw(self):
+    def draw(self) -> widgets.VBox:
         self.out_plot = widgets.Output(
             layout={"width": "50%", "border": "1px solid black"}
         )
@@ -198,20 +200,22 @@ class GUI(HasSession):
             ]
         )
 
-    def on_file_save(self, change):
+    # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
+    # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
+    def on_file_save(self, change: Dict) -> None:
         self.save(f"{self.script_title}.json")
 
-    def on_file_load(self, change):
+    def on_file_load(self, change: Dict) -> None:
         self.load(f"{self.script_title}.json")
 
-    def on_delete_node(self, change):
+    def on_delete_node(self, change: Dict) -> None:
         self.canvas_widget.delete_selected()
 
-    def on_value_change(self, change):
+    def on_value_change(self, change: Dict) -> None:
         self.node_selector.options = self._nodes_dict[self.modules_dropdown.value].keys()
 
-    def on_nodes_change(self, change):
+    def on_nodes_change(self, change: Dict) -> None:
         self._selected_node = self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
 
-    def on_alg_mode_change(self, change):
+    def on_alg_mode_change(self, change: Dict) -> None:
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)

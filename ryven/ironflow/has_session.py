@@ -26,7 +26,7 @@ class HasSession(ABC):
     A convenience parent for classes that interact with a single-script Ryven session.
     """
 
-    def __init__(self, session):
+    def __init__(self, session: Session):
         self._session = session
 
     @property
