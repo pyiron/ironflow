@@ -24,7 +24,7 @@ __date__ = "May 10, 2022"
 os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
 
-packages = ["ryven/std", "ryven/nodes/built_in/"]  # , 'ryven/mynodes']
+PACKAGES = ["ryven/std", "ryven/nodes/built_in/"]  # , 'ryven/mynodes']
 
 alg_modes = ["data", "exec"]
 
@@ -33,8 +33,9 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI:
-    def __init__(self):  # , onto_dic=onto_dic):
+    def __init__(self, packages=None):  # , onto_dic=onto_dic):
         session = rc.Session()
+        packages = packages if packages is not None else PACKAGES
         for package in packages:
             session.register_nodes(
                 import_nodes_package(NodesPackage(directory=package))
@@ -138,6 +139,9 @@ class GUI:
         self.btn_save = widgets.Button(
             tooltip="Save", icon="upload", layout=widgets.Layout(width="50px")
         )
+        self.btn_delete_node = widgets.Button(
+            tooltip="Delete Node", icon="trash", layout=widgets.Layout(width="50px")
+        )
 
         self.alg_mode = widgets.Dropdown(
             options=alg_modes,
@@ -163,6 +167,7 @@ class GUI:
         self.nodes.observe(self.on_nodes_change, names="value")
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
+        self.btn_delete_node.on_click(self.on_delete_node)
 
         # if self.canvas_widget._node_widget is None:
         #     self.canvas_widget._node_widget = widgets.Box()
@@ -176,6 +181,7 @@ class GUI:
                         self.alg_mode,
                         self.btn_save,
                         self.btn_load,
+                        self.btn_delete_node
                     ]
                 ),
                 widgets.HBox(
@@ -193,6 +199,9 @@ class GUI:
 
     def on_file_load(self, change):
         self.load("test.json")
+
+    def on_delete_node(self, change):
+        self.canvas_widget.delete_selected()
 
     def on_value_change(self, change):
         self.nodes.options = self._nodes_dict[self.modules.value].keys()
