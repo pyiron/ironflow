@@ -215,7 +215,7 @@ class NodeWidget(BaseCanvasWidget):
         self.add_outputs()
 
     def draw_title(self, title: str) -> None:
-        self.canvas.fill_style = "darkgray"
+        self.canvas.fill_style = self.node.color if hasattr(self.node, 'color') else "darkgray"
         self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
         self.canvas.font = f"{self.layout.font_size}px serif"
         self.canvas.fill_style = self.layout.font_title_color
