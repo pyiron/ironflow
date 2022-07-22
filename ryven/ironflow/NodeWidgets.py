@@ -3,8 +3,6 @@ from __future__ import annotations
 import ipywidgets as widgets
 import numpy as np
 
-from .NodeWidget import CanvasLayout
-
 import pickle
 import base64
 

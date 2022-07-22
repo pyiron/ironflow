@@ -4,7 +4,7 @@ import os
 import ipywidgets as widgets
 import ryvencore as rc
 from IPython.display import display
-from ryven.main.utils import import_nodes_package, load_from_file, NodesPackage
+from ryven.main.utils import import_nodes_package, NodesPackage
 
 from .CanvasObject import CanvasObject, gui_modes
 from .has_session import HasSession
@@ -109,7 +109,7 @@ class GUI(HasSession):
 
     def _print(self, text: str) -> None:
         with self.out_log:
-            self.gui.out_log.clear_output()
+            self.out_log.clear_output()
 
             print(text)
 

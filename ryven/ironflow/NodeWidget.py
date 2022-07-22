@@ -276,7 +276,7 @@ class NodeWidget(BaseCanvasWidget):
     def add_inputs(self) -> None:
         self._add_ports(radius=self.port_radius, inputs=self.inputs)
 
-    def add_outputs(self, radius: Number = 5) -> None:
+    def add_outputs(self) -> None:
         self._add_ports(radius=self.port_radius, outputs=self.outputs)
 
     def draw(self) -> None:
