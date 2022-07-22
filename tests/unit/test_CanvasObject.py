@@ -10,7 +10,7 @@ import os
 class TestCanvasObect(TestCase):
 
     def setUp(self):
-        self.gui = GUI(packages=["../../ryven/std", "../../ryven/nodes/built_in/"])
+        self.gui = GUI()
         self.canvas = self.gui.canvas_widget
 
     @classmethod
