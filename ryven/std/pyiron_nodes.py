@@ -2,7 +2,7 @@ import random
 
 import matplotlib.pylab as plt
 import numpy as np
-from pyiron import Project
+from pyiron_atomistics import Project
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 
 from special_nodes import DualNodeBase
