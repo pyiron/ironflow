@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from IPython.display import display
+from .layouts import CanvasLayout, NodeLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -21,26 +22,6 @@ __maintainer__ = "Joerg Neugebauer"
 __email__ = "janssen@mpie.de"
 __status__ = "production"
 __date__ = "May 10, 2022"
-
-
-class CanvasLayout:
-    def __init__(
-        self,
-        width: int = 100,
-        height: int = 60,
-        font_size: int = 12,
-        background_color: str = "blue",
-        selected_color: str = "lightblue",
-        font_color: str = "black",
-        font_title_color: str = "black",
-    ):
-        self.width = width
-        self.height = height
-        self.background_color = background_color
-        self.selected_color = selected_color
-        self.font_size = font_size
-        self.font_color = font_color
-        self.font_title_color = font_title_color
 
 
 class BaseCanvasWidget:
@@ -152,7 +133,7 @@ class PortWidget(BaseCanvasWidget):
         radius: Number = 10,
         parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
         port: Optional[NodePort] = None,
-        layout: Optional[CanvasLayout] = None,
+        layout: Optional[Union[DataPortLayout, ExecPortLayout]] = None,
         selected: bool = False,
         text_left: str = "",
     ):
@@ -167,8 +148,8 @@ class PortWidget(BaseCanvasWidget):
         if self.selected:
             self.canvas.fill_style = self.layout.selected_color
         self.canvas.fill_circle(self.x, self.y, self.radius)
-        self.canvas.font = "21px serif"
-        self.canvas.fill_style = "black"
+        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.fill_style = self.layout.font_color
         self.canvas.fill_text(
             self.text_left, self.x + self.radius + 3, self.y + self.radius // 2
         )
@@ -187,7 +168,7 @@ class NodeWidget(BaseCanvasWidget):
             y: Number,
             node: Node,
             parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[CanvasLayout] = None,
+            layout: Optional[NodeLayout] = None,
             selected: bool = False,
             port_radius: Number = 10,
     ):
@@ -203,18 +184,8 @@ class NodeWidget(BaseCanvasWidget):
 
         self.port_radius = port_radius
         self.port_layouts = {
-            'data': CanvasLayout(
-                width=20,
-                height=10,
-                background_color="lightgreen",
-                selected_color="darkgreen",
-            ),
-            'exec': CanvasLayout(
-                width=20,
-                height=10,
-                background_color="lightblue",
-                selected_color="darkblue",
-            )
+            'data': DataPortLayout(),
+            'exec': ExecPortLayout()
         }
 
         if len(self.node.inputs) > 3:
@@ -223,9 +194,9 @@ class NodeWidget(BaseCanvasWidget):
         self.add_outputs()
 
     def draw_title(self, title: str) -> None:
-        self.canvas.fill_style = self.node.color if hasattr(self.node, 'color') else "darkgray"
+        self.canvas.fill_style = self.node.color
         self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
-        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.font = f"{self.layout.font_title_size}px serif"
         self.canvas.fill_style = self.layout.font_title_color
         x = self.x + (self.width * 0.04)
         y = self.y + self._title_box_height - 8
@@ -233,7 +204,7 @@ class NodeWidget(BaseCanvasWidget):
 
     def draw_value(self, val: Any, val_is_updated: bool = True) -> None:
         self.canvas.fill_style = self.layout.font_color
-        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.font = f"{self.layout.font_title_size}px serif"
         x = self.x + (self.width * 0.3)
         y = (self.y + (self.height * 0.65),)
         self.canvas.fill_text(str(val), x, y)
@@ -311,13 +282,13 @@ class ButtonNodeWidget(NodeWidget):
             y: Number,
             node: Node,
             parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[CanvasLayout] = None,
+            layout: Optional[ButtonLayout] = None,
             selected: bool = False,
             port_radius: Number = 10,
     ):
         super().__init__(x, y, node, parent, layout, selected, port_radius)
 
-        layout = CanvasLayout(width=100, height=30, background_color="darkgray")
+        layout = ButtonLayout()
         s = BaseCanvasWidget(50, 50, parent=self, layout=layout)
         s.handle_select = self.handle_button_select
         self.add_widget(s)

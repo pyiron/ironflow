@@ -5,7 +5,8 @@ import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
 
-from .NodeWidget import CanvasLayout, NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
+from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
+from .layouts import NodeLayout
 from .NodeWidgets import NodeWidgets
 from .has_session import HasSession
 
@@ -203,13 +204,7 @@ class CanvasObject(HasSession):
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
         #    print ('node: ', node.identifier, node.GLOBAL_ID)
 
-        layout = CanvasLayout(
-            font_size=20,
-            width=200,
-            height=100,
-            background_color="gray",
-            selected_color="green",
-        )
+        layout = NodeLayout()
 
         if hasattr(node, "main_widget_class"):
             if node.main_widget_class is not None:
