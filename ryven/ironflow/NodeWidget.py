@@ -3,11 +3,11 @@ from __future__ import annotations
 import numpy as np
 from IPython.display import display
 
-from typing import TYPE_CHECKING, Optional, Union, Dict, Any
+from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
     from .CanvasObject import CanvasObject
     from ipycanvas import Canvas
-    from ryven.NENV import Node
+    from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
     from ryvencore.NodePort import NodePort
 
@@ -238,8 +238,8 @@ class NodeWidget(BaseCanvasWidget):
     def _add_ports(
             self,
             radius: Number,
-            inputs: Optional[Dict] = None,
-            outputs: Optional[Dict] = None,
+            inputs: Optional[List[NodeInputBP]] = None,
+            outputs: Optional[List[NodeOutputBP]] = None,
             border: Number = 1.4,
             text: str = ""
     ) -> None:
