@@ -101,7 +101,7 @@ class GUI(HasSession):
 
         self.out_canvas.clear_output()
         with self.out_canvas:
-            display(self.canvas_widget._canvas)
+            display(self.canvas_widget.canvas)
 
         self.canvas_widget.redraw()
         self.out_plot.clear_output()
@@ -121,7 +121,7 @@ class GUI(HasSession):
 
         self.out_canvas = widgets.Output(layout={"border": "1px solid black"})
         with self.out_canvas:
-            display(self.canvas_widget._canvas)
+            display(self.canvas_widget.canvas)
 
         module_options = self._nodes_dict.keys()
         self.modules_dropdown = widgets.Dropdown(

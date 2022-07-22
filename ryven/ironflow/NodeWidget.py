@@ -84,8 +84,8 @@ class BaseCanvasWidget:
         return self.parent.y + self._y  # - self.parent.height//2
 
     @property
-    def _canvas(self) -> Canvas:
-        return self.parent._canvas
+    def canvas(self) -> Canvas:
+        return self.parent.canvas
 
     def add_widget(self, widget: BaseCanvasWidget) -> None:
         if widget.parent is None:
@@ -104,10 +104,10 @@ class BaseCanvasWidget:
         self._y += dy_in
 
     def draw_shape(self) -> None:
-        self._canvas.fill_style = self.layout.background_color
+        self.canvas.fill_style = self.layout.background_color
         if self.selected:
-            self._canvas.fill_style = self.layout.selected_color
-        self._canvas.fill_rect(
+            self.canvas.fill_style = self.layout.selected_color
+        self.canvas.fill_rect(
             self.x,  # - (self.width * 0.5),
             self.y,  # - (self.height * 0.5),
             self.width,
@@ -163,13 +163,13 @@ class PortWidget(BaseCanvasWidget):
         self.text_left = text_left
 
     def draw_shape(self) -> None:
-        self._canvas.fill_style = self.layout.background_color
+        self.canvas.fill_style = self.layout.background_color
         if self.selected:
-            self._canvas.fill_style = self.layout.selected_color
-        self._canvas.fill_circle(self.x, self.y, self.radius)
-        self._canvas.font = "21px serif"
-        self._canvas.fill_style = "black"
-        self._canvas.fill_text(
+            self.canvas.fill_style = self.layout.selected_color
+        self.canvas.fill_circle(self.x, self.y, self.radius)
+        self.canvas.font = "21px serif"
+        self.canvas.fill_style = "black"
+        self.canvas.fill_text(
             self.text_left, self.x + self.radius + 3, self.y + self.radius // 2
         )
 
@@ -215,20 +215,20 @@ class NodeWidget(BaseCanvasWidget):
         self.add_outputs()
 
     def draw_title(self, title: str) -> None:
-        self._canvas.fill_style = "darkgray"
-        self._canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
-        self._canvas.font = f"{self.layout.font_size}px serif"
-        self._canvas.fill_style = self.layout.font_title_color
+        self.canvas.fill_style = "darkgray"
+        self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
+        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.fill_style = self.layout.font_title_color
         x = self.x + (self.width * 0.04)
         y = self.y + self._title_box_height - 8
-        self._canvas.fill_text(title, x, y)
+        self.canvas.fill_text(title, x, y)
 
     def draw_value(self, val: Any, val_is_updated: bool = True) -> None:
-        self._canvas.fill_style = self.layout.font_color
-        self._canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.fill_style = self.layout.font_color
+        self.canvas.font = f"{self.layout.font_size}px serif"
         x = self.x + (self.width * 0.3)
         y = (self.y + (self.height * 0.65),)
-        self._canvas.fill_text(str(val), x, y)
+        self.canvas.fill_text(str(val), x, y)
         if val_is_updated:
             if ("matplotlib" in str(type(val))) or ("NGLWidget" in str(type(val))):
                 self.parent.gui.out_plot.clear_output()
