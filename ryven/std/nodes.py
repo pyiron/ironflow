@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(__file__))
 from special_nodes import nodes as special_nodes
 from basic_operators import nodes as operator_nodes
 from control_structures import nodes as cs_nodes
-from pyiron_nodes import nodes as pyiron_nodes
+from atomistics_nodes import nodes as pyiron_nodes
 
 
 __author__ = "Joerg Neugebauer"
