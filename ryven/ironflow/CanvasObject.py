@@ -69,6 +69,10 @@ class CanvasObject(HasSession):
 
         self._object_to_gui_dict = {}
 
+    @property
+    def canvas(self):
+        return self._canvas
+
     def draw_connection(self, port_1: int, port_2: int) -> None:
         # i_out, i_in = path
         # out = self.objects_to_draw[i_out]
