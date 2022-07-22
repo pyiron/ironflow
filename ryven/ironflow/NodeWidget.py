@@ -202,12 +202,20 @@ class NodeWidget(BaseCanvasWidget):
         self.outputs = node.outputs
 
         self.port_radius = port_radius
-        self.layout_ports = CanvasLayout(
-            width=20,
-            height=10,
-            background_color="lightgreen",
-            selected_color="darkgreen",
-        )
+        self.port_layouts = {
+            'data': CanvasLayout(
+                width=20,
+                height=10,
+                background_color="lightgreen",
+                selected_color="darkgreen",
+            ),
+            'exec': CanvasLayout(
+                width=20,
+                height=10,
+                background_color="lightblue",
+                selected_color="darkblue",
+            )
+        }
 
         if len(self.node.inputs) > 3:
             self._height = 200
@@ -269,7 +277,7 @@ class NodeWidget(BaseCanvasWidget):
                         parent=self,
                         port=data[i_port],
                         text_left=data[i_port].label_str,
-                        layout=self.layout_ports,
+                        layout=self.port_layouts[data[i_port].type_],
                     )
                 )
 
