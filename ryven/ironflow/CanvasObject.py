@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
-import ipywidgets as widgets
-import numpy as np
 from IPython.display import display
 
 from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
