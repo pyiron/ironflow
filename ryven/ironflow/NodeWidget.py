@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from IPython.display import display
-from .layouts import Layout, NodeLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -29,15 +29,14 @@ class BaseCanvasWidget:
             self,
             x: Number,
             y: Number,
-            parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[Layout] = None,
+            parent: Union[CanvasObject, BaseCanvasWidget],
+            layout: Layout,
             selected: bool = False
     ):
         self._x = x  # relative to parent
         self._y = y
 
         self.layout = layout
-
         self.parent = parent
         self.selected = selected
 
@@ -69,11 +68,6 @@ class BaseCanvasWidget:
         return self.parent.canvas
 
     def add_widget(self, widget: BaseCanvasWidget) -> None:
-        if widget.parent is None:
-            widget.parent = self
-        if widget.layout is None:
-            widget.layout = self.parent.layout
-
         self.objects_to_draw.append(widget)
 
     def set_x_y(self, x_in: Number, y_in: Number) -> None:
@@ -130,10 +124,10 @@ class PortWidget(BaseCanvasWidget):
         self,
         x: Number,
         y: Number,
+        parent: Union[CanvasObject, BaseCanvasWidget],
+        layout: PortLayout,
         radius: Number = 10,
-        parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
         port: Optional[NodePort] = None,
-        layout: Optional[Union[DataPortLayout, ExecPortLayout]] = None,
         selected: bool = False,
         text_left: str = "",
     ):
@@ -166,9 +160,9 @@ class NodeWidget(BaseCanvasWidget):
             self,
             x: Number,
             y: Number,
+            parent: Union[CanvasObject, BaseCanvasWidget],
+            layout: NodeLayout,
             node: Node,
-            parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[NodeLayout] = None,
             selected: bool = False,
             port_radius: Number = 10,
     ):
@@ -244,11 +238,11 @@ class NodeWidget(BaseCanvasWidget):
                     PortWidget(
                         x,
                         y_port * d_y + y_min,
-                        radius=radius,
                         parent=self,
-                        port=data[i_port],
-                        text_left=data[i_port].label_str,
                         layout=self.port_layouts[data[i_port].type_],
+                        port=data[i_port],
+                        radius=radius,
+                        text_left=data[i_port].label_str,
                     )
                 )
 
@@ -280,13 +274,13 @@ class ButtonNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
+            parent: Union[CanvasObject, BaseCanvasWidget],
+            layout: ButtonLayout,
             node: Node,
-            parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[ButtonLayout] = None,
             selected: bool = False,
             port_radius: Number = 10,
     ):
-        super().__init__(x, y, node, parent, layout, selected, port_radius)
+        super().__init__(x, y, parent, layout, node, selected, port_radius)
 
         layout = ButtonLayout()
         s = BaseCanvasWidget(50, 50, parent=self, layout=layout)

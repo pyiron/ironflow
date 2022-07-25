@@ -210,12 +210,12 @@ class CanvasObject(HasSession):
             if node.main_widget_class is not None:
                 # node.title = str(node.main_widget_class)
                 f = eval(node.main_widget_class)
-                s = f(x, y, parent=self, node=node, layout=layout)
+                s = f(x, y, parent=self, layout=layout, node=node)
             else:
-                s = NodeWidget(x, y, parent=self, node=node, layout=layout)
+                s = NodeWidget(x, y, parent=self, layout=layout, node=node)
             # print ('s: ', s)
         else:
-            s = NodeWidget(x, y, parent=self, node=node, layout=layout)
+            s = NodeWidget(x, y, parent=self, layout=layout, node=node)
 
         self.objects_to_draw.append(s)
         return s

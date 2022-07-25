@@ -3,6 +3,7 @@ from typing import Optional
 from abc import ABC
 from dataclasses import dataclass
 
+
 @dataclass
 class Layout(ABC):
     width: int
@@ -10,15 +11,11 @@ class Layout(ABC):
     background_color: str = "gray"
     font_size: int = 18
     font_color: str = "black"
-
-
-@dataclass
-class SelectableLayout(Layout, ABC):
     selected_color: str = "green"
 
 
 @dataclass
-class NodeLayout(SelectableLayout):
+class NodeLayout(Layout):
     width: int = 200
     height: int = 100
     font_title_size: int = 22
@@ -26,7 +23,7 @@ class NodeLayout(SelectableLayout):
 
 
 @dataclass
-class PortLayout(SelectableLayout, ABC):
+class PortLayout(Layout, ABC):
     width: int = 20
     height: int = 10
 
