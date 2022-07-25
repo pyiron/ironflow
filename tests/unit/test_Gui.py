@@ -36,11 +36,10 @@ class TestGUI(TestCase):
         # Maybe this will change in the future, but it's baked in the assumptions for now so let's make sure to test it
 
         new_flow = new_gui._session.scripts[0].flow
-        print(new_flow)
         self.assertEqual(0, len(new_flow.nodes), msg="Fresh GUI shouldn't have any nodes yet.")
         self.assertEqual(0, len(new_flow.connections), msg="Fresh GUI shouldn't have any connections yet.")
 
-        new_gui.draw()  # Temporary hack to ensure new_gui.out_canvas exists
+        new_gui.draw()  # TODO: Temporary hack to ensure new_gui.out_canvas exists, allow renderless loading
         new_gui.on_file_load(None)
         new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
         print(new_gui._session.scripts, new_gui._session.scripts[0].flow)
@@ -97,3 +96,21 @@ class TestGUI(TestCase):
         gui.canvas_widget.add_node(1, 1, gui._nodes_dict["user"][MyNode.title])
         gui.flow.nodes[1].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[1].outputs[0].val, -40, msg="New node instances should reflect updated class.")
+
+        gui.on_file_save(None)
+        new_gui = GUI(script_title=gui.script_title)
+        new_gui.draw()  # TODO: Change the gui to allow renderless loading
+        with self.assertRaises(Exception):
+            new_gui.on_file_load(None)
+
+        new_gui.register_user_node(MyNode)
+        new_gui.on_file_load(None)
+        new_gui.flow.nodes[0].inputs[0].update(3)
+        new_gui.flow.nodes[1].inputs[0].update(3)
+        self.assertEqual(
+            new_gui.flow.nodes[0].outputs[0].val,
+            new_gui.flow.nodes[1].outputs[0].val,
+            msg="The updated class was registered, so expect the same behaviour from both nodes now."
+        )
+
+        os.remove(f"{gui.script_title}.json")

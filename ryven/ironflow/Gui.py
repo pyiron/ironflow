@@ -70,6 +70,9 @@ class GUI(HasSession):
         Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
                 update. Already-placed nodes are still instances of the old class and need to be deleted.
 
+        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
+            loading the saved graph is possible.
+
         Args:
             node_class Type[NENV.Node]: The new node class to register.
         """
