@@ -177,7 +177,7 @@ class NodeWidget(BaseCanvasWidget):
         }
 
         if len(self.node.inputs) > 3:
-            self._height = 200
+            self._height = 200  # TODO: Make height programatically dependent on content
         self.add_inputs()
         self.add_outputs()
 
