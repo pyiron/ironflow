@@ -57,12 +57,12 @@ class GUI(HasSession):
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
 
     def _register_node(self, node_class: Type[NENV.Node]):
-        node_module = node_class.__module__.replace('__main__', 'notebook')  # n.identifier_prefix
+        node_module = node_class.__module__.replace('__main__', 'user')  # n.identifier_prefix
         if node_module not in self._nodes_dict.keys():
             self._nodes_dict[node_module] = {}
         self._nodes_dict[node_module][node_class.title] = node_class
 
-    def register_custom_node(self, node_class: Type[NENV.Node]):
+    def register_user_node(self, node_class: Type[NENV.Node]):
         """
         Register a custom node class from the gui's current working scope. These nodes are available under the
         'notebook' module.
