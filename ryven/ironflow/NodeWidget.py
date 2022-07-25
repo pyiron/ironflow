@@ -97,7 +97,6 @@ class BaseCanvasWidget:
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         x_coord = self.x  # - (self.width * 0.5)
         y_coord = self.y  # - (self.height * 0.5)
-
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
@@ -142,7 +141,7 @@ class PortWidget(BaseCanvasWidget):
         if self.selected:
             self.canvas.fill_style = self.layout.selected_color
         self.canvas.fill_circle(self.x, self.y, self.radius)
-        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.font = self.layout.font_string
         self.canvas.fill_style = self.layout.font_color
         self.canvas.fill_text(
             self.text_left, self.x + self.radius + 3, self.y + self.radius // 2
@@ -190,7 +189,7 @@ class NodeWidget(BaseCanvasWidget):
     def draw_title(self, title: str) -> None:
         self.canvas.fill_style = self.node.color
         self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
-        self.canvas.font = f"{self.layout.font_title_size}px serif"
+        self.canvas.font = self.layout.title_font_string
         self.canvas.fill_style = self.layout.font_title_color
         x = self.x + (self.width * 0.04)
         y = self.y + self._title_box_height - 8
@@ -198,7 +197,7 @@ class NodeWidget(BaseCanvasWidget):
 
     def draw_value(self, val: Any, val_is_updated: bool = True) -> None:
         self.canvas.fill_style = self.layout.font_color
-        self.canvas.font = f"{self.layout.font_title_size}px serif"
+        self.canvas.font = self.layout.title_font_string
         x = self.x + (self.width * 0.3)
         y = (self.y + (self.height * 0.65),)
         self.canvas.fill_text(str(val), x, y)

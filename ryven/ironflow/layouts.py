@@ -12,6 +12,11 @@ class Layout(ABC):
     font_size: int = 18
     font_color: str = "black"
     selected_color: str = "green"
+    font: str = "serif"
+
+    @property
+    def font_string(self):
+        return f"{self.font_size}px {self.font}"
 
 
 @dataclass
@@ -20,6 +25,11 @@ class NodeLayout(Layout):
     height: int = 100
     font_title_size: int = 22
     font_title_color: str = "black"
+    title_font: str = "serif"
+
+    @property
+    def title_font_string(self):
+        return f"{self.font_title_size}px {self.title_font}"
 
 
 @dataclass
