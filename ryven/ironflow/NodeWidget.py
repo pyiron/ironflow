@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import numpy as np
 from IPython.display import display
+from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 
-from typing import TYPE_CHECKING, Optional, Union, Dict, Any
+from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
     from .CanvasObject import CanvasObject
     from ipycanvas import Canvas
-    from ryven.NENV import Node
+    from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
     from ryvencore.NodePort import NodePort
 
@@ -23,40 +24,19 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-class CanvasLayout:
-    def __init__(
-        self,
-        width: int = 100,
-        height: int = 60,
-        font_size: int = 12,
-        background_color: str = "blue",
-        selected_color: str = "lightblue",
-        font_color: str = "black",
-        font_title_color: str = "black",
-    ):
-        self.width = width
-        self.height = height
-        self.background_color = background_color
-        self.selected_color = selected_color
-        self.font_size = font_size
-        self.font_color = font_color
-        self.font_title_color = font_title_color
-
-
 class BaseCanvasWidget:
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[CanvasLayout] = None,
+            parent: Union[CanvasObject, BaseCanvasWidget],
+            layout: Layout,
             selected: bool = False
     ):
         self._x = x  # relative to parent
         self._y = y
 
         self.layout = layout
-
         self.parent = parent
         self.selected = selected
 
@@ -88,11 +68,6 @@ class BaseCanvasWidget:
         return self.parent.canvas
 
     def add_widget(self, widget: BaseCanvasWidget) -> None:
-        if widget.parent is None:
-            widget.parent = self
-        if widget.layout is None:
-            widget.layout = self.parent.layout
-
         self.objects_to_draw.append(widget)
 
     def set_x_y(self, x_in: Number, y_in: Number) -> None:
@@ -104,9 +79,7 @@ class BaseCanvasWidget:
         self._y += dy_in
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.background_color
-        if self.selected:
-            self.canvas.fill_style = self.layout.selected_color
+        self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
         self.canvas.fill_rect(
             self.x,  # - (self.width * 0.5),
             self.y,  # - (self.height * 0.5),
@@ -122,7 +95,6 @@ class BaseCanvasWidget:
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         x_coord = self.x  # - (self.width * 0.5)
         y_coord = self.y  # - (self.height * 0.5)
-
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
@@ -135,10 +107,7 @@ class BaseCanvasWidget:
             return None
 
     def is_selected(self, x_in: Number, y_in: Number) -> bool:
-        if self._is_at_xy(x_in, y_in):
-            return True
-        else:
-            return False
+        return self._is_at_xy(x_in, y_in)
 
     def set_selected(self, state: bool) -> None:
         self.selected = state
@@ -149,10 +118,10 @@ class PortWidget(BaseCanvasWidget):
         self,
         x: Number,
         y: Number,
+        parent: Union[CanvasObject, BaseCanvasWidget],
+        layout: PortLayout,
         radius: Number = 10,
-        parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
         port: Optional[NodePort] = None,
-        layout: Optional[CanvasLayout] = None,
         selected: bool = False,
         text_left: str = "",
     ):
@@ -167,8 +136,8 @@ class PortWidget(BaseCanvasWidget):
         if self.selected:
             self.canvas.fill_style = self.layout.selected_color
         self.canvas.fill_circle(self.x, self.y, self.radius)
-        self.canvas.font = "21px serif"
-        self.canvas.fill_style = "black"
+        self.canvas.font = self.layout.font_string
+        self.canvas.fill_style = self.layout.font_color
         self.canvas.fill_text(
             self.text_left, self.x + self.radius + 3, self.y + self.radius // 2
         )
@@ -185,9 +154,9 @@ class NodeWidget(BaseCanvasWidget):
             self,
             x: Number,
             y: Number,
+            parent: Union[CanvasObject, BaseCanvasWidget],
+            layout: NodeLayout,
             node: Node,
-            parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[CanvasLayout] = None,
             selected: bool = False,
             port_radius: Number = 10,
     ):
@@ -202,22 +171,20 @@ class NodeWidget(BaseCanvasWidget):
         self.outputs = node.outputs
 
         self.port_radius = port_radius
-        self.layout_ports = CanvasLayout(
-            width=20,
-            height=10,
-            background_color="lightgreen",
-            selected_color="darkgreen",
-        )
+        self.port_layouts = {
+            'data': DataPortLayout(),
+            'exec': ExecPortLayout()
+        }
 
         if len(self.node.inputs) > 3:
-            self._height = 200
+            self._height = 200  # TODO: Make height programatically dependent on content
         self.add_inputs()
         self.add_outputs()
 
     def draw_title(self, title: str) -> None:
-        self.canvas.fill_style = "darkgray"
+        self.canvas.fill_style = self.node.color
         self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
-        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.font = self.layout.title_font_string
         self.canvas.fill_style = self.layout.font_title_color
         x = self.x + (self.width * 0.04)
         y = self.y + self._title_box_height - 8
@@ -225,7 +192,7 @@ class NodeWidget(BaseCanvasWidget):
 
     def draw_value(self, val: Any, val_is_updated: bool = True) -> None:
         self.canvas.fill_style = self.layout.font_color
-        self.canvas.font = f"{self.layout.font_size}px serif"
+        self.canvas.font = self.layout.title_font_string
         x = self.x + (self.width * 0.3)
         y = (self.y + (self.height * 0.65),)
         self.canvas.fill_text(str(val), x, y)
@@ -238,8 +205,8 @@ class NodeWidget(BaseCanvasWidget):
     def _add_ports(
             self,
             radius: Number,
-            inputs: Optional[Dict] = None,
-            outputs: Optional[Dict] = None,
+            inputs: Optional[List[NodeInputBP]] = None,
+            outputs: Optional[List[NodeOutputBP]] = None,
             border: Number = 1.4,
             text: str = ""
     ) -> None:
@@ -265,11 +232,11 @@ class NodeWidget(BaseCanvasWidget):
                     PortWidget(
                         x,
                         y_port * d_y + y_min,
-                        radius=radius,
                         parent=self,
+                        layout=self.port_layouts[data[i_port].type_],
                         port=data[i_port],
+                        radius=radius,
                         text_left=data[i_port].label_str,
-                        layout=self.layout_ports,
                     )
                 )
 
@@ -301,15 +268,15 @@ class ButtonNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
+            parent: Union[CanvasObject, BaseCanvasWidget],
+            layout: ButtonLayout,
             node: Node,
-            parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[CanvasLayout] = None,
             selected: bool = False,
             port_radius: Number = 10,
     ):
-        super().__init__(x, y, node, parent, layout, selected, port_radius)
+        super().__init__(x, y, parent, layout, node, selected, port_radius)
 
-        layout = CanvasLayout(width=100, height=30, background_color="darkgray")
+        layout = ButtonLayout()
         s = BaseCanvasWidget(50, 50, parent=self, layout=layout)
         s.handle_select = self.handle_button_select
         self.add_widget(s)
