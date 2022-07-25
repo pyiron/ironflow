@@ -220,7 +220,6 @@ class CanvasObject(HasSession):
 
     def add_node(self, x: Number, y: Number, node: Node):
         n = self.flow.create_node(node)
-        print("node: ", n.identifier, n.GLOBAL_ID)
         self.load_node(x, y, n)
 
         self.redraw()
