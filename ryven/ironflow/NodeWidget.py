@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from IPython.display import display
-from .layouts import CanvasLayout, NodeLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from .layouts import Layout, NodeLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ class BaseCanvasWidget:
             x: Number,
             y: Number,
             parent: Optional[Union[CanvasObject, BaseCanvasWidget]] = None,
-            layout: Optional[CanvasLayout] = None,
+            layout: Optional[Layout] = None,
             selected: bool = False
     ):
         self._x = x  # relative to parent
