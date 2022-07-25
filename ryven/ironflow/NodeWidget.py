@@ -79,9 +79,7 @@ class BaseCanvasWidget:
         self._y += dy_in
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.background_color
-        if self.selected:
-            self.canvas.fill_style = self.layout.selected_color
+        self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
         self.canvas.fill_rect(
             self.x,  # - (self.width * 0.5),
             self.y,  # - (self.height * 0.5),
@@ -109,10 +107,7 @@ class BaseCanvasWidget:
             return None
 
     def is_selected(self, x_in: Number, y_in: Number) -> bool:
-        if self._is_at_xy(x_in, y_in):
-            return True
-        else:
-            return False
+        return self._is_at_xy(x_in, y_in)
 
     def set_selected(self, state: bool) -> None:
         self.selected = state
