@@ -147,18 +147,19 @@ class CanvasObject(HasSession):
         sel_object = self.get_element_at_xy(x, y)
         last_object = self._last_selected_object
 
-        if last_object is None:
-            if sel_object is not None:
-                self._handle_new_object_selection(sel_object)
-            elif time_since_last_click < self._double_click_speed:
-                self.add_node(x, y, self.gui.new_node_class)
-                self._built_object_to_gui_dict()
-        else:
-            if sel_object is not None and sel_object != last_object:
+        # Case 1: Select something new
+        if sel_object is not None and sel_object != last_object:
+            if last_object is not None:
                 last_object.set_selected(False)
-                self._handle_new_object_selection(sel_object)
-            elif sel_object is None:
-                last_object.set_selected(False)
+            self._handle_new_object_selection(sel_object)
+        # Case 2: Double-click on empty space
+        elif last_object is None and time_since_last_click < self._double_click_speed:
+            self.add_node(x, y, self.gui.new_node_class)
+            self._built_object_to_gui_dict()
+        # Case 3: Single-click on empty space
+        elif last_object is not None:  # Deselecting
+            last_object.set_selected(False)
+        # Case 4: you re-selected the same thing (possibly empty space)
 
         self._last_selected_object = sel_object
         self.redraw()
