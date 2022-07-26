@@ -197,7 +197,7 @@ class CanvasObject(HasSession):
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
         for o in self.objects_to_draw:
-            if o.is_selected(x_in, y_in):
+            if o.is_here(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 

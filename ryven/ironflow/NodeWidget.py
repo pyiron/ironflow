@@ -100,13 +100,13 @@ class BaseCanvasWidget:
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
         if self._is_at_xy(x_in, y_in):
             for o in self.objects_to_draw:
-                if o.is_selected(x_in, y_in):
+                if o.is_here(x_in, y_in):
                     return o.get_element_at_xy(x_in, y_in)
             return self
         else:
             return None
 
-    def is_selected(self, x_in: Number, y_in: Number) -> bool:
+    def is_here(self, x_in: Number, y_in: Number) -> bool:
         return self._is_at_xy(x_in, y_in)
 
     def select(self) -> None:
