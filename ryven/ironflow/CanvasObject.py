@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
+from time import time
 
 from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
 from .layouts import NodeLayout
@@ -77,6 +78,10 @@ class CanvasObject(HasSession):
 
         self._last_selected_object = None
         self._last_selected_port = None
+
+        self._mouse_is_down = False
+        self._last_mouse_down = time()
+        self._double_click_speed = 0.2
 
         self._connection_in = None
         self._node_widget = None
