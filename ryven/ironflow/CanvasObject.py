@@ -31,6 +31,21 @@ mode_move, mode_connect, mode_none = gui_modes
 
 
 class CanvasObject(HasSession):
+    """
+
+    Mouse behaviour:
+        - Mouse click (down and release) on a node element or any child element selects that element
+        - Mouse down, hold, and move on a node element or any child element selects the (parent) node and moves it
+        - Mouse click on nothing clears selection
+        - Mouse double-click on nothing creates a new node of the type currently selected in the node menu
+        - TODO: Mouse down, hold, and move on nothing draws a rectangle, everything inside is selected on release
+
+    Keyboard behaviour: TODO
+        - ESC: Deselect all.
+        - Backspace/Delete:
+            - If a node is selected, deletes it
+            - If a port is selected, deletes all connections it is part of
+    """
     def __init__(self, gui: Optional[GUI] = None, width: int = 2000, height: int = 1000):
         self.gui = gui
         super().__init__(self.gui.session)
