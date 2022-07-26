@@ -77,7 +77,7 @@ class CanvasObject(HasSession):
 
         self._mouse_is_down = False
         self._last_mouse_down = time()
-        self._double_click_speed = 0.2
+        self._double_click_speed = 0.25  # In seconds. TODO: Put this in a config somewhere
 
         self._connection_in = None
         self._node_widget = None
