@@ -74,7 +74,6 @@ class CanvasObject(HasSession):
         self.y = 0
 
         self._last_selected_object = None
-        self._last_selected_port = None
 
         self._mouse_is_down = False
         self._last_mouse_down = time()
@@ -135,7 +134,7 @@ class CanvasObject(HasSession):
             self.deselect_all()
 
     def deselect_all(self) -> None:
-        [o.set_selected(False) for o in self.objects_to_draw if o.selected]
+        [o.deselect() for o in self.objects_to_draw]
         self.redraw()
 
     def handle_mouse_down(self, x: Number, y: Number):
@@ -150,44 +149,51 @@ class CanvasObject(HasSession):
         # Case 1: Select something new
         if sel_object is not None and sel_object != last_object:
             if last_object is not None:
-                last_object.set_selected(False)
-            self._handle_new_object_selection(sel_object)
+                last_object.deselect()
+            sel_object = self._handle_new_object_selection(sel_object)
         # Case 2: Double-click on empty space
         elif last_object is None and time_since_last_click < self._double_click_speed:
             self.add_node(x, y, self.gui.new_node_class)
             self._built_object_to_gui_dict()
         # Case 3: Single-click on empty space
-        elif last_object is not None:  # Deselecting
-            last_object.set_selected(False)
+        elif last_object is not None:
+            last_object.deselect()
         # Case 4: you re-selected the same thing (possibly empty space)
 
         self._last_selected_object = sel_object
+
         self.redraw()
 
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
 
-    def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> None:
-        newly_selected_object.set_selected(True)
-
-        if isinstance(newly_selected_object, NodeWidget):
-            self._handle_node_select(newly_selected_object)
-        elif isinstance(newly_selected_object, PortWidget):
-            self._handle_port_select(newly_selected_object)
+    def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> Union[BaseCanvasWidget | None]:
+        newly_selected_object.select()
 
         if hasattr(newly_selected_object, "handle_select"):
             newly_selected_object.handle_select(newly_selected_object)
 
-    def _handle_node_select(self, sel_object: NodeWidget) -> None:
+        if isinstance(newly_selected_object, NodeWidget):
+            return self._handle_node_select(newly_selected_object)
+        elif isinstance(newly_selected_object, PortWidget):
+            return self._handle_port_select(newly_selected_object)
+        else:
+            return newly_selected_object
+
+    def _handle_node_select(self, sel_object: NodeWidget) -> NodeWidget:
         self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
         with self.gui.out_status:
             self.gui.out_status.clear_output()
             display(self._node_widget)  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+        return sel_object
 
-    def _handle_port_select(self, sel_object: PortWidget) -> None:
+    def _handle_port_select(self, sel_object: PortWidget) -> Union[PortWidget | None]:
         if isinstance(self._last_selected_object, PortWidget):
             self.flow.connect_nodes(self._last_selected_object.port, sel_object.port)
             self.deselect_all()
+            return None
+        else:
+            return sel_object
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
         for o in self.objects_to_draw:
@@ -196,7 +202,7 @@ class CanvasObject(HasSession):
         return None
 
     def get_selected_objects(self) -> List[BaseCanvasWidget]:
-        return [o for o in self.objects_to_draw if o.selected]
+        return [o for o in self.objects_to_draw if o.selected if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
         # dx = x - self._x0_mouse

@@ -38,7 +38,7 @@ class BaseCanvasWidget:
 
         self.layout = layout
         self.parent = parent
-        self.selected = selected
+        self._selected = selected
 
         self.objects_to_draw = []
 
@@ -109,8 +109,16 @@ class BaseCanvasWidget:
     def is_selected(self, x_in: Number, y_in: Number) -> bool:
         return self._is_at_xy(x_in, y_in)
 
-    def set_selected(self, state: bool) -> None:
-        self.selected = state
+    def select(self) -> None:
+        self._selected = True
+
+    def deselect(self) -> None:
+        self._selected = False
+        [o.deselect() for o in self.objects_to_draw]
+
+    @property
+    def selected(self):
+        return self._selected
 
 
 class PortWidget(BaseCanvasWidget):
@@ -283,4 +291,4 @@ class ButtonNodeWidget(NodeWidget):
 
     def handle_button_select(self, button: ButtonNodeWidget) -> None:
         button.parent.node.exec_output(0)
-        button.set_selected(False)
+        button.deselect()
