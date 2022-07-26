@@ -146,6 +146,11 @@ class CanvasObject(HasSession):
 
         sel_object = self.get_element_at_xy(x, y)
         self._selected_object = sel_object
+
+        if sel_object is None and time_since_last_click < self._double_click_speed:
+            self.add_node(x, y, self.gui._selected_node)
+            self._built_object_to_gui_dict()
+
         if sel_object is not None:
             sel_object.set_selected(not sel_object.selected)
             if sel_object.selected:
@@ -162,9 +167,7 @@ class CanvasObject(HasSession):
 
             else:
                 self._last_selected_object = None
-        else:
-            self.add_node(x, y, self.gui._selected_node)
-            self._built_object_to_gui_dict()
+
 
         self._x0_mouse = x
         self._y0_mouse = y
