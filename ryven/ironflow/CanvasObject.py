@@ -120,15 +120,7 @@ class CanvasObject(HasSession):
         self._canvas.fill_rect(0, 0, self._width, self._height)
 
     def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
-        if key == "Delete":
-            self.delete_selected()
-        elif key == "m":
-            self.gui.mode_dropdown.value = mode_move
-        elif key == "c":
-            self.deselect_all()
-            self.gui.mode_dropdown.value = mode_connect
-        elif key == "n":
-            self.gui.mode_dropdown.value = mode_none
+        pass  # TODO
 
     def set_connection(self, ind_node: int) -> None:
         if self._connection_in is None:
