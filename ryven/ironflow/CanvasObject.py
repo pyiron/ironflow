@@ -66,6 +66,7 @@ class CanvasObject(HasSession):
         self.connections = []
 
         self._canvas.on_mouse_down(self.handle_mouse_down)
+        self._canvas.on_mouse_up(self.handle_mouse_up)
         self._canvas.on_mouse_move(self.handle_mouse_move)
         self._canvas.on_key_down(self.handle_keyboard_event)
 
@@ -138,6 +139,11 @@ class CanvasObject(HasSession):
         self.redraw()
 
     def handle_mouse_down(self, x: Number, y: Number):
+        self._mouse_is_down = True
+        now = time()
+        time_since_last_click = now - self._last_mouse_down
+        self._last_mouse_down = now
+
         sel_object = self.get_element_at_xy(x, y)
         self._selected_object = sel_object
         if sel_object is not None:
@@ -163,6 +169,9 @@ class CanvasObject(HasSession):
         self._x0_mouse = x
         self._y0_mouse = y
         self.redraw()
+
+    def handle_mouse_up(self, x: Number, y: Number):
+        self._mouse_is_down = False
 
     def _handle_node_select(self, sel_object: NodeWidget) -> None:
         self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
