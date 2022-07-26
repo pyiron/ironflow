@@ -27,10 +27,6 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-gui_modes = ["(M)ove Node", "Add (C)onnection", "(N)one"]
-mode_move, mode_connect, mode_none = gui_modes
-
-
 class CanvasObject(HasSession):
     """
 
@@ -192,16 +188,15 @@ class CanvasObject(HasSession):
         return [o for o in self.objects_to_draw if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
-        if self.gui.mode_dropdown.value == mode_move:
-            # dx = x - self._x0_mouse
-            # dy = y - self._y0_mouse
-            # self._x0_mouse, self._y0_mouse = x, y
+        # dx = x - self._x0_mouse
+        # dy = y - self._y0_mouse
+        # self._x0_mouse, self._y0_mouse = x, y
 
-            if [o for o in self.objects_to_draw if o.selected]:
-                with hold_canvas(self._canvas):
-                    # [o.add_x_y(dx, dy) for o in self.objects_to_draw if o.selected]
-                    [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
-                    self.redraw()
+        if [o for o in self.objects_to_draw if o.selected]:
+            with hold_canvas(self._canvas):
+                # [o.add_x_y(dx, dy) for o in self.objects_to_draw if o.selected]
+                [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
+                self.redraw()
 
     def redraw(self) -> None:
         self.canvas_restart()

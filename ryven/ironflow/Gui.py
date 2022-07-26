@@ -6,7 +6,7 @@ import ryvencore as rc
 from IPython.display import display
 from ryven.main.utils import import_nodes_package, NodesPackage
 
-from .CanvasObject import CanvasObject, gui_modes
+from .CanvasObject import CanvasObject
 from .has_session import HasSession
 
 import ryven.NENV as NENV
@@ -172,13 +172,6 @@ class GUI(HasSession):
             layout=widgets.Layout(width="130px"),
         )
 
-        self.mode_dropdown = widgets.Dropdown(
-            options=gui_modes,
-            value=gui_modes[0],
-            disabled=False,
-            layout=widgets.Layout(width="130px"),
-        )
-
         self.btn_load = widgets.Button(
             tooltip="Load", icon="upload", layout=widgets.Layout(width="50px")
         )
@@ -223,7 +216,6 @@ class GUI(HasSession):
                 widgets.HBox(
                     [
                         self.modules_dropdown,
-                        self.mode_dropdown,
                         self.alg_mode_dropdown,
                         self.btn_save,
                         self.btn_load,
