@@ -204,7 +204,7 @@ class CanvasObject(HasSession):
         # dy = y - self._y0_mouse
         # self._x0_mouse, self._y0_mouse = x, y
 
-        if [o for o in self.objects_to_draw if o.selected]:
+        if [o for o in self.objects_to_draw if o.selected] and self._mouse_is_down:
             with hold_canvas(self._canvas):
                 # [o.add_x_y(dx, dy) for o in self.objects_to_draw if o.selected]
                 [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
