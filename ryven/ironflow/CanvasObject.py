@@ -145,29 +145,22 @@ class CanvasObject(HasSession):
         self._last_mouse_down = now
 
         sel_object = self.get_element_at_xy(x, y)
-        self._selected_object = sel_object
+        last_object = self._last_selected_object
 
-        if sel_object is None and time_since_last_click < self._double_click_speed:
-            self.add_node(x, y, self.gui._selected_node)
-            self._built_object_to_gui_dict()
+        if last_object is None:
+            if sel_object is not None:
+                self._handle_new_object_selection(sel_object)
+            elif time_since_last_click < self._double_click_speed:
+                self.add_node(x, y, self.gui._selected_node)
+                self._built_object_to_gui_dict()
+        else:
+            if sel_object is not None and sel_object != last_object:
+                last_object.set_selected(False)
+                self._handle_new_object_selection(sel_object)
+            elif sel_object is None:
+                last_object.set_selected(False)
 
-        if sel_object is not None:
-            sel_object.set_selected(not sel_object.selected)
-            if sel_object.selected:
-                if self._last_selected_object is not None:
-                    self._last_selected_object.set_selected(False)
-                self._last_selected_object = sel_object
-                if isinstance(sel_object, NodeWidget):
-                    self._handle_node_select(sel_object)
-                elif isinstance(sel_object, PortWidget):
-                    self._handle_port_select(sel_object)
-
-                if hasattr(sel_object, "handle_select"):
-                    sel_object.handle_select(sel_object)
-
-            else:
-                self._last_selected_object = None
-
+        self._last_selected_object = sel_object
 
         self._x0_mouse = x
         self._y0_mouse = y
@@ -175,6 +168,17 @@ class CanvasObject(HasSession):
 
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
+
+    def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> None:
+        newly_selected_object.set_selected(True)
+
+        if isinstance(newly_selected_object, NodeWidget):
+            self._handle_node_select(newly_selected_object)
+        elif isinstance(newly_selected_object, PortWidget):
+            self._handle_port_select(newly_selected_object)
+
+        if hasattr(newly_selected_object, "handle_select"):
+            newly_selected_object.handle_select(newly_selected_object)
 
     def _handle_node_select(self, sel_object: NodeWidget) -> None:
         self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
