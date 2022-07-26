@@ -187,11 +187,8 @@ class CanvasObject(HasSession):
             display(self._node_widget)  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
     def _handle_port_select(self, sel_object: PortWidget) -> None:
-        if self._last_selected_port is None:
-            self._last_selected_port = sel_object.port
-        else:
-            self.flow.connect_nodes(self._last_selected_port, sel_object.port)
-            self._last_selected_port = None
+        if isinstance(self._last_selected_object, PortWidget):
+            self.flow.connect_nodes(self._last_selected_object.port, sel_object.port)
             self.deselect_all()
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
