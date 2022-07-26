@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
+from time import time
 
 from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
 from .layouts import NodeLayout
@@ -26,11 +27,22 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-gui_modes = ["(M)ove Node", "Add (C)onnection", "(N)one"]
-mode_move, mode_connect, mode_none = gui_modes
-
-
 class CanvasObject(HasSession):
+    """
+
+    Mouse behaviour:
+        - Mouse click (down and release) on a node element or any child element selects that element
+        - Mouse down, hold, and move on a node element or any child element selects the (parent) node and moves it
+        - Mouse click on nothing clears selection
+        - Mouse double-click on nothing creates a new node of the type currently selected in the node menu
+        - TODO: Mouse down, hold, and move on nothing draws a rectangle, everything inside is selected on release
+
+    Keyboard behaviour: TODO
+        - ESC: Deselect all.
+        - Backspace/Delete:
+            - If a node is selected, deletes it
+            - If a port is selected, deletes all connections it is part of
+    """
     def __init__(self, gui: Optional[GUI] = None, width: int = 2000, height: int = 1000):
         self.gui = gui
         super().__init__(self.gui.session)
@@ -54,6 +66,7 @@ class CanvasObject(HasSession):
         self.connections = []
 
         self._canvas.on_mouse_down(self.handle_mouse_down)
+        self._canvas.on_mouse_up(self.handle_mouse_up)
         self._canvas.on_mouse_move(self.handle_mouse_move)
         self._canvas.on_key_down(self.handle_keyboard_event)
 
@@ -61,7 +74,10 @@ class CanvasObject(HasSession):
         self.y = 0
 
         self._last_selected_object = None
-        self._last_selected_port = None
+
+        self._mouse_is_down = False
+        self._last_mouse_down = time()
+        self._double_click_speed = 0.25  # In seconds. TODO: Put this in a config somewhere
 
         self._connection_in = None
         self._node_widget = None
@@ -100,15 +116,7 @@ class CanvasObject(HasSession):
         self._canvas.fill_rect(0, 0, self._width, self._height)
 
     def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
-        if key == "Delete":
-            self.delete_selected()
-        elif key == "m":
-            self.gui.mode_dropdown.value = mode_move
-        elif key == "c":
-            self.deselect_all()
-            self.gui.mode_dropdown.value = mode_connect
-        elif key == "n":
-            self.gui.mode_dropdown.value = mode_none
+        pass  # TODO
 
     def set_connection(self, ind_node: int) -> None:
         if self._connection_in is None:
@@ -126,70 +134,86 @@ class CanvasObject(HasSession):
             self.deselect_all()
 
     def deselect_all(self) -> None:
-        [o.set_selected(False) for o in self.objects_to_draw if o.selected]
+        [o.deselect() for o in self.objects_to_draw]
         self.redraw()
 
     def handle_mouse_down(self, x: Number, y: Number):
+        self._mouse_is_down = True
+        now = time()
+        time_since_last_click = now - self._last_mouse_down
+        self._last_mouse_down = now
+
         sel_object = self.get_element_at_xy(x, y)
-        self._selected_object = sel_object
-        if sel_object is not None:
-            sel_object.set_selected(not sel_object.selected)
-            if sel_object.selected:
-                if self._last_selected_object is not None:
-                    self._last_selected_object.set_selected(False)
-                self._last_selected_object = sel_object
-                if isinstance(sel_object, NodeWidget):
-                    self._handle_node_select(sel_object)
-                elif isinstance(sel_object, PortWidget):
-                    self._handle_port_select(sel_object)
+        last_object = self._last_selected_object
 
-                if hasattr(sel_object, "handle_select"):
-                    sel_object.handle_select(sel_object)
-
-            else:
-                self._last_selected_object = None
-        else:
-            self.add_node(x, y, self.gui._selected_node)
+        # Case 1: Select something new
+        if sel_object is not None and sel_object != last_object:
+            if last_object is not None:
+                last_object.deselect()
+            sel_object = self._handle_new_object_selection(sel_object)
+        # Case 2: Double-click on empty space
+        elif last_object is None and time_since_last_click < self._double_click_speed:
+            self.add_node(x, y, self.gui.new_node_class)
             self._built_object_to_gui_dict()
+        # Case 3: Single-click on empty space
+        elif last_object is not None:
+            last_object.deselect()
+        # Case 4: you re-selected the same thing (possibly empty space)
 
-        self._x0_mouse = x
-        self._y0_mouse = y
+        self._last_selected_object = sel_object
+
         self.redraw()
 
-    def _handle_node_select(self, sel_object: NodeWidget) -> None:
+    def handle_mouse_up(self, x: Number, y: Number):
+        self._mouse_is_down = False
+
+    def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> Union[BaseCanvasWidget | None]:
+        newly_selected_object.select()
+
+        if hasattr(newly_selected_object, "handle_select"):
+            newly_selected_object.handle_select(newly_selected_object)
+
+        if isinstance(newly_selected_object, NodeWidget):
+            return self._handle_node_select(newly_selected_object)
+        elif isinstance(newly_selected_object, PortWidget):
+            return self._handle_port_select(newly_selected_object)
+        else:
+            return newly_selected_object
+
+    def _handle_node_select(self, sel_object: NodeWidget) -> NodeWidget:
         self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
         with self.gui.out_status:
             self.gui.out_status.clear_output()
             display(self._node_widget)  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+        return sel_object
 
-    def _handle_port_select(self, sel_object: PortWidget) -> None:
-        if self._last_selected_port is None:
-            self._last_selected_port = sel_object.port
-        else:
-            self.flow.connect_nodes(self._last_selected_port, sel_object.port)
-            self._last_selected_port = None
+    def _handle_port_select(self, sel_object: PortWidget) -> Union[PortWidget | None]:
+        if isinstance(self._last_selected_object, PortWidget):
+            self.flow.connect_nodes(self._last_selected_object.port, sel_object.port)
             self.deselect_all()
+            return None
+        else:
+            return sel_object
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
         for o in self.objects_to_draw:
-            if o.is_selected(x_in, y_in):
+            if o.is_here(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 
     def get_selected_objects(self) -> List[BaseCanvasWidget]:
-        return [o for o in self.objects_to_draw if o.selected]
+        return [o for o in self.objects_to_draw if o.selected if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
-        if self.gui.mode_dropdown.value == mode_move:
-            # dx = x - self._x0_mouse
-            # dy = y - self._y0_mouse
-            # self._x0_mouse, self._y0_mouse = x, y
+        # dx = x - self._x0_mouse
+        # dy = y - self._y0_mouse
+        # self._x0_mouse, self._y0_mouse = x, y
 
-            if [o for o in self.objects_to_draw if o.selected]:
-                with hold_canvas(self._canvas):
-                    # [o.add_x_y(dx, dy) for o in self.objects_to_draw if o.selected]
-                    [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
-                    self.redraw()
+        if [o for o in self.objects_to_draw if o.selected] and self._mouse_is_down:
+            with hold_canvas(self._canvas):
+                # [o.add_x_y(dx, dy) for o in self.objects_to_draw if o.selected]
+                [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
+                self.redraw()
 
     def redraw(self) -> None:
         self.canvas_restart()
