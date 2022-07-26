@@ -151,7 +151,7 @@ class CanvasObject(HasSession):
             if sel_object is not None:
                 self._handle_new_object_selection(sel_object)
             elif time_since_last_click < self._double_click_speed:
-                self.add_node(x, y, self.gui._selected_node)
+                self.add_node(x, y, self.gui.new_node_class)
                 self._built_object_to_gui_dict()
         else:
             if sel_object is not None and sel_object != last_object:

@@ -197,13 +197,11 @@ class GUI(HasSession):
             #     description='Nodes:',
             disabled=False,
         )
-        self.on_nodes_change(list(nodes_options)[0])
 
         self.out_status = widgets.Output(layout={"border": "1px solid black"})
 
         self.alg_mode_dropdown.observe(self.on_alg_mode_change, names="value")
         self.modules_dropdown.observe(self.on_value_change, names="value")
-        self.node_selector.observe(self.on_nodes_change, names="value")
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
@@ -246,8 +244,9 @@ class GUI(HasSession):
     def on_value_change(self, change: Dict) -> None:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
-    def on_nodes_change(self, change: Dict) -> None:
-        self._selected_node = self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
-
     def on_alg_mode_change(self, change: Dict) -> None:
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
+
+    @property
+    def new_node_class(self):
+        return self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
