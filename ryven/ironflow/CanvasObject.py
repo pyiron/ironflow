@@ -161,9 +161,6 @@ class CanvasObject(HasSession):
                 last_object.set_selected(False)
 
         self._last_selected_object = sel_object
-
-        self._x0_mouse = x
-        self._y0_mouse = y
         self.redraw()
 
     def handle_mouse_up(self, x: Number, y: Number):
