@@ -348,6 +348,7 @@ class ForEach_Node(NodeBase):
         NodeOutputBP("e", type_="data"),
         NodeOutputBP("finished", type_="exec"),
     ]
+    color = '#b33a27'
 
     _count = 0
 
