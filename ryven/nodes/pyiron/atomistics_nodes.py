@@ -3,7 +3,7 @@ import numpy as np
 from pyiron_atomistics import Project
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 
-from special_nodes import DualNodeBase
+from ryven.nodes.std.special_nodes import DualNodeBase
 
 
 __author__ = "Joerg Neugebauer"
