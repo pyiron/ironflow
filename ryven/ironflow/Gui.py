@@ -69,7 +69,7 @@ class GUI(HasSession):
     def register_user_node(self, node_class: Type[NENV.Node]):
         """
         Register a custom node class from the gui's current working scope. These nodes are available under the
-        'notebook' module.
+        'user' module. You will need to (re-)draw your GUI to see the change.
 
         Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
                 update. Already-placed nodes are still instances of the old class and need to be deleted.
