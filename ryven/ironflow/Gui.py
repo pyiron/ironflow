@@ -178,9 +178,15 @@ class GUI(HasSession):
             layout={"width": "50%", "border": "1px solid black"}
         )
 
+
         self.out_canvas = widgets.Output(layout={"border": "1px solid black"})
-        with self.out_canvas:
-            display(self.canvas_widget.canvas)
+        self.script_tabs = widgets.Tab(
+            [widgets.Output(layout={"border": "1px solid black"}) for _ in range(len(self.session.scripts))]
+        )
+        for i in range(len(self.session.scripts)):
+            self.script_tabs.set_title(i, self.session.scripts[i].title)
+            with self.script_tabs.children[i]:
+                display(self._flow_canvases[i].canvas)
 
         module_options = sorted(self._nodes_dict.keys())
         self.modules_dropdown = widgets.Dropdown(
@@ -240,7 +246,7 @@ class GUI(HasSession):
                     ]
                 ),
                 widgets.HBox(
-                    [widgets.VBox([self.node_selector]), self.out_canvas, self.out_plot]
+                    [widgets.VBox([self.node_selector]), self.script_tabs, self.out_plot]
                 ),
                 self.out_log,
                 self.out_status,
