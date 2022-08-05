@@ -26,7 +26,7 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-class CanvasObject:
+class FlowCanvas:
     """
     A canvas for representing a particular Ryven script, which is determined at instantiation by the currently active
     gui script.

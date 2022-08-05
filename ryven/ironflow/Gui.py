@@ -6,7 +6,7 @@ import ryvencore as rc
 from IPython.display import display
 from ryven.main.utils import import_nodes_package, NodesPackage
 
-from .CanvasObject import CanvasObject
+from .FlowCanvas import FlowCanvas
 from .has_session import HasSession
 
 import ryven.NENV as NENV
@@ -55,7 +55,7 @@ class GUI(HasSession):
         for n in self.session.nodes:
             self._register_node(n)
 
-        self.canvas_widget = CanvasObject(gui=self)
+        self.canvas_widget = FlowCanvas(gui=self)
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
@@ -134,7 +134,7 @@ class GUI(HasSession):
         self.session.delete_script(self.script)
         self.session.load(data)
 
-        self.canvas_widget = CanvasObject(gui=self)
+        self.canvas_widget = FlowCanvas(gui=self)
         self.canvas_widget.canvas_restart()
         all_data = data["scripts"][i_script]["flow"]["nodes"]
         for i, node in enumerate(self.flow.nodes):
