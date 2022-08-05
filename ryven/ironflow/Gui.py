@@ -201,7 +201,7 @@ class GUI(HasSession):
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
-        self.btn_new_script = widgets.Button(tooltip="New script", icon="file-plus", layout=button_layout)
+        self.btn_new_script = widgets.Button(tooltip="New script", icon="file", layout=button_layout)
 
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -226,6 +226,7 @@ class GUI(HasSession):
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
+        self.btn_new_script.on_click(self.on_new_script)
 
         # if self.canvas_widget._node_widget is None:
         #     self.canvas_widget._node_widget = widgets.Box()
@@ -268,6 +269,9 @@ class GUI(HasSession):
 
     def on_alg_mode_change(self, change: Dict) -> None:
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
+
+    def on_new_script(self, change: Dict) -> None:
+        self.create_script(f"{len(self.session.scripts)}")
 
     @property
     def new_node_class(self):
