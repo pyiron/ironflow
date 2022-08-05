@@ -43,8 +43,7 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 class GUI(HasSession):
     def __init__(self, script_title: str = "test", session: Optional[rc.Session] = None):  # , onto_dic=onto_dic):
         super().__init__(session=rc.Session() if session is None else session)
-        self._script_title = script_title
-        self.session.create_script(title=self.script_title)
+        self.session.create_script(title=script_title)
 
         for package in packages:
             self.session.register_nodes(
@@ -103,10 +102,6 @@ class GUI(HasSession):
             self.session.unregister_node(node_class)
         self.session.register_node(node_class)
         self._register_node(node_class, node_module='user')
-
-    @property
-    def script_title(self) -> str:
-        return self._script_title
 
     def save(self, file_path: str) -> None:
         data = self.serialize()
@@ -237,10 +232,10 @@ class GUI(HasSession):
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
     def on_file_save(self, change: Dict) -> None:
-        self.save(f"{self.script_title}.json")
+        self.save(f"{self.script.title}.json")
 
     def on_file_load(self, change: Dict) -> None:
-        self.load(f"{self.script_title}.json")
+        self.load(f"{self.script.title}.json")
 
     def on_delete_node(self, change: Dict) -> None:
         self.canvas_widget.delete_selected()

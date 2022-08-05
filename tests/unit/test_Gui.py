@@ -98,7 +98,7 @@ class TestGUI(TestCase):
         self.assertEqual(gui.flow.nodes[1].outputs[0].val, -40, msg="New node instances should reflect updated class.")
 
         gui.on_file_save(None)
-        new_gui = GUI(script_title=gui.script_title)
+        new_gui = GUI(script_title=gui.script.title)
         new_gui.draw()  # TODO: Change the gui to allow renderless loading
         with self.assertRaises(Exception):
             new_gui.on_file_load(None)
@@ -113,7 +113,7 @@ class TestGUI(TestCase):
             msg="The updated class was registered, so expect the same behaviour from both nodes now."
         )
 
-        os.remove(f"{gui.script_title}.json")
+        os.remove(f"{gui.script.title}.json")
 
     def test_repeated_instantiation(self):
         gui = GUI(script_title='foo')
