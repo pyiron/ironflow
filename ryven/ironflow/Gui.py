@@ -197,15 +197,11 @@ class GUI(HasSession):
             layout=widgets.Layout(width="130px"),
         )
 
-        self.btn_load = widgets.Button(
-            tooltip="Load", icon="upload", layout=widgets.Layout(width="50px")
-        )
-        self.btn_save = widgets.Button(
-            tooltip="Save", icon="download", layout=widgets.Layout(width="50px")
-        )
-        self.btn_delete_node = widgets.Button(
-            tooltip="Delete Node", icon="trash", layout=widgets.Layout(width="50px")
-        )
+        button_layout = widgets.Layout(width="50px")
+        self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
+        self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
+        self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
+        self.btn_new_script = widgets.Button(tooltip="New script", icon="file-plus", layout=button_layout)
 
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -242,7 +238,8 @@ class GUI(HasSession):
                         self.alg_mode_dropdown,
                         self.btn_save,
                         self.btn_load,
-                        self.btn_delete_node
+                        self.btn_delete_node,
+                        self.btn_new_script
                     ]
                 ),
                 widgets.HBox(
