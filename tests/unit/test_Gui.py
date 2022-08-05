@@ -15,6 +15,32 @@ class TestGUI(TestCase):
         except FileNotFoundError:
             pass
 
+    def test_multiple_scripts(self):
+        gui = GUI(script_title='foo')
+        gui.canvas_widget.add_node(0, 0, gui._nodes_dict['nodes']['val'])
+        gui.create_script(title='bar')
+        gui.canvas_widget.add_node(1, 1, gui._nodes_dict['nodes']['result'])
+        fname = 'my_session.json'
+        gui.save(fname)
+        new_gui = GUI(script_title='something_random')
+        new_gui.draw()  # TODO: This is still just a hack to get new_gui.out_canvas to exist...
+        new_gui.load(fname)
+
+        self.assertEqual(
+            0,
+            new_gui._active_script_index,
+            msg=f"Expected loaded sessions to start on the zeroth script, but got script {new_gui._active_script_index}"
+        )
+
+        for i in range(len(gui.session.scripts)):
+            saved_node = gui.session.scripts[i].flow.nodes[0].title
+            loaded_node = new_gui.session.scripts[i].flow.nodes[0].title
+            self.assertEqual(
+                saved_node,
+                loaded_node,
+                msg=f"Expected saved and loaded nodes to match, but got {saved_node} and {loaded_node}"
+            )
+
     def test_saving_and_loading(self):
         title = 'foo'
         gui = GUI(script_title=title)

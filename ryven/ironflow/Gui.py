@@ -43,7 +43,8 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 class GUI(HasSession):
     def __init__(self, script_title: str = "test", session: Optional[rc.Session] = None):  # , onto_dic=onto_dic):
         super().__init__(session=rc.Session() if session is None else session)
-        self.session.create_script(title=script_title)
+        self._flow_canvases = []
+        self.create_script(title=script_title)
 
         for package in packages:
             self.session.register_nodes(
@@ -54,14 +55,22 @@ class GUI(HasSession):
         for n in self.session.nodes:
             self._register_node(n)
 
-        self._flow_canvases = [FlowCanvas(gui=self)]
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
 
+    def create_script(
+            self,
+            title: str = None,
+            create_default_logs: bool = True,
+            data: Dict = None
+    ):
+        super().create_script(title=title, create_default_logs=create_default_logs, data=data)
+        self._flow_canvases.append(FlowCanvas(gui=self))
+
     @property
     def canvas_widget(self):
-        return self._flow_canvases[0]
+        return self._flow_canvases[self._active_script_index]
 
     def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
         node_module = node_module or node_class.__module__  # n.identifier_prefix
@@ -114,12 +123,15 @@ class GUI(HasSession):
             f.write(json.dumps(data, indent=4))
 
     def serialize(self) -> Dict:
+        currently_active = self._active_script_index
         data = self.session.serialize()
-        i_script = 0
-        all_data = data["scripts"][i_script]["flow"]["nodes"]
-        for i, node_widget in enumerate(self.canvas_widget.objects_to_draw):
-            all_data[i]["pos x"] = node_widget.x
-            all_data[i]["pos y"] = node_widget.y
+        for i_script, script in enumerate(self.session.scripts):
+            all_data = data["scripts"][i_script]["flow"]["nodes"]
+            self.activate_script(i_script)
+            for i, node_widget in enumerate(self.canvas_widget.objects_to_draw):
+                all_data[i]["pos x"] = node_widget.x
+                all_data[i]["pos y"] = node_widget.y
+        self.activate_script(currently_active)
         return data
 
     def load(self, file_path: str) -> None:
@@ -129,19 +141,23 @@ class GUI(HasSession):
         self.load_from_data(data)
 
     def load_from_data(self, data: Dict) -> None:
-        i_script = 0
-        self.session.delete_script(self.script)
+        for script in self.session.scripts:
+            self.session.delete_script(script)
+        self._flow_canvases = []
+
         self.session.load(data)
+        for i_script, script in enumerate(self.session.scripts):
+            self.activate_script(i_script)
+            self._flow_canvases.append(FlowCanvas(gui=self))
+            all_data = data["scripts"][i_script]["flow"]["nodes"]
+            for i_node, node in enumerate(self.flow.nodes):
+                self.canvas_widget.load_node(
+                    all_data[i_node]["pos x"], all_data[i_node]["pos y"], node
+                )
+            self.canvas_widget._built_object_to_gui_dict()
 
-        self._flow_canvases = [FlowCanvas(gui=self)]
+        self.activate_script(0)
         self.canvas_widget.canvas_restart()
-        all_data = data["scripts"][i_script]["flow"]["nodes"]
-        for i, node in enumerate(self.flow.nodes):
-            self.canvas_widget.load_node(
-                all_data[i]["pos x"], all_data[i]["pos y"], node
-            )
-        self.canvas_widget._built_object_to_gui_dict()
-
         self.out_canvas.clear_output()
         with self.out_canvas:
             display(self.canvas_widget.canvas)
