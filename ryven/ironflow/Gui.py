@@ -54,10 +54,14 @@ class GUI(HasSession):
         for n in self.session.nodes:
             self._register_node(n)
 
-        self.canvas_widget = FlowCanvas(gui=self)
+        self._flow_canvases = [FlowCanvas(gui=self)]
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
+
+    @property
+    def canvas_widget(self):
+        return self._flow_canvases[0]
 
     def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
         node_module = node_module or node_class.__module__  # n.identifier_prefix
@@ -129,7 +133,7 @@ class GUI(HasSession):
         self.session.delete_script(self.script)
         self.session.load(data)
 
-        self.canvas_widget = FlowCanvas(gui=self)
+        self._flow_canvases = [FlowCanvas(gui=self)]
         self.canvas_widget.canvas_restart()
         all_data = data["scripts"][i_script]["flow"]["nodes"]
         for i, node in enumerate(self.flow.nodes):
