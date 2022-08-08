@@ -187,6 +187,7 @@ class GUI(HasSession):
             self.script_tabs.set_title(i, self.session.scripts[i].title)
             with self.script_tabs.children[i]:
                 display(self._flow_canvases[i].canvas)
+        self._add_new_script_tab()
 
         module_options = sorted(self._nodes_dict.keys())
         self.modules_dropdown = widgets.Dropdown(
@@ -227,7 +228,6 @@ class GUI(HasSession):
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
-        self.btn_new_script.on_click(self.on_new_script)
 
         # if self.canvas_widget._node_widget is None:
         #     self.canvas_widget._node_widget = widgets.Box()
@@ -241,7 +241,6 @@ class GUI(HasSession):
                         self.btn_save,
                         self.btn_load,
                         self.btn_delete_node,
-                        self.btn_new_script
                     ]
                 ),
                 widgets.HBox(
@@ -253,6 +252,10 @@ class GUI(HasSession):
                 # self.canvas_widget._node_widget
             ]
         )
+
+    def _add_new_script_tab(self):
+        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
+        self.script_tabs.set_title(len(self.session.scripts), "+")
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
@@ -272,16 +275,21 @@ class GUI(HasSession):
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def on_tab_select(self, change: Dict):
-        self.activate_script(self.script_tabs.get_state(key='selected_index')['selected_index'])
+        # self.activate_script(self.script_tabs.get_state(key='selected_index')['selected_index'])
+        selected_index = self.script_tabs.get_state(key='selected_index')['selected_index']
+        if selected_index == self.n_scripts:
+            self.on_new_script({})
+        else:
+            self.activate_script(selected_index)
 
     def on_new_script(self, change: Dict) -> None:
         self.create_script(f"script_{len(self.session.scripts)}")
-        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
-        last_index = len(self.script_tabs.children) - 1
-        self.script_tabs.set_title(last_index, self.session.scripts[-1].title)
+        last_script_index = self.n_scripts - 1
+        self.script_tabs.set_title(last_script_index, self.session.scripts[-1].title)
         with self.script_tabs.children[-1]:
             display(self._flow_canvases[-1].canvas)
-        self.script_tabs.selected_index = last_index
+        self.script_tabs.selected_index = last_script_index
+        self._add_new_script_tab()
 
     @property
     def new_node_class(self):

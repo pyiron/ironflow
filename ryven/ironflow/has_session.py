@@ -59,3 +59,7 @@ class HasSession(ABC):
             data: Dict = None):
         self.session.create_script(title=title, create_default_logs=create_default_logs, data=data)
         self.activate_script(-1)
+
+    @property
+    def n_scripts(self):
+        return len(self.session.scripts)
