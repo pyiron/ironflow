@@ -44,7 +44,7 @@ class GUI(HasSession):
     def __init__(self, script_title: str = "test", session: Optional[rc.Session] = None):  # , onto_dic=onto_dic):
         super().__init__(session=rc.Session() if session is None else session)
         self._flow_canvases = []
-        self.create_script(title="script_0")
+        self.create_script(title=self.next_auto_script_name)
 
         for package in packages:
             self.session.register_nodes(
@@ -67,6 +67,14 @@ class GUI(HasSession):
     ):
         super().create_script(title=title, create_default_logs=create_default_logs, data=data)
         self._flow_canvases.append(FlowCanvas(gui=self))
+
+    @property
+    def next_auto_script_name(self):
+        i = 0
+        titles = [s.title for s in self.session.scripts]
+        while f"script_{i}" in titles:
+            i += 1
+        return f"script_{i}"
 
     @property
     def canvas_widget(self):
@@ -178,12 +186,11 @@ class GUI(HasSession):
             layout={"width": "50%", "border": "1px solid black"}
         )
 
-
         self.out_canvas = widgets.Output(layout={"border": "1px solid black"})
         self.script_tabs = widgets.Tab(
-            [widgets.Output(layout={"border": "1px solid black"}) for _ in range(len(self.session.scripts))]
+            [widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)]
         )
-        for i in range(len(self.session.scripts)):
+        for i in range(self.n_scripts):
             self.script_tabs.set_title(i, self.session.scripts[i].title)
             with self.script_tabs.children[i]:
                 display(self._flow_canvases[i].canvas)
@@ -241,6 +248,7 @@ class GUI(HasSession):
         self.btn_rename_script.on_click(self.on_rename_script)
         self.btn_confirm_script_name.on_click(self.on_confirm_script_name)
         self.btn_cancel_script_name.on_click(self.on_cancel_script_name)
+        self.btn_delete_script.on_click(self.on_delete_script)
 
 
         # if self.canvas_widget._node_widget is None:
@@ -300,7 +308,7 @@ class GUI(HasSession):
             self.activate_script(selected_index)
 
     def new_script_tab_selected(self) -> None:
-        self.create_script(f"script_{len(self.session.scripts)}")
+        self.create_script(self.next_auto_script_name)
         last_script_index = self.n_scripts - 1
         self.script_tabs.set_title(last_script_index, self.session.scripts[-1].title)
         with self.script_tabs.children[-1]:
@@ -336,6 +344,23 @@ class GUI(HasSession):
 
     def _empty_script_rename_panel(self) -> None:
         self.script_rename_panel.children = []
+
+    def on_delete_script(self, change: Dict) -> None:
+        selected_index = self.script_tabs.get_state(key='selected_index')['selected_index']
+        self.script_tabs.children = self.script_tabs.children[:selected_index] + \
+                                    self.script_tabs.children[selected_index + 1:]
+        self._flow_canvases.pop(self._active_script_index)
+        self.session.delete_script(self.script)
+        for i in range(selected_index, self.n_scripts):
+            self.script_tabs.set_title(i, self.session.scripts[i].title)
+            with self.script_tabs.children[i]:
+                display(self._flow_canvases[i].canvas)
+        self.script_tabs.set_title(self.n_scripts, "+")
+        if self.n_scripts > 0:
+            self.activate_script(0)
+            self.script_tabs.selected_index = 0
+        else:
+            self.new_script_tab_selected()
 
     @property
     def new_node_class(self):
