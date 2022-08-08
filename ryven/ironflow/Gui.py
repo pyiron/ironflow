@@ -199,6 +199,7 @@ class GUI(HasSession):
         )
 
         button_layout = widgets.Layout(width="50px")
+        # Icon source: https://fontawesome.com
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
