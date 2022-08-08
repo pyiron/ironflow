@@ -223,6 +223,7 @@ class GUI(HasSession):
 
         self.alg_mode_dropdown.observe(self.on_alg_mode_change, names="value")
         self.modules_dropdown.observe(self.on_value_change, names="value")
+        self.script_tabs.observe(self.on_tab_select)
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
@@ -270,12 +271,17 @@ class GUI(HasSession):
     def on_alg_mode_change(self, change: Dict) -> None:
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
+    def on_tab_select(self, change: Dict):
+        self.activate_script(self.script_tabs.get_state(key='selected_index')['selected_index'])
+
     def on_new_script(self, change: Dict) -> None:
         self.create_script(f"script_{len(self.session.scripts)}")
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
-        self.script_tabs.set_title(len(self.script_tabs.children) - 1, self.session.scripts[-1].title)
+        last_index = len(self.script_tabs.children) - 1
+        self.script_tabs.set_title(last_index, self.session.scripts[-1].title)
         with self.script_tabs.children[-1]:
             display(self._flow_canvases[-1].canvas)
+        self.script_tabs.selected_index = last_index
 
     @property
     def new_node_class(self):
