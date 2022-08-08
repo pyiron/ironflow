@@ -271,7 +271,11 @@ class GUI(HasSession):
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def on_new_script(self, change: Dict) -> None:
-        self.create_script(f"{len(self.session.scripts)}")
+        self.create_script(f"script_{len(self.session.scripts)}")
+        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
+        self.script_tabs.set_title(len(self.script_tabs.children) - 1, self.session.scripts[-1].title)
+        with self.script_tabs.children[-1]:
+            display(self._flow_canvases[-1].canvas)
 
     @property
     def new_node_class(self):
