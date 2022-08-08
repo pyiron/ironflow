@@ -317,12 +317,18 @@ class GUI(HasSession):
         ]
 
     def on_confirm_script_name(self, change: Dict) -> None:
+        old_name = self.script.title
         new_name = self.script_name_box.value
-        self.script.title = new_name
-        self.script_tabs.set_title(
-            self.script_tabs.get_state(key='selected_index')['selected_index'],
-            new_name
-        )
+        rename_success = self.session.rename_script(self.script, new_name)
+        if rename_success:
+            self.script_tabs.set_title(
+                self.script_tabs.get_state(key='selected_index')['selected_index'],
+                new_name
+            )
+        else:
+            self.session.rename_script(old_name)
+            with self.out_log:
+                print(f"INVALID NAME: Failed to rename {old_name} to {new_name}.")
         self._empty_script_rename_panel()
 
     def on_cancel_script_name(self, change: Dict) -> None:
