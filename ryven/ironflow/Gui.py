@@ -275,14 +275,13 @@ class GUI(HasSession):
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def on_tab_select(self, change: Dict):
-        # self.activate_script(self.script_tabs.get_state(key='selected_index')['selected_index'])
         selected_index = self.script_tabs.get_state(key='selected_index')['selected_index']
         if selected_index == self.n_scripts:
-            self.on_new_script({})
+            self.new_script_tab_selected()
         else:
             self.activate_script(selected_index)
 
-    def on_new_script(self, change: Dict) -> None:
+    def new_script_tab_selected(self) -> None:
         self.create_script(f"script_{len(self.session.scripts)}")
         last_script_index = self.n_scripts - 1
         self.script_tabs.set_title(last_script_index, self.session.scripts[-1].title)
