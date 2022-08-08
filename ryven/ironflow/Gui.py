@@ -41,10 +41,10 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI(HasSession):
-    def __init__(self, script_title: str = "test", session: Optional[rc.Session] = None):  # , onto_dic=onto_dic):
+    def __init__(self, script_title: Optional[str] = None, session: Optional[rc.Session] = None):
         super().__init__(session=rc.Session() if session is None else session)
         self._flow_canvases = []
-        self.create_script(title=self.next_auto_script_name)
+        self.create_script(title=script_title if script_title is not None else self.next_auto_script_name)
 
         for package in packages:
             self.session.register_nodes(
