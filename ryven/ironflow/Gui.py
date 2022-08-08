@@ -44,7 +44,7 @@ class GUI(HasSession):
     def __init__(self, script_title: str = "test", session: Optional[rc.Session] = None):  # , onto_dic=onto_dic):
         super().__init__(session=rc.Session() if session is None else session)
         self._flow_canvases = []
-        self.create_script(title=script_title)
+        self.create_script(title="script_0")
 
         for package in packages:
             self.session.register_nodes(
