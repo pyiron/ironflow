@@ -203,7 +203,10 @@ class GUI(HasSession):
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
-        self.btn_new_script = widgets.Button(tooltip="New script", icon="file", layout=button_layout)
+        self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="file", layout=button_layout)
+        # TODO: Use file-pen once this is available
+        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="square-minus", layout=button_layout)
+        # TODO: Use file-circle-minus once this is available
 
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -242,6 +245,8 @@ class GUI(HasSession):
                         self.btn_save,
                         self.btn_load,
                         self.btn_delete_node,
+                        self.btn_rename_script,
+                        self.btn_delete_script,
                     ]
                 ),
                 widgets.HBox(
