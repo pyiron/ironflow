@@ -205,8 +205,14 @@ class GUI(HasSession):
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
         self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="file", layout=button_layout)
         # TODO: Use file-pen once this is available
-        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="square-minus", layout=button_layout)
+        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
         # TODO: Use file-circle-minus once this is available
+
+        self.script_name_box = widgets.Text(value=self.script.title, description="New script name:")
+        self.btn_confirm_script_name = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
+        self.btn_cancel_script_name = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
+        # TODO: Use xmark once this is available
+        self.script_rename_panel = widgets.HBox([])
 
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -232,6 +238,10 @@ class GUI(HasSession):
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
+        self.btn_rename_script.on_click(self.on_rename_script)
+        self.btn_confirm_script_name.on_click(self.on_confirm_script_name)
+        self.btn_cancel_script_name.on_click(self.on_cancel_script_name)
+
 
         # if self.canvas_widget._node_widget is None:
         #     self.canvas_widget._node_widget = widgets.Box()
@@ -249,6 +259,7 @@ class GUI(HasSession):
                         self.btn_delete_script,
                     ]
                 ),
+                self.script_rename_panel,
                 widgets.HBox(
                     [widgets.VBox([self.node_selector]), self.script_tabs, self.out_plot]
                 ),
@@ -281,6 +292,7 @@ class GUI(HasSession):
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def on_tab_select(self, change: Dict):
+        self._empty_script_rename_panel()
         selected_index = self.script_tabs.get_state(key='selected_index')['selected_index']
         if selected_index == self.n_scripts:
             self.new_script_tab_selected()
@@ -295,6 +307,29 @@ class GUI(HasSession):
             display(self._flow_canvases[-1].canvas)
         self.script_tabs.selected_index = last_script_index
         self._add_new_script_tab()
+
+    def on_rename_script(self, change: Dict) -> None:
+        self.script_name_box.value = self.script.title
+        self.script_rename_panel.children = [
+            self.script_name_box,
+            self.btn_confirm_script_name,
+            self.btn_cancel_script_name
+        ]
+
+    def on_confirm_script_name(self, change: Dict) -> None:
+        new_name = self.script_name_box.value
+        self.script.title = new_name
+        self.script_tabs.set_title(
+            self.script_tabs.get_state(key='selected_index')['selected_index'],
+            new_name
+        )
+        self._empty_script_rename_panel()
+
+    def on_cancel_script_name(self, change: Dict) -> None:
+        self._empty_script_rename_panel()
+
+    def _empty_script_rename_panel(self) -> None:
+        self.script_rename_panel.children = []
 
     @property
     def new_node_class(self):
