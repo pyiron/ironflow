@@ -55,9 +55,9 @@ class TestGUI(TestCase):
         flow.connect_nodes(n1.outputs[0], n2.inputs[0])
 
         with self.assertRaises(FileNotFoundError):
-            gui.on_file_load(None)
+            gui.click_load(None)
 
-        gui.on_file_save(None)
+        gui.click_save(None)
 
         new_gui = GUI(title)
         self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
@@ -68,7 +68,7 @@ class TestGUI(TestCase):
         self.assertEqual(0, len(new_flow.connections), msg="Fresh GUI shouldn't have any connections yet.")
 
         new_gui.draw()  # TODO: Temporary hack to ensure new_gui.out_canvas exists, allow renderless loading
-        new_gui.on_file_load(None)
+        new_gui.click_load(None)
         new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
         print(new_gui._session.scripts, new_gui._session.scripts[0].flow)
         self.assertEqual(len(flow.nodes), len(new_flow.nodes), msg="Loaded GUI should recover nodes.")
@@ -125,14 +125,14 @@ class TestGUI(TestCase):
         gui.flow.nodes[1].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[1].outputs[0].val, -40, msg="New node instances should reflect updated class.")
 
-        gui.on_file_save(None)
+        gui.click_save(None)
         new_gui = GUI(gui.session_title)
         new_gui.draw()  # TODO: Change the gui to allow renderless loading
         with self.assertRaises(Exception):
-            new_gui.on_file_load(None)
+            new_gui.click_load(None)
 
         new_gui.register_user_node(MyNode)
-        new_gui.on_file_load(None)
+        new_gui.click_load(None)
         new_gui.flow.nodes[0].inputs[0].update(3)
         new_gui.flow.nodes[1].inputs[0].update(3)
         self.assertEqual(

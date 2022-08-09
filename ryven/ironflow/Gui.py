@@ -61,7 +61,7 @@ class GUI:
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
 
 
-        self.script_tabs.observe(self.on_tab_select)
+        self.script_tabs.observe(self.change_script_tabs)
 
         self.create_script(script_title)
 
@@ -227,15 +227,15 @@ class GUI:
 
         self.out_status = widgets.Output(layout={"border": "1px solid black"})
 
-        self.alg_mode_dropdown.observe(self.on_alg_mode_change, names="value")
-        self.modules_dropdown.observe(self.on_value_change, names="value")
-        self.btn_load.on_click(self.on_file_load)
-        self.btn_save.on_click(self.on_file_save)
-        self.btn_delete_node.on_click(self.on_delete_node)
-        self.btn_rename_script.on_click(self.on_rename_script)
-        self.btn_confirm_script_name.on_click(self.on_confirm_script_name)
-        self.btn_cancel_script_name.on_click(self.on_cancel_script_name)
-        self.btn_delete_script.on_click(self.on_delete_script)
+        self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
+        self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
+        self.btn_load.on_click(self.click_load)
+        self.btn_save.on_click(self.click_save)
+        self.btn_delete_node.on_click(self.click_delete_node)
+        self.btn_rename_script.on_click(self.click_rename_script)
+        self.btn_confirm_script_name.on_click(self.click_confirm_script_name)
+        self.btn_cancel_script_name.on_click(self.click_cancel_script_name)
+        self.btn_delete_script.on_click(self.click_delete_script)
 
 
         # if self.canvas_widget._node_widget is None:
@@ -267,22 +267,22 @@ class GUI:
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def on_file_save(self, change: Dict) -> None:
+    def click_save(self, change: Dict) -> None:
         self.save(f"{self.session_title}.json")
 
-    def on_file_load(self, change: Dict) -> None:
+    def click_load(self, change: Dict) -> None:
         self.load(f"{self.session_title}.json")
 
-    def on_delete_node(self, change: Dict) -> None:
+    def click_delete_node(self, change: Dict) -> None:
         self.flow_canvas_widget.delete_selected()
 
-    def on_value_change(self, change: Dict) -> None:
+    def change_modules_dropdown(self, change: Dict) -> None:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
-    def on_alg_mode_change(self, change: Dict) -> None:
+    def change_alg_mode_dropdown(self, change: Dict) -> None:
         self.flow_canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
-    def on_tab_select(self, change: Dict):
+    def change_script_tabs(self, change: Dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
             self._empty_script_rename_panel()
             if self.script_tabs.selected_index == self.n_scripts:
@@ -290,7 +290,7 @@ class GUI:
             else:
                 self.active_script_index = self.script_tabs.selected_index
 
-    def on_rename_script(self, change: Dict) -> None:
+    def click_rename_script(self, change: Dict) -> None:
         self.script_name_box.value = self.script.title
         self.script_rename_panel.children = [
             self.script_name_box,
@@ -298,7 +298,7 @@ class GUI:
             self.btn_cancel_script_name
         ]
 
-    def on_confirm_script_name(self, change: Dict) -> None:
+    def click_confirm_script_name(self, change: Dict) -> None:
         old_name = self.script.title
         new_name = self.script_name_box.value
         rename_success = self.session.rename_script(self.script, new_name)
@@ -309,10 +309,10 @@ class GUI:
             self._print(f"INVALID NAME: Failed to rename {old_name} to {new_name}.")
         self._empty_script_rename_panel()
 
-    def on_cancel_script_name(self, change: Dict) -> None:
+    def click_cancel_script_name(self, change: Dict) -> None:
         self._empty_script_rename_panel()
 
-    def on_delete_script(self, change: Dict) -> None:
+    def click_delete_script(self, change: Dict) -> None:
         last_active = self.active_script_index
         self._flow_canvases.pop(self.active_script_index)
         self.session.delete_script(self.script)
