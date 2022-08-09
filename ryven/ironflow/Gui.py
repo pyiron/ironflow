@@ -55,14 +55,6 @@ class GUI:
         for n in self.session.nodes:
             self._register_node(n)
 
-        self.script_tabs = widgets.Tab([])
-
-        self.script_rename_panel = widgets.HBox([])
-        self.out_log = widgets.Output(layout={"border": "1px solid black"})
-
-
-        self.script_tabs.observe(self.change_script_tabs)
-
         self.create_script(script_title)
 
     @property
@@ -114,7 +106,7 @@ class GUI:
             title: Optional[str] = None,
             create_default_logs: bool = True,
             data: Optional[Dict] = None
-    ):
+    ) -> None:
         self.session.create_script(
             title=title if title is not None else self.next_auto_script_name,
             create_default_logs=create_default_logs,
@@ -122,7 +114,18 @@ class GUI:
         )
         self.active_script_index = -1
         self._flow_canvases.append(FlowCanvas(gui=self))
-        self._update_tabs_from_model()
+
+    def delete_script(self) -> None:
+        last_active = self.active_script_index
+        self._flow_canvases.pop(self.active_script_index)
+        self.session.delete_script(self.script)
+        if self.n_scripts == 0:
+            self.create_script()
+        else:
+            self.active_script_index = last_active - 1
+
+    def rename_script(self, new_name: str) -> bool:
+        return self.session.rename_script(self.script, new_name)
 
     def save(self, file_path: str) -> None:
         data = self.serialize()
@@ -179,10 +182,10 @@ class GUI:
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
-        self.out_plot = widgets.Output(
-            layout={"width": "50%", "border": "1px solid black"}
-        )
+        self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
+        self.out_log = widgets.Output(layout={"border": "1px solid black"})
 
+        self.script_tabs = widgets.Tab([])
         self._update_tabs_from_model()
 
         module_options = sorted(self._nodes_dict.keys())
@@ -204,6 +207,7 @@ class GUI:
         self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
         # TODO: Use file-circle-minus once this is available
 
+        self.script_rename_panel = widgets.HBox([])
         self.script_name_box = widgets.Text(value=self.script.title, description="New script name:")
         self.btn_confirm_script_name = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
         self.btn_cancel_script_name = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
@@ -236,6 +240,7 @@ class GUI:
         self.btn_confirm_script_name.on_click(self.click_confirm_script_name)
         self.btn_cancel_script_name.on_click(self.click_cancel_script_name)
         self.btn_delete_script.on_click(self.click_delete_script)
+        self.script_tabs.observe(self.change_script_tabs)
 
 
         # if self.canvas_widget._node_widget is None:
@@ -287,6 +292,7 @@ class GUI:
             self._empty_script_rename_panel()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
+                self._update_tabs_from_model()
             else:
                 self.active_script_index = self.script_tabs.selected_index
 
@@ -299,28 +305,20 @@ class GUI:
         ]
 
     def click_confirm_script_name(self, change: Dict) -> None:
-        old_name = self.script.title
         new_name = self.script_name_box.value
-        rename_success = self.session.rename_script(self.script, new_name)
+        rename_success = self.rename_script(new_name)
         if rename_success:
             self.script_tabs.set_title(self.active_script_index, new_name)
         else:
-            self.session.rename_script(old_name)
-            self._print(f"INVALID NAME: Failed to rename {old_name} to {new_name}.")
+            self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
         self._empty_script_rename_panel()
 
     def click_cancel_script_name(self, change: Dict) -> None:
         self._empty_script_rename_panel()
 
     def click_delete_script(self, change: Dict) -> None:
-        last_active = self.active_script_index
-        self._flow_canvases.pop(self.active_script_index)
-        self.session.delete_script(self.script)
-        if self.n_scripts == 0:
-            self.create_script()
-        else:
-            self.active_script_index = last_active - 1
-            self._update_tabs_from_model()
+        self.delete_script()
+        self._update_tabs_from_model()
 
     def _update_tabs_from_model(self):
         self.script_tabs.selected_index = None
