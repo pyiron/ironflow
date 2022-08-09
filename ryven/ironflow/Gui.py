@@ -155,7 +155,7 @@ class GUI:
 
         self.session.load(data)
         for i_script, script in enumerate(self.session.scripts):
-            flow_canvas = FlowCanvas(gui=self)
+            flow_canvas = FlowCanvas(gui=self, flow=script.flow)
             all_data = data["scripts"][i_script]["flow"]["nodes"]
             for i_node, node in enumerate(script.flow.nodes):
                 flow_canvas.load_node(all_data[i_node]["pos x"], all_data[i_node]["pos y"], node)

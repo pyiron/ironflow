@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from Gui import GUI
     from ryven.NENV import Node
     Number = Union[int, float]
+    from ryvencore import Flow
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -44,9 +45,9 @@ class FlowCanvas:
             - If a node is selected, deletes it
             - If a port is selected, deletes all connections it is part of
     """
-    def __init__(self, gui: Optional[GUI] = None, width: int = 2000, height: int = 1000):
+    def __init__(self, gui: GUI, flow: Optional[Flow] = None, width: int = 2000, height: int = 1000):
         self.gui = gui
-        self.flow = gui.flow
+        self.flow = flow if flow is not None else gui.flow
         self._width, self._height = width, height
 
         self._col_background = "black"  # "#584f4e"
