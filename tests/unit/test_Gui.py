@@ -18,7 +18,7 @@ class TestGUI(TestCase):
     def test_multiple_scripts(self):
         gui = GUI('foo')
         gui.canvas_widget.add_node(0, 0, gui._nodes_dict['nodes']['val'])
-        gui.create_script(title='bar')
+        gui.create_script()
         gui.canvas_widget.add_node(1, 1, gui._nodes_dict['nodes']['result'])
         fname = 'my_session.json'
         gui.save(fname)

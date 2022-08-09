@@ -2,12 +2,11 @@ import json
 import os
 
 import ipywidgets as widgets
-import ryvencore as rc
 from IPython.display import display
 from ryven.main.utils import import_nodes_package, NodesPackage
 
 from .FlowCanvas import FlowCanvas
-from .has_session import HasSession
+from ryvencore import Session, Script, Flow
 
 import ryven.NENV as NENV
 from pathlib import Path
@@ -40,12 +39,12 @@ alg_modes = ["data", "exec"]
 debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
-class GUI(HasSession):
-    def __init__(self, session_title, script_title: Optional[str] = None, session: Optional[rc.Session] = None):
-        super().__init__(session=rc.Session() if session is None else session)
+class GUI:
+    def __init__(self, session_title: str, script_title: Optional[str] = None, session: Optional[Session] = None):
+        self._session = session if session is not None else Session()
         self.session_title = session_title
         self._flow_canvases = []
-        self.create_script(title=script_title if script_title is not None else self.next_auto_script_name)
+        self._active_script_index = 0
 
         for package in packages:
             self.session.register_nodes(
@@ -56,18 +55,58 @@ class GUI(HasSession):
         for n in self.session.nodes:
             self._register_node(n)
 
-        # self.onto_dic = onto_dic
+        self.script_tabs = widgets.Tab([])
 
+        self.script_rename_panel = widgets.HBox([])
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
+
+
+        self.script_tabs.observe(self.on_tab_select)
+
+        self.create_script(script_title)
+
+    @property
+    def active_script_index(self) -> int:
+        return self._active_script_index
+
+    @active_script_index.setter
+    def active_script_index(self, i: int) -> None:
+        if i >= len(self.session.scripts):
+            raise KeyError(
+                f"Attempted to activate script {i}, but there are only {len(self.session.scripts)} available."
+            )
+        self._active_script_index = i % self.n_scripts
+
+    @property
+    def session(self) -> Session:
+        return self._session
+
+    @property
+    def script(self) -> Script:
+        return self.session.scripts[self.active_script_index]
+
+    @property
+    def flow(self) -> Flow:
+        return self.script.flow
+
+    @property
+    def n_scripts(self):
+        return len(self.session.scripts)
 
     def create_script(
             self,
-            title: str = None,
+            title: Optional[str] = None,
             create_default_logs: bool = True,
-            data: Dict = None
+            data: Optional[Dict] = None
     ):
-        super().create_script(title=title, create_default_logs=create_default_logs, data=data)
+        self.session.create_script(
+            title=title if title is not None else self.next_auto_script_name,
+            create_default_logs=create_default_logs,
+            data=data
+        )
+        self.active_script_index = -1
         self._flow_canvases.append(FlowCanvas(gui=self))
+        self._update_tabs_from_model()
 
     @property
     def next_auto_script_name(self):
@@ -79,7 +118,7 @@ class GUI(HasSession):
 
     @property
     def canvas_widget(self):
-        return self._flow_canvases[self._active_script_index]
+        return self._flow_canvases[self.active_script_index]
 
     def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
         node_module = node_module or node_class.__module__  # n.identifier_prefix
@@ -132,15 +171,15 @@ class GUI(HasSession):
             f.write(json.dumps(data, indent=4))
 
     def serialize(self) -> Dict:
-        currently_active = self._active_script_index
+        currently_active = self.active_script_index
         data = self.session.serialize()
         for i_script, script in enumerate(self.session.scripts):
             all_data = data["scripts"][i_script]["flow"]["nodes"]
-            self.activate_script(i_script)
+            self.active_script_index = i_script
             for i, node_widget in enumerate(self.canvas_widget.objects_to_draw):
                 all_data[i]["pos x"] = node_widget.x
                 all_data[i]["pos y"] = node_widget.y
-        self.activate_script(currently_active)
+        self.active_script_index = currently_active
         return data
 
     def load(self, file_path: str) -> None:
@@ -155,25 +194,17 @@ class GUI(HasSession):
         self._flow_canvases = []
 
         self.session.load(data)
-        self.script_tabs.children = [
-            widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)
-        ]
         for i_script, script in enumerate(self.session.scripts):
-            self._flow_canvases.append(FlowCanvas(gui=self))
-            self.activate_script(i_script)
-            self.script_tabs.set_title(i_script, script.title)
-            with self.script_tabs.children[i_script]:
-                display(self._flow_canvases[i_script].canvas)
+            flow_canvas = FlowCanvas(gui=self)
             all_data = data["scripts"][i_script]["flow"]["nodes"]
-            for i_node, node in enumerate(self.flow.nodes):
-                self.canvas_widget.load_node(
-                    all_data[i_node]["pos x"], all_data[i_node]["pos y"], node
-                )
-            self.canvas_widget._built_object_to_gui_dict()
-            self.canvas_widget.redraw()
-        self._add_new_script_tab()
+            for i_node, node in enumerate(script.flow.nodes):
+                flow_canvas.load_node(all_data[i_node]["pos x"], all_data[i_node]["pos y"], node)
+            flow_canvas._built_object_to_gui_dict()
+            flow_canvas.redraw()
+            self._flow_canvases.append(flow_canvas)
 
-        self.activate_script(0)
+        self.active_script_index = 0
+        self._update_tabs_from_model()
         self.out_plot.clear_output()
         self.out_log.clear_output()
 
@@ -189,14 +220,7 @@ class GUI(HasSession):
             layout={"width": "50%", "border": "1px solid black"}
         )
 
-        self.script_tabs = widgets.Tab(
-            [widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)]
-        )
-        for i in range(self.n_scripts):
-            self.script_tabs.set_title(i, self.session.scripts[i].title)
-            with self.script_tabs.children[i]:
-                display(self._flow_canvases[i].canvas)
-        self._add_new_script_tab()
+        self._update_tabs_from_model()
 
         module_options = sorted(self._nodes_dict.keys())
         self.modules_dropdown = widgets.Dropdown(
@@ -221,7 +245,6 @@ class GUI(HasSession):
         self.btn_confirm_script_name = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
         self.btn_cancel_script_name = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
         # TODO: Use xmark once this is available
-        self.script_rename_panel = widgets.HBox([])
 
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -243,7 +266,6 @@ class GUI(HasSession):
 
         self.alg_mode_dropdown.observe(self.on_alg_mode_change, names="value")
         self.modules_dropdown.observe(self.on_value_change, names="value")
-        self.script_tabs.observe(self.on_tab_select)
         self.btn_load.on_click(self.on_file_load)
         self.btn_save.on_click(self.on_file_save)
         self.btn_delete_node.on_click(self.on_delete_node)
@@ -280,10 +302,6 @@ class GUI(HasSession):
             ]
         )
 
-    def _add_new_script_tab(self):
-        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
-        self.script_tabs.set_title(len(self.session.scripts), "+")
-
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
     def on_file_save(self, change: Dict) -> None:
@@ -302,21 +320,12 @@ class GUI(HasSession):
         self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def on_tab_select(self, change: Dict):
-        self._empty_script_rename_panel()
-        selected_index = self.script_tabs.get_state(key='selected_index')['selected_index']
-        if selected_index == self.n_scripts:
-            self.new_script_tab_selected()
-        else:
-            self.activate_script(selected_index)
-
-    def new_script_tab_selected(self) -> None:
-        self.create_script(self.next_auto_script_name)
-        last_script_index = self.n_scripts - 1
-        self.script_tabs.set_title(last_script_index, self.session.scripts[-1].title)
-        with self.script_tabs.children[-1]:
-            display(self._flow_canvases[-1].canvas)
-        self.script_tabs.selected_index = last_script_index
-        self._add_new_script_tab()
+        if change['name'] == 'selected_index' and change['new'] is not None:
+            self._empty_script_rename_panel()
+            if self.script_tabs.selected_index == self.n_scripts:
+                self.create_script()
+            else:
+                self.active_script_index = self.script_tabs.selected_index
 
     def on_rename_script(self, change: Dict) -> None:
         self.script_name_box.value = self.script.title
@@ -331,14 +340,10 @@ class GUI(HasSession):
         new_name = self.script_name_box.value
         rename_success = self.session.rename_script(self.script, new_name)
         if rename_success:
-            self.script_tabs.set_title(
-                self.script_tabs.get_state(key='selected_index')['selected_index'],
-                new_name
-            )
+            self.script_tabs.set_title(self.active_script_index, new_name)
         else:
             self.session.rename_script(old_name)
-            with self.out_log:
-                print(f"INVALID NAME: Failed to rename {old_name} to {new_name}.")
+            self._print(f"INVALID NAME: Failed to rename {old_name} to {new_name}.")
         self._empty_script_rename_panel()
 
     def on_cancel_script_name(self, change: Dict) -> None:
@@ -348,21 +353,33 @@ class GUI(HasSession):
         self.script_rename_panel.children = []
 
     def on_delete_script(self, change: Dict) -> None:
-        selected_index = self.script_tabs.get_state(key='selected_index')['selected_index']
-        self.script_tabs.children = self.script_tabs.children[:selected_index] + \
-                                    self.script_tabs.children[selected_index + 1:]
-        self._flow_canvases.pop(self._active_script_index)
+        last_active = self.active_script_index
+        self._flow_canvases.pop(self.active_script_index)
         self.session.delete_script(self.script)
-        for i in range(selected_index, self.n_scripts):
-            self.script_tabs.set_title(i, self.session.scripts[i].title)
-            with self.script_tabs.children[i]:
-                display(self._flow_canvases[i].canvas)
-        self.script_tabs.set_title(self.n_scripts, "+")
-        if self.n_scripts > 0:
-            self.activate_script(0)
-            self.script_tabs.selected_index = 0
+        if self.n_scripts == 0:
+            self.create_script()
         else:
-            self.new_script_tab_selected()
+            self.active_script_index = last_active - 1
+            self._update_tabs_from_model()
+
+    def _update_tabs_from_model(self):
+        self.script_tabs.selected_index = None
+        # ^ To circumvent a bug where the index gets set to 0 on child changes
+        # https://github.com/jupyter-widgets/ipywidgets/issues/2988
+        self.script_tabs.children = [
+            widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)
+        ]
+        for i, child in enumerate(self.script_tabs.children):
+            self.script_tabs.set_title(i, self.session.scripts[i].title)
+            child.clear_output()
+            with child:
+                display(self._flow_canvases[i].canvas)
+        self._add_new_script_tab()
+        self.script_tabs.selected_index = self.active_script_index
+
+    def _add_new_script_tab(self):
+        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
+        self.script_tabs.set_title(len(self.session.scripts), "+")
 
     @property
     def new_node_class(self):

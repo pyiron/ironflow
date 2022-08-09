@@ -31,35 +31,3 @@ class HasSession(ABC):
     def __init__(self, session: Session):
         self._session = session
         self._active_script_index = 0
-
-    @property
-    def session(self) -> Session:
-        return self._session
-
-    @property
-    def script(self) -> Script:
-        return self.session.scripts[self._active_script_index]
-
-    @property
-    def flow(self) -> Flow:
-        return self.script.flow
-
-    def activate_script(self, i: int) -> None:
-        if i > len(self.session.scripts):
-            warnings.warn(
-                f"Attempted to activate script {i}, but there are only {len(self.session.scripts)} available."
-            )
-        else:
-            self._active_script_index = i
-
-    def create_script(
-            self,
-            title: str = None,
-            create_default_logs: bool = True,
-            data: Dict = None):
-        self.session.create_script(title=title, create_default_logs=create_default_logs, data=data)
-        self.activate_script(-1)
-
-    @property
-    def n_scripts(self):
-        return len(self.session.scripts)
