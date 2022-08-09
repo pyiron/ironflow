@@ -93,6 +93,22 @@ class GUI:
     def n_scripts(self):
         return len(self.session.scripts)
 
+    @property
+    def next_auto_script_name(self):
+        i = 0
+        titles = [s.title for s in self.session.scripts]
+        while f"script_{i}" in titles:
+            i += 1
+        return f"script_{i}"
+
+    @property
+    def flow_canvas_widget(self):
+        return self._flow_canvases[self.active_script_index]
+
+    @property
+    def new_node_class(self):
+        return self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
+
     def create_script(
             self,
             title: Optional[str] = None,
@@ -107,62 +123,6 @@ class GUI:
         self.active_script_index = -1
         self._flow_canvases.append(FlowCanvas(gui=self))
         self._update_tabs_from_model()
-
-    @property
-    def next_auto_script_name(self):
-        i = 0
-        titles = [s.title for s in self.session.scripts]
-        while f"script_{i}" in titles:
-            i += 1
-        return f"script_{i}"
-
-    @property
-    def flow_canvas_widget(self):
-        return self._flow_canvases[self.active_script_index]
-
-    def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
-        node_module = node_module or node_class.__module__  # n.identifier_prefix
-        if node_module not in self._nodes_dict.keys():
-            self._nodes_dict[node_module] = {}
-        self._nodes_dict[node_module][node_class.title] = node_class
-
-    def register_user_node(self, node_class: Type[NENV.Node]):
-        """
-        Register a custom node class from the gui's current working scope. These nodes are available under the
-        'user' module. You will need to (re-)draw your GUI to see the change.
-
-        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
-                update. Already-placed nodes are still instances of the old class and need to be deleted.
-
-        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
-            loading the saved graph is possible.
-
-        Args:
-            node_class Type[NENV.Node]: The new node class to register.
-
-        Example:
-            >>> from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
-            >>> gui = GUI(script_title='foo')
-            >>>
-            >>> class MyNode(Node):
-            >>>     title = "MyUserNode"
-            >>>     init_inputs = [
-            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
-            >>>     ]
-            >>>     init_outputs = [
-            >>>        NodeOutputBP(label="bar")
-            >>>    ]
-            >>>    color = 'cyan'
-            >>>
-            >>>     def update_event(self, inp=-1):
-            >>>         self.set_output_val(0, self.input(0) + 42)
-            >>>
-            >>> gui.register_user_node(MyNode)
-        """
-        if node_class in self.session.nodes:
-            self.session.unregister_node(node_class)
-        self.session.register_node(node_class)
-        self._register_node(node_class, node_module='user')
 
     def save(self, file_path: str) -> None:
         data = self.serialize()
@@ -207,6 +167,9 @@ class GUI:
         self._update_tabs_from_model()
         self.out_plot.clear_output()
         self.out_log.clear_output()
+
+    def _empty_script_rename_panel(self) -> None:
+        self.script_rename_panel.children = []
 
     def _print(self, text: str) -> None:
         with self.out_log:
@@ -349,9 +312,6 @@ class GUI:
     def on_cancel_script_name(self, change: Dict) -> None:
         self._empty_script_rename_panel()
 
-    def _empty_script_rename_panel(self) -> None:
-        self.script_rename_panel.children = []
-
     def on_delete_script(self, change: Dict) -> None:
         last_active = self.active_script_index
         self._flow_canvases.pop(self.active_script_index)
@@ -381,6 +341,46 @@ class GUI:
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
         self.script_tabs.set_title(len(self.session.scripts), "+")
 
-    @property
-    def new_node_class(self):
-        return self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
+    def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
+        node_module = node_module or node_class.__module__  # n.identifier_prefix
+        if node_module not in self._nodes_dict.keys():
+            self._nodes_dict[node_module] = {}
+        self._nodes_dict[node_module][node_class.title] = node_class
+
+    def register_user_node(self, node_class: Type[NENV.Node]):
+        """
+        Register a custom node class from the gui's current working scope. These nodes are available under the
+        'user' module. You will need to (re-)draw your GUI to see the change.
+
+        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
+                update. Already-placed nodes are still instances of the old class and need to be deleted.
+
+        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
+            loading the saved graph is possible.
+
+        Args:
+            node_class Type[NENV.Node]: The new node class to register.
+
+        Example:
+            >>> from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> gui = GUI(script_title='foo')
+            >>>
+            >>> class MyNode(Node):
+            >>>     title = "MyUserNode"
+            >>>     init_inputs = [
+            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
+            >>>     ]
+            >>>     init_outputs = [
+            >>>        NodeOutputBP(label="bar")
+            >>>    ]
+            >>>    color = 'cyan'
+            >>>
+            >>>     def update_event(self, inp=-1):
+            >>>         self.set_output_val(0, self.input(0) + 42)
+            >>>
+            >>> gui.register_user_node(MyNode)
+        """
+        if node_class in self.session.nodes:
+            self.session.unregister_node(node_class)
+        self.session.register_node(node_class)
+        self._register_node(node_class, node_module='user')
