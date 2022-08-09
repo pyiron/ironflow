@@ -117,7 +117,7 @@ class GUI:
         return f"script_{i}"
 
     @property
-    def canvas_widget(self):
+    def flow_canvas_widget(self):
         return self._flow_canvases[self.active_script_index]
 
     def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
@@ -176,7 +176,7 @@ class GUI:
         for i_script, script in enumerate(self.session.scripts):
             all_data = data["scripts"][i_script]["flow"]["nodes"]
             self.active_script_index = i_script
-            for i, node_widget in enumerate(self.canvas_widget.objects_to_draw):
+            for i, node_widget in enumerate(self.flow_canvas_widget.objects_to_draw):
                 all_data[i]["pos x"] = node_widget.x
                 all_data[i]["pos y"] = node_widget.y
         self.active_script_index = currently_active
@@ -311,13 +311,13 @@ class GUI:
         self.load(f"{self.session_title}.json")
 
     def on_delete_node(self, change: Dict) -> None:
-        self.canvas_widget.delete_selected()
+        self.flow_canvas_widget.delete_selected()
 
     def on_value_change(self, change: Dict) -> None:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
     def on_alg_mode_change(self, change: Dict) -> None:
-        self.canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
+        self.flow_canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def on_tab_select(self, change: Dict):
         if change['name'] == 'selected_index' and change['new'] is not None:

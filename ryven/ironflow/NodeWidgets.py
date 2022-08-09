@@ -49,7 +49,7 @@ class NodeWidgets:
     def gui_object_change(self, change: Dict) -> None:
         self._node.set_state({"val": change["new"]}, 0)
         self._node.update_event()
-        self._central_gui.canvas_widget.redraw()
+        self._central_gui.flow_canvas_widget.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -108,7 +108,7 @@ class NodeWidgets:
         # print (change)
         self._node.inputs[i_c].val = change["new"]
         self._node.update_event()
-        self._central_gui.canvas_widget.redraw()
+        self._central_gui.flow_canvas_widget.redraw()
 
     def input_change_0(self, change: Dict) -> None:
         self.input_change(0, change)
