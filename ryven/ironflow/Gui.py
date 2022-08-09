@@ -171,14 +171,49 @@ class GUI:
         self.out_plot.clear_output()
         self.out_log.clear_output()
 
-    def _empty_script_rename_panel(self) -> None:
-        self.script_rename_panel.children = []
+    def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
+        node_module = node_module or node_class.__module__  # n.identifier_prefix
+        if node_module not in self._nodes_dict.keys():
+            self._nodes_dict[node_module] = {}
+        self._nodes_dict[node_module][node_class.title] = node_class
 
-    def _print(self, text: str) -> None:
-        with self.out_log:
-            self.out_log.clear_output()
+    def register_user_node(self, node_class: Type[NENV.Node]):
+        """
+        Register a custom node class from the gui's current working scope. These nodes are available under the
+        'user' module. You will need to (re-)draw your GUI to see the change.
 
-            print(text)
+        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
+                update. Already-placed nodes are still instances of the old class and need to be deleted.
+
+        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
+            loading the saved graph is possible.
+
+        Args:
+            node_class Type[NENV.Node]: The new node class to register.
+
+        Example:
+            >>> from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> gui = GUI(script_title='foo')
+            >>>
+            >>> class MyNode(Node):
+            >>>     title = "MyUserNode"
+            >>>     init_inputs = [
+            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
+            >>>     ]
+            >>>     init_outputs = [
+            >>>        NodeOutputBP(label="bar")
+            >>>    ]
+            >>>    color = 'cyan'
+            >>>
+            >>>     def update_event(self, inp=-1):
+            >>>         self.set_output_val(0, self.input(0) + 42)
+            >>>
+            >>> gui.register_user_node(MyNode)
+        """
+        if node_class in self.session.nodes:
+            self.session.unregister_node(node_class)
+        self.session.register_node(node_class)
+        self._register_node(node_class, node_module='user')
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
@@ -339,46 +374,11 @@ class GUI:
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
         self.script_tabs.set_title(len(self.session.scripts), "+")
 
-    def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
-        node_module = node_module or node_class.__module__  # n.identifier_prefix
-        if node_module not in self._nodes_dict.keys():
-            self._nodes_dict[node_module] = {}
-        self._nodes_dict[node_module][node_class.title] = node_class
+    def _empty_script_rename_panel(self) -> None:
+        self.script_rename_panel.children = []
 
-    def register_user_node(self, node_class: Type[NENV.Node]):
-        """
-        Register a custom node class from the gui's current working scope. These nodes are available under the
-        'user' module. You will need to (re-)draw your GUI to see the change.
+    def _print(self, text: str) -> None:
+        with self.out_log:
+            self.out_log.clear_output()
 
-        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
-                update. Already-placed nodes are still instances of the old class and need to be deleted.
-
-        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
-            loading the saved graph is possible.
-
-        Args:
-            node_class Type[NENV.Node]: The new node class to register.
-
-        Example:
-            >>> from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
-            >>> gui = GUI(script_title='foo')
-            >>>
-            >>> class MyNode(Node):
-            >>>     title = "MyUserNode"
-            >>>     init_inputs = [
-            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
-            >>>     ]
-            >>>     init_outputs = [
-            >>>        NodeOutputBP(label="bar")
-            >>>    ]
-            >>>    color = 'cyan'
-            >>>
-            >>>     def update_event(self, inp=-1):
-            >>>         self.set_output_val(0, self.input(0) + 42)
-            >>>
-            >>> gui.register_user_node(MyNode)
-        """
-        if node_class in self.session.nodes:
-            self.session.unregister_node(node_class)
-        self.session.register_node(node_class)
-        self._register_node(node_class, node_module='user')
+            print(text)
