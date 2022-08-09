@@ -1,3 +1,7 @@
+# coding: utf-8
+# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
+# Distributed under the terms of "New BSD License", see the LICENSE file.
+
 import json
 import os
 
@@ -13,14 +17,14 @@ from pathlib import Path
 
 from typing import Optional, Dict, Type
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
     "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
 )
 __version__ = "0.1"
-__maintainer__ = "Joerg Neugebauer"
-__email__ = "janssen@mpie.de"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
 __status__ = "production"
 __date__ = "May 10, 2022"
 
@@ -224,7 +228,6 @@ class GUI:
         self.modules_dropdown = widgets.Dropdown(
             options=module_options,
             value=list(module_options)[0],
-            #     description='Category:',
             disabled=False,
             layout=widgets.Layout(width="130px"),
         )
@@ -274,10 +277,6 @@ class GUI:
         self.btn_delete_script.on_click(self.click_delete_script)
         self.script_tabs.observe(self.change_script_tabs)
 
-
-        # if self.canvas_widget._node_widget is None:
-        #     self.canvas_widget._node_widget = widgets.Box()
-
         return widgets.VBox(
             [
                 widgets.HBox(
@@ -298,7 +297,6 @@ class GUI:
                 self.out_log,
                 self.out_status,
                 debug_view
-                # self.canvas_widget._node_widget
             ]
         )
 
