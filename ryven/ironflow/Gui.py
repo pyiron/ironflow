@@ -41,8 +41,9 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI(HasSession):
-    def __init__(self, script_title: Optional[str] = None, session: Optional[rc.Session] = None):
+    def __init__(self, session_title, script_title: Optional[str] = None, session: Optional[rc.Session] = None):
         super().__init__(session=rc.Session() if session is None else session)
+        self.session_title = session_title
         self._flow_canvases = []
         self.create_script(title=script_title if script_title is not None else self.next_auto_script_name)
 
@@ -149,28 +150,30 @@ class GUI(HasSession):
         self.load_from_data(data)
 
     def load_from_data(self, data: Dict) -> None:
-        for script in self.session.scripts:
+        for script in self.session.scripts[::-1]:
             self.session.delete_script(script)
         self._flow_canvases = []
 
         self.session.load(data)
+        self.script_tabs.children = [
+            widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)
+        ]
         for i_script, script in enumerate(self.session.scripts):
-            self.activate_script(i_script)
             self._flow_canvases.append(FlowCanvas(gui=self))
+            self.activate_script(i_script)
+            self.script_tabs.set_title(i_script, script.title)
+            with self.script_tabs.children[i_script]:
+                display(self._flow_canvases[i_script].canvas)
             all_data = data["scripts"][i_script]["flow"]["nodes"]
             for i_node, node in enumerate(self.flow.nodes):
                 self.canvas_widget.load_node(
                     all_data[i_node]["pos x"], all_data[i_node]["pos y"], node
                 )
             self.canvas_widget._built_object_to_gui_dict()
+            self.canvas_widget.redraw()
+        self._add_new_script_tab()
 
         self.activate_script(0)
-        self.canvas_widget.canvas_restart()
-        self.out_canvas.clear_output()
-        with self.out_canvas:
-            display(self.canvas_widget.canvas)
-
-        self.canvas_widget.redraw()
         self.out_plot.clear_output()
         self.out_log.clear_output()
 
@@ -186,7 +189,6 @@ class GUI(HasSession):
             layout={"width": "50%", "border": "1px solid black"}
         )
 
-        self.out_canvas = widgets.Output(layout={"border": "1px solid black"})
         self.script_tabs = widgets.Tab(
             [widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)]
         )
@@ -285,10 +287,10 @@ class GUI(HasSession):
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
     def on_file_save(self, change: Dict) -> None:
-        self.save(f"{self.script.title}.json")
+        self.save(f"{self.session_title}.json")
 
     def on_file_load(self, change: Dict) -> None:
-        self.load(f"{self.script.title}.json")
+        self.load(f"{self.session_title}.json")
 
     def on_delete_node(self, change: Dict) -> None:
         self.canvas_widget.delete_selected()
