@@ -10,7 +10,7 @@ import os
 class TestCanvasObect(TestCase):
 
     def setUp(self):
-        self.gui = GUI()
+        self.gui = GUI('gui')
         self.canvas = self.gui.canvas_widget
 
     @classmethod
