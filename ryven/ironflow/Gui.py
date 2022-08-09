@@ -167,9 +167,6 @@ class GUI:
             self._flow_canvases.append(flow_canvas)
 
         self.active_script_index = 0
-        self._update_tabs_from_model()
-        self.out_plot.clear_output()
-        self.out_log.clear_output()
 
     def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
         node_module = node_module or node_class.__module__  # n.identifier_prefix
@@ -312,6 +309,9 @@ class GUI:
 
     def click_load(self, change: Dict) -> None:
         self.load(f"{self.session_title}.json")
+        self._update_tabs_from_model()
+        self.out_plot.clear_output()
+        self.out_log.clear_output()
 
     def click_delete_node(self, change: Dict) -> None:
         self.flow_canvas_widget.delete_selected()
