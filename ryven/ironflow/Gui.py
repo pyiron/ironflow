@@ -216,6 +216,10 @@ class GUI:
         self.session.register_node(node_class)
         self._register_node(node_class, node_module='user')
 
+    ### ^ Back end ########
+    ### More or less... ###
+    ### v Front end #######
+
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
         self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
