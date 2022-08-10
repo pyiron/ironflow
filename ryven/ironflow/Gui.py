@@ -326,7 +326,7 @@ class GUI:
 
     def change_script_tabs(self, change: Dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
-            self._empty_script_rename_panel()
+            self._depopulate_text_input_panel()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
                 self._update_tabs_from_model()
@@ -341,7 +341,7 @@ class GUI:
             self.btn_input_text_cancel
         ]
 
-    def _empty_script_rename_panel(self) -> None:
+    def _depopulate_text_input_panel(self) -> None:
         self.text_input_panel.children = []
 
     def click_rename_script(self, change: Dict) -> None:
@@ -354,10 +354,10 @@ class GUI:
             self.script_tabs.set_title(self.active_script_index, new_name)
         else:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
-        self._empty_script_rename_panel()
+        self._depopulate_text_input_panel()
 
     def click_input_text_cancel(self, change: Dict) -> None:
-        self._empty_script_rename_panel()
+        self._depopulate_text_input_panel()
 
     def click_delete_script(self, change: Dict) -> None:
         self.delete_script()
