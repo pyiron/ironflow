@@ -247,7 +247,7 @@ class GUI:
         # TODO: Use file-circle-minus once this is available
 
         self.text_input_panel = widgets.HBox([])
-        self.text_input_field = widgets.Text(value=self.script.title, description="New script name:")
+        self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
         self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
         self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
         # TODO: Use xmark once this is available
@@ -333,19 +333,20 @@ class GUI:
             else:
                 self.active_script_index = self.script_tabs.selected_index
 
-    def _populate_text_input_panel(self):
-        self.text_input_field.value = self.script.title
+    def _populate_text_input_panel(self, description, initial_value):
         self.text_input_panel.children = [
             self.text_input_field,
             self.btn_input_text_ok,
             self.btn_input_text_cancel
         ]
+        self.text_input_field.description = description
+        self.text_input_field.value = initial_value
 
     def _depopulate_text_input_panel(self) -> None:
         self.text_input_panel.children = []
 
     def click_rename_script(self, change: Dict) -> None:
-        self._populate_text_input_panel()
+        self._populate_text_input_panel("Script name", self.script.title)
 
     def click_input_text_ok(self, change: Dict) -> None:
         new_name = self.text_input_field.value
