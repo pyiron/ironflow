@@ -311,15 +311,6 @@ class GUI:
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def click_save(self, change: Dict) -> None:
-        self.save(f"{self.session_title}.json")
-
-    def click_load(self, change: Dict) -> None:
-        self.load(f"{self.session_title}.json")
-        self._update_tabs_from_model()
-        self.out_plot.clear_output()
-        self.out_log.clear_output()
-
     def click_delete_node(self, change: Dict) -> None:
         self.flow_canvas_widget.delete_selected()
 
@@ -361,6 +352,15 @@ class GUI:
         if context not in self._context_actions.keys():
             raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
         self._context = context
+
+    def click_save(self, change: Dict) -> None:
+        self.save(f"{self.session_title}.json")
+
+    def click_load(self, change: Dict) -> None:
+        self.load(f"{self.session_title}.json")
+        self._update_tabs_from_model()
+        self.out_plot.clear_output()
+        self.out_log.clear_output()
 
     def click_rename_script(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
