@@ -333,13 +333,16 @@ class GUI:
             else:
                 self.active_script_index = self.script_tabs.selected_index
 
-    def click_rename_script(self, change: Dict) -> None:
+    def _populate_text_input_panel(self):
         self.text_input_field.value = self.script.title
         self.text_input_panel.children = [
             self.text_input_field,
             self.btn_input_text_ok,
             self.btn_input_text_cancel
         ]
+
+    def click_rename_script(self, change: Dict) -> None:
+        self._populate_text_input_panel()
 
     def click_input_text_ok(self, change: Dict) -> None:
         new_name = self.text_input_field.value
