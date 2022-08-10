@@ -345,9 +345,6 @@ class GUI:
     def _depopulate_text_input_panel(self) -> None:
         self.text_input_panel.children = []
 
-    def click_rename_script(self, change: Dict) -> None:
-        self._populate_text_input_panel("Script name", self.script.title)
-
     def click_input_text_ok(self, change: Dict) -> None:
         new_name = self.text_input_field.value
         rename_success = self.rename_script(new_name)
@@ -359,6 +356,9 @@ class GUI:
 
     def click_input_text_cancel(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
+
+    def click_rename_script(self, change: Dict) -> None:
+        self._populate_text_input_panel("Script name", self.script.title)
 
     def click_delete_script(self, change: Dict) -> None:
         self.delete_script()
