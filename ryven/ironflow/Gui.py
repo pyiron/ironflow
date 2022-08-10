@@ -284,6 +284,9 @@ class GUI:
         self.btn_delete_node.on_click(self.click_delete_node)
         self.btn_rename_script.on_click(self.click_rename_script)
         self.btn_input_text_ok.on_click(self.click_input_text_ok)
+        self.text_input_field.on_submit(self.click_input_text_ok)
+        # ^ Ignore the deprecation warning, 'observe' does function the way we actually want
+        # https://github.com/jupyter-widgets/ipywidgets/issues/2446
         self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.btn_delete_script.on_click(self.click_delete_script)
         self.script_tabs.observe(self.change_script_tabs)
