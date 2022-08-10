@@ -359,30 +359,37 @@ class GUI:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel("Save file name", self.session_title)
         self._set_context("save")
+        self._print("Choose a file name to save to (omit the file extension, .json)")
 
     def _save_context_action(self, file_name):
         self.save(f"{file_name}.json")
+        self._print(f"Session saved to {file_name}.json")
 
     def click_load(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel("Load file name", self.session_title)
         self._set_context("load")
+        self._print("Choose a file name to load (omit the file extension, .json)")
 
     def _load_context_action(self, file_name):
         self.load(f"{file_name}.json")
         self._update_tabs_from_model()
         self.out_plot.clear_output()
         self.out_log.clear_output()
+        self._print(f"Session loaded from {file_name}.json")
 
     def click_rename_script(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel("Script name", self.script.title)
         self._set_context('rename')
+        self._print("Choose a new name for the current script")
 
     def _rename_context_action(self, new_name):
+        old_name = self.script.title
         rename_success = self.rename_script(new_name)
         if rename_success:
             self.script_tabs.set_title(self.active_script_index, new_name)
+            self._print(f"Script '{old_name}' renamed '{new_name}'")
         else:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
