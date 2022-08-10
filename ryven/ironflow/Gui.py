@@ -246,10 +246,10 @@ class GUI:
         self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
         # TODO: Use file-circle-minus once this is available
 
-        self.script_rename_panel = widgets.HBox([])
-        self.script_name_box = widgets.Text(value=self.script.title, description="New script name:")
-        self.btn_confirm_script_name = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
-        self.btn_cancel_script_name = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
+        self.text_input_panel = widgets.HBox([])
+        self.text_input_field = widgets.Text(value=self.script.title, description="New script name:")
+        self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
+        self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
         # TODO: Use xmark once this is available
 
         self.alg_mode_dropdown = widgets.Dropdown(
@@ -276,8 +276,8 @@ class GUI:
         self.btn_save.on_click(self.click_save)
         self.btn_delete_node.on_click(self.click_delete_node)
         self.btn_rename_script.on_click(self.click_rename_script)
-        self.btn_confirm_script_name.on_click(self.click_confirm_script_name)
-        self.btn_cancel_script_name.on_click(self.click_cancel_script_name)
+        self.btn_input_text_ok.on_click(self.click_input_text_ok)
+        self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.btn_delete_script.on_click(self.click_delete_script)
         self.script_tabs.observe(self.change_script_tabs)
 
@@ -294,7 +294,7 @@ class GUI:
                         self.btn_delete_script,
                     ]
                 ),
-                self.script_rename_panel,
+                self.text_input_panel,
                 widgets.HBox(
                     [widgets.VBox([self.node_selector]), self.script_tabs, self.out_plot]
                 ),
@@ -334,15 +334,15 @@ class GUI:
                 self.active_script_index = self.script_tabs.selected_index
 
     def click_rename_script(self, change: Dict) -> None:
-        self.script_name_box.value = self.script.title
-        self.script_rename_panel.children = [
-            self.script_name_box,
-            self.btn_confirm_script_name,
-            self.btn_cancel_script_name
+        self.text_input_field.value = self.script.title
+        self.text_input_panel.children = [
+            self.text_input_field,
+            self.btn_input_text_ok,
+            self.btn_input_text_cancel
         ]
 
-    def click_confirm_script_name(self, change: Dict) -> None:
-        new_name = self.script_name_box.value
+    def click_input_text_ok(self, change: Dict) -> None:
+        new_name = self.text_input_field.value
         rename_success = self.rename_script(new_name)
         if rename_success:
             self.script_tabs.set_title(self.active_script_index, new_name)
@@ -350,7 +350,7 @@ class GUI:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
         self._empty_script_rename_panel()
 
-    def click_cancel_script_name(self, change: Dict) -> None:
+    def click_input_text_cancel(self, change: Dict) -> None:
         self._empty_script_rename_panel()
 
     def click_delete_script(self, change: Dict) -> None:
@@ -377,7 +377,7 @@ class GUI:
         self.script_tabs.set_title(len(self.session.scripts), "+")
 
     def _empty_script_rename_panel(self) -> None:
-        self.script_rename_panel.children = []
+        self.text_input_panel.children = []
 
     def _print(self, text: str) -> None:
         with self.out_log:
