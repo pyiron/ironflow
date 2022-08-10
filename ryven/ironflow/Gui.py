@@ -62,6 +62,8 @@ class GUI:
         self._context = None
         self._context_actions = {
             "rename": self._rename_context_action,
+            "save": self._save_context_action,
+            "load": self._load_context_action
         }
 
         self.create_script(script_title)
@@ -354,10 +356,20 @@ class GUI:
         self._context = context
 
     def click_save(self, change: Dict) -> None:
-        self.save(f"{self.session_title}.json")
+        self._depopulate_text_input_panel()
+        self._populate_text_input_panel("Save file name", self.session_title)
+        self._set_context("save")
+
+    def _save_context_action(self, file_name):
+        self.save(f"{file_name}.json")
 
     def click_load(self, change: Dict) -> None:
-        self.load(f"{self.session_title}.json")
+        self._depopulate_text_input_panel()
+        self._populate_text_input_panel("Load file name", self.session_title)
+        self._set_context("load")
+
+    def _load_context_action(self, file_name):
+        self.load(f"{file_name}.json")
         self._update_tabs_from_model()
         self.out_plot.clear_output()
         self.out_log.clear_output()
