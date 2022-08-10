@@ -341,6 +341,9 @@ class GUI:
             self.btn_input_text_cancel
         ]
 
+    def _empty_script_rename_panel(self) -> None:
+        self.text_input_panel.children = []
+
     def click_rename_script(self, change: Dict) -> None:
         self._populate_text_input_panel()
 
@@ -378,9 +381,6 @@ class GUI:
     def _add_new_script_tab(self):
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
         self.script_tabs.set_title(len(self.session.scripts), "+")
-
-    def _empty_script_rename_panel(self) -> None:
-        self.text_input_panel.children = []
 
     def _print(self, text: str) -> None:
         with self.out_log:
