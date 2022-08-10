@@ -59,6 +59,11 @@ class GUI:
         for n in self.session.nodes:
             self._register_node(n)
 
+        self._context = None
+        self._context_actions = {
+            "rename": self._rename_context_action,
+        }
+
         self.create_script(script_title)
 
     @property
@@ -346,19 +351,29 @@ class GUI:
         self.text_input_panel.children = []
 
     def click_input_text_ok(self, change: Dict) -> None:
-        new_name = self.text_input_field.value
-        rename_success = self.rename_script(new_name)
-        if rename_success:
-            self.script_tabs.set_title(self.active_script_index, new_name)
-        else:
-            self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
+        self._context_actions[self._context](self.text_input_field.value)
         self._depopulate_text_input_panel()
 
     def click_input_text_cancel(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
 
+    def _set_context(self, context):
+        if context not in self._context_actions.keys():
+            raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
+        self._context = context
+
     def click_rename_script(self, change: Dict) -> None:
+        self._depopulate_text_input_panel()
         self._populate_text_input_panel("Script name", self.script.title)
+        self._set_context('rename')
+
+    def _rename_context_action(self, new_name):
+        rename_success = self.rename_script(new_name)
+        if rename_success:
+            self.script_tabs.set_title(self.active_script_index, new_name)
+        else:
+            self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
+
 
     def click_delete_script(self, change: Dict) -> None:
         self.delete_script()
