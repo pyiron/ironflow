@@ -352,6 +352,7 @@ class GUI:
 
     def click_input_text_cancel(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
+        self._print("")
 
     def _set_context(self, context):
         if context not in self._context_actions.keys():
