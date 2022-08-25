@@ -264,7 +264,7 @@ class Plot3d_Node(DualNodeBase):
 
     def update_event(self, inp=-1):
         self._val_is_updated = True
-        if self.active and inp == 0:
+        if self.active:
             self.val = self.input(1).plot3d()
         elif not self.active:
             self.val = self.input(0)
