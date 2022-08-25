@@ -323,7 +323,10 @@ class GUI:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
     def change_alg_mode_dropdown(self, change: Dict) -> None:
-        self.flow_canvas_widget.script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
+        # Current behaviour: Updates the flow mode for all scripts
+        # TODO: Change only for the active script, and update the dropdown on tab (script) switching
+        for script in self.session.scripts:
+            script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
     def change_script_tabs(self, change: Dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
