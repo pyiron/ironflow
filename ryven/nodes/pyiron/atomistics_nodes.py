@@ -289,10 +289,12 @@ class Matplot_Node(DualNodeBase):
     def update_event(self, inp=-1):
         self._val_is_updated = True
         if self.active:
+            plt.ioff()
             fig = plt.figure()
             plt.clf()
             plt.plot(self.input(1), self.input(2))
             self.val = fig
+            plt.ion()
         elif not self.active:
             self.val = self.input(0)
 
