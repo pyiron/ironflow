@@ -214,6 +214,16 @@ class NodeWidget(BaseCanvasWidget):
                 with self.parent.gui.out_plot:
                     display(val)
 
+    def display_representation(self):
+        try:
+            representation, changed = self.node.get_node_display()
+            if changed:
+                self.parent.gui.out_plot.clear_output()
+                with self.parent.gui.out_plot:
+                    display(representation)
+        except AttributeError:
+            pass
+
     def _add_ports(
             self,
             radius: Number,
@@ -270,6 +280,8 @@ class NodeWidget(BaseCanvasWidget):
 
             self.draw_value(self.node.val, val_is_updated)
             self.node._val_is_updated = False
+
+        self.display_representation()
 
         for o in self.objects_to_draw:
             o.draw()

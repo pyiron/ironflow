@@ -7,6 +7,7 @@ import numpy as np
 from pyiron_atomistics import Project
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 
+from abc import ABC, abstractmethod
 from ryven.nodes.std.special_nodes import DualNodeBase
 
 
@@ -31,7 +32,28 @@ class NodeBase(Node):
         # here we could add some stuff for all nodes below...
 
 
-class Project_Node(NodeBase):
+class NodeWithDisplay(NodeBase, ABC):
+    def __init__(self, params):
+        super().__init__(params)
+        self._representation = None
+        self._representation_changed = True
+
+    def get_node_display(self):
+        display = self.representation
+        if display != self._representation:
+            self._representation = display
+            self._representation_changed = True
+        else:
+            self._representation_changed = False
+        return self._representation, self._representation_changed
+
+    @property
+    @abstractmethod
+    def representation(self):
+        pass
+
+
+class Project_Node(NodeWithDisplay):
     """Create a pyiron project node"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -51,6 +73,10 @@ class Project_Node(NodeBase):
     def update_event(self, inp=-1):
         pr = Project(self.input(0))
         self.set_output_val(0, pr)
+
+    @property
+    def representation(self):
+        return str(self.input(0))
 
 
 class BulkStructure_Node(NodeBase):
