@@ -66,6 +66,7 @@ class ExecPortLayout(PortLayout):
 
 @dataclass
 class ButtonLayout(Layout):
-    width: int = 100
+    width: int = 70
     height: int = 30
     background_color: str = "darkgray"
+    pressed_color: str = "dimgray"

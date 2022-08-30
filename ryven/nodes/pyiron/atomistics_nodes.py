@@ -33,6 +33,8 @@ class NodeBase(Node):
 
 
 class NodeWithDisplay(NodeBase, ABC):
+    main_widget_class = "DisplayableNodeWidget"
+
     def __init__(self, params):
         super().__init__(params)
         self._representation = None

@@ -8,7 +8,7 @@ from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 from time import time
 
-from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
+from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
 from .layouts import NodeLayout
 from .NodeWidgets import NodeWidgets
 
@@ -176,13 +176,16 @@ class FlowCanvas:
     def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> Union[BaseCanvasWidget | None]:
         newly_selected_object.select()
 
-        if hasattr(newly_selected_object, "handle_select"):
-            newly_selected_object.handle_select(newly_selected_object)
+        # if hasattr(newly_selected_object, "handle_select"):
+        #     newly_selected_object = newly_selected_object.handle_select(newly_selected_object)
 
         if isinstance(newly_selected_object, NodeWidget):
             return self._handle_node_select(newly_selected_object)
         elif isinstance(newly_selected_object, PortWidget):
             return self._handle_port_select(newly_selected_object)
+        elif isinstance(newly_selected_object, DisplayButtonWidget):
+            newly_selected_object.handle_select(None)
+            return None
         else:
             return newly_selected_object
 
