@@ -52,6 +52,9 @@ class NodeWithDisplay(NodeBase, ABC):
     def representation(self):
         pass
 
+    def output(self, i):
+        return self.outputs[i].val
+
 
 class Project_Node(NodeWithDisplay):
     """Create a pyiron project node"""
@@ -71,6 +74,7 @@ class Project_Node(NodeWithDisplay):
         self.update()
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         pr = Project(self.input(0))
         self.set_output_val(0, pr)
 
@@ -79,7 +83,7 @@ class Project_Node(NodeWithDisplay):
         return str(self.input(0))
 
 
-class BulkStructure_Node(NodeBase):
+class BulkStructure_Node(NodeWithDisplay):
     """Generate a bulk atomic structure"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -96,10 +100,15 @@ class BulkStructure_Node(NodeBase):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         pr = self.input(0)
         self.set_output_val(
             0, pr.create.structure.bulk(self.input(1), cubic=self.input(2))
         )
+
+    @property
+    def representation(self):
+        return self.output(0).plot3d()
 
 
 class Repeat_Node(NodeBase):
