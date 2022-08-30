@@ -216,11 +216,11 @@ class NodeWidget(BaseCanvasWidget):
 
     def display_representation(self):
         try:
-            representation, changed = self.node.get_node_display()
-            if changed:
+            if self.node.displayed and self.node.representation_updated:
                 self.parent.gui.out_plot.clear_output()
                 with self.parent.gui.out_plot:
-                    display(representation)
+                    display(self.node.representation)
+                self.node.representation_updated = False
         except AttributeError:
             pass
 

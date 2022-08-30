@@ -36,16 +36,17 @@ class NodeWithDisplay(NodeBase, ABC):
     def __init__(self, params):
         super().__init__(params)
         self._representation = None
-        self._representation_changed = True
+        self.representation_updated = False
+        self.displayed = False
 
-    def get_node_display(self):
-        display = self.representation
-        if display != self._representation:
-            self._representation = display
-            self._representation_changed = True
-        else:
-            self._representation_changed = False
-        return self._representation, self._representation_changed
+    def update_event(self, inp=-1):
+        self.representation_updated = True
+
+    def get_displayable(self):
+        if self.representation_updated:
+            self._representation = self.representation
+        return self._representation
+
 
     @property
     @abstractmethod
