@@ -93,7 +93,7 @@ class OutputsOnlyAtoms(NodeWithDisplay, ABC):
     @abstractmethod
     def update_event(self, inp=-1):
         """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
-        pass
+        super().update_event(inp=inp)
 
     @property
     def representations(self) -> tuple:
@@ -132,6 +132,7 @@ class Repeat_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).repeat(self.input(1)))
 
 
@@ -145,6 +146,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
@@ -207,12 +209,11 @@ class GenericOutput_Node(NodeWithDisplay):
 
     def __init__(self, params):
         super().__init__(params)
-        self.val = None
 
     def update_event(self, input_called=-1):
+        super().update_event(inp=inp)
         self.inputs[1].dtype.items = self.input(0)["output/generic"].list_nodes()
         val = self.input(0)[f"output/generic/{self.input(1)}"]
-        self.val = self.inputs[1].val
         self.set_output_val(0, val)
 
 
@@ -232,6 +233,7 @@ class IntRand_Node(NodeWithDisplay):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         val = np.random.randint(0, high=self.input(0), size=self.input(1))
         self.set_output_val(0, val)
 
@@ -250,6 +252,7 @@ class JobName_Node(NodeWithDisplay):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         val = self.input(0) + f"{float(self.input(1))}".replace("-", "m").replace(
             ".", "p"
         )
@@ -276,6 +279,7 @@ class Linspace_Node(NodeWithDisplay):
         self.update()    
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         val = np.linspace(self.input(0), self.input(1), self.input(2))
         # val = 10
         self.set_output_val(0, val)
@@ -345,6 +349,7 @@ class Sin_Node(NodeWithDisplay):
     color = "#5d95de"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         self.set_output_val(0, np.sin(self.input(0)))
 
 
