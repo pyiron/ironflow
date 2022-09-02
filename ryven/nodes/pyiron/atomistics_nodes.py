@@ -280,27 +280,26 @@ class Linspace_Node(NodeWithDisplay):
         self.set_output_val(0, val)
 
 
-class Plot3d_Node(DualNodeBase):
+class Plot3d_Node(NodeWithDisplay):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(type_="exec"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(dtype=dtypes.Boolean(default=False), label="print")
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec"),
+        NodeOutputBP(type_="data"),
+        NodeOutputBP(type_="data"),
     ]
     color = "#5d95de"
 
-    def __init__(self, params):
-        super().__init__(params, active=True)
-
     def update_event(self, inp=-1):
-        self._val_is_updated = True
-        if self.active:
-            self.val = self.input(1).plot3d()
-        elif not self.active:
-            self.val = self.input(0)
+        super().update_event(inp=inp)
+        self.set_output_val(0, self.input(0).plot3d())
+        if self.input(1):
+            self.set_output_val(1, self.input(0))
+        else:
+            self.set_output_val(1, None)
 
 
 class Matplot_Node(NodeWithDisplay):
