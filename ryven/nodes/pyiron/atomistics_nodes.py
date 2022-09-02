@@ -308,33 +308,26 @@ class Plot3d_Node(DualNodeBase):
             self.val = self.input(0)
 
 
-class Matplot_Node(DualNodeBase):
+class Matplot_Node(NodeWithDisplay):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(type_="exec"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="y"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec"),
+        NodeOutputBP(type_="data"),
     ]
     color = "#5d95de"
 
-    def __init__(self, params):
-        super().__init__(params, active=True)
-
     def update_event(self, inp=-1):
-        self._val_is_updated = True
-        if self.active:
-            plt.ioff()
-            fig = plt.figure()
-            plt.clf()
-            plt.plot(self.input(1), self.input(2))
-            self.val = fig
-            plt.ion()
-        elif not self.active:
-            self.val = self.input(0)
+        super().update_event()
+        plt.ioff()
+        fig = plt.figure()
+        plt.clf()
+        plt.plot(self.input(0), self.input(1))
+        self.set_output_val(0, fig)
+        plt.ion()
 
 
 class Sin_Node(NodeWithDisplay):
