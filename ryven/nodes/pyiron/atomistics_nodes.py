@@ -86,7 +86,23 @@ class Project_Node(NodeWithDisplay):
         return str(self.input(0)),
 
 
-class BulkStructure_Node(NodeWithDisplay):
+class OutputsOnlyAtoms(NodeWithDisplay, ABC):
+    init_outputs = [
+        NodeOutputBP(),
+    ]
+    color = "#aabb44"
+
+    @abstractmethod
+    def update_event(self, inp=-1):
+        """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
+        pass
+
+    @property
+    def representations(self) -> tuple:
+        return self.output(0).plot3d(), self.output(0)
+
+
+class BulkStructure_Node(OutputsOnlyAtoms):
     """Generate a bulk atomic structure"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -97,10 +113,6 @@ class BulkStructure_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Char(default="Fe"), label="element"),
         NodeInputBP(dtype=dtypes.Boolean(default=True), label="cubic"),
     ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = "#aabb44"
 
     def update_event(self, inp=-1):
         super().update_event(inp=inp)
@@ -109,12 +121,8 @@ class BulkStructure_Node(NodeWithDisplay):
             0, pr.create.structure.bulk(self.input(1), cubic=self.input(2))
         )
 
-    @property
-    def representations(self) -> tuple:
-        return self.output(0).plot3d(), self.output(0)
 
-
-class Repeat_Node(NodeBase):
+class Repeat_Node(OutputsOnlyAtoms):
     """Repeat atomic structure supercell"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -124,17 +132,12 @@ class Repeat_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = "#aabb44"
 
     def update_event(self, inp=-1):
-        self.val = self.input(0)
         self.set_output_val(0, self.input(0).repeat(self.input(1)))
 
 
-class ApplyStrain_Node(NodeBase):
+class ApplyStrain_Node(OutputsOnlyAtoms):
     """Apply strain on atomic structure supercell"""
 
     title = "ApplyStrain"
@@ -142,14 +145,9 @@ class ApplyStrain_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = "#aabb44"
 
     def update_event(self, inp=-1):
-        self.val = self.input(0)
-        self.set_output_val(0, self.input(0).apply_strain(self.input(1)))
+        self.set_output_val(0, self.input(0).apply_strain(self.input(1), return_box=True))
 
 
 class Lammps_Node(DualNodeBase):
