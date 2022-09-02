@@ -364,6 +364,12 @@ class DisplayButtonWidget(ButtonWidget):
 
 
 class DisplayableNodeWidget(NodeWidget):
+    """
+    Has a `Display` button that sends a representation over to the `ryven.ironflow.Gui.GUI.out_plot` window.
+    Display gets locked until the button is pressed again, or another node gets displayed.
+    While displayed, display updates automatically on changes to input.
+    """
+
     def __init__(
             self,
             x: Number,
