@@ -205,7 +205,7 @@ class GenericOutput_Node(NodeWithDisplay):
     def __init__(self, params):
         super().__init__(params)
 
-    def update_event(self, input_called=-1):
+    def update_event(self, inp=-1):
         super().update_event(inp=inp)
         self.inputs[1].dtype.items = self.input(0)["output/generic"].list_nodes()
         val = self.input(0)[f"output/generic/{self.input(1)}"]
