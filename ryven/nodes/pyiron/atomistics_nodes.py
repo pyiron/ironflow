@@ -296,10 +296,14 @@ class Plot3d_Node(NodeWithDisplay):
     def update_event(self, inp=-1):
         super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).plot3d())
+        self.set_output_val(1, self.input(0))
+
+    @property
+    def representations(self) -> tuple:
         if self.input(1):
-            self.set_output_val(1, self.input(0))
+            return self.output(0), self.output(1)
         else:
-            self.set_output_val(1, None)
+            return self.output(0),
 
 
 class Matplot_Node(NodeWithDisplay):
@@ -405,28 +409,6 @@ class ForEach_Node(NodeBase):
         # self.exec_output(2)
 
 
-class Print_Node(DualNodeBase):
-    title = "Print"
-    version = "v0.1"
-    init_inputs = [
-        NodeInputBP(type_="exec"),
-        NodeInputBP(dtype=dtypes.Data(size="m")),
-    ]
-    init_outputs = [
-        NodeOutputBP(type_="exec"),
-    ]
-    color = "#5d95de"
-
-    def __init__(self, params):
-        super().__init__(params, active=True)
-
-    def update_event(self, inp=-1):
-        if self.active:
-            self.val = self.input(1)
-        elif not self.active:
-            self.val = self.input(0)
-
-
 class ExecCounter_Node(DualNodeBase):
     title = "ExecCounter"
     version = "v0.1"
@@ -476,7 +458,6 @@ nodes = [
     Linspace_Node,
     Sin_Node,
     Result_Node,
-    Print_Node,
     ExecCounter_Node,
     Matplot_Node,
     Click_Node,
