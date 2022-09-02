@@ -7,6 +7,7 @@ from __future__ import annotations
 import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+import ipywidgets as widgets
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -382,7 +383,8 @@ class DisplayableNodeWidget(NodeWidget):
         if self.node.displayed and self.node.representation_updated:
             self.parent.gui.out_plot.clear_output()
             with self.parent.gui.out_plot:
-                display(self.node.representation)
+                for rep in self.node.representations:
+                    display(rep)
             self.node.representation_updated = False
 
     def draw(self):

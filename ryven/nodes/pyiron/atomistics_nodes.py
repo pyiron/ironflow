@@ -52,7 +52,7 @@ class NodeWithDisplay(NodeBase, ABC):
 
     @property
     @abstractmethod
-    def representation(self):
+    def representations(self) -> tuple:
         pass
 
     def output(self, i):
@@ -82,8 +82,8 @@ class Project_Node(NodeWithDisplay):
         self.set_output_val(0, pr)
 
     @property
-    def representation(self):
-        return str(self.input(0))
+    def representations(self) -> tuple:
+        return str(self.input(0)),
 
 
 class BulkStructure_Node(NodeWithDisplay):
@@ -110,8 +110,8 @@ class BulkStructure_Node(NodeWithDisplay):
         )
 
     @property
-    def representation(self):
-        return self.output(0).plot3d()
+    def representations(self) -> tuple:
+        return self.output(0).plot3d(), self.output(0)
 
 
 class Repeat_Node(NodeBase):
