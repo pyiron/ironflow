@@ -29,7 +29,7 @@ class NodeBase(Node):
     def __init__(self, params):
         super().__init__(params)
 
-        # here we could add some stuff for all nodes below...
+    # here we could add some stuff for all nodes below...
 
 
 class NodeWithDisplay(NodeBase, ABC):
@@ -49,11 +49,9 @@ class NodeWithDisplay(NodeBase, ABC):
             self._representation = self.representation
         return self._representation
 
-
     @property
-    @abstractmethod
     def representations(self) -> tuple:
-        pass
+        return tuple(o.val for o in self.outputs)
 
     def output(self, i):
         return self.outputs[i].val
@@ -147,7 +145,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, self.input(0).apply_strain(self.input(1), return_box=True))
+        self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
 class Lammps_Node(DualNodeBase):
@@ -184,7 +182,7 @@ class Lammps_Node(DualNodeBase):
             self.val = self.input(0)
 
 
-class GenericOutput_Node(NodeBase):
+class GenericOutput_Node(NodeWithDisplay):
     """Select Generic Output item"""
 
     version = "v0.1"
@@ -218,7 +216,7 @@ class GenericOutput_Node(NodeBase):
         self.set_output_val(0, val)
 
 
-class IntRand_Node(NodeBase):
+class IntRand_Node(NodeWithDisplay):
     """Generate a random number in a given range"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -238,7 +236,7 @@ class IntRand_Node(NodeBase):
         self.set_output_val(0, val)
 
 
-class JobName_Node(NodeBase):
+class JobName_Node(NodeWithDisplay):
     """Create job name for parameters"""
 
     title = "JobName"
@@ -258,7 +256,7 @@ class JobName_Node(NodeBase):
         self.set_output_val(0, val)
 
 
-class Linspace_Node(NodeBase):
+class Linspace_Node(NodeWithDisplay):
     """Generate a linear mesh in a given range using np.linspace"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -335,7 +333,7 @@ class Matplot_Node(DualNodeBase):
             self.val = self.input(0)
 
 
-class Sin_Node(NodeBase):
+class Sin_Node(NodeWithDisplay):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
