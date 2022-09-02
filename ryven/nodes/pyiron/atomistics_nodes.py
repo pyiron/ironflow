@@ -44,11 +44,6 @@ class NodeWithDisplay(NodeBase, ABC):
     def update_event(self, inp=-1):
         self.representation_updated = True
 
-    def get_displayable(self):
-        if self.representation_updated:
-            self._representation = self.representation
-        return self._representation
-
     @property
     def representations(self) -> tuple:
         return tuple(o.val for o in self.outputs)
