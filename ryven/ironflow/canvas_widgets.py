@@ -7,6 +7,7 @@ from __future__ import annotations
 import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from ryven.ironflow.node_widgets import NodeWidgets
 import ipywidgets as widgets
 from abc import ABC, abstractmethod
 
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
     from ryvencore.NodePort import NodePort
+    from ryvencore.Flow import Flow
 
 
 __author__ = "Joerg Neugebauer"
@@ -56,10 +58,11 @@ class CanvasWidget(ABC):
 
         self._height = self.layout.height
 
-    def on_click(self):
+    @abstractmethod
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         pass
 
-    def on_double_click(self):
+    def on_double_click(self) -> Optional[CanvasWidget]:
         pass
 
     def _init_after_parent_assignment(self):
@@ -88,6 +91,13 @@ class CanvasWidget(ABC):
     @property
     def gui(self) -> GUI:
         return self.parent.gui
+
+    @property
+    def flow(self) -> Flow:
+        return self.parent.flow
+
+    def deselect_all(self) -> None:
+        return self.parent.deselect_all()
 
     def add_widget(self, widget: CanvasWidget) -> None:
         self.objects_to_draw.append(widget)
@@ -161,6 +171,20 @@ class PortWidget(CanvasWidget):
         self.port = port
         self.text_left = text_left
 
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        if last_selected_object == self:
+            self.deselect()
+            return None
+        elif isinstance(last_selected_object, PortWidget):
+            self.flow.connect_nodes(last_selected_object.port, self.port)
+            self.deselect_all()
+            return None
+        else:
+            if last_selected_object is not None:
+                last_selected_object.deselect()
+            self.select()
+            return self
+
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.background_color
         if self.selected:
@@ -210,6 +234,26 @@ class NodeWidget(CanvasWidget):
             self._height = 200  # TODO: Make height programatically dependent on content
         self.add_inputs()
         self.add_outputs()
+
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        if last_selected_object == self:
+            return self
+        else:
+            if last_selected_object is not None:
+                last_selected_object.deselect()
+            self.select()
+            try:
+                node_widget = NodeWidgets(self.node, self.gui).draw()
+                with self.gui.out_status:
+                    self.gui.out_status.clear_output()
+                    display(node_widget)
+                    # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+                    return self
+            except Exception as e:
+                self.gui._print(f"Failed to handle selection of {self} with exception {e}")
+                self.gui.out_status.clear_output()
+                self.deselect()
+                return None
 
     def draw_title(self, title: str) -> None:
         self.canvas.fill_style = self.node.color
@@ -358,7 +402,7 @@ class DisplayButtonWidget(ButtonWidget):
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
-    def on_click(self, not_used):
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         if self.pressed:
             self.pressed = False
             self.parent.node.displayed = False
@@ -373,6 +417,7 @@ class DisplayButtonWidget(ButtonWidget):
             self.parent.node.representation_updated = True
             self.parent.parent.gui.displayed_node = self.parent
         self.deselect()
+        return last_selected_object
 
 
 class DisplayableNodeWidget(NodeWidget):

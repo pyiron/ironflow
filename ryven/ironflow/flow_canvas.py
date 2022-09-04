@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
     Number = Union[int, float]
-    from ryvencore import Flow
+    from ryvencore.Flow import Flow
 
 __author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
@@ -41,6 +41,7 @@ class FlowCanvas:
         - Mouse down, hold, and move on a node element or any child element selects the (parent) node and moves it
         - Mouse click on nothing clears selection
         - Mouse double-click on nothing creates a new node of the type currently selected in the node menu
+        - Mouse click on a selected (pressed) port (button) deselects (unpresses) that port (button)
         - TODO: Mouse down, hold, and move on nothing draws a rectangle, everything inside is selected on release
 
     Keyboard behaviour: TODO
@@ -156,19 +157,14 @@ class FlowCanvas:
         sel_object = self.get_element_at_xy(x, y)
         last_object = self._last_selected_object
 
-        if last_object is None:
-            if sel_object is not None:
-                sel_object = self._handle_new_object_selection(sel_object)
+        if sel_object is None:
+            if last_object is not None:
+                last_object.deselect()
             elif time_since_last_click < self._double_click_speed:
                 self.add_node(x, y, self.gui.new_node_class)
                 self._built_object_to_gui_dict()
         else:
-            if sel_object is not None:
-                if sel_object != last_object:
-                    last_object.deselect()
-                    sel_object = self._handle_new_object_selection(sel_object)
-            else:
-                last_object.deselect()
+            sel_object = sel_object.on_click(last_object)
 
         self._last_selected_object = sel_object
 
@@ -176,45 +172,6 @@ class FlowCanvas:
 
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
-
-    def _handle_new_object_selection(self, newly_selected_object: CanvasWidget) -> Union[CanvasWidget | None]:
-        newly_selected_object.select()
-
-        # if hasattr(newly_selected_object, "handle_select"):
-        #     newly_selected_object = newly_selected_object.handle_select(newly_selected_object)
-
-        if isinstance(newly_selected_object, NodeWidget):
-            return self._handle_node_select(newly_selected_object)
-        elif isinstance(newly_selected_object, PortWidget):
-            return self._handle_port_select(newly_selected_object)
-        elif isinstance(newly_selected_object, DisplayButtonWidget):
-            newly_selected_object.on_click(None)
-            return None
-        else:
-            return newly_selected_object
-
-    def _handle_node_select(self, sel_object: NodeWidget) -> NodeWidget:
-        try:
-            self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
-            with self.gui.out_status:
-                self.gui.out_status.clear_output()
-                display(self._node_widget)
-                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-                return sel_object
-        except Exception as e:
-            self.gui._print(f"Failed to handle selection of {sel_object} with exception {e}")
-            self.gui.out_status.clear_output()
-            sel_object.deselect()
-            return None
-
-
-    def _handle_port_select(self, sel_object: PortWidget) -> Union[PortWidget | None]:
-        if isinstance(self._last_selected_object, PortWidget):
-            self.flow.connect_nodes(self._last_selected_object.port, sel_object.port)
-            self.deselect_all()
-            return None
-        else:
-            return sel_object
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
         for o in self.objects_to_draw:
