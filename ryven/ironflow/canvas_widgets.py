@@ -355,7 +355,7 @@ class ButtonNodeWidget(NodeWidget):
         button.deselect()
 
 
-class ButtonWidget(CanvasWidget):
+class ButtonWidget(CanvasWidget, ABC):
     def __init__(
             self,
             x: Number,
@@ -368,6 +368,23 @@ class ButtonWidget(CanvasWidget):
         super().__init__(x, y, parent, layout, selected)
         self.title = title
         self.pressed = False
+
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        if self.pressed:
+            self.pressed = False
+            self.on_unpressed()
+        else:
+            self.on_pressed()
+        self.deselect()
+        return last_selected_object
+
+    @abstractmethod
+    def on_pressed(self):
+        pass
+
+    @abstractmethod
+    def on_unpressed(self):
+        pass
 
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
@@ -402,22 +419,19 @@ class DisplayButtonWidget(ButtonWidget):
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
-        if self.pressed:
-            self.pressed = False
-            self.parent.node.displayed = False
-            self.parent.parent.gui.out_plot.clear_output()
-            self.parent.parent.gui.displayed_node = None
-        else:
-            if self.parent.parent.gui.displayed_node is not None:
-                self.parent.parent.gui.displayed_node.node.displayed = False
-                self.parent.parent.gui.displayed_node.display_button.pressed = False
-            self.pressed = True
-            self.parent.node.displayed = True
-            self.parent.node.representation_updated = True
-            self.parent.parent.gui.displayed_node = self.parent
-        self.deselect()
-        return last_selected_object
+    def on_pressed(self):
+        if self.parent.parent.gui.displayed_node is not None:
+            self.parent.parent.gui.displayed_node.node.displayed = False
+            self.parent.parent.gui.displayed_node.display_button.pressed = False
+        self.pressed = True
+        self.parent.node.displayed = True
+        self.parent.node.representation_updated = True
+        self.parent.parent.gui.displayed_node = self.parent
+
+    def on_unpressed(self):
+        self.parent.node.displayed = False
+        self.parent.parent.gui.out_plot.clear_output()
+        self.parent.parent.gui.displayed_node = None
 
 
 class DisplayableNodeWidget(NodeWidget):
