@@ -386,14 +386,15 @@ class DisplayableNodeWidget(NodeWidget):
         self.add_widget(self.display_button)
 
     def display_node(self):
-        if self.node.displayed and self.node.representation_updated:
-            self.parent.gui.out_plot.clear_output()
-            with self.parent.gui.out_plot:
-                for rep in self.node.representations:
-                    display(rep)
-            self.node.representation_updated = False
+        """Send the node's representation to a separate GUI window"""
+        self.parent.gui.out_plot.clear_output()
+        with self.parent.gui.out_plot:
+            for rep in self.node.representations:
+                display(rep)
+        self.node.representation_updated = False
 
     def draw(self):
         super().draw()
-        self.display_node()
+        if self.node.displayed and self.node.representation_updated:
+            self.display_node()
 
