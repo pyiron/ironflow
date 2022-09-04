@@ -13,10 +13,12 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
     from .flow_canvas import FlowCanvas
+    from ryven.ironflow.gui import GUI
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
     from ryvencore.NodePort import NodePort
+
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -82,6 +84,10 @@ class CanvasWidget(ABC):
     @property
     def canvas(self) -> Canvas:
         return self.parent.canvas
+
+    @property
+    def gui(self) -> GUI:
+        return self.parent.gui
 
     def add_widget(self, widget: CanvasWidget) -> None:
         self.objects_to_draw.append(widget)

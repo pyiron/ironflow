@@ -50,7 +50,7 @@ class FlowCanvas:
             - If a port is selected, deletes all connections it is part of
     """
     def __init__(self, gui: GUI, flow: Optional[Flow] = None, width: int = 2000, height: int = 1000):
-        self.gui = gui
+        self._gui = gui
         self.flow = flow if flow is not None else gui.flow
         self._width, self._height = width, height
 
@@ -93,6 +93,10 @@ class FlowCanvas:
     @property
     def canvas(self):
         return self._canvas
+
+    @property
+    def gui(self):
+        return self._gui
 
     def draw_connection(self, port_1: int, port_2: int) -> None:
         # i_out, i_in = path
