@@ -372,19 +372,19 @@ class ButtonWidget(CanvasWidget, ABC):
     def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         if self.pressed:
             self.pressed = False
-            self.on_unpressed()
+            self.unpress()
         else:
             self.pressed = True
-            self.on_pressed()
+            self.press()
         self.deselect()
         return last_selected_object
 
     @abstractmethod
-    def on_pressed(self):
+    def press(self):
         pass
 
     @abstractmethod
-    def on_unpressed(self):
+    def unpress(self):
         pass
 
     def draw_shape(self) -> None:
@@ -420,18 +420,13 @@ class DisplayButtonWidget(ButtonWidget):
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
-    def on_pressed(self):
-        if self.parent.parent.gui.displayed_node is not None:
-            self.parent.parent.gui.displayed_node.node.displayed = False
-            self.parent.parent.gui.displayed_node.display_button.pressed = False
-        self.parent.node.displayed = True
-        self.parent.node.representation_updated = True
-        self.parent.parent.gui.displayed_node = self.parent
+    def press(self):
+        self.pressed = True
+        self.parent.set_display()
 
-    def on_unpressed(self):
-        self.parent.node.displayed = False
-        self.parent.parent.gui.out_plot.clear_output()
-        self.parent.parent.gui.displayed_node = None
+    def unpress(self):
+        self.pressed = False
+        self.parent.clear_display()
 
 
 class DisplayableNodeWidget(NodeWidget):
@@ -455,6 +450,18 @@ class DisplayableNodeWidget(NodeWidget):
 
         self.display_button = DisplayButtonWidget(80, 50, parent=self, layout=ButtonLayout())
         self.add_widget(self.display_button)
+
+    def set_display(self):
+        if self.gui.displayed_node is not None:
+            self.gui.displayed_node.display_button.unpress()
+        self.node.displayed = True
+        self.node.representation_updated = True
+        self.gui.displayed_node = self
+
+    def clear_display(self):
+        self.node.displayed = False
+        self.gui.out_plot.clear_output()
+        self.gui.displayed_node = None
 
     def draw_display(self):
         """Send the node's representation to a separate GUI window"""
