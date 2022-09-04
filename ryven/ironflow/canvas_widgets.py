@@ -374,6 +374,7 @@ class ButtonWidget(CanvasWidget, ABC):
             self.pressed = False
             self.on_unpressed()
         else:
+            self.pressed = True
             self.on_pressed()
         self.deselect()
         return last_selected_object
@@ -423,7 +424,6 @@ class DisplayButtonWidget(ButtonWidget):
         if self.parent.parent.gui.displayed_node is not None:
             self.parent.parent.gui.displayed_node.node.displayed = False
             self.parent.parent.gui.displayed_node.display_button.pressed = False
-        self.pressed = True
         self.parent.node.displayed = True
         self.parent.node.representation_updated = True
         self.parent.parent.gui.displayed_node = self.parent
