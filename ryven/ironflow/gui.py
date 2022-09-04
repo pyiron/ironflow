@@ -337,6 +337,7 @@ class GUI:
                 self._update_tabs_from_model()
             else:
                 self.active_script_index = self.script_tabs.selected_index
+            self.flow_canvas_widget.redraw()
 
     def _populate_text_input_panel(self, description, initial_value):
         self.text_input_panel.children = [
