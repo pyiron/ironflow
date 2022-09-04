@@ -184,7 +184,7 @@ class FlowCanvas:
         elif isinstance(newly_selected_object, PortWidget):
             return self._handle_port_select(newly_selected_object)
         elif isinstance(newly_selected_object, DisplayButtonWidget):
-            newly_selected_object.handle_select(None)
+            newly_selected_object.on_click(None)
             return None
         else:
             return newly_selected_object

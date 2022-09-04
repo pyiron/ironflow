@@ -8,7 +8,7 @@ import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 import ipywidgets as widgets
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -53,6 +53,12 @@ class CanvasWidget(ABC):
         self.objects_to_draw = []
 
         self._height = self.layout.height
+
+    def on_click(self):
+        pass
+
+    def on_double_click(self):
+        pass
 
     def _init_after_parent_assignment(self):
         pass
@@ -346,7 +352,7 @@ class DisplayButtonWidget(ButtonWidget):
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
-    def handle_select(self, not_used):
+    def on_click(self, not_used):
         if self.pressed:
             self.pressed = False
             self.parent.node.displayed = False
