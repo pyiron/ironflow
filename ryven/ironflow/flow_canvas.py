@@ -5,12 +5,12 @@
 from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
-from IPython.display import display
 from time import time
 
-from .canvas_widgets import NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+from .canvas_widgets import (
+    NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+)
 from .layouts import NodeLayout
-from .node_widgets import NodeWidgets
 
 from typing import TYPE_CHECKING, Optional, Union, List
 if TYPE_CHECKING:

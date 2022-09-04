@@ -8,7 +8,6 @@ import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 from ryven.ironflow.node_widgets import NodeWidgets
-import ipywidgets as widgets
 from abc import ABC, abstractmethod
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
