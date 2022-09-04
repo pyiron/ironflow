@@ -164,7 +164,10 @@ class FlowCanvas:
                 self.add_node(x, y, self.gui.new_node_class)
                 self._built_object_to_gui_dict()
         else:
-            sel_object = sel_object.on_click(last_object)
+            if sel_object == last_object and time_since_last_click < self._double_click_speed:
+                sel_object = sel_object.on_double_click()
+            else:
+                sel_object = sel_object.on_click(last_object)
 
         self._last_selected_object = sel_object
 

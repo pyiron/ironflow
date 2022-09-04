@@ -62,7 +62,7 @@ class CanvasWidget(ABC):
         pass
 
     def on_double_click(self) -> Optional[CanvasWidget]:
-        pass
+        return self
 
     def _init_after_parent_assignment(self):
         pass
@@ -253,6 +253,10 @@ class NodeWidget(CanvasWidget):
                 self.gui.out_status.clear_output()
                 self.deselect()
                 return None
+
+    def on_double_click(self) -> Optional[CanvasWidget]:
+        self.delete()
+        return None
 
     def draw_title(self, title: str) -> None:
         self.canvas.fill_style = self.node.color
@@ -467,8 +471,9 @@ class DisplayableNodeWidget(NodeWidget):
 
     def clear_display(self):
         self.node.displayed = False
-        self.gui.out_plot.clear_output()
-        self.gui.displayed_node = None
+        if self.gui.displayed_node == self:
+            self.gui.out_plot.clear_output()
+            self.gui.displayed_node = None
 
     def draw_display(self):
         """Send the node's representation to a separate GUI window"""
@@ -482,4 +487,8 @@ class DisplayableNodeWidget(NodeWidget):
         super().draw()
         if self.node.displayed and self.node.representation_updated:
             self.draw_display()
+
+    def delete(self) -> None:
+        self.clear_display()
+        return super().delete()
 
