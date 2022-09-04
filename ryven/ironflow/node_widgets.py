@@ -12,7 +12,7 @@ import base64
 
 from typing import TYPE_CHECKING, Dict, Union
 if TYPE_CHECKING:
-    from Gui import GUI
+    from gui import GUI
     from ryven.NENV import Node
 
 __author__ = "Joerg Neugebauer"

@@ -8,13 +8,13 @@ from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 from time import time
 
-from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+from .canvas_widgets import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
 from .layouts import NodeLayout
-from .NodeWidgets import NodeWidgets
+from .node_widgets import NodeWidgets
 
 from typing import TYPE_CHECKING, Optional, Union, List
 if TYPE_CHECKING:
-    from Gui import GUI
+    from gui import GUI
     from ryven.NENV import Node
     Number = Union[int, float]
     from ryvencore import Flow

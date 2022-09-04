@@ -9,7 +9,7 @@ import ipywidgets as widgets
 from IPython.display import display
 from ryven.main.utils import import_nodes_package, NodesPackage
 
-from .FlowCanvas import FlowCanvas
+from .flow_canvas import FlowCanvas
 from ryvencore import Session, Script, Flow
 
 import ryven.NENV as NENV

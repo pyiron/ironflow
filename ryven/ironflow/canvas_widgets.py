@@ -11,7 +11,7 @@ import ipywidgets as widgets
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
-    from .FlowCanvas import FlowCanvas
+    from .flow_canvas import FlowCanvas
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
