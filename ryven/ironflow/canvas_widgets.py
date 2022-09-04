@@ -214,11 +214,6 @@ class NodeWidget(CanvasWidget):
         x = self.x + (self.width * 0.3)
         y = (self.y + (self.height * 0.65),)
         self.canvas.fill_text(str(val), x, y)
-        if val_is_updated:
-            if ("matplotlib" in str(type(val))) or ("NGLWidget" in str(type(val))):
-                self.parent.gui.out_plot.clear_output()
-                with self.parent.gui.out_plot:
-                    display(val)
 
     def _add_ports(
             self,
