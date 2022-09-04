@@ -8,6 +8,7 @@ import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 import ipywidgets as widgets
+from abc import ABC
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -29,12 +30,16 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-class BaseCanvasWidget:
+class CanvasWidget(ABC):
+    """
+    Parent class for all "widgets" that exist inside the scope of the flow canvas.
+    """
+
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: Layout,
             selected: bool = False
     ):
@@ -72,7 +77,7 @@ class BaseCanvasWidget:
     def canvas(self) -> Canvas:
         return self.parent.canvas
 
-    def add_widget(self, widget: BaseCanvasWidget) -> None:
+    def add_widget(self, widget: CanvasWidget) -> None:
         self.objects_to_draw.append(widget)
 
     def set_x_y(self, x_in: Number, y_in: Number) -> None:
@@ -102,7 +107,7 @@ class BaseCanvasWidget:
         y_coord = self.y  # - (self.height * 0.5)
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
         if self._is_at_xy(x_in, y_in):
             for o in self.objects_to_draw:
                 if o.is_here(x_in, y_in):
@@ -126,12 +131,12 @@ class BaseCanvasWidget:
         return self._selected
 
 
-class PortWidget(BaseCanvasWidget):
+class PortWidget(CanvasWidget):
     def __init__(
         self,
         x: Number,
         y: Number,
-        parent: Union[FlowCanvas, BaseCanvasWidget],
+        parent: Union[FlowCanvas, CanvasWidget],
         layout: PortLayout,
         radius: Number = 10,
         port: Optional[NodePort] = None,
@@ -162,12 +167,12 @@ class PortWidget(BaseCanvasWidget):
         return x_coord < x_in < (x_coord + 2 * self.radius) and y_coord < y_in < (y_coord + 2 * self.radius)
 
 
-class NodeWidget(BaseCanvasWidget):
+class NodeWidget(CanvasWidget):
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -281,7 +286,7 @@ class ButtonNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -290,7 +295,7 @@ class ButtonNodeWidget(NodeWidget):
         super().__init__(x, y, parent, layout, node, selected, port_radius)
 
         layout = ButtonLayout()
-        s = BaseCanvasWidget(50, 50, parent=self, layout=layout)
+        s = CanvasWidget(50, 50, parent=self, layout=layout)
         s.handle_select = self.handle_button_select
         self.add_widget(s)
 
@@ -299,7 +304,7 @@ class ButtonNodeWidget(NodeWidget):
         button.deselect()
 
 
-class ButtonWidget(BaseCanvasWidget):
+class ButtonWidget(CanvasWidget):
     def __init__(
             self,
             x: Number,
@@ -374,7 +379,7 @@ class DisplayableNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,

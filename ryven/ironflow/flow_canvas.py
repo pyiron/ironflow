@@ -8,7 +8,7 @@ from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 from time import time
 
-from .canvas_widgets import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+from .canvas_widgets import NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
 from .layouts import NodeLayout
 from .node_widgets import NodeWidgets
 
@@ -173,7 +173,7 @@ class FlowCanvas:
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
 
-    def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> Union[BaseCanvasWidget | None]:
+    def _handle_new_object_selection(self, newly_selected_object: CanvasWidget) -> Union[CanvasWidget | None]:
         newly_selected_object.select()
 
         # if hasattr(newly_selected_object, "handle_select"):
@@ -212,13 +212,13 @@ class FlowCanvas:
         else:
             return sel_object
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
         for o in self.objects_to_draw:
             if o.is_here(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 
-    def get_selected_objects(self) -> List[BaseCanvasWidget]:
+    def get_selected_objects(self) -> List[CanvasWidget]:
         return [o for o in self.objects_to_draw if o.selected if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
