@@ -229,13 +229,5 @@ class FlowCanvas:
     def delete_selected(self) -> None:
         for o in self.objects_to_draw:
             if o.selected:
-                self.objects_to_draw.remove(o)
-                self._remove_node_from_flow(o.node)
+                o.delete()
         self.redraw()
-
-    def _remove_node_from_flow(self, node: Node) -> None:
-        for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
-            # TODO: Can we be more efficient than looping over all nodes?
-            if (c.inp.node == node) or (c.out.node == node):
-                self.flow.remove_connection(c)
-        self.flow.remove_node(node)

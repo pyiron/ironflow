@@ -330,6 +330,14 @@ class NodeWidget(CanvasWidget):
         for o in self.objects_to_draw:
             o.draw()
 
+    def delete(self) -> None:
+        for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
+            # TODO: Can we be more efficient than looping over all nodes?
+            if (c.inp.node == self.node) or (c.out.node == self.node):
+                self.flow.remove_connection(c)
+        self.flow.remove_node(self.node)
+        self.parent.objects_to_draw.remove(self)
+
 
 class ButtonNodeWidget(NodeWidget):
     def __init__(
