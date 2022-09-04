@@ -456,7 +456,7 @@ class DisplayableNodeWidget(NodeWidget):
         self.display_button = DisplayButtonWidget(80, 50, parent=self, layout=ButtonLayout())
         self.add_widget(self.display_button)
 
-    def display_node(self):
+    def draw_display(self):
         """Send the node's representation to a separate GUI window"""
         self.parent.gui.out_plot.clear_output()
         with self.parent.gui.out_plot:
@@ -467,5 +467,5 @@ class DisplayableNodeWidget(NodeWidget):
     def draw(self):
         super().draw()
         if self.node.displayed and self.node.representation_updated:
-            self.display_node()
+            self.draw_display()
 
