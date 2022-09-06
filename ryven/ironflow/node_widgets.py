@@ -127,10 +127,10 @@ class NodeWidgets:
         self.input_change(3, change)
 
     def input_change_4(self, change: Dict) -> None:
-        self.input_change(3, change)
+        self.input_change(4, change)
 
     def input_change_5(self, change: Dict) -> None:
-        self.input_change(3, change)
+        self.input_change(5, change)
 
     def draw(self) -> widgets.HBox:
         self.inp_box = widgets.GridBox(
