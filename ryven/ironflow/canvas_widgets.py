@@ -43,7 +43,7 @@ class CanvasWidget(ABC):
             y: Number,
             parent: Union[FlowCanvas, CanvasWidget],
             layout: Layout,
-            selected: bool = False
+            selected: bool = False,
     ):
         self._x = x  # relative to parent
         self._y = y
@@ -151,19 +151,78 @@ class CanvasWidget(ABC):
         return self._selected
 
 
-class PortWidget(CanvasWidget):
+class HideableWidget(CanvasWidget, ABC):
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: Union[FlowCanvas, CanvasWidget],
+            layout: Layout,
+            selected: bool = False,
+            hidden_x: Optional[Number] = None,
+            hidden_y: Optional[Number] = None
+    ):
+        super().__init__(x=x, y=y, parent=parent, layout=layout, selected=selected)
+        self._hidden_x = hidden_x if hidden_x is not None else x
+        self._hidden_y = hidden_y if hidden_y is not None else y
+        self.visible = True
+
+    @property
+    def hidden_x(self) -> Number:
+        return self.parent.x + self._hidden_x
+
+    @property
+    def hidden_y(self) -> Number:
+        return self.parent.y + self._hidden_y
+
+    @property
+    def x(self) -> Number:
+        if self.visible:
+            return self.parent.x + self._x
+        else:
+            return self.hidden_x
+
+    @property
+    def y(self) -> Number:
+        if self.visible:
+            return self.parent.y + self._y
+        else:
+            return self.hidden_y
+
+    def show(self):
+        self.visible = True
+
+    def hide(self):
+        self.visible = False
+
+    def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
+        if self.visible:
+            return super()._is_at_xy(x_in=x_in, y_in=y_in)
+        else:
+            return False
+
+    def draw(self) -> None:
+        if self.visible:
+            super().draw()
+
+
+class PortWidget(HideableWidget):
     def __init__(
         self,
         x: Number,
         y: Number,
         parent: Union[FlowCanvas, CanvasWidget],
         layout: PortLayout,
+        selected: bool = False,
+        hidden_x: Optional[Number] = None,
+        hidden_y: Optional[Number] = None,
         radius: Number = 10,
         port: Optional[NodePort] = None,
-        selected: bool = False,
         text_left: str = "",
     ):
-        super().__init__(x, y, parent, layout, selected)
+        super().__init__(
+            x=x, y=y, parent=parent, layout=layout, selected=selected, hidden_x=hidden_x, hidden_y=hidden_y
+        )
 
         self.radius = radius
         self.port = port
@@ -290,18 +349,21 @@ class NodeWidget(CanvasWidget):
         n_ports = len(data)
 
         y_min = self._title_box_height
-        d_y = self.height - y_min
+        l_y = (self.height - y_min)
 
         if n_ports > 0:
-            i_y_vec = (np.arange(n_ports) + 1 / 2) / n_ports
+            y_step = l_y / n_ports
+            y_locs = (np.arange(n_ports) + 0.5) * y_step + y_min
 
-            for i_port, y_port in enumerate(i_y_vec):
+            for i_port, y_port in enumerate(y_locs):
                 self.add_widget(
                     PortWidget(
                         x,
-                        y_port * d_y + y_min,
+                        y_port,
                         parent=self,
                         layout=self.port_layouts[data[i_port].type_],
+                        hidden_x=x,
+                        hidden_y=y_locs[0],
                         port=data[i_port],
                         radius=radius,
                         text_left=data[i_port].label_str,
