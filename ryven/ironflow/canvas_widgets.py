@@ -7,7 +7,6 @@ from __future__ import annotations
 import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
-from ryven.ironflow.node_widgets import NodeWidgets
 from abc import ABC, abstractmethod
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
@@ -242,12 +241,8 @@ class NodeWidget(CanvasWidget):
                 last_selected_object.deselect()
             self.select()
             try:
-                node_widget = NodeWidgets(self.node, self.gui).draw()
-                with self.gui.out_status:
-                    self.gui.out_status.clear_output()
-                    display(node_widget)
-                    # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-                    return self
+                self.gui.node_interface.draw_for_node(self.node)
+                return self
             except Exception as e:
                 self.gui._print(f"Failed to handle selection of {self} with exception {e}")
                 self.gui.out_status.clear_output()
@@ -341,6 +336,8 @@ class NodeWidget(CanvasWidget):
                 self.flow.remove_connection(c)
         self.flow.remove_node(self.node)
         self.parent.objects_to_draw.remove(self)
+        if self.gui.node_interface.node == self.node:
+            self.gui.node_interface.draw_for_node(None)
 
 
 class ButtonNodeWidget(NodeWidget):

@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from IPython.display import display
 import ipywidgets as widgets
 import numpy as np
 
@@ -32,17 +33,15 @@ def deserialize(data):
 
 
 class NodeWidgets:
-    def __init__(self, node: Node, central_gui: GUI):
-        self._node = node
+    def __init__(self, central_gui: GUI):
+        self.node = None
         self._central_gui = central_gui
-        self.gui_object()
-        self.input_widgets()
         # self.input = []
 
     def gui_object(self) -> Union[widgets.FloatSlider, widgets.Box]:
-        if "slider" in self._node.title.lower():
+        if "slider" in self.node.title.lower():
             self.gui = widgets.FloatSlider(
-                value=self._node.val, min=0, max=10, continuous_update=False
+                value=self.node.val, min=0, max=10, continuous_update=False
             )
 
             self.gui.observe(self.gui_object_change, names="value")
@@ -51,15 +50,15 @@ class NodeWidgets:
         return self.gui
 
     def gui_object_change(self, change: Dict) -> None:
-        self._node.set_state({"val": change["new"]}, 0)
-        self._node.update_event()
+        self.node.set_state({"val": change["new"]}, 0)
+        self.node.update_event()
         self._central_gui.flow_canvas_widget.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
-        if not hasattr(self._node, "inputs"):
+        if not hasattr(self.node, "inputs"):
             return
-        for i_c, inp in enumerate(self._node.inputs[:]):
+        for i_c, inp in enumerate(self.node.inputs[:]):
             if inp.dtype is None:
                 # if inp.type_ == 'exec':
                 inp_widget = widgets.Label(value=inp.type_)
@@ -110,8 +109,8 @@ class NodeWidgets:
 
     def input_change(self, i_c: int, change: Dict) -> None:
         # print (change)
-        self._node.inputs[i_c].val = change["new"]
-        self._node.update_event()
+        self.node.inputs[i_c].val = change["new"]
+        self.node.update_event()
         self._central_gui.flow_canvas_widget.redraw()
 
     def input_change_0(self, change: Dict) -> None:
@@ -149,15 +148,15 @@ class NodeWidgets:
         )
 
         glob_id_val = None
-        if hasattr(self._node, "GLOBAL_ID"):
-            glob_id_val = self._node.GLOBAL_ID
+        if hasattr(self.node, "GLOBAL_ID"):
+            glob_id_val = self.node.GLOBAL_ID
         global_id = widgets.Text(
             value=str(glob_id_val), description="GLOBAL_ID:", disabled=True
         )
         # global_id.layout.width = '300px'
 
         title = widgets.Text(
-            value=str(self._node.title),
+            value=str(self.node.title),
             # placeholder='Type something',
             description="Title:",
             disabled=True,
@@ -174,3 +173,12 @@ class NodeWidgets:
         )
 
         return widgets.HBox([self.inp_box, self.gui, info_box])
+
+    def draw_for_node(self, node: Node | None):
+        self.node = node
+        with self._central_gui.out_status:
+            self._central_gui.out_status.clear_output()
+            if node is not None:
+                self.gui_object()
+                self.input_widgets()
+                display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
