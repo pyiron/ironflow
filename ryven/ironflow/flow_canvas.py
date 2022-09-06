@@ -197,7 +197,6 @@ class FlowCanvas:
                 self.redraw()
 
     def redraw(self) -> None:
-        self.canvas_restart()
         with hold_canvas(self._canvas):
             self.canvas_restart()
             [o.draw() for o in self.objects_to_draw]
