@@ -214,7 +214,7 @@ class NodeWidget(CanvasWidget):
     ):
         super().__init__(x, y, parent, layout, selected)
 
-        self._title_box_height = 30  # 0.3  # ratio with respect to height
+
 
         self.node = node
         self.title = node.title
@@ -228,8 +228,9 @@ class NodeWidget(CanvasWidget):
             'exec': ExecPortLayout()
         }
 
-        if len(self.node.inputs) > 3:
-            self._height = 200  # TODO: Make height programatically dependent on content
+        self._title_box_height = 30  # 0.3  # ratio with respect to height
+        self._io_height = 1.33 * 2 * self.port_radius * max(len(self.node.inputs), len(self.node.outputs))
+        self._height = self._io_height + self._title_box_height
         self.add_inputs()
         self.add_outputs()
 
