@@ -32,7 +32,7 @@ def deserialize(data):
     return pickle.loads(base64.b64decode(data))
 
 
-class NodeWidgets:
+class NodeInterface:
     def __init__(self, central_gui: GUI):
         self.node = None
         self._central_gui = central_gui
