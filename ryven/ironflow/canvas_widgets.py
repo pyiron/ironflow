@@ -606,7 +606,7 @@ class DisplayableNodeWidget(NodeWidget):
         return super().delete()
 
 
-class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget):
+class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
     def __init__(
             self,
             x: Number,
@@ -637,11 +637,24 @@ class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget):
     def unpress(self):
         self.show()
 
+    def draw_shape(self) -> None:
+        self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
+        self.canvas.fill_polygon(self._points)
+
+    @property
+    @abstractmethod
+    def _points(self) -> list[tuple[Number, Number]]:
+        pass
+
 
 class ExpandButtonWidget(ExpandCollapseButtonWidget):
-    def draw_shape(self) -> None:
-        # TODO: Use a triangle instead of a square
-        super().draw_shape()
+    @property
+    def _points(self) -> list[tuple[Number, Number]]:
+        return [
+            (self.x, self.y),
+            (self.x + self.width, self.y),
+            (self.x + 0.5 * self.width, self.y + self.height)
+        ]
 
     def press(self):
         super().press()
@@ -649,9 +662,13 @@ class ExpandButtonWidget(ExpandCollapseButtonWidget):
 
 
 class CollapseButtonWidget(ExpandCollapseButtonWidget):
-    def draw_shape(self) -> None:
-        # TODO: Use a triangle instead of a square
-        super().draw_shape()
+    @property
+    def _points(self) -> list[tuple[Number, Number]]:
+        return [
+            (self.x, self.y + self.height),
+            (self.x + 0.5 * self.width, self.y),
+            (self.x + self.width, self.y + self.height)
+        ]
 
     def press(self):
         super().press()
