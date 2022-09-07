@@ -44,6 +44,7 @@ class CanvasWidget(ABC):
             parent: Union[FlowCanvas, CanvasWidget],
             layout: Layout,
             selected: bool = False,
+            title: Optional[str] = None,
     ):
         self._x = x  # relative to parent
         self._y = y
@@ -51,6 +52,7 @@ class CanvasWidget(ABC):
         self.layout = layout
         self.parent = parent
         self._selected = selected
+        self.title = title
 
         self.objects_to_draw = []
 
@@ -117,8 +119,14 @@ class CanvasWidget(ABC):
             self.height,
         )
 
+    @abstractmethod
+    def draw_title(self) -> None:
+        pass
+
     def draw(self) -> None:
         self.draw_shape()
+        if self.title is not None:
+            self.draw_title()
         for o in self.objects_to_draw:
             o.draw()
 
@@ -159,13 +167,15 @@ class HideableWidget(CanvasWidget, ABC):
             parent: Union[FlowCanvas, CanvasWidget],
             layout: Layout,
             selected: bool = False,
+            title: Optional[str] = None,
+            visible: bool = True,
             hidden_x: Optional[Number] = None,
-            hidden_y: Optional[Number] = None
+            hidden_y: Optional[Number] = None,
     ):
-        super().__init__(x=x, y=y, parent=parent, layout=layout, selected=selected)
+        super().__init__(x=x, y=y, parent=parent, layout=layout, selected=selected, title=title)
         self._hidden_x = hidden_x if hidden_x is not None else x
         self._hidden_y = hidden_y if hidden_y is not None else y
-        self.visible = True
+        self.visible = visible
 
     @property
     def hidden_x(self) -> Number:
@@ -213,20 +223,26 @@ class PortWidget(HideableWidget):
         y: Number,
         parent: Union[FlowCanvas, CanvasWidget],
         layout: PortLayout,
+        port: NodePort,
         selected: bool = False,
+        title: Optional[str] = None,
         hidden_x: Optional[Number] = None,
         hidden_y: Optional[Number] = None,
         radius: Number = 10,
-        port: Optional[NodePort] = None,
-        text_left: str = "",
     ):
         super().__init__(
-            x=x, y=y, parent=parent, layout=layout, selected=selected, hidden_x=hidden_x, hidden_y=hidden_y
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            selected=selected,
+            title=title if title is not None else port.label_str,
+            hidden_x=hidden_x,
+            hidden_y=hidden_y
         )
 
         self.radius = radius
         self.port = port
-        self.text_left = text_left
 
     def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         if last_selected_object == self:
@@ -243,15 +259,13 @@ class PortWidget(HideableWidget):
             return self
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.background_color
-        if self.selected:
-            self.canvas.fill_style = self.layout.selected_color
+        self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
         self.canvas.fill_circle(self.x, self.y, self.radius)
+
+    def draw_title(self) -> None:
         self.canvas.font = self.layout.font_string
         self.canvas.fill_style = self.layout.font_color
-        self.canvas.fill_text(
-            self.text_left, self.x + self.radius + 3, self.y + self.radius // 2
-        )
+        self.canvas.fill_text(self.title, self.x + self.radius + 3, self.y + self.radius // 2)
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         x_coord = self.x - self.radius
@@ -269,15 +283,19 @@ class NodeWidget(CanvasWidget):
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
+            title: Optional[str] = None,
             port_radius: Number = 10,
     ):
-        super().__init__(x, y, parent, layout, selected)
-
-
+        super().__init__(
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            selected=selected,
+            title=title if title is not None else node.title,
+        )
 
         self.node = node
-        self.title = node.title
-
         self.inputs = node.inputs
         self.outputs = node.outputs
 
@@ -288,8 +306,10 @@ class NodeWidget(CanvasWidget):
         }
 
         self._title_box_height = 30  # 0.3  # ratio with respect to height
-        self._io_height = 1.33 * 2 * self.port_radius * max(len(self.node.inputs), len(self.node.outputs))
-        self._height = self._io_height + self._title_box_height
+        subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
+        self._io_height = subwidget_size_and_buffer * max(len(self.node.inputs), len(self.node.outputs))
+        self._expand_collapse_height = subwidget_size_and_buffer
+        self._height = self._title_box_height + self._io_height #+ self._expand_collapse_height
         self.add_inputs()
         self.add_outputs()
 
@@ -313,21 +333,14 @@ class NodeWidget(CanvasWidget):
         self.delete()
         return None
 
-    def draw_title(self, title: str) -> None:
+    def draw_title(self) -> None:
         self.canvas.fill_style = self.node.color
         self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
-        self.canvas.font = self.layout.title_font_string
-        self.canvas.fill_style = self.layout.font_title_color
+        self.canvas.font = self.layout.font_string
+        self.canvas.fill_style = self.layout.font_color
         x = self.x + (self.width * 0.04)
         y = self.y + self._title_box_height - 8
-        self.canvas.fill_text(title, x, y)
-
-    def draw_value(self, val: Any, val_is_updated: bool = True) -> None:
-        self.canvas.fill_style = self.layout.font_color
-        self.canvas.font = self.layout.title_font_string
-        x = self.x + (self.width * 0.3)
-        y = (self.y + (self.height * 0.65),)
-        self.canvas.fill_text(str(val), x, y)
+        self.canvas.fill_text(self.title, x, y)
 
     def _add_ports(
             self,
@@ -335,7 +348,6 @@ class NodeWidget(CanvasWidget):
             inputs: Optional[List[NodeInputBP]] = None,
             outputs: Optional[List[NodeOutputBP]] = None,
             border: Number = 1.4,
-            text: str = ""
     ) -> None:
         if inputs is not None:
             x = radius * border
@@ -358,15 +370,14 @@ class NodeWidget(CanvasWidget):
             for i_port, y_port in enumerate(y_locs):
                 self.add_widget(
                     PortWidget(
-                        x,
-                        y_port,
+                        x=x,
+                        y=y_port,
                         parent=self,
                         layout=self.port_layouts[data[i_port].type_],
+                        port=data[i_port],
                         hidden_x=x,
                         hidden_y=y_locs[0],
-                        port=data[i_port],
                         radius=radius,
-                        text_left=data[i_port].label_str,
                     )
                 )
 
@@ -375,22 +386,6 @@ class NodeWidget(CanvasWidget):
 
     def add_outputs(self) -> None:
         self._add_ports(radius=self.port_radius, outputs=self.outputs)
-
-    def draw(self) -> None:
-        super().draw()
-        if self.title is not None:
-            self.draw_title(self.title)
-
-        if hasattr(self.node, "val"):
-            val_is_updated = True
-            if hasattr(self.node, "_val_is_updated"):
-                val_is_updated = self.node._val_is_updated
-
-            self.draw_value(self.node.val, val_is_updated)
-            self.node._val_is_updated = False
-
-        for o in self.objects_to_draw:
-            o.draw()
 
     def delete(self) -> None:
         for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
@@ -434,11 +429,12 @@ class ButtonWidget(CanvasWidget, ABC):
             parent: NodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
-            title="Button",
+            title: str = "Button",
+            pressed: Optional[bool] = False,
     ):
         super().__init__(x, y, parent, layout, selected)
         self.title = title
-        self.pressed = False
+        self.pressed = pressed
 
     def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         if self.pressed:
@@ -461,8 +457,8 @@ class ButtonWidget(CanvasWidget, ABC):
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
         self.canvas.fill_rect(
-            self.x,  # - (self.width * 0.5),
-            self.y,  # - (self.height * 0.5),
+            self.x,
+            self.y,
             self.width,
             self.height,
         )
@@ -473,10 +469,6 @@ class ButtonWidget(CanvasWidget, ABC):
         x = self.x + (self.width * 0.1)
         y = self.y + (self.height * 0.05) + self.layout.font_size
         self.canvas.fill_text(self.title, x, y)
-
-    def draw(self) -> None:
-        self.draw_shape()
-        self.draw_title()
 
 
 class DisplayButtonWidget(ButtonWidget):
@@ -492,11 +484,9 @@ class DisplayButtonWidget(ButtonWidget):
         super().__init__(x, y, parent, layout, selected, title=title)
 
     def press(self):
-        self.pressed = True
         self.parent.set_display()
 
     def unpress(self):
-        self.pressed = False
         self.parent.clear_display()
 
 
@@ -515,9 +505,19 @@ class DisplayableNodeWidget(NodeWidget):
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
+            title: Optional[str] = None,
             port_radius: Number = 10,
     ):
-        super().__init__(x, y, parent, layout, node, selected, port_radius)
+        super().__init__(
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            node=node,
+            selected=selected,
+            title=title,
+            port_radius=port_radius,
+        )
 
         button_layout = ButtonLayout()
         button_edge_offset = 5

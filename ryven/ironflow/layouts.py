@@ -37,19 +37,13 @@ class Layout(ABC):
 class NodeLayout(Layout):
     width: int = 200
     height: int = 100
-    font_title_size: int = 22
-    font_title_color: str = "black"
-    title_font: str = "serif"
-
-    @property
-    def title_font_string(self):
-        return f"{self.font_title_size}px {self.title_font}"
+    font_size: int = 22
 
 
 @dataclass
 class PortLayout(Layout, ABC):
     width: int = 20
-    height: int = 10
+    height: int = 20
 
 
 @dataclass
