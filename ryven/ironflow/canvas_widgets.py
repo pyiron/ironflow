@@ -305,13 +305,39 @@ class NodeWidget(CanvasWidget):
             'exec': ExecPortLayout()
         }
 
-        self._title_box_height = 30  # 0.3  # ratio with respect to height
+        self._title_box_height = 30
+
+        n_ports_max = max(len(self.node.inputs), len(self.node.outputs))
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
-        self._io_height = subwidget_size_and_buffer * max(len(self.node.inputs), len(self.node.outputs))
+        self._io_height = subwidget_size_and_buffer * n_ports_max
         self._expand_collapse_height = subwidget_size_and_buffer
-        self._height = self._title_box_height + self._io_height #+ self._expand_collapse_height
+        self._height = self._expanded_height
+
+        y_step = (self._io_height + self._expand_collapse_height) / (n_ports_max + 1)
+        self._port_y_locs = (np.arange(n_ports_max + 1) + 0.5) * y_step + self._title_box_height
+
         self.add_inputs()
         self.add_outputs()
+        self.expand_button = ExpandButtonWidget(
+            x=0.5 * self.width - self.port_radius,
+            y=self._port_y_locs[0] - self.port_radius,
+            parent=self,
+            layout=ButtonLayout(),
+            pressed=True,
+            visible=False,
+            size=2 * self.port_radius
+        )
+        self.add_widget(self.expand_button)
+        self.collapse_button = CollapseButtonWidget(
+            x=0.5 * self.width - self.port_radius,
+            y=self._port_y_locs[-1] - self.port_radius,
+            parent=self,
+            layout=ButtonLayout(),
+            pressed=False,
+            visible=True,
+            size=2 * self.port_radius
+        )
+        self.add_widget(self.collapse_button)
 
     def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         if last_selected_object == self:
@@ -359,27 +385,19 @@ class NodeWidget(CanvasWidget):
             return
 
         n_ports = len(data)
-
-        y_min = self._title_box_height
-        l_y = (self.height - y_min)
-
-        if n_ports > 0:
-            y_step = l_y / n_ports
-            y_locs = (np.arange(n_ports) + 0.5) * y_step + y_min
-
-            for i_port, y_port in enumerate(y_locs):
-                self.add_widget(
-                    PortWidget(
-                        x=x,
-                        y=y_port,
-                        parent=self,
-                        layout=self.port_layouts[data[i_port].type_],
-                        port=data[i_port],
-                        hidden_x=x,
-                        hidden_y=y_locs[0],
-                        radius=radius,
-                    )
+        for i_port in range(n_ports):
+            self.add_widget(
+                PortWidget(
+                    x=x,
+                    y=self._port_y_locs[i_port],
+                    parent=self,
+                    layout=self.port_layouts[data[i_port].type_],
+                    port=data[i_port],
+                    hidden_x=x,
+                    hidden_y=self._port_y_locs[0],
+                    radius=radius,
                 )
+            )
 
     def add_inputs(self) -> None:
         self._add_ports(radius=self.port_radius, inputs=self.inputs)
@@ -396,6 +414,34 @@ class NodeWidget(CanvasWidget):
         self.parent.objects_to_draw.remove(self)
         if self.gui.node_interface.node == self.node:
             self.gui.node_interface.draw_for_node(None)
+
+    @property
+    def port_widgets(self) -> list[PortWidget]:
+        return [o for o in self.objects_to_draw if isinstance(o, PortWidget)]
+
+    @property
+    def _expanded_height(self) -> Number:
+        return self._title_box_height + self._io_height + self._expand_collapse_height
+
+    @property
+    def _collapsed_height(self) -> Number:
+        return self._title_box_height + self._expand_collapse_height
+
+    def expand_io(self):
+        self._height = self._expanded_height
+        for o in self.port_widgets:
+            o.show()
+        # self.collapse_button.on_click()  # Why doesn't this do the same as the next two lines??
+        self.collapse_button.unpress()
+        self.collapse_button.pressed = False
+
+    def collapse_io(self):
+        self._height = self._collapsed_height
+        for o in self.port_widgets:
+            o.hide()
+        # TODO: The expand and collapse buttons are effectively an XOR toggle...improve this awkward implementation
+        self.expand_button.unpress()
+        self.expand_button.pressed = False
 
 
 class ButtonNodeWidget(NodeWidget):
@@ -559,3 +605,54 @@ class DisplayableNodeWidget(NodeWidget):
         self.clear_display()
         return super().delete()
 
+
+class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget):
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: NodeWidget,
+            layout: ButtonLayout,
+            selected: bool = False,
+            pressed: bool = False,
+            visible: bool = True,
+            title: Optional[str] = None,
+            size: Optional[Number] = None,
+    ):
+        if size is not None:
+            layout.width = size
+            layout.height = size
+        dpl = DataPortLayout()
+        layout.background_color = dpl.background_color
+        layout.pressed_color = dpl.background_color
+
+        ButtonWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
+                              pressed=pressed)
+        HideableWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
+                                visible=visible)
+
+    def press(self):
+        self.hide()
+
+    def unpress(self):
+        self.show()
+
+
+class ExpandButtonWidget(ExpandCollapseButtonWidget):
+    def draw_shape(self) -> None:
+        # TODO: Use a triangle instead of a square
+        super().draw_shape()
+
+    def press(self):
+        super().press()
+        self.parent.expand_io()
+
+
+class CollapseButtonWidget(ExpandCollapseButtonWidget):
+    def draw_shape(self) -> None:
+        # TODO: Use a triangle instead of a square
+        super().draw_shape()
+
+    def press(self):
+        super().press()
+        self.parent.collapse_io()
