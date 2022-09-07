@@ -471,7 +471,7 @@ class ButtonWidget(CanvasWidget, ABC):
         self.canvas.font = self.layout.font_string
         self.canvas.fill_style = self.layout.font_color
         x = self.x + (self.width * 0.1)
-        y = self.y + (self.height * 0.1) + self.layout.font_size
+        y = self.y + (self.height * 0.05) + self.layout.font_size
         self.canvas.fill_text(self.title, x, y)
 
     def draw(self) -> None:
@@ -487,7 +487,7 @@ class DisplayButtonWidget(ButtonWidget):
             parent: DisplayableNodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
-            title="Display",
+            title="PLOT",
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
@@ -519,7 +519,14 @@ class DisplayableNodeWidget(NodeWidget):
     ):
         super().__init__(x, y, parent, layout, node, selected, port_radius)
 
-        self.display_button = DisplayButtonWidget(80, 50, parent=self, layout=ButtonLayout())
+        button_layout = ButtonLayout()
+        button_edge_offset = 5
+        self.display_button = DisplayButtonWidget(
+            x=self.width - button_layout.width - button_edge_offset,
+            y=button_edge_offset,
+            parent=self,
+            layout=button_layout
+        )
         self.add_widget(self.display_button)
 
     def set_display(self):
