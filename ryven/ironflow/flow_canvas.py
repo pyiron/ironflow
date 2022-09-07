@@ -79,6 +79,8 @@ class FlowCanvas:
 
         self.x = 0
         self.y = 0
+        self._x_move_anchor = None
+        self._y_move_anchor = None
 
         self._last_selected_object = None
 
@@ -150,6 +152,9 @@ class FlowCanvas:
 
     def handle_mouse_down(self, x: Number, y: Number):
         self._mouse_is_down = True
+        self._x_move_anchor = x
+        self._y_move_anchor = y
+
         now = time()
         time_since_last_click = now - self._last_mouse_down
         self._last_mouse_down = now
@@ -192,6 +197,12 @@ class FlowCanvas:
                 with hold_canvas(self._canvas):
                     [o.set_x_y(x, y) for o in selected_objects]
                     self.redraw()
+            else:
+                self.x += x - self._x_move_anchor
+                self.y += y - self._y_move_anchor
+                self._x_move_anchor = x
+                self._y_move_anchor = y
+                self.redraw()
 
     def redraw(self) -> None:
         with hold_canvas(self._canvas):
