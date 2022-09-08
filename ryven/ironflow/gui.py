@@ -97,12 +97,14 @@ class GUI(HasSession):
         button_layout = widgets.Layout(width="50px")
         # Icon source: https://fontawesome.com
         # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
-        self.btn_node_help = widgets.Button(
-            tooltip="Print docs for selected node", icon="question-circle", layout=button_layout
-        )
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
-        self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
+        self.btn_help_node = widgets.Button(
+            tooltip="Print docs for selected node", icon="question-circle", layout=button_layout
+        )
+        self.btn_add_node = widgets.Button(tooltip="Add node", icon="plus-circle", layout=button_layout)
+        self.btn_delete_node = widgets.Button(tooltip="Delete node", icon="minus-circle", layout=button_layout)
+        self.btn_create_script = widgets.Button(tooltip="Create script", icon="plus-square-o", layout=button_layout)
         self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="pencil-square-o", layout=button_layout)
         # TODO: Use file-pen once this is available
         self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus-square-o", layout=button_layout)
@@ -140,10 +142,12 @@ class GUI(HasSession):
 
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
         self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
-        self.btn_node_help.on_click(self.click_node_help)
+        self.btn_help_node.on_click(self.click_node_help)
         self.btn_load.on_click(self.click_load)
         self.btn_save.on_click(self.click_save)
+        self.btn_add_node.on_click(self.click_add_node)
         self.btn_delete_node.on_click(self.click_delete_node)
+        self.btn_create_script.on_click(self.click_create_script)
         self.btn_rename_script.on_click(self.click_rename_script)
         self.btn_input_text_ok.on_click(self.click_input_text_ok)
         self.text_input_field.on_submit(self.click_input_text_ok)
@@ -160,10 +164,12 @@ class GUI(HasSession):
                     [
                         self.modules_dropdown,
                         self.alg_mode_dropdown,
-                        self.btn_node_help,
                         self.btn_save,
                         self.btn_load,
+                        self.btn_help_node,
+                        self.btn_add_node,
                         self.btn_delete_node,
+                        self.btn_create_script,
                         self.btn_rename_script,
                         self.btn_delete_script,
                         self.btn_zero_location,
@@ -181,6 +187,9 @@ class GUI(HasSession):
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
+    def click_add_node(self, change: dict) -> None:
+        self.flow_canvas_widget.add_node(10, 10, self.new_node_class)
+
     def click_delete_node(self, change: Dict) -> None:
         self.flow_canvas_widget.delete_selected()
 
@@ -274,6 +283,13 @@ class GUI(HasSession):
         self.out_plot.clear_output()
         self.out_log.clear_output()
         self._print(f"Session loaded from {file_name}.json")
+
+    def click_create_script(self, change: dict) -> None:
+        self.create_script()
+        self._update_tabs_from_model()
+        self.script_tabs.selected_index = self.n_scripts - 1
+        self.active_script_index = self.script_tabs.selected_index
+        self.flow_canvas_widget.redraw()
 
     def click_rename_script(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
