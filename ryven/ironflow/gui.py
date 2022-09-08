@@ -97,24 +97,35 @@ class GUI(HasSession):
         button_layout = widgets.Layout(width="50px")
         # Icon source: https://fontawesome.com
         # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
-        self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
-        self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
+        self.btn_load = widgets.Button(tooltip="Load session from JSON", icon="upload", layout=button_layout)
+        self.btn_save = widgets.Button(tooltip="Save session to JSON", icon="download", layout=button_layout)
         self.btn_help_node = widgets.Button(
-            tooltip="Print docs for selected node", icon="question-circle", layout=button_layout
+            tooltip="Print docs for new node class", icon="question-circle", layout=button_layout
         )
-        self.btn_add_node = widgets.Button(tooltip="Add node", icon="plus-circle", layout=button_layout)
-        self.btn_delete_node = widgets.Button(tooltip="Delete node", icon="minus-circle", layout=button_layout)
-        self.btn_create_script = widgets.Button(tooltip="Create script", icon="plus-square-o", layout=button_layout)
-        self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="pencil-square-o", layout=button_layout)
-        # TODO: Use file-pen once this is available
-        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus-square-o", layout=button_layout)
-        # TODO: Use file-circle-minus once this is available
-        self.btn_zero_location = widgets.Button(
-            tooltip="Recenter canvas at (0,0)",
-            icon="map-marker",
+        self.btn_add_node = widgets.Button(
+            tooltip="Add new node (or double-click on empty space)", icon="plus-circle", layout=button_layout
+        )
+        self.btn_delete_node = widgets.Button(
+            tooltip="Delete selected node (or double-click on the node)", icon="minus-circle", layout=button_layout
+        )
+        self.btn_create_script = widgets.Button(
+            tooltip="Create script (or click the '+' tab)", icon="plus-square-o", layout=button_layout
+        )
+        self.btn_rename_script = widgets.Button(
+            tooltip="Rename script",
+            icon="pencil-square-o",  # TODO: Use file-pen once this is available
             layout=button_layout
         )
-        # TODO: Use location-dot once this is available
+        self.btn_delete_script = widgets.Button(
+            tooltip="Delete script",
+            icon="minus-square-o",  # TODO: Use file-circle-minus once this is available
+            layout=button_layout
+        )
+        self.btn_zero_location = widgets.Button(
+            tooltip="Recenter script canvas at the origin",
+            icon="map-marker",  # TODO: Use location-dot once this is available
+            layout=button_layout
+        )
 
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
