@@ -198,13 +198,15 @@ class GUI(HasSession):
                 self.active_script_index = self.script_tabs.selected_index
             self.flow_canvas_widget.redraw()
 
-    def _populate_text_input_panel(self, description, initial_value):
+    def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
         self.text_input_panel.children = [
             self.text_input_field,
             self.btn_input_text_ok,
             self.btn_input_text_cancel
         ]
         self.text_input_field.description = description
+        description_tooltip = description_tooltip if description_tooltip is not None else description
+        self.text_input_field.description_tooltip = description_tooltip
         self.text_input_field.value = initial_value
 
     def _depopulate_text_input_panel(self) -> None:
@@ -225,7 +227,11 @@ class GUI(HasSession):
 
     def click_save(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
-        self._populate_text_input_panel("Save file name", self.session_title)
+        self._populate_text_input_panel(
+            "Save file",
+            self.session_title,
+            description_tooltip="Save to file name"
+        )
         self._set_context("save")
         self._print("Choose a file name to save to (omit the file extension, .json)")
 
@@ -235,7 +241,11 @@ class GUI(HasSession):
 
     def click_load(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
-        self._populate_text_input_panel("Load file name", self.session_title)
+        self._populate_text_input_panel(
+            "Load file",
+            self.session_title,
+            description_tooltip="Load from file name"
+        )
         self._set_context("load")
         self._print("Choose a file name to load (omit the file extension, .json)")
 
@@ -248,7 +258,11 @@ class GUI(HasSession):
 
     def click_rename_script(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
-        self._populate_text_input_panel("Script name", self.script.title)
+        self._populate_text_input_panel(
+            "New name",
+            self.script.title,
+            description_tooltip="New script name"
+        )
         self._set_context('rename')
         self._print("Choose a new name for the current script")
 
