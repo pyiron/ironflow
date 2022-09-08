@@ -453,18 +453,22 @@ class ButtonNodeWidget(NodeWidget):
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
+            title: Optional[str] = None,
             port_radius: Number = 10,
     ):
-        super().__init__(x, y, parent, layout, node, selected, port_radius)
+        super().__init__(
+            x=x, y=y, parent=parent, layout=layout, node=node, selected=selected, title=title, port_radius=port_radius
+        )
 
-        layout = ButtonLayout()
-        s = CanvasWidget(50, 50, parent=self, layout=layout)
-        s.handle_select = self.handle_button_select
-        self.add_widget(s)
-
-    def handle_button_select(self, button: ButtonNodeWidget) -> None:
-        button.parent.node.exec_output(0)
-        button.deselect()
+        button_layout = ButtonLayout()
+        self.exec_button = ExecButtonWidget(
+            x=0.8 * (self.width - button_layout.width),
+            y=self._port_y_locs[0] - 0.5 * button_layout.height,
+            parent=self,
+            layout=button_layout,
+            title="Exec",
+        )
+        self.add_widget(self.exec_button)
 
 
 class ButtonWidget(CanvasWidget, ABC):
@@ -673,3 +677,12 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
     def press(self):
         super().press()
         self.parent.collapse_io()
+
+
+class ExecButtonWidget(ButtonWidget):
+    def press(self):
+        self.parent.node.exec_output(0)
+        self.unpress()
+
+    def unpress(self):
+        self.pressed = False
