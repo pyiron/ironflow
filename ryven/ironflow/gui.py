@@ -103,9 +103,9 @@ class GUI(HasSession):
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
-        self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="file", layout=button_layout)
+        self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="pencil-square-o", layout=button_layout)
         # TODO: Use file-pen once this is available
-        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
+        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus-square-o", layout=button_layout)
         # TODO: Use file-circle-minus once this is available
         self.btn_zero_location = widgets.Button(
             tooltip="Recenter canvas at (0,0)",
