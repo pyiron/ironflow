@@ -16,7 +16,7 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 import ipywidgets as widgets
-from IPython.display import display
+from IPython.display import display, HTML
 from ryven.ironflow.models import HasSession
 from ryven.ironflow.node_interface import NodeInterface
 from ryven.ironflow.flow_canvas import FlowCanvas
@@ -97,6 +97,9 @@ class GUI(HasSession):
         button_layout = widgets.Layout(width="50px")
         # Icon source: https://fontawesome.com
         # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
+        self.btn_node_help = widgets.Button(
+            tooltip="Print docs for selected node", icon="question-circle", layout=button_layout
+        )
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
@@ -137,6 +140,7 @@ class GUI(HasSession):
 
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
         self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
+        self.btn_node_help.on_click(self.click_node_help)
         self.btn_load.on_click(self.click_load)
         self.btn_save.on_click(self.click_save)
         self.btn_delete_node.on_click(self.click_delete_node)
@@ -156,6 +160,7 @@ class GUI(HasSession):
                     [
                         self.modules_dropdown,
                         self.alg_mode_dropdown,
+                        self.btn_node_help,
                         self.btn_save,
                         self.btn_load,
                         self.btn_delete_node,
@@ -224,6 +229,20 @@ class GUI(HasSession):
         if context not in self._context_actions.keys():
             raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
         self._context = context
+
+    def click_node_help(self, change: dict) -> None:
+        def _pretty_docstring(node_class):
+            """
+            If we just pass a string, `display` doesn't resolve newlines.
+            If we pass a `print`ed string, `display` also shows the `None` value returned by `print`
+            So we use this ugly hack.
+            """
+            string = f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
+            return HTML(string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;"))
+
+        self.out_log.clear_output()
+        with self.out_log:
+            display(_pretty_docstring(self.new_node_class))
 
     def click_save(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
