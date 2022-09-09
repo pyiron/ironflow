@@ -158,7 +158,7 @@ class Lammps_Node(DualNodeBase):
     title = "Lammps"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(type_="exec"),
+        NodeInputBP(type_="exec", label="run"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
         NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),

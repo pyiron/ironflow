@@ -8,6 +8,7 @@ import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 from abc import ABC, abstractmethod
+from ryvencore.NodePort import NodeInput, NodeOutput
 
 from typing import TYPE_CHECKING, Optional, Union, List, Callable
 if TYPE_CHECKING:
@@ -386,18 +387,31 @@ class NodeWidget(CanvasWidget):
 
         n_ports = len(data)
         for i_port in range(n_ports):
+            port = data[i_port]
+            data_or_exec = port.type_
             self.add_widget(
                 PortWidget(
                     x=x,
                     y=self._port_y_locs[i_port],
                     parent=self,
-                    layout=self.port_layouts[data[i_port].type_],
-                    port=data[i_port],
+                    layout=self.port_layouts[data_or_exec],
+                    port=port,
                     hidden_x=x,
                     hidden_y=self._port_y_locs[0],
                     radius=radius,
                 )
             )
+            if data_or_exec == "exec" and inputs is not None:
+                button_layout = ButtonLayout()
+                self.add_widget(
+                    ExecButtonWidget(
+                        x=x + 0.3 * button_layout.width,
+                        y=self._port_y_locs[i_port] - 0.5 * button_layout.height,
+                        parent=self,
+                        layout=button_layout,
+                        port=port
+                    )
+                )
 
     def add_inputs(self) -> None:
         self._add_ports(radius=self.port_radius, inputs=self.inputs)
@@ -461,13 +475,12 @@ class ButtonNodeWidget(NodeWidget):
         )
 
         button_layout = ButtonLayout()
-        self.exec_button = ExecOutputButtonWidget(
+        self.exec_button = ExecButtonWidget(
             x=0.8 * (self.width - button_layout.width),
             y=self._port_y_locs[0] - 0.5 * button_layout.height,
             parent=self,
             layout=button_layout,
-            index=0,
-            title="Exec",
+            port=self.node.outputs[0],
         )
         self.add_widget(self.exec_button)
 
@@ -680,41 +693,35 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
         self.parent.collapse_io()
 
 
-class ExecButtonWidget(ButtonWidget, ABC):
+class ExecButtonWidget(ButtonWidget):
     def __init__(
             self,
             x: Number,
             y: Number,
             parent: NodeWidget,
             layout: ButtonLayout,
-            index: int,
+            port: NodePort,
             selected: bool = False,
-            title: str = "Button",
+            title: str = "Exec",
             pressed: Optional[bool] = False,
     ):
-        super().__init__(x=x, y=y, parent=parent, layout=layout, selected=selected, title=title, pressed=pressed)
-        self._index = index
-
-    @property
-    @abstractmethod
-    def _exec_call(self) -> Callable:
-        pass
+        super().__init__(
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            selected=selected,
+            title=port.label_str if port.label_str is not None else title,
+            pressed=pressed
+        )
+        self.port = port
 
     def press(self):
-        self._exec_call(self._index)
         self.unpress()
+        if isinstance(self.port, NodeInput):
+            self.port.update()
+        elif isinstance(self.port, NodeOutput):
+            self.port.exec()
 
     def unpress(self):
         self.pressed = False
-
-
-class ExecOutputButtonWidget(ExecButtonWidget):
-    @property
-    def _exec_call(self) -> Callable:
-        return self.parent.node.exec_output
-
-
-class ExecInputButtonWidget(ExecButtonWidget):
-    @property
-    def _exec_call(self) -> Callable:
-        return self.parent.node.exec_input
