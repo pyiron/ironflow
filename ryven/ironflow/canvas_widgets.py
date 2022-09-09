@@ -541,7 +541,7 @@ class DisplayButtonWidget(ButtonWidget):
             parent: DisplayableNodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
-            title="PLOT",
+            title="SHOW",
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
