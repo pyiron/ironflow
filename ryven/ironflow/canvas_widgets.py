@@ -709,7 +709,7 @@ class ExecButtonWidget(ButtonWidget):
             parent=parent,
             layout=layout,
             selected=selected,
-            title=port.label_str if port.label_str is not None else title,
+            title=port.label_str if port.label_str != '' else title,
             pressed=pressed
         )
         self.port = port
