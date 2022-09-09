@@ -208,7 +208,7 @@ class HideableWidget(CanvasWidget, ABC):
 
     def is_here(self, x_in: Number, y_in: Number) -> bool:
         if self.visible:
-            return super()._is_at_xy(x_in=x_in, y_in=y_in)
+            return self._is_at_xy(x_in=x_in, y_in=y_in)
         else:
             return False
 
