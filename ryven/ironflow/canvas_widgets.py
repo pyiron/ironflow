@@ -9,7 +9,7 @@ from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 from abc import ABC, abstractmethod
 
-from typing import TYPE_CHECKING, Optional, Union, List, Any
+from typing import TYPE_CHECKING, Optional, Union, List, Callable
 if TYPE_CHECKING:
     from .flow_canvas import FlowCanvas
     from ryven.ironflow.gui import GUI
@@ -461,11 +461,12 @@ class ButtonNodeWidget(NodeWidget):
         )
 
         button_layout = ButtonLayout()
-        self.exec_button = ExecButtonWidget(
+        self.exec_button = ExecOutputButtonWidget(
             x=0.8 * (self.width - button_layout.width),
             y=self._port_y_locs[0] - 0.5 * button_layout.height,
             parent=self,
             layout=button_layout,
+            index=0,
             title="Exec",
         )
         self.add_widget(self.exec_button)
@@ -679,10 +680,41 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
         self.parent.collapse_io()
 
 
-class ExecButtonWidget(ButtonWidget):
+class ExecButtonWidget(ButtonWidget, ABC):
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: NodeWidget,
+            layout: ButtonLayout,
+            index: int,
+            selected: bool = False,
+            title: str = "Button",
+            pressed: Optional[bool] = False,
+    ):
+        super().__init__(x=x, y=y, parent=parent, layout=layout, selected=selected, title=title, pressed=pressed)
+        self._index = index
+
+    @property
+    @abstractmethod
+    def _exec_call(self) -> Callable:
+        pass
+
     def press(self):
-        self.parent.node.exec_output(0)
+        self._exec_call(self._index)
         self.unpress()
 
     def unpress(self):
         self.pressed = False
+
+
+class ExecOutputButtonWidget(ExecButtonWidget):
+    @property
+    def _exec_call(self) -> Callable:
+        return self.parent.node.exec_output
+
+
+class ExecInputButtonWidget(ExecButtonWidget):
+    @property
+    def _exec_call(self) -> Callable:
+        return self.parent.node.exec_input
