@@ -190,7 +190,12 @@ class FlowCanvas:
         layout = NodeLayout()
 
         if hasattr(node, "main_widget_class") and node.main_widget_class is not None:
-            node_class = eval(node.main_widget_class)
+            if isinstance(node.main_widget_class, str):
+                node_class = eval(node.main_widget_class)
+            elif issubclass(node.main_widget_class, NodeWidget):
+                node_class = node.main_widget_class
+            else:
+                raise TypeError(f"main_widget_class {node.main_widget_class} not recognized")
         else:
             node_class = NodeWidget
         s = node_class(x=x, y=y, parent=self, layout=layout, node=node)

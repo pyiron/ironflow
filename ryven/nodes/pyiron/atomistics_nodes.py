@@ -6,6 +6,7 @@ import matplotlib.pylab as plt
 import numpy as np
 from pyiron_atomistics import Project
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
+from ryven.ironflow.canvas_widgets import DisplayableNodeWidget, ButtonNodeWidget
 
 from abc import ABC, abstractmethod
 from ryven.nodes.std.special_nodes import DualNodeBase
@@ -33,7 +34,7 @@ class NodeBase(Node):
 
 
 class NodeWithDisplay(NodeBase, ABC):
-    main_widget_class = "DisplayableNodeWidget"
+    main_widget_class = DisplayableNodeWidget
 
     def __init__(self, params):
         super().__init__(params)
@@ -461,7 +462,7 @@ class ExecCounter_Node(DualNodeBase):
 class Click_Node(NodeBase):
     title = "Click"
     version = "v0.1"
-    main_widget_class = "ButtonNodeWidget"
+    main_widget_class = ButtonNodeWidget
     init_inputs = []
     init_outputs = [NodeOutputBP(type_="exec")]
     color = "#99dd55"
