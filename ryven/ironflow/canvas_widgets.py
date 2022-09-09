@@ -60,10 +60,10 @@ class CanvasWidget(ABC):
         self._height = self.layout.height
 
     @abstractmethod
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> CanvasWidget | None:
         pass
 
-    def on_double_click(self) -> Optional[CanvasWidget]:
+    def on_double_click(self) -> CanvasWidget | None:
         return self
 
     def _init_after_parent_assignment(self):
@@ -245,7 +245,7 @@ class PortWidget(HideableWidget):
         self.radius = radius
         self.port = port
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> PortWidget | None:
         if last_selected_object == self:
             self.deselect()
             return None
@@ -341,7 +341,7 @@ class NodeWidget(CanvasWidget):
         )
         self.add_widget(self.collapse_button)
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> NodeWidget | None:
         if last_selected_object == self:
             return self
         else:
@@ -357,7 +357,7 @@ class NodeWidget(CanvasWidget):
                 self.deselect()
                 return None
 
-    def on_double_click(self) -> Optional[CanvasWidget]:
+    def on_double_click(self) -> None:
         self.delete()
         return None
 
@@ -497,7 +497,7 @@ class ButtonWidget(CanvasWidget, ABC):
         self.title = title
         self.pressed = pressed
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> CanvasWidget | None:
         if self.pressed:
             self.unpress()
         else:
