@@ -56,7 +56,7 @@ class NodeInterface:
     def gui_object_change(self, change: Dict) -> None:
         self.node.set_state({"val": change["new"]}, 0)
         self.node.update_event()
-        self._central_gui.flow_canvas_widget.redraw()
+        self._central_gui.flow_canvas.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -115,7 +115,7 @@ class NodeInterface:
         def input_change(change: Dict) -> None:
             self.node.inputs[i_c].val = change["new"]
             self.node.update_event()
-            self._central_gui.flow_canvas_widget.redraw()
+            self._central_gui.flow_canvas.redraw()
         return input_change
 
     def draw(self) -> widgets.HBox:

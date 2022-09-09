@@ -59,7 +59,7 @@ class GUI(HasSession):
         super().delete_script()
 
     @property
-    def flow_canvas_widget(self):
+    def flow_canvas(self):
         return self._flow_canvases[self.active_script_index]
 
     @property
@@ -199,10 +199,10 @@ class GUI(HasSession):
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
     def click_add_node(self, change: dict) -> None:
-        self.flow_canvas_widget.add_node(10, 10, self.new_node_class)
+        self.flow_canvas.add_node(10, 10, self.new_node_class)
 
     def click_delete_node(self, change: Dict) -> None:
-        self.flow_canvas_widget.delete_selected()
+        self.flow_canvas.delete_selected()
 
     def change_modules_dropdown(self, change: Dict) -> None:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
@@ -221,7 +221,7 @@ class GUI(HasSession):
                 self._update_tabs_from_model()
             else:
                 self.active_script_index = self.script_tabs.selected_index
-            self.flow_canvas_widget.redraw()
+            self.flow_canvas.redraw()
 
     def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
         self.text_input_panel.children = [
@@ -300,7 +300,7 @@ class GUI(HasSession):
         self._update_tabs_from_model()
         self.script_tabs.selected_index = self.n_scripts - 1
         self.active_script_index = self.script_tabs.selected_index
-        self.flow_canvas_widget.redraw()
+        self.flow_canvas.redraw()
 
     def click_rename_script(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
@@ -326,9 +326,9 @@ class GUI(HasSession):
         self._update_tabs_from_model()
 
     def click_zero_location(self, change: dict) -> None:
-        self.flow_canvas_widget.x = 0
-        self.flow_canvas_widget.y = 0
-        self.flow_canvas_widget.redraw()
+        self.flow_canvas.x = 0
+        self.flow_canvas.y = 0
+        self.flow_canvas.redraw()
 
     def _update_tabs_from_model(self):
         self.script_tabs.selected_index = None

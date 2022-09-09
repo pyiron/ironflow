@@ -17,9 +17,9 @@ class TestGUI(TestCase):
 
     def test_multiple_scripts(self):
         gui = GUI('foo')
-        gui.flow_canvas_widget.add_node(0, 0, gui._nodes_dict['nodes']['val'])
+        gui.flow_canvas.add_node(0, 0, gui._nodes_dict['nodes']['val'])
         gui.create_script()
-        gui.flow_canvas_widget.add_node(1, 1, gui._nodes_dict['nodes']['result'])
+        gui.flow_canvas.add_node(1, 1, gui._nodes_dict['nodes']['result'])
         canonical_file_name = f"{gui.session_title}.json"
         gui.save(canonical_file_name)
         new_gui = GUI('something_random')
@@ -45,7 +45,7 @@ class TestGUI(TestCase):
     def test_saving_and_loading(self):
         title = 'foo'
         gui = GUI(title)
-        canvas = gui.flow_canvas_widget
+        canvas = gui.flow_canvas
         flow = gui._session.scripts[0].flow
 
         canvas.add_node(0, 0, gui._nodes_dict['nodes']['val'])  # Need to create with canvas instead of flow
@@ -99,7 +99,7 @@ class TestGUI(TestCase):
         gui.register_user_node(MyNode)
         self.assertIn(MyNode, gui.session.nodes)
 
-        gui.flow_canvas_widget.add_node(0, 0, gui._nodes_dict["user"][MyNode.title])
+        gui.flow_canvas.add_node(0, 0, gui._nodes_dict["user"][MyNode.title])
         gui.flow.nodes[0].inputs[0].update(1)
         self.assertEqual(gui.flow.nodes[0].outputs[0].val, 43)
 
@@ -120,7 +120,7 @@ class TestGUI(TestCase):
         gui.flow.nodes[0].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[0].outputs[0].val, 44, msg="Expected to be using instance of old class")
 
-        gui.flow_canvas_widget.add_node(1, 1, gui._nodes_dict["user"][MyNode.title])
+        gui.flow_canvas.add_node(1, 1, gui._nodes_dict["user"][MyNode.title])
         gui.flow.nodes[1].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[1].outputs[0].val, -40, msg="New node instances should reflect updated class.")
 
