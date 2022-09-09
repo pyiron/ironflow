@@ -56,12 +56,6 @@ class FlowCanvas:
         self._width, self._height = width, height
 
         self._col_background = "black"  # "#584f4e"
-        self._col_node_header = "blue"  # "#38a8a4"
-        self._col_node_selected = "#9dcea6"
-        self._col_node_unselected = "#dee7bc"
-
-        self._font_size = 30
-        self._node_box_size = 160, 70
 
         self._canvas = Canvas(width=width, height=height)
         self._canvas.fill_style = self._col_background
@@ -88,9 +82,6 @@ class FlowCanvas:
         self._last_mouse_down = time()
         self._double_click_speed = 0.25  # In seconds. TODO: Put this in a config somewhere
 
-        self._connection_in = None
-        self._node_widget = None
-
         self._object_to_gui_dict = {}
 
     @property
@@ -102,9 +93,6 @@ class FlowCanvas:
         return self._gui
 
     def draw_connection(self, port_1: int, port_2: int) -> None:
-        # i_out, i_in = path
-        # out = self.objects_to_draw[i_out]
-        # inp = self.objects_to_draw[i_in]
         out = self._object_to_gui_dict[port_1]
         inp = self._object_to_gui_dict[port_2]
 
@@ -130,21 +118,6 @@ class FlowCanvas:
 
     def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
         pass  # TODO
-
-    def set_connection(self, ind_node: int) -> None:
-        if self._connection_in is None:
-            self._connection_in = ind_node
-        else:
-            out = self.objects_to_draw[self._connection_in].node.outputs[0]
-            inp = self.objects_to_draw[ind_node].node.inputs[-1]
-            if self.flow.connect_nodes(inp, out) is None:
-                i_con = self.connections.index([self._connection_in, ind_node])
-                del self.connections[i_con]
-            else:
-                self.connections.append([self._connection_in, ind_node])
-
-            self._connection_in = None
-            self.deselect_all()
 
     def deselect_all(self) -> None:
         [o.deselect() for o in self.objects_to_draw]
@@ -212,18 +185,14 @@ class FlowCanvas:
                 self.draw_connection(c.inp, c.out)
 
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
-        #    print ('node: ', node.identifier, node.GLOBAL_ID)
-
         layout = NodeLayout()
 
         if hasattr(node, "main_widget_class"):
             if node.main_widget_class is not None:
-                # node.title = str(node.main_widget_class)
                 f = eval(node.main_widget_class)
                 s = f(x, y, parent=self, layout=layout, node=node)
             else:
                 s = NodeWidget(x, y, parent=self, layout=layout, node=node)
-            # print ('s: ', s)
         else:
             s = NodeWidget(x, y, parent=self, layout=layout, node=node)
 
