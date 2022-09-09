@@ -187,12 +187,9 @@ class FlowCanvas:
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
         layout = NodeLayout()
 
-        if hasattr(node, "main_widget_class"):
-            if node.main_widget_class is not None:
-                f = eval(node.main_widget_class)
-                s = f(x, y, parent=self, layout=layout, node=node)
-            else:
-                s = NodeWidget(x, y, parent=self, layout=layout, node=node)
+        if hasattr(node, "main_widget_class") and node.main_widget_class is not None:
+            f = eval(node.main_widget_class)
+            s = f(x, y, parent=self, layout=layout, node=node)
         else:
             s = NodeWidget(x, y, parent=self, layout=layout, node=node)
 
