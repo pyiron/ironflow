@@ -300,8 +300,7 @@ class NodeWidget(CanvasWidget):
             'exec': ExecPortLayout()
         }
 
-        self._title_box_height = 30
-
+        self._title_box_height = self.layout.title_box_height
         n_ports_max = max(len(self.node.inputs), len(self.node.outputs))
         n_ports_min = len([p for p in self.node.inputs if p.type_ == "exec"])
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius

@@ -38,6 +38,7 @@ class NodeLayout(Layout):
     width: int = 200
     height: int = 100
     font_size: int = 22
+    title_box_height: int = 30
 
 
 @dataclass
