@@ -188,10 +188,10 @@ class FlowCanvas:
         layout = NodeLayout()
 
         if hasattr(node, "main_widget_class") and node.main_widget_class is not None:
-            f = eval(node.main_widget_class)
-            s = f(x, y, parent=self, layout=layout, node=node)
+            node_class = eval(node.main_widget_class)
         else:
-            s = NodeWidget(x, y, parent=self, layout=layout, node=node)
+            node_class = NodeWidget
+        s = node_class(x=x, y=y, parent=self, layout=layout, node=node)
 
         self.objects_to_draw.append(s)
         return s
