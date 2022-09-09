@@ -302,12 +302,11 @@ class NodeWidget(CanvasWidget):
 
         self._title_box_height = self.layout.title_box_height
         n_ports_max = max(len(self.node.inputs), len(self.node.outputs))
-        n_ports_min = len([p for p in self.node.inputs if p.type_ == "exec"])
+        exec_port_i = np.where([p.type_ == "exec" for p in self.node.inputs])[0]
+        n_ports_min = exec_port_i[-1] + 1 if len(exec_port_i) > 0 else 1
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
         self._io_height = subwidget_size_and_buffer * n_ports_max
         self._exec_height = subwidget_size_and_buffer * n_ports_min
-        # TODO: Right now we're hard-coding in that all the exec ports (which come with buttons) appear first in input
-        #       This isn't necessarily so, nor checked for anywhere. Do better.
         self._expand_collapse_height = subwidget_size_and_buffer
         self._height = self._expanded_height
 
