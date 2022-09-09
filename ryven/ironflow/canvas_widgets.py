@@ -79,11 +79,11 @@ class CanvasWidget(ABC):
 
     @property
     def x(self) -> Number:
-        return self.parent.x + self._x  # - self.parent.width//2
+        return self.parent.x + self._x
 
     @property
     def y(self) -> Number:
-        return self.parent.y + self._y  # - self.parent.height//2
+        return self.parent.y + self._y
 
     @property
     def canvas(self) -> Canvas:
@@ -114,8 +114,8 @@ class CanvasWidget(ABC):
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
         self.canvas.fill_rect(
-            self.x,  # - (self.width * 0.5),
-            self.y,  # - (self.height * 0.5),
+            self.x,
+            self.y,
             self.width,
             self.height,
         )
@@ -132,8 +132,8 @@ class CanvasWidget(ABC):
             o.draw()
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
-        x_coord = self.x  # - (self.width * 0.5)
-        y_coord = self.y  # - (self.height * 0.5)
+        x_coord = self.x
+        y_coord = self.y
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
@@ -446,7 +446,6 @@ class NodeWidget(CanvasWidget):
         self._height = self._expanded_height
         for o in self.port_widgets:
             o.show()
-        # self.collapse_button.on_click()  # Why doesn't this do the same as the next two lines??
         self.collapse_button.on_unpressed()
         self.collapse_button.pressed = False
 
