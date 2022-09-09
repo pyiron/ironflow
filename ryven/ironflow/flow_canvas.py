@@ -63,13 +63,13 @@ class FlowCanvas:
         self._canvas.layout.width = "100%"
         self._canvas.layout.height = "auto"
 
-        self.objects_to_draw = []
-        self.connections = []
-
         self._canvas.on_mouse_down(self.handle_mouse_down)
         self._canvas.on_mouse_up(self.handle_mouse_up)
         self._canvas.on_mouse_move(self.handle_mouse_move)
         self._canvas.on_key_down(self.handle_keyboard_event)
+
+        self.objects_to_draw = []
+        self.connections = []
 
         self.x = 0
         self.y = 0
