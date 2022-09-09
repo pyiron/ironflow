@@ -401,7 +401,7 @@ class NodeWidget(CanvasWidget):
                 button_layout = ButtonLayout()
                 self.add_widget(
                     ExecButtonWidget(
-                        x=x + 0.3 * button_layout.width,
+                        x=x + radius,
                         y=self._port_y_locs[i_port] - 0.5 * button_layout.height,
                         parent=self,
                         layout=button_layout,
