@@ -159,6 +159,7 @@ class Lammps_Node(NodeWithDisplay):
     version = "v0.1"
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
+        NodeInputBP(type_="exec", label="remove"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
         NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
@@ -170,19 +171,45 @@ class Lammps_Node(NodeWithDisplay):
     ]
     color = "#5d95de"
 
+    @property
+    def _project(self):
+        return self.input(2)
+
+    @property
+    def _name(self):
+        return self.input(3)
+
+    @property
+    def _structure(self):
+        return self.input(4)
+
+    @property
+    def _potential(self):
+        return self.input(5)
+
     def _run(self):
-        pr = self.input(1)
-        job = pr.create.job.Lammps(self.input(2))
-        job.structure = self.input(3)
-        job.potential = self.input(4)
+        job = self._project.create.job.Lammps(self._name)
+        job.structure = self._structure
+        job.potential = self._potential
         self._job = job
         job.run()
         self.set_output_val(1, job)
         self.exec_output(0)
 
+    def _remove(self):
+        try:
+            name = self._job.name  # Remove based on the run job, not the input name which might have changed...
+            self._project.remove_job(name)
+            self.set_output_val(1, None)
+        except AttributeError:
+            pass
+
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         if inp == 0:
             self._run()
+        elif inp == 1:
+            self._remove()
 
     @property
     def representations(self) -> tuple:
