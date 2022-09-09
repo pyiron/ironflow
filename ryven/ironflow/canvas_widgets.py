@@ -66,9 +66,6 @@ class CanvasWidget(ABC):
     def on_double_click(self) -> CanvasWidget | None:
         return self
 
-    def _init_after_parent_assignment(self):
-        pass
-
     @property
     def width(self) -> int:
         return self.layout.width
