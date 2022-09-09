@@ -638,9 +638,8 @@ class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
         if size is not None:
             layout.width = size
             layout.height = size
-        dpl = DataPortLayout()
-        layout.background_color = dpl.background_color
-        layout.pressed_color = dpl.background_color
+        layout.background_color = parent.node.color
+        layout.pressed_color = parent.node.color
 
         ButtonWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
                               pressed=pressed)
