@@ -300,24 +300,25 @@ class NodeWidget(CanvasWidget):
             'exec': ExecPortLayout()
         }
 
-        self._title_box_height = self.layout.title_box_height
-        n_ports_max = max(len(self.node.inputs), len(self.node.outputs))
+        n_ports_max = max(len(self.node.inputs), len(self.node.outputs)) + 1  # Includes the expand/collapse button
         exec_port_i = np.where([p.type_ == "exec" for p in self.node.inputs])[0]
         n_ports_min = exec_port_i[-1] + 1 if len(exec_port_i) > 0 else 1
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
-        self._io_height = subwidget_size_and_buffer * n_ports_max
-        self._exec_height = subwidget_size_and_buffer * n_ports_min
-        self._expand_collapse_height = subwidget_size_and_buffer
+        self._title_box_height = self.layout.title_box_height
+        self._max_body_height = subwidget_size_and_buffer * n_ports_max
+        self._min_body_height = subwidget_size_and_buffer * n_ports_min
+        self._expanded_height = self._title_box_height + self._max_body_height
+        self._collapsed_height = self._title_box_height + self._min_body_height
         self._height = self._expanded_height
 
-        y_step = (self._io_height + self._expand_collapse_height) / (n_ports_max + 1)
-        self._port_y_locs = (np.arange(n_ports_max + 1) + 0.5) * y_step + self._title_box_height
+        y_step = self._max_body_height / n_ports_max
+        self._subwidget_y_locs = (np.arange(n_ports_max) + 0.5) * y_step + self._title_box_height
 
         self.add_inputs()
         self.add_outputs()
         self.expand_button = ExpandButtonWidget(
             x=0.5 * self.width - self.port_radius,
-            y=self._port_y_locs[0] - self.port_radius,
+            y=self._subwidget_y_locs[0] - self.port_radius,
             parent=self,
             layout=ButtonLayout(),
             pressed=True,
@@ -327,7 +328,7 @@ class NodeWidget(CanvasWidget):
         self.add_widget(self.expand_button)
         self.collapse_button = CollapseButtonWidget(
             x=0.5 * self.width - self.port_radius,
-            y=self._port_y_locs[-1] - self.port_radius,
+            y=self._subwidget_y_locs[-1] - self.port_radius,
             parent=self,
             layout=ButtonLayout(),
             pressed=False,
@@ -388,12 +389,12 @@ class NodeWidget(CanvasWidget):
             self.add_widget(
                 PortWidget(
                     x=x,
-                    y=self._port_y_locs[i_port],
+                    y=self._subwidget_y_locs[i_port],
                     parent=self,
                     layout=self.port_layouts[data_or_exec],
                     port=port,
                     hidden_x=x,
-                    hidden_y=self._port_y_locs[0],
+                    hidden_y=self._subwidget_y_locs[0],
                     radius=radius,
                 )
             )
@@ -402,7 +403,7 @@ class NodeWidget(CanvasWidget):
                 self.add_widget(
                     ExecButtonWidget(
                         x=x + radius,
-                        y=self._port_y_locs[i_port] - 0.5 * button_layout.height,
+                        y=self._subwidget_y_locs[i_port] - 0.5 * button_layout.height,
                         parent=self,
                         layout=button_layout,
                         port=port
@@ -428,14 +429,6 @@ class NodeWidget(CanvasWidget):
     @property
     def port_widgets(self) -> list[PortWidget]:
         return [o for o in self.objects_to_draw if isinstance(o, PortWidget)]
-
-    @property
-    def _expanded_height(self) -> Number:
-        return self._title_box_height + self._io_height + self._expand_collapse_height
-
-    @property
-    def _collapsed_height(self) -> Number:
-        return self._title_box_height + max(self._expand_collapse_height, self._exec_height)
 
     def expand_io(self):
         self._height = self._expanded_height
@@ -469,7 +462,7 @@ class ButtonNodeWidget(NodeWidget):
         button_layout = ButtonLayout()
         self.exec_button = ExecButtonWidget(
             x=0.8 * (self.width - button_layout.width),
-            y=self._port_y_locs[0] - 0.5 * button_layout.height,
+            y=self._subwidget_y_locs[0] - 0.5 * button_layout.height,
             parent=self,
             layout=button_layout,
             port=self.node.outputs[0],
