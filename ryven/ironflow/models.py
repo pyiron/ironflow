@@ -34,7 +34,7 @@ packages = [os.path.join(ryven_location, "nodes", *subloc) for subloc in [
     ("built_in",),
     ("std",),
     ("pyiron",),
-]]  # , ("mynodes",)
+]]
 
 
 class HasSession(ABC):
