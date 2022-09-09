@@ -66,6 +66,18 @@ class GUI(HasSession):
     def new_node_class(self):
         return self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
 
+    def serialize(self) -> dict:
+        data = super().serialize()
+        currently_active = self.active_script_index
+        for i_script, script in enumerate(self.session.scripts):
+            all_data = data["scripts"][i_script]["flow"]["nodes"]
+            self.active_script_index = i_script
+            for i, node_widget in enumerate(self.flow_canvas.objects_to_draw):
+                all_data[i]["pos x"] = node_widget.x
+                all_data[i]["pos y"] = node_widget.y
+        self.active_script_index = currently_active
+        return data
+
     def load_from_data(self, data: Dict) -> None:
         super().load_from_data(data)
         self._flow_canvases = []

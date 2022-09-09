@@ -121,16 +121,7 @@ class HasSession(ABC):
             f.write(json.dumps(data, indent=4))
 
     def serialize(self) -> Dict:
-        currently_active = self.active_script_index
-        data = self.session.serialize()
-        for i_script, script in enumerate(self.session.scripts):
-            all_data = data["scripts"][i_script]["flow"]["nodes"]
-            self.active_script_index = i_script
-            for i, node_widget in enumerate(self.flow_canvas.objects_to_draw):
-                all_data[i]["pos x"] = node_widget.x
-                all_data[i]["pos y"] = node_widget.y
-        self.active_script_index = currently_active
-        return data
+        return self.session.serialize()
 
     def load(self, file_path: str) -> None:
         with open(file_path, "r") as f:
