@@ -447,7 +447,7 @@ class NodeWidget(CanvasWidget):
         for o in self.port_widgets:
             o.show()
         # self.collapse_button.on_click()  # Why doesn't this do the same as the next two lines??
-        self.collapse_button.unpress()
+        self.collapse_button.on_unpressed()
         self.collapse_button.pressed = False
 
     def collapse_io(self):
@@ -455,7 +455,7 @@ class NodeWidget(CanvasWidget):
         for o in self.port_widgets:
             o.hide()
         # TODO: The expand and collapse buttons are effectively an XOR toggle...improve this awkward implementation
-        self.expand_button.unpress()
+        self.expand_button.on_unpressed()
         self.expand_button.pressed = False
 
 
@@ -503,20 +503,26 @@ class ButtonWidget(CanvasWidget, ABC):
 
     def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
         if self.pressed:
-            self.pressed = False
             self.unpress()
         else:
-            self.pressed = True
             self.press()
         self.deselect()
         return last_selected_object
+    
+    def press(self):
+        self.pressed = True
+        self.on_pressed()
+        
+    def unpress(self):
+        self.pressed = False
+        self.on_unpressed()
 
     @abstractmethod
-    def press(self):
+    def on_pressed(self):
         pass
 
     @abstractmethod
-    def unpress(self):
+    def on_unpressed(self):
         pass
 
     def draw_shape(self) -> None:
@@ -548,10 +554,10 @@ class DisplayButtonWidget(ButtonWidget):
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
-    def press(self):
+    def on_pressed(self):
         self.parent.set_display()
 
-    def unpress(self):
+    def on_unpressed(self):
         self.parent.clear_display()
 
 
@@ -650,10 +656,10 @@ class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
         HideableWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
                                 visible=visible)
 
-    def press(self):
+    def on_pressed(self):
         self.hide()
 
-    def unpress(self):
+    def on_unpressed(self):
         self.show()
 
     def draw_shape(self) -> None:
@@ -675,8 +681,8 @@ class ExpandButtonWidget(ExpandCollapseButtonWidget):
             (self.x + 0.5 * self.width, self.y + self.height)
         ]
 
-    def press(self):
-        super().press()
+    def on_pressed(self):
+        super().on_pressed()
         self.parent.expand_io()
 
 
@@ -689,8 +695,8 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
             (self.x + self.width, self.y + self.height)
         ]
 
-    def press(self):
-        super().press()
+    def on_pressed(self):
+        super().on_pressed()
         self.parent.collapse_io()
 
 
@@ -717,12 +723,12 @@ class ExecButtonWidget(ButtonWidget):
         )
         self.port = port
 
-    def press(self):
+    def on_pressed(self):
         self.unpress()
         if isinstance(self.port, NodeInput):
             self.port.update()
         elif isinstance(self.port, NodeOutput):
             self.port.exec()
 
-    def unpress(self):
-        self.pressed = False
+    def on_unpressed(self):
+        pass
