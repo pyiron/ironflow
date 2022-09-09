@@ -55,10 +55,12 @@ class FlowCanvas:
         self.flow = flow if flow is not None else gui.flow
         self._width, self._height = width, height
 
-        self._col_background = "black"  # "#584f4e"
+        self._canvas_color = "black"  # "#584f4e"
+        self._connection_style = "white"
+        self._connection_width = 3
 
         self._canvas = Canvas(width=width, height=height)
-        self._canvas.fill_style = self._col_background
+        self._canvas.fill_style = self._canvas_color
         self._canvas.fill_rect(0, 0, width, height)
         self._canvas.layout.width = "100%"
         self._canvas.layout.height = "auto"
@@ -97,8 +99,8 @@ class FlowCanvas:
         inp = self._object_to_gui_dict[port_2]
 
         canvas = self._canvas
-        canvas.stroke_style = "white"
-        canvas.line_width = 3
+        canvas.stroke_style = self._connection_style
+        canvas.line_width = self._connection_width
         canvas.move_to(out.x, out.y)
         canvas.line_to(inp.x, inp.y)
         canvas.stroke()
@@ -113,7 +115,7 @@ class FlowCanvas:
 
     def canvas_restart(self) -> None:
         self._canvas.clear()
-        self._canvas.fill_style = self._col_background
+        self._canvas.fill_style = self._canvas_color
         self._canvas.fill_rect(0, 0, self._width, self._height)
 
     def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
