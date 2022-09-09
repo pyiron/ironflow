@@ -220,7 +220,6 @@ class GenericOutput_Node(NodeWithDisplay):
     """Select Generic Output item"""
 
     version = "v0.1"
-
     title = "GenericOutput"
     init_inputs = [
         NodeInputBP(dtype=dtypes.Data(size="m"), label="job"),
@@ -234,9 +233,6 @@ class GenericOutput_Node(NodeWithDisplay):
     init_outputs = [
         NodeOutputBP(),
     ]
-
-    # main_widget_class = widgets.Result_Node_MainWidget
-    # main_widget_pos = 'between ports'
     color = "#c69a15"
 
     def __init__(self, params):
@@ -390,8 +386,6 @@ class Result_Node(NodeBase):
     init_inputs = [
         NodeInputBP(type_="data"),
     ]
-    # main_widget_class = widgets.Result_Node_MainWidget
-    # main_widget_pos = 'between ports'
     color = "#c69a15"
 
     def __init__(self, params):
@@ -438,12 +432,7 @@ class ForEach_Node(NodeBase):
                 self.exec_output(2)
         elif inp > 0:
             self._count = 0
-        self.val = self._count    
-        # for e in self.input(0):
-        #     self.set_output_val(1, e)
-        #     self.exec_output(0)
-
-        # self.exec_output(2)
+        self.val = self._count
 
 
 class ExecCounter_Node(DualNodeBase):
@@ -473,7 +462,6 @@ class Click_Node(NodeBase):
     title = "Click"
     version = "v0.1"
     main_widget_class = "ButtonNodeWidget"
-    main_widget_pos = "between ports"
     init_inputs = []
     init_outputs = [NodeOutputBP(type_="exec")]
     color = "#99dd55"
