@@ -446,16 +446,13 @@ class NodeWidget(CanvasWidget):
         self._height = self._expanded_height
         for o in self.port_widgets:
             o.show()
-        self.collapse_button.on_unpressed()
-        self.collapse_button.pressed = False
+        self.collapse_button.unpress()
 
     def collapse_io(self):
         self._height = self._collapsed_height
         for o in self.port_widgets:
             o.hide()
-        # TODO: The expand and collapse buttons are effectively an XOR toggle...improve this awkward implementation
-        self.expand_button.on_unpressed()
-        self.expand_button.pressed = False
+        self.expand_button.unpress()
 
 
 class ButtonNodeWidget(NodeWidget):
