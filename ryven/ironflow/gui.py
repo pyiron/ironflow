@@ -138,6 +138,17 @@ class GUI(HasSession):
             icon="map-marker",  # TODO: Use location-dot once this is available
             layout=button_layout
         )
+        buttons = [
+            self.btn_save,
+            self.btn_load,
+            self.btn_help_node,
+            self.btn_add_node,
+            self.btn_delete_node,
+            self.btn_create_script,
+            self.btn_rename_script,
+            self.btn_delete_script,
+            self.btn_zero_location,
+        ]
 
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
@@ -185,15 +196,7 @@ class GUI(HasSession):
                     [
                         self.modules_dropdown,
                         self.alg_mode_dropdown,
-                        self.btn_save,
-                        self.btn_load,
-                        self.btn_help_node,
-                        self.btn_add_node,
-                        self.btn_delete_node,
-                        self.btn_create_script,
-                        self.btn_rename_script,
-                        self.btn_delete_script,
-                        self.btn_zero_location,
+                        *buttons,
                     ]
                 ),
                 self.text_input_panel,
