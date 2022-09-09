@@ -154,7 +154,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
-class Lammps_Node(DualNodeBase):
+class Lammps_Node(NodeWithDisplay):
     title = "Lammps"
     version = "v0.1"
     init_inputs = [
@@ -170,22 +170,23 @@ class Lammps_Node(DualNodeBase):
     ]
     color = "#5d95de"
 
-    def __init__(self, params):
-        super().__init__(params, active=True)
+    def _run(self):
+        pr = self.input(1)
+        job = pr.create.job.Lammps(self.input(2))
+        job.structure = self.input(3)
+        job.potential = self.input(4)
+        self._job = job
+        job.run()
+        self.set_output_val(1, job)
+        self.exec_output(0)
 
     def update_event(self, inp=-1):
-        self._val_is_updated = True
-        if self.active and inp == 0:
-            pr = self.input(1)
-            job = pr.create.job.Lammps(self.input(2))
-            job.structure = self.input(3)
-            job.potential = self.input(4)
-            self._job = job
-            job.run()
-            self.set_output_val(1, job)
-            self.exec_output(0)
-        elif not self.active:
-            self.val = self.input(0)
+        if inp == 0:
+            self._run()
+
+    @property
+    def representations(self) -> tuple:
+        return self.output(1),
 
 
 class GenericOutput_Node(NodeWithDisplay):
