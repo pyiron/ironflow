@@ -22,7 +22,7 @@ from abc import ABC
 from ryvencore import Session, Script, Flow
 from ryven.main.utils import import_nodes_package, NodesPackage
 
-from typing import Optional, Dict, Type
+from typing import Optional, Type
 
 import ryven.NENV as NENV
 
@@ -94,7 +94,7 @@ class HasSession(ABC):
             self,
             title: Optional[str] = None,
             create_default_logs: bool = True,
-            data: Optional[Dict] = None
+            data: Optional[dict] = None
     ) -> None:
         self.session.create_script(
             title=title if title is not None else self.next_auto_script_name,
@@ -120,7 +120,7 @@ class HasSession(ABC):
         with open(file_path, "w") as f:
             f.write(json.dumps(data, indent=4))
 
-    def serialize(self) -> Dict:
+    def serialize(self) -> dict:
         return self.session.serialize()
 
     def load(self, file_path: str) -> None:
@@ -129,7 +129,7 @@ class HasSession(ABC):
 
         self.load_from_data(data)
 
-    def load_from_data(self, data: Dict) -> None:
+    def load_from_data(self, data: dict) -> None:
         for script in self.session.scripts[::-1]:
             self.session.delete_script(script)
         self.session.load(data)

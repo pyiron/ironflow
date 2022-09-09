@@ -10,7 +10,7 @@ from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLay
 from abc import ABC, abstractmethod
 from ryvencore.NodePort import NodeInput, NodeOutput
 
-from typing import TYPE_CHECKING, Optional, Union, List, Callable
+from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
     from .flow_canvas import FlowCanvas
     from ryven.ironflow.gui import GUI
@@ -42,7 +42,7 @@ class CanvasWidget(ABC):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: Layout,
             selected: bool = False,
             title: Optional[str] = None,
@@ -136,7 +136,7 @@ class CanvasWidget(ABC):
         y_coord = self.y  # - (self.height * 0.5)
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
         if self.is_here(x_in, y_in):
             for o in self.objects_to_draw:
                 if o.is_here(x_in, y_in):
@@ -165,7 +165,7 @@ class HideableWidget(CanvasWidget, ABC):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: Layout,
             selected: bool = False,
             title: Optional[str] = None,
@@ -222,7 +222,7 @@ class PortWidget(HideableWidget):
         self,
         x: Number,
         y: Number,
-        parent: Union[FlowCanvas, CanvasWidget],
+        parent: FlowCanvas | CanvasWidget,
         layout: PortLayout,
         port: NodePort,
         selected: bool = False,
@@ -277,7 +277,7 @@ class NodeWidget(CanvasWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -373,8 +373,8 @@ class NodeWidget(CanvasWidget):
     def _add_ports(
             self,
             radius: Number,
-            inputs: Optional[List[NodeInputBP]] = None,
-            outputs: Optional[List[NodeOutputBP]] = None,
+            inputs: Optional[list[NodeInputBP]] = None,
+            outputs: Optional[list[NodeOutputBP]] = None,
             border: Number = 1.4,
     ) -> None:
         if inputs is not None:
@@ -464,7 +464,7 @@ class ButtonNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -572,7 +572,7 @@ class DisplayableNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: NodeLayout,
             node: Node,
             selected: bool = False,

@@ -21,7 +21,7 @@ from ryven.ironflow.models import HasSession
 from ryven.ironflow.node_interface import NodeInterface
 from ryven.ironflow.flow_canvas import FlowCanvas
 
-from typing import Optional, Dict
+from typing import Optional
 from ryvencore import Session
 
 alg_modes = ["data", "exec"]
@@ -49,7 +49,7 @@ class GUI(HasSession):
             self,
             title: Optional[str] = None,
             create_default_logs: bool = True,
-            data: Optional[Dict] = None
+            data: Optional[dict] = None
     ) -> None:
         super().create_script(title=title, create_default_logs=create_default_logs, data=data)
         self._flow_canvases.append(FlowCanvas(gui=self))
@@ -78,7 +78,7 @@ class GUI(HasSession):
         self.active_script_index = currently_active
         return data
 
-    def load_from_data(self, data: Dict) -> None:
+    def load_from_data(self, data: dict) -> None:
         super().load_from_data(data)
         self._flow_canvases = []
         for i_script, script in enumerate(self.session.scripts):
@@ -214,19 +214,19 @@ class GUI(HasSession):
     def click_add_node(self, change: dict) -> None:
         self.flow_canvas.add_node(10, 10, self.new_node_class)
 
-    def click_delete_node(self, change: Dict) -> None:
+    def click_delete_node(self, change: dict) -> None:
         self.flow_canvas.delete_selected()
 
-    def change_modules_dropdown(self, change: Dict) -> None:
+    def change_modules_dropdown(self, change: dict) -> None:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
-    def change_alg_mode_dropdown(self, change: Dict) -> None:
+    def change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # TODO: Change only for the active script, and update the dropdown on tab (script) switching
         for script in self.session.scripts:
             script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
-    def change_script_tabs(self, change: Dict):
+    def change_script_tabs(self, change: dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
             self._depopulate_text_input_panel()
             if self.script_tabs.selected_index == self.n_scripts:
@@ -250,11 +250,11 @@ class GUI(HasSession):
     def _depopulate_text_input_panel(self) -> None:
         self.text_input_panel.children = []
 
-    def click_input_text_ok(self, change: Dict) -> None:
+    def click_input_text_ok(self, change: dict) -> None:
         self._context_actions[self._context](self.text_input_field.value)
         self._depopulate_text_input_panel()
 
-    def click_input_text_cancel(self, change: Dict) -> None:
+    def click_input_text_cancel(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._print("")
 
@@ -277,7 +277,7 @@ class GUI(HasSession):
         with self.out_log:
             display(_pretty_docstring(self.new_node_class))
 
-    def click_save(self, change: Dict) -> None:
+    def click_save(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel(
             "Save file",
@@ -291,7 +291,7 @@ class GUI(HasSession):
         self.save(f"{file_name}.json")
         self._print(f"Session saved to {file_name}.json")
 
-    def click_load(self, change: Dict) -> None:
+    def click_load(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel(
             "Load file",
@@ -315,7 +315,7 @@ class GUI(HasSession):
         self.active_script_index = self.script_tabs.selected_index
         self.flow_canvas.redraw()
 
-    def click_rename_script(self, change: Dict) -> None:
+    def click_rename_script(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel(
             "New name",
@@ -334,7 +334,7 @@ class GUI(HasSession):
         else:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
-    def click_delete_script(self, change: Dict) -> None:
+    def click_delete_script(self, change: dict) -> None:
         self.delete_script()
         self._update_tabs_from_model()
 

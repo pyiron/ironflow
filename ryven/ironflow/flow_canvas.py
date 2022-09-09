@@ -12,7 +12,7 @@ from .canvas_widgets import (
 )
 from .layouts import NodeLayout
 
-from typing import TYPE_CHECKING, Optional, Union, List
+from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
@@ -181,13 +181,13 @@ class FlowCanvas:
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
         for o in self.objects_to_draw:
             if o.is_here(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 
-    def get_selected_objects(self) -> List[CanvasWidget]:
+    def get_selected_objects(self) -> list[CanvasWidget]:
         return [o for o in self.objects_to_draw if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
