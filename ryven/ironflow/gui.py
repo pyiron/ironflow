@@ -156,8 +156,6 @@ class GUI(HasSession):
         self.node_selector = widgets.RadioButtons(
             options=nodes_options,
             value=list(nodes_options)[0],
-            #    layout={'width': 'max-content'}, # If the items' names are long
-            #     description='Nodes:',
             disabled=False,
         )
 
