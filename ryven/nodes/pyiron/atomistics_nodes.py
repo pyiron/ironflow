@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from ryven.nodes.std.special_nodes import DualNodeBase
 
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
     "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"

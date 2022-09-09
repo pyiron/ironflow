@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ryvencore.Flow import Flow
 
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
     "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
