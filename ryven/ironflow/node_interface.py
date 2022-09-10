@@ -166,3 +166,5 @@ class NodeInterface:
                 self.gui_object()
                 self.input_widgets()
                 display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+            else:
+                display(None)
