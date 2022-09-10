@@ -201,10 +201,10 @@ class GUI(HasSession):
                 ),
                 self.text_input_panel,
                 widgets.HBox(
-                    [widgets.VBox([self.node_selector]), self.script_tabs, self.out_plot]
+                    [widgets.VBox([self.node_selector]), self.script_tabs]
                 ),
                 self.out_log,
-                self.out_status,
+                widgets.HBox([self.out_status, self.out_plot]),
                 debug_view
             ]
         )
