@@ -118,13 +118,11 @@ class NodeInterface:
             self._central_gui.flow_canvas.redraw()
         return input_change
 
-    def draw(self) -> widgets.HBox:
+    def draw(self) -> widgets.VBox:
         self.inp_box = widgets.GridBox(
             list(np.array(self._input).flatten()),
             layout=widgets.Layout(
-                width="210px",
-                grid_template_columns="90px 110px",
-                # grid_gap='1px 1px',
+                grid_template_columns="110px 50%",
                 border="solid 1px blue",
                 margin="10px",
             ),
@@ -159,7 +157,7 @@ class NodeInterface:
             padding="0px",
         )
 
-        return widgets.HBox([self.inp_box, self.gui, info_box])
+        return widgets.VBox([title, self.inp_box, info_box])  # self.gui
 
     def draw_for_node(self, node: Node | None):
         self.node = node
