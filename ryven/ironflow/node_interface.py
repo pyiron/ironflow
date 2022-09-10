@@ -63,20 +63,14 @@ class NodeInterface:
         if not hasattr(self.node, "inputs"):
             return
         for i_c, inp in enumerate(self.node.inputs[:]):
-            if inp.dtype is None:
-                # if inp.type_ == 'exec':
-                inp_widget = widgets.Label(value=inp.type_)
-                description = inp.type_
-                # inp_widget =
-            else:
+            if inp.dtype is not None:
                 dtype = str(inp.dtype).split(".")[-1]
                 dtype_state = deserialize(inp.data()["dtype state"])
                 if inp.val is None:
                     inp.val = dtype_state["val"]
-                # print (dtype)
                 if dtype == "Integer":
                     inp_widget = widgets.IntText(
-                        value=inp.val,  # dtype_state['val'],
+                        value=inp.val,
                         disabled=False,
                         description="",
                         continuous_update=False,
@@ -84,7 +78,7 @@ class NodeInterface:
                     )
                 elif dtype == "Boolean":
                     inp_widget = widgets.Checkbox(
-                        value=inp.val,  # dtype_state['val'],
+                        value=inp.val,
                         indent=True,
                         description="",
                         layout=widgets.Layout(width="110px", border="solid 1px"),
@@ -103,8 +97,13 @@ class NodeInterface:
                         value=str(inp.val),
                         continuous_update=False,
                     )
-
                 description = inp.label_str
+            elif inp.label_str != "":
+                inp_widget = widgets.Label(value=inp.type_)
+                description = inp.label_str
+            else:
+                inp_widget = widgets.Label(value=inp.type_)
+                description = inp.type_
             self._input.append([widgets.Label(description), inp_widget])
 
             inp_widget.observe(self.input_change_i(i_c), names="value")
