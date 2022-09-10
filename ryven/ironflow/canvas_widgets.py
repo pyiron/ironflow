@@ -426,6 +426,11 @@ class NodeWidget(CanvasWidget):
         if self.gui.node_interface.node == self.node:
             self.gui.node_interface.draw_for_node(None)
 
+    def deselect(self) -> None:
+        super().deselect()
+        if self.gui.node_interface.node == self.node:
+            self.gui.node_interface.draw_for_node(None)
+
     @property
     def port_widgets(self) -> list[PortWidget]:
         return [o for o in self.objects_to_draw if isinstance(o, PortWidget)]
