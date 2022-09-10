@@ -168,8 +168,8 @@ class GUI(HasSession):
         self._update_tabs_from_model()
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
-        self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black", "align_content": "flex-end"})
-        self.out_status = widgets.Output(layout={"border": "1px solid black"})
+        self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
+        self.out_status = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
 
         # Wire callbacks
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
