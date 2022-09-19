@@ -110,6 +110,7 @@ class GUI(HasSession):
         button_layout = widgets.Layout(width="50px")
         # Icon source: https://fontawesome.com
         # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
+        # v4 icon search: https://fontawesome.com/v4/icons/
         self.btn_load = widgets.Button(tooltip="Load session from JSON", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save session to JSON", icon="download", layout=button_layout)
         self.btn_help_node = widgets.Button(
@@ -139,6 +140,16 @@ class GUI(HasSession):
             icon="map-marker",  # TODO: Use location-dot once this is available
             layout=button_layout
         )
+        self.btn_zoom_in = widgets.Button(
+            tooltip="Zoom canvas in",
+            icon="search-plus",
+            layout=button_layout
+        )
+        self.btn_zoom_out = widgets.Button(
+            tooltip="Zoom canvas out",
+            icon="search-minus",
+            layout=button_layout
+        )
         buttons = [
             self.btn_save,
             self.btn_load,
@@ -149,6 +160,8 @@ class GUI(HasSession):
             self.btn_rename_script,
             self.btn_delete_script,
             self.btn_zero_location,
+            self.btn_zoom_in,
+            self.btn_zoom_out,
         ]
 
         self.text_input_panel = widgets.HBox([])
@@ -163,8 +176,11 @@ class GUI(HasSession):
             value=list(nodes_options)[0],
             disabled=False,
         )
+        self.node_selector_box = widgets.VBox([self.node_selector])
+        self.node_selector_box.layout.width = "15%"
 
         self.script_tabs = widgets.Tab([])
+        self.script_tabs.layout.width = "95%"
         self._update_tabs_from_model()
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
@@ -188,6 +204,8 @@ class GUI(HasSession):
         self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.btn_delete_script.on_click(self.click_delete_script)
         self.btn_zero_location.on_click(self.click_zero_location)
+        self.btn_zoom_in.on_click(self.click_zoom_in)
+        self.btn_zoom_out.on_click(self.click_zoom_out)
         self.script_tabs.observe(self.change_script_tabs)
 
         return widgets.VBox(
@@ -201,7 +219,7 @@ class GUI(HasSession):
                 ),
                 self.text_input_panel,
                 widgets.HBox(
-                    [widgets.VBox([self.node_selector]), self.script_tabs]
+                    [self.node_selector_box, self.script_tabs]
                 ),
                 self.out_log,
                 widgets.HBox([self.out_status, self.out_plot]),
@@ -305,6 +323,12 @@ class GUI(HasSession):
         self.flow_canvas.x = 0
         self.flow_canvas.y = 0
         self.flow_canvas.redraw()
+
+    def click_zoom_in(self, change: dict) -> None:
+        self.flow_canvas.zoom_in()
+
+    def click_zoom_out(self, change: dict) -> None:
+        self.flow_canvas.zoom_out()
 
     def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
         self.text_input_panel.children = [
