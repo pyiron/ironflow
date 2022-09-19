@@ -60,8 +60,7 @@ class FlowCanvas:
         self._connection_width = 3
 
         self._canvas = Canvas(width=width, height=height)
-        self._canvas.fill_style = self._canvas_color
-        self._canvas.fill_rect(0, 0, width, height)
+        self.canvas_restart()
         self._canvas.layout.width = "100%"
         self._canvas.layout.height = "auto"
 
