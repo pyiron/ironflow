@@ -54,7 +54,7 @@ class FlowCanvas:
         self._gui = gui
         self.flow = flow if flow is not None else gui.flow
 
-        self._standard_size = (2000, 1000)
+        self._standard_size = (1800, 800)
         self._zoom_factors = [0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00]
         self._zoom_index = 2
         self._width, self._height = self._get_size()
