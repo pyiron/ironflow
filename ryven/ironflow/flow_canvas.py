@@ -113,7 +113,7 @@ class FlowCanvas:
         for n in self.objects_to_draw:
             self._object_to_gui_dict[n.node] = n
             for p in n.objects_to_draw:
-                if hasattr(p, "port"):
+                if isinstance(p, PortWidget):
                     self._object_to_gui_dict[p.port] = p
 
     def canvas_restart(self) -> None:
