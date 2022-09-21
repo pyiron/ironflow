@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from ryven.ironflow.node_interface.node_interface_abc import NodeInterfaceBase
+from ryven.ironflow.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 
 from typing import TYPE_CHECKING, Optional
