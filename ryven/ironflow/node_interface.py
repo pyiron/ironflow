@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from ryven.ironflow.node_interface_abc import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 import numpy as np
@@ -32,25 +33,14 @@ def deserialize(data):
     return pickle.loads(base64.b64decode(data))
 
 
-class NodeInterface:
+class NodeInterface(NodeInterfaceBase):
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
     def __init__(self, gui: GUI, layout: Optional[dict] = None):
+        super().__init__(gui=gui, layout=layout)
         self.node = None
-        self.gui = gui
-        self.layout = layout if layout is not None else {"width": "50%", "border": "1px solid black"}
-        self._output = None
-
-    @property
-    def output(self) -> widgets.Output:
-        if self._output is None:
-            self._output = widgets.Output(layout=self.layout)
-        return self._output
-
-    def clear_output(self):
-        self.output.clear_output()
 
     @property
     def input_widget(self) -> widgets.Widget:
@@ -63,7 +53,7 @@ class NodeInterface:
         except AttributeError:
             return widgets.Output()
 
-    def input_field_list(self) -> list[widgets.Widget]:
+    def input_field_list(self) -> list[list[widgets.Widget]]:
         input = []
         if hasattr(self.node, "inputs"):
             for i_c, inp in enumerate(self.node.inputs[:]):
@@ -150,7 +140,7 @@ class NodeInterface:
         )
         return info_box
 
-    def draw(self) -> widgets.VBox:
+    def draw(self) -> None:
         self.clear_output()
         if self.node is not None:
             with self.output:
