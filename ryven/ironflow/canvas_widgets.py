@@ -345,7 +345,7 @@ class NodeWidget(CanvasWidget):
                 last_selected_object.deselect()
             self.select()
             try:
-                self.gui.node_interface.draw_for_node(self.node)
+                self.gui.node_controller.draw_for_node(self.node)
                 return self
             except Exception as e:
                 self.gui._print(f"Failed to handle selection of {self} with exception {e}")
@@ -423,13 +423,13 @@ class NodeWidget(CanvasWidget):
                 self.flow.remove_connection(c)
         self.flow.remove_node(self.node)
         self.parent.objects_to_draw.remove(self)
-        if self.gui.node_interface.node == self.node:
-            self.gui.node_interface.draw_for_node(None)
+        if self.gui.node_controller.node == self.node:
+            self.gui.node_controller.draw_for_node(None)
 
     def deselect(self) -> None:
         super().deselect()
-        if self.gui.node_interface.node == self.node:
-            self.gui.node_interface.draw_for_node(None)
+        if self.gui.node_controller.node == self.node:
+            self.gui.node_controller.draw_for_node(None)
 
     @property
     def port_widgets(self) -> list[PortWidget]:

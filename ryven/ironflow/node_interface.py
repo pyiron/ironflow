@@ -33,7 +33,7 @@ def deserialize(data):
     return pickle.loads(base64.b64decode(data))
 
 
-class NodeInterface(NodeInterfaceBase):
+class NodeController(NodeInterfaceBase):
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """

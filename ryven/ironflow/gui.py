@@ -18,7 +18,7 @@ __date__ = "May 10, 2022"
 import ipywidgets as widgets
 from IPython.display import display, HTML
 from ryven.ironflow.models import HasSession
-from ryven.ironflow.node_interface import NodeInterface
+from ryven.ironflow.node_interface import NodeController
 from ryven.ironflow.representation import NodePresenter
 from ryven.ironflow.flow_canvas import FlowCanvas
 
@@ -35,7 +35,7 @@ class GUI(HasSession):
 
         self._flow_canvases = []
         self.displayed_node = None
-        self.node_interface = NodeInterface(self)
+        self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
 
         self._context = None
@@ -186,7 +186,7 @@ class GUI(HasSession):
         self._update_tabs_from_model()
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
-        node_box = widgets.HBox([self.node_interface.output, self.node_presenter.output])
+        node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
         # Wire callbacks
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
