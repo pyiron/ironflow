@@ -544,16 +544,17 @@ class DisplayButtonWidget(ButtonWidget):
         super().__init__(x, y, parent, layout, selected, title=title)
 
     def on_pressed(self):
-        self.parent.set_display()
+        self.gui.node_presenter.node_widget = self.parent
 
     def on_unpressed(self):
-        self.parent.clear_display()
+        self.gui.node_presenter.node_widget = None
 
 
 class DisplayableNodeWidget(NodeWidget):
     """
-    Has a `Display` button that sends a representation over to the `ryven.ironflow.Gui.GUI.out_plot` window.
-    Display gets locked until the button is pressed again, or another node gets displayed.
+    Has a `SHOW` button that sends a representation over to the `ryven.ironflow.Gui.GUI.node_presenter.output`
+    window.
+    Display gets locked until the button is pressed again, the node is deleted, or another node gets displayed.
     While displayed, display updates automatically on changes to input.
     """
 
@@ -589,34 +590,9 @@ class DisplayableNodeWidget(NodeWidget):
         )
         self.add_widget(self.display_button)
 
-    def set_display(self):
-        if self.gui.displayed_node is not None:
-            self.gui.displayed_node.display_button.unpress()
-        self.node.displayed = True
-        self.node.representation_updated = True
-        self.gui.displayed_node = self
-
-    def clear_display(self):
-        self.node.displayed = False
-        if self.gui.displayed_node == self:
-            self.gui.out_plot.clear_output()
-            self.gui.displayed_node = None
-
-    def draw_display(self):
-        """Send the node's representation to a separate GUI window"""
-        self.parent.gui.out_plot.clear_output()
-        with self.parent.gui.out_plot:
-            for rep in self.node.representations:
-                display(rep)
-        self.node.representation_updated = False
-
-    def draw(self):
-        super().draw()
-        if self.node.displayed and self.node.representation_updated:
-            self.draw_display()
-
     def delete(self) -> None:
-        self.clear_display()
+        if self.gui.node_presenter.node_widget == self:
+            self.gui.node_presenter.node_widget = None
         return super().delete()
 
 

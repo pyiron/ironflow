@@ -19,6 +19,7 @@ import ipywidgets as widgets
 from IPython.display import display, HTML
 from ryven.ironflow.models import HasSession
 from ryven.ironflow.node_interface import NodeInterface
+from ryven.ironflow.representation import NodePresenter
 from ryven.ironflow.flow_canvas import FlowCanvas
 
 from typing import Optional
@@ -35,6 +36,7 @@ class GUI(HasSession):
         self._flow_canvases = []
         self.displayed_node = None
         self.node_interface = NodeInterface(self)
+        self.node_presenter = NodePresenter(self)
 
         self._context = None
         self._context_actions = {
@@ -184,8 +186,8 @@ class GUI(HasSession):
         self._update_tabs_from_model()
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
-        self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
         self.out_status = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
+        node_box = widgets.HBox([self.out_status, self.node_presenter.output])
 
         # Wire callbacks
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
@@ -222,7 +224,7 @@ class GUI(HasSession):
                     [self.node_selector_box, self.script_tabs]
                 ),
                 self.out_log,
-                widgets.HBox([self.out_status, self.out_plot]),
+                node_box,
                 debug_view
             ]
         )
@@ -265,7 +267,7 @@ class GUI(HasSession):
     def _load_context_action(self, file_name):
         self.load(f"{file_name}.json")
         self._update_tabs_from_model()
-        self.out_plot.clear_output()
+        self.node_presenter.clear_output()
         self.out_log.clear_output()
         self._print(f"Session loaded from {file_name}.json")
 
