@@ -34,7 +34,6 @@ class GUI(HasSession):
         super().__init__(session_title=session_title, session=session)
 
         self._flow_canvases = []
-        self.displayed_node = None
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
 
