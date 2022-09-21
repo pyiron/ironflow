@@ -47,8 +47,10 @@ class NodeWithDisplay(NodeBase, ABC):
         self.representation_updated = True
 
     @property
-    def representations(self) -> tuple:
-        return tuple(o.val for o in self.outputs)
+    def representations(self) -> dict:
+        return {
+            o.label_str if o.label_str != "" else i: o.val for i, o in enumerate(self.outputs)
+        }
 
     def output(self, i):
         return self.outputs[i].val
@@ -77,8 +79,8 @@ class Project_Node(NodeWithDisplay):
         self.set_output_val(0, pr)
 
     @property
-    def representations(self) -> tuple:
-        return str(self.input(0)),
+    def representations(self) -> dict:
+        return {"name": str(self.input(0))}
 
 
 class OutputsOnlyAtoms(NodeWithDisplay, ABC):
@@ -93,8 +95,11 @@ class OutputsOnlyAtoms(NodeWithDisplay, ABC):
         super().update_event(inp=inp)
 
     @property
-    def representations(self) -> tuple:
-        return self.output(0).plot3d(), self.output(0)
+    def representations(self) -> dict:
+        return {
+            "plot3d": self.output(0).plot3d(),
+            "print": self.output(0)
+        }
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -233,8 +238,8 @@ class Lammps_Node(NodeWithDisplay):
 
 
     @property
-    def representations(self) -> tuple:
-        return self.output(1),
+    def representations(self) -> dict:
+        return {"job": self.output(1)}
 
 
 class GenericOutput_Node(NodeWithDisplay):
@@ -353,11 +358,11 @@ class Plot3d_Node(NodeWithDisplay):
         self.set_output_val(1, self.input(0))
 
     @property
-    def representations(self) -> tuple:
+    def representations(self) -> dict:
         if self.input(1):
-            return self.output(0), self.output(1)
+            return {"plot3d": self.output(0), "print": self.output(1)}
         else:
-            return self.output(0),
+            return {"plot3d": self.output(0)}
 
 
 class Matplot_Node(NodeWithDisplay):
