@@ -10,7 +10,7 @@ from IPython.display import display
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ironflow.ryven.ironflow.gui import GUI
-    from ironflow.ryven.ironflow.canvas_widgets import DisplayableNodeWidget
+    from ironflow.ryven.ironflow.canvas_widgets import RepresentableNodeWidget
 
 __author__ = "Liam huber"
 __copyright__ = (
@@ -39,14 +39,14 @@ class NodePresenter:
         return self._output
 
     @property
-    def node_widget(self) -> DisplayableNodeWidget | None:
+    def node_widget(self) -> RepresentableNodeWidget | None:
         return self._node_widget
 
     @node_widget.setter
-    def node_widget(self, new_node_widget: DisplayableNodeWidget | None):
+    def node_widget(self, new_node_widget: RepresentableNodeWidget | None):
         if self._node_widget is not None:
             self.clear_output()
-            self._node_widget.display_button.pressed = False
+            self._node_widget.represent_button.pressed = False
         if new_node_widget is not None:
             new_node_widget.node.representation_updated = True
         self._node_widget = new_node_widget

@@ -531,12 +531,12 @@ class ButtonWidget(CanvasWidget, ABC):
         self.canvas.fill_text(self.title, x, y)
 
 
-class DisplayButtonWidget(ButtonWidget):
+class RepresentButtonWidget(ButtonWidget):
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: DisplayableNodeWidget,
+            parent: RepresentableNodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
             title="SHOW",
@@ -550,7 +550,7 @@ class DisplayButtonWidget(ButtonWidget):
         self.gui.node_presenter.node_widget = None
 
 
-class DisplayableNodeWidget(NodeWidget):
+class RepresentableNodeWidget(NodeWidget):
     """
     Has a `SHOW` button that sends a representation over to the `ryven.ironflow.Gui.GUI.node_presenter.output`
     window.
@@ -582,13 +582,13 @@ class DisplayableNodeWidget(NodeWidget):
 
         button_layout = ButtonLayout()
         button_edge_offset = 5
-        self.display_button = DisplayButtonWidget(
+        self.represent_button = RepresentButtonWidget(
             x=self.width - button_layout.width - button_edge_offset,
             y=button_edge_offset,
             parent=self,
             layout=button_layout
         )
-        self.add_widget(self.display_button)
+        self.add_widget(self.represent_button)
 
     def delete(self) -> None:
         if self.gui.node_presenter.node_widget == self:
