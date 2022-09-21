@@ -41,13 +41,18 @@ class NodeController(NodeInterfaceBase):
     def __init__(self, gui: GUI, layout: Optional[dict] = None):
         super().__init__(gui=gui, layout=layout)
         self.node = None
+        self._margin = 5  # px
+        self._row_height = 30  # px
+
+    def _box_height(self, n_rows: int) -> int:
+        return n_rows * self._row_height + 2 * self._margin
 
     @property
     def input_widget(self) -> widgets.Widget:
         try:
             widget = self.node.input_widget(self.gui, self.node).widget
             widget.layout = widgets.Layout(
-                height="70px", border="solid 1px red", margin="10px", padding="10px"
+                height="70px", border="solid 1px blue", margin=f"{self._margin}px", padding="10px", width="auto"
             )
             return widget
         except AttributeError:
@@ -68,14 +73,12 @@ class NodeController(NodeInterfaceBase):
                             disabled=False,
                             description="",
                             continuous_update=False,
-                            layout=widgets.Layout(width="110px", border="solid 1px"),
                         )
                     elif dtype == "Boolean":
                         inp_widget = widgets.Checkbox(
                             value=inp.val,
-                            indent=True,
+                            indent=False,
                             description="",
-                            layout=widgets.Layout(width="110px", border="solid 1px"),
                         )
                     elif dtype == "Choice":
                         inp_widget = widgets.Dropdown(
@@ -83,7 +86,6 @@ class NodeController(NodeInterfaceBase):
                             options=inp.dtype.items,
                             description="",
                             ensure_option=True,
-                            layout=widgets.Layout(width="110px", border="solid 1px"),
                         )
 
                     else:
@@ -110,16 +112,24 @@ class NodeController(NodeInterfaceBase):
         return input_change
 
     @property
-    def input_box(self):
+    def input_box(self) -> widgets.GridBox | widgets.Output:
         input_fields = self.input_field_list()
-        return widgets.GridBox(
-            list(np.array(input_fields).flatten()),
-            layout=widgets.Layout(
-                grid_template_columns="110px 50%",
-                border="solid 1px blue",
-                margin="10px",
-            ),
-        ) if len(input_fields) > 0 else widgets.Output()
+        n_fields = len(input_fields)
+        if n_fields > 0:
+            return widgets.GridBox(
+                list(np.array(input_fields).flatten()),
+                layout=widgets.Layout(
+                    grid_template_columns="110px auto",
+                    grid_auto_rows=f"{self._row_height}px",
+                    border="solid 1px blue",
+                    margin=f"{self._margin}px",
+                    height=f"{self._box_height(n_fields)}px",
+                    # Automatic height like this really should be doable just with the CSS,
+                    # but for the life of me I can't get a CSS solution working right -Liam
+                )
+            )
+        else:
+            return widgets.Output()
 
     @property
     def info_box(self):
@@ -132,10 +142,9 @@ class NodeController(NodeInterfaceBase):
 
         info_box = widgets.VBox([title, global_id])
         info_box.layout = widgets.Layout(
-            height="70px",
-            width="350px",
+            height=f"{self._box_height(2)}px",
             border="solid 1px red",
-            margin="10px",
+            margin=f"{self._margin}px",
             padding="0px",
         )
         return info_box
