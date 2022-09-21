@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
     "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
