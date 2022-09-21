@@ -11,7 +11,7 @@ from ryvencore.NodePort import NodeInput, NodeOutput
 
 from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
-    from ryven.ironflow.canvas.flow_canvas import FlowCanvas
+    from ryven.ironflow.canvas.flow import FlowCanvas
     from ryven.ironflow.gui import GUI
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
