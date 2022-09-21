@@ -138,7 +138,7 @@ class NodeInterface:
         )
         # title.layout.width = '300px'
 
-        info_box = widgets.VBox([global_id, title])
+        info_box = widgets.VBox([title, global_id])
         info_box.layout = widgets.Layout(
             height="70px",
             width="350px",
