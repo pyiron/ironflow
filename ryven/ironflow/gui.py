@@ -186,8 +186,7 @@ class GUI(HasSession):
         self._update_tabs_from_model()
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
-        self.out_status = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
-        node_box = widgets.HBox([self.out_status, self.node_presenter.output])
+        node_box = widgets.HBox([self.node_interface.output, self.node_presenter.output])
 
         # Wire callbacks
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")

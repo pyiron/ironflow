@@ -11,7 +11,7 @@ import numpy as np
 import pickle
 import base64
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Optional
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
@@ -37,10 +37,20 @@ class NodeInterface:
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, gui: GUI):
+    def __init__(self, gui: GUI, layout: Optional[dict] = None):
         self.node = None
         self.gui = gui
-        # self.input = []
+        self.layout = layout if layout is not None else {"width": "50%", "border": "1px solid black"}
+        self._output = None
+
+    @property
+    def output(self) -> widgets.Output:
+        if self._output is None:
+            self._output = widgets.Output(layout=self.layout)
+        return self._output
+
+    def clear_output(self):
+        self.output.clear_output()
 
     @property
     def input_widget(self) -> widgets.Widget:
@@ -141,16 +151,15 @@ class NodeInterface:
         return info_box
 
     def draw(self) -> widgets.VBox:
-        return widgets.VBox([self.input_box, self.input_widget, self.info_box])
+        self.clear_output()
+        if self.node is not None:
+            with self.output:
+                display(widgets.VBox([self.input_box, self.input_widget, self.info_box]))
+                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
     def draw_for_node(self, node: Node | None):
         self.node = node
-        with self.gui.out_status:
-            self.gui.out_status.clear_output()
-            if node is not None:
-                display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-            else:
-                display(None)
+        self.draw()
 
 
 class SliderControl:
