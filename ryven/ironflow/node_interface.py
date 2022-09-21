@@ -42,12 +42,16 @@ class NodeInterface:
         self.gui = gui
         # self.input = []
 
-    def gui_object(self) -> widgets.FloatSlider | widgets.Box:
-        if "slider" in self.node.title.lower():
-            self.gui_obj = SliderControl(self.gui, self.node).widget
-        else:
-            self.gui_obj = widgets.Box()
-        return self.gui_obj
+    @property
+    def input_widget(self) -> widgets.Widget:
+        try:
+            widget = self.node.input_widget(self.gui, self.node).widget
+            widget.layout = widgets.Layout(
+                height="70px", border="solid 1px red", margin="10px", padding="10px"
+            )
+            return widget
+        except AttributeError:
+            return widgets.Output()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -118,10 +122,6 @@ class NodeInterface:
             ),
         )
 
-        self.gui_obj.layout = widgets.Layout(
-            height="70px", border="solid 1px red", margin="10px", padding="10px"
-        )
-
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
@@ -147,14 +147,13 @@ class NodeInterface:
             padding="0px",
         )
 
-        return widgets.VBox([title, self.inp_box, info_box, self.gui_obj])  # self.gui_obj
+        return widgets.VBox([title, self.inp_box, info_box, self.input_widget])
 
     def draw_for_node(self, node: Node | None):
         self.node = node
         with self.gui.out_status:
             self.gui.out_status.clear_output()
             if node is not None:
-                self.gui_object()
                 self.input_widgets()
                 display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
             else:

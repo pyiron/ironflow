@@ -3,6 +3,7 @@ from contextlib import redirect_stdout, redirect_stderr
 
 from ryven.NENV import *
 widgets = import_widgets(__file__)
+from ryven.ironflow.node_interface import SliderControl
 
 
 class NodeBase(Node):
@@ -349,6 +350,7 @@ class Slider_Node(NodeBase):
     ]
     main_widget_class = widgets.SliderNode_MainWidget
     main_widget_pos = 'below ports'
+    input_widget = SliderControl
 
     def __init__(self, params):
         super().__init__(params)
