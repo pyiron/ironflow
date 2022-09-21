@@ -25,6 +25,7 @@ __date__ = "Sept 20, 2022"
 
 
 class NodePresenter:
+    """Handles the display of nodes with a representation."""
 
     def __init__(self, gui: GUI, layout: Optional[dict] = None):
         self.gui = gui
