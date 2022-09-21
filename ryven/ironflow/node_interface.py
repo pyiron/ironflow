@@ -44,19 +44,10 @@ class NodeInterface:
 
     def gui_object(self) -> widgets.FloatSlider | widgets.Box:
         if "slider" in self.node.title.lower():
-            self.gui_obj = widgets.FloatSlider(
-                value=self.node.val, min=0, max=10, continuous_update=False
-            )
-
-            self.gui_obj.observe(self.gui_object_change, names="value")
+            self.gui_obj = SliderControl(self.gui, self.node).widget
         else:
             self.gui_obj = widgets.Box()
         return self.gui_obj
-
-    def gui_object_change(self, change: dict) -> None:
-        self.node.set_state({"val": change["new"]}, 0)
-        self.node.update_event()
-        self.gui.flow_canvas.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -168,3 +159,19 @@ class NodeInterface:
                 display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
             else:
                 display(None)
+
+
+class SliderControl:
+    def __init__(self, gui: GUI, node: Node):
+        self.gui = gui
+        self.node = node
+        self.widget = widgets.FloatSlider(
+            value=self.node.val, min=0, max=10, continuous_update=False
+        )
+
+        self.widget.observe(self.widget_change, names="value")
+
+    def widget_change(self, change: dict) -> None:
+        self.node.set_state({"val": change["new"]}, 0)
+        self.node.update_event()
+        self.gui.flow_canvas.redraw()
