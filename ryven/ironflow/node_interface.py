@@ -147,7 +147,7 @@ class NodeInterface:
             padding="0px",
         )
 
-        return widgets.VBox([title, self.inp_box, info_box, self.input_widget])
+        return widgets.VBox([self.inp_box, self.input_widget, info_box])
 
     def draw_for_node(self, node: Node | None):
         self.node = node
