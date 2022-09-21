@@ -4,13 +4,13 @@
 
 from __future__ import annotations
 
-from ryven.ironflow.canvas.base import HideableWidget, CanvasWidget
-from ryven.ironflow.canvas.layouts import PortLayout
+from ryven.ironflow.canvas_widgets.base import HideableWidget, CanvasWidget
+from ryven.ironflow.canvas_widgets.layouts import PortLayout
 
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
-    from ryven.ironflow.canvas.flow import FlowCanvas
-    from ryven.ironflow.canvas.base import Number
+    from ryven.ironflow.canvas_widgets.flow import FlowCanvas
+    from ryven.ironflow.canvas_widgets.base import Number
     from ryvencore.NodePort import NodePort
 
 __author__ = "Liam Huber, Joerg Neugebauer"

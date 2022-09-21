@@ -10,7 +10,7 @@ from IPython.display import display
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ryven.ironflow.gui import GUI
-    from ryven.ironflow.canvas.nodes import RepresentableNodeWidget
+    from ryven.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
 
 __author__ = "Liam huber"
 __copyright__ = (

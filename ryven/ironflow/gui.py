@@ -19,7 +19,7 @@ import ipywidgets as widgets
 from IPython.display import display, HTML
 from ryven.ironflow.model import HasSession
 from ryven.ironflow.node_interface import NodeController, NodePresenter
-from ryven.ironflow.canvas.flow import FlowCanvas
+from ryven.ironflow.canvas_widgets.flow import FlowCanvas
 
 from typing import Optional
 from ryvencore import Session

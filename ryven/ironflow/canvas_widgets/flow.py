@@ -7,13 +7,13 @@ from __future__ import annotations
 from ipycanvas import Canvas, hold_canvas
 from time import time
 
-from ryven.ironflow.canvas.nodes import (
+from ryven.ironflow.canvas_widgets.nodes import (
     NodeWidget, ButtonNodeWidget, RepresentableNodeWidget
 )
-from ryven.ironflow.canvas.buttons import RepresentButtonWidget
-from ryven.ironflow.canvas.ports import PortWidget
-from ryven.ironflow.canvas.base import CanvasWidget
-from ryven.ironflow.canvas.layouts import NodeLayout
+from ryven.ironflow.canvas_widgets.buttons import RepresentButtonWidget
+from ryven.ironflow.canvas_widgets.ports import PortWidget
+from ryven.ironflow.canvas_widgets.base import CanvasWidget
+from ryven.ironflow.canvas_widgets.layouts import NodeLayout
 
 from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:

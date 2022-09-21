@@ -8,14 +8,14 @@ from abc import ABC, abstractmethod
 
 from ryvencore.NodePort import NodePort, NodeInput, NodeOutput
 
-from ryven.ironflow.canvas.base import CanvasWidget, HideableWidget
-from ryven.ironflow.canvas.layouts import ButtonLayout
+from ryven.ironflow.canvas_widgets.base import CanvasWidget, HideableWidget
+from ryven.ironflow.canvas_widgets.layouts import ButtonLayout
 
 
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
-    from ryven.ironflow.canvas.base import Number
-    from ryven.ironflow.canvas.nodes import NodeWidget, RepresentableNodeWidget
+    from ryven.ironflow.canvas_widgets.base import Number
+    from ryven.ironflow.canvas_widgets.nodes import NodeWidget, RepresentableNodeWidget
 
 
 __author__ = "Liam Huber, Joerg Neugebauer"
