@@ -37,26 +37,26 @@ class NodeInterface:
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, central_gui: GUI):
+    def __init__(self, gui: GUI):
         self.node = None
-        self._central_gui = central_gui
+        self.gui = gui
         # self.input = []
 
     def gui_object(self) -> widgets.FloatSlider | widgets.Box:
         if "slider" in self.node.title.lower():
-            self.gui = widgets.FloatSlider(
+            self.gui_obj = widgets.FloatSlider(
                 value=self.node.val, min=0, max=10, continuous_update=False
             )
 
-            self.gui.observe(self.gui_object_change, names="value")
+            self.gui_obj.observe(self.gui_object_change, names="value")
         else:
-            self.gui = widgets.Box()
-        return self.gui
+            self.gui_obj = widgets.Box()
+        return self.gui_obj
 
     def gui_object_change(self, change: dict) -> None:
         self.node.set_state({"val": change["new"]}, 0)
         self.node.update_event()
-        self._central_gui.flow_canvas.redraw()
+        self.gui.flow_canvas.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -114,7 +114,7 @@ class NodeInterface:
         def input_change(change: dict) -> None:
             self.node.inputs[i_c].val = change["new"]
             self.node.update_event()
-            self._central_gui.flow_canvas.redraw()
+            self.gui.flow_canvas.redraw()
         return input_change
 
     def draw(self) -> widgets.VBox:
@@ -127,7 +127,7 @@ class NodeInterface:
             ),
         )
 
-        self.gui.layout = widgets.Layout(
+        self.gui_obj.layout = widgets.Layout(
             height="70px", border="solid 1px red", margin="10px", padding="10px"
         )
 
@@ -156,12 +156,12 @@ class NodeInterface:
             padding="0px",
         )
 
-        return widgets.VBox([title, self.inp_box, info_box])  # self.gui
+        return widgets.VBox([title, self.inp_box, info_box, self.gui_obj])  # self.gui_obj
 
     def draw_for_node(self, node: Node | None):
         self.node = node
-        with self._central_gui.out_status:
-            self._central_gui.out_status.clear_output()
+        with self.gui.out_status:
+            self.gui.out_status.clear_output()
             if node is not None:
                 self.gui_object()
                 self.input_widgets()
