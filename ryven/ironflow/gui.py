@@ -17,7 +17,7 @@ __date__ = "May 10, 2022"
 
 import ipywidgets as widgets
 from IPython.display import display, HTML
-from ryven.ironflow.models import HasSession
+from ryven.ironflow.model import HasSession
 from ryven.ironflow.node_interface import NodeController
 from ryven.ironflow.representation import NodePresenter
 from ryven.ironflow.flow_canvas import FlowCanvas
