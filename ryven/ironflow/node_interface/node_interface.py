@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from ryven.ironflow.node_interface_abc import NodeInterfaceBase
+from ryven.ironflow.node_interface.node_interface_abc import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 import numpy as np
@@ -14,7 +14,7 @@ import base64
 
 from typing import TYPE_CHECKING, Callable, Optional
 if TYPE_CHECKING:
-    from gui import GUI
+    from ryven.ironflow.gui import GUI
     from ryven.NENV import Node
 
 __author__ = "Joerg Neugebauer, Liam Huber"

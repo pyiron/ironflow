@@ -7,7 +7,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
-    from ironflow.ryven.ironflow.gui import GUI
+    from ryven.ironflow.gui import GUI
 import ipywidgets as widgets
 
 

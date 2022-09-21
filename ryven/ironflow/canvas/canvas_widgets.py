@@ -5,14 +5,13 @@
 from __future__ import annotations
 
 import numpy as np
-from IPython.display import display
-from ryven.ironflow.layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from ryven.ironflow.canvas.layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 from abc import ABC, abstractmethod
 from ryvencore.NodePort import NodeInput, NodeOutput
 
 from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
-    from ryven.ironflow.flow_canvas import FlowCanvas
+    from ryven.ironflow.canvas.flow_canvas import FlowCanvas
     from ryven.ironflow.gui import GUI
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
