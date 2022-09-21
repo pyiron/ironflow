@@ -362,6 +362,7 @@ class GUI(HasSession):
     def change_script_tabs(self, change: dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
             self._depopulate_text_input_panel()
+            self.flow_canvas.deselect_all()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
                 self._update_tabs_from_model()
