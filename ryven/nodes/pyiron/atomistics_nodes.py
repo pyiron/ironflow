@@ -6,6 +6,7 @@ import matplotlib.pylab as plt
 import numpy as np
 from pyiron_atomistics import Project
 from pyiron_atomistics.lammps import list_potentials
+from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 from ryven.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
 
@@ -247,7 +248,7 @@ class GenericOutput_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="job"),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="energy_tot", items=["energy_tot", "energy_pot"]
+                default="Input an atomistic job", items=["Input an atomistic job"]
             ),
             label="field",
         ),
@@ -260,10 +261,33 @@ class GenericOutput_Node(NodeWithRepresentation):
     def __init__(self, params):
         super().__init__(params)
 
-    def update_event(self, inp=-1):
-        self.inputs[1].dtype.items = self.input(0)["output/generic"].list_nodes()
-        val = self.input(0)[f"output/generic/{self.input(1)}"]
+    @property
+    def _job(self):
+        return self.input(0)
+
+    def _update_fields(self):
+        if isinstance(self._job, AtomisticGenericJob):
+            self.inputs[1].dtype.items = self._job["output/generic"].list_nodes()
+            self.inputs[1].val = self.inputs[1].dtype.items[0]
+        else:
+            self.inputs[1].dtype.items = [self.init_inputs[1].dtype.default]
+            # Note: It would be sensible to use `self.init_outputs[1].dtype.items` above, but this field gets updated
+            # to `self.inputs[1].dtype.items`, probably because of the mutability of lists.
+            self.inputs[1].val = self.init_inputs[1].dtype.default
+
+    def _update_value(self):
+        if isinstance(self._job, AtomisticGenericJob):
+            val = self._job[f"output/generic/{self.input(1)}"]
+        else:
+            val = None
         self.set_output_val(0, val)
+
+    def update_event(self, inp=-1):
+        if inp == 0:
+            self._update_fields()
+            self._update_value()
+        elif inp == 1:
+            self._update_value()
 
 
 class IntRand_Node(NodeWithRepresentation):
