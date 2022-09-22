@@ -72,7 +72,7 @@ class Project_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Char(default="."), label="name"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="project"),
     ]
     color = "#aabb44"
 
@@ -90,7 +90,7 @@ class Project_Node(NodeWithRepresentation):
 
 class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="structure"),
     ]
     color = "#aabb44"
 
@@ -178,7 +178,7 @@ class Lammps_Node(NodeWithRepresentation):
     ]
     init_outputs = [
         NodeOutputBP(type_="exec"),
-        NodeOutputBP(),
+        NodeOutputBP(label="job"),
     ]
     color = "#5d95de"
 
@@ -238,11 +238,6 @@ class Lammps_Node(NodeWithRepresentation):
             self._update_potential_choices()
 
 
-    @property
-    def representations(self) -> dict:
-        return {"job": self.output(1)}
-
-
 class GenericOutput_Node(NodeWithRepresentation):
     """Select Generic Output item"""
 
@@ -254,11 +249,11 @@ class GenericOutput_Node(NodeWithRepresentation):
             dtype=dtypes.Choice(
                 default="energy_tot", items=["energy_tot", "energy_pot"]
             ),
-            label="Var",
+            label="field",
         ),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="output"),
     ]
     color = "#c69a15"
 
@@ -282,7 +277,7 @@ class IntRand_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="length"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="randint"),
     ]
     color = "#aabb44"
 
@@ -300,7 +295,7 @@ class JobName_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Float(default=0), label="float"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="job name"),
     ]
     color = "#aabb44"
 
@@ -323,7 +318,7 @@ class Linspace_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="linspace"),
     ]
     color = "#aabb44"
 
@@ -342,18 +337,14 @@ class Plot3d_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data"),
-        NodeOutputBP(type_="data"),
+        NodeOutputBP(type_="data", label="plot3d"),
+        NodeOutputBP(type_="data", label="structure"),
     ]
     color = "#5d95de"
 
     def update_event(self, inp=-1):
         self.set_output_val(0, self.input(0).plot3d())
         self.set_output_val(1, self.input(0))
-
-    @property
-    def representations(self) -> dict:
-        return {"plot3d": self.output(0), "print": self.output(1)}
 
 
 class Matplot_Node(NodeWithRepresentation):
@@ -364,7 +355,7 @@ class Matplot_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="y"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data"),
+        NodeOutputBP(type_="data", label="fig"),
     ]
     color = "#5d95de"
 
@@ -385,7 +376,7 @@ class Sin_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Data(size="m")),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="sin"),
     ]
     color = "#5d95de"
 
@@ -429,9 +420,9 @@ class ForEach_Node(NodeBase):
         NodeInputBP(dtype=dtypes.List(), label="elements"),
     ]
     init_outputs = [
-        NodeOutputBP("loop", type_="exec"),
-        NodeOutputBP("e", type_="data"),
-        NodeOutputBP("finished", type_="exec"),
+        NodeOutputBP(label="loop", type_="exec"),
+        NodeOutputBP(label="e", type_="data"),
+        NodeOutputBP(label="finished", type_="exec"),
     ]
     color = '#b33a27'
 
