@@ -34,7 +34,7 @@ class NodeBase(Node):
     # here we could add some stuff for all nodes below...
 
 
-class NodeWithDisplay(NodeBase, ABC):
+class NodeWithRepresentation(NodeBase, ABC):
     main_widget_class = RepresentableNodeWidget
 
     def __init__(self, params):
@@ -56,7 +56,7 @@ class NodeWithDisplay(NodeBase, ABC):
         return self.outputs[i].val
 
 
-class Project_Node(NodeWithDisplay):
+class Project_Node(NodeWithRepresentation):
     """Create a pyiron project node"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -83,7 +83,7 @@ class Project_Node(NodeWithDisplay):
         return {"name": str(self.input(0))}
 
 
-class OutputsOnlyAtoms(NodeWithDisplay, ABC):
+class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
     init_outputs = [
         NodeOutputBP(),
     ]
@@ -161,7 +161,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
-class Lammps_Node(NodeWithDisplay):
+class Lammps_Node(NodeWithRepresentation):
     title = "Lammps"
     version = "v0.1"
     init_inputs = [
@@ -242,7 +242,7 @@ class Lammps_Node(NodeWithDisplay):
         return {"job": self.output(1)}
 
 
-class GenericOutput_Node(NodeWithDisplay):
+class GenericOutput_Node(NodeWithRepresentation):
     """Select Generic Output item"""
 
     version = "v0.1"
@@ -271,7 +271,7 @@ class GenericOutput_Node(NodeWithDisplay):
         self.set_output_val(0, val)
 
 
-class IntRand_Node(NodeWithDisplay):
+class IntRand_Node(NodeWithRepresentation):
     """Generate a random number in a given range"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -292,7 +292,7 @@ class IntRand_Node(NodeWithDisplay):
         self.set_output_val(0, val)
 
 
-class JobName_Node(NodeWithDisplay):
+class JobName_Node(NodeWithRepresentation):
     """Create job name for parameters"""
 
     title = "JobName"
@@ -313,7 +313,7 @@ class JobName_Node(NodeWithDisplay):
         self.set_output_val(0, val)
 
 
-class Linspace_Node(NodeWithDisplay):
+class Linspace_Node(NodeWithRepresentation):
     """Generate a linear mesh in a given range using np.linspace"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -339,7 +339,7 @@ class Linspace_Node(NodeWithDisplay):
         self.set_output_val(0, val)
 
 
-class Plot3d_Node(NodeWithDisplay):
+class Plot3d_Node(NodeWithRepresentation):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
@@ -365,7 +365,7 @@ class Plot3d_Node(NodeWithDisplay):
             return {"plot3d": self.output(0)}
 
 
-class Matplot_Node(NodeWithDisplay):
+class Matplot_Node(NodeWithRepresentation):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
@@ -387,7 +387,7 @@ class Matplot_Node(NodeWithDisplay):
         plt.ion()
 
 
-class Sin_Node(NodeWithDisplay):
+class Sin_Node(NodeWithRepresentation):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
