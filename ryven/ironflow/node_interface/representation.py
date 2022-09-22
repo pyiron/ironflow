@@ -31,8 +31,8 @@ class NodePresenter(NodeInterfaceBase):
     def __init__(self, gui: GUI, layout: Optional[dict] = None):
         super().__init__(gui=gui, layout=layout)
         self._node_widget = None
-        self._widgets = None
-        self._toggles = None
+        self._widgets = []
+        self._toggles = []
 
     @property
     def node_widget(self) -> RepresentableNodeWidget | None:
@@ -51,8 +51,8 @@ class NodePresenter(NodeInterfaceBase):
             self._toggles = self._build_toggles(new_node_widget.node.representations)
         else:
             self._node_widget = None
-            self._widgets = None
-            self._toggles = None
+            self._widgets = []
+            self._toggles = []
 
     @staticmethod
     def _build_widgets(representations: dict) -> list[widgets.Output]:
@@ -96,3 +96,8 @@ class NodePresenter(NodeInterfaceBase):
         if self.node_widget is not None and self.node_widget.node.representation_updated:
             self._draw()
             self.node_widget.node.representation_updated = False
+
+    def clear_output(self):
+        for w in self._widgets:
+            w.clear_output()
+        super().clear_output()
