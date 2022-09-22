@@ -59,7 +59,8 @@ class NodeWithRepresentation(NodeBase, ABC):
     @property
     def representations(self) -> dict:
         return {
-            o.label_str if o.label_str != "" else f"output{i}": o.val for i, o in enumerate(self.outputs)
+            o.label_str if o.label_str != "" else f"output{i}": o.val
+            for i, o in enumerate(self.outputs) if o.type_ == "data"
         }
 
 
