@@ -49,10 +49,8 @@ class NodeWithRepresentation(NodeBase, ABC):
 
     def __init__(self, params):
         super().__init__(params)
-        self._representation = None
         self.representation_updated = False
         self._call_after_update.append(self._representation_update)
-        self.displayed = False
 
     def _representation_update(self, inp):
         self.representation_updated = True
