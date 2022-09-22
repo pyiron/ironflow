@@ -340,7 +340,6 @@ class Plot3d_Node(NodeWithRepresentation):
     version = "v0.1"
     init_inputs = [
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
-        NodeInputBP(dtype=dtypes.Boolean(default=False), label="print")
     ]
     init_outputs = [
         NodeOutputBP(type_="data"),
@@ -354,10 +353,7 @@ class Plot3d_Node(NodeWithRepresentation):
 
     @property
     def representations(self) -> dict:
-        if self.input(1):
-            return {"plot3d": self.output(0), "print": self.output(1)}
-        else:
-            return {"plot3d": self.output(0)}
+        return {"plot3d": self.output(0), "print": self.output(1)}
 
 
 class Matplot_Node(NodeWithRepresentation):
