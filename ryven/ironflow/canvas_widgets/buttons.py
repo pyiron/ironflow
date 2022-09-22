@@ -56,6 +56,13 @@ class ButtonWidget(CanvasWidget, ABC):
     def press(self):
         self.pressed = True
         self.on_pressed()
+        # Ok, now here is a weird hack:
+        self.gui.node_controller.draw()
+        # This way, if a button causes some change in node-state, it gets reflected in the node_controller,
+        # e.g. if we `run` or `remove` some job, but a nodestream node is taking that job as input.
+        # Performance and usability hits are minimal, but from a maintenance perspective it is super bad, confusing,
+        # and hard to maintain, so it would be much nicer in the future to find a way to hook the node_controller right
+        #  onto input updates on the nodes
 
     def unpress(self):
         self.pressed = False
