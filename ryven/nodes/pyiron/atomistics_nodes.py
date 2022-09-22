@@ -30,8 +30,18 @@ class NodeBase(Node):
 
     def __init__(self, params):
         super().__init__(params)
+        self._call_after_update = []
 
-    # here we could add some stuff for all nodes below...
+    def update(self, inp=-1):
+        super().update(inp=inp)
+        self._after_update(inp)
+
+    def _after_update(self, inp: int):
+        for fnc in self._call_after_update:
+            fnc(inp)
+
+    def output(self, i):
+        return self.outputs[i].val
 
 
 class NodeWithRepresentation(NodeBase, ABC):
@@ -41,9 +51,10 @@ class NodeWithRepresentation(NodeBase, ABC):
         super().__init__(params)
         self._representation = None
         self.representation_updated = False
+        self._call_after_update.append(self._representation_update)
         self.displayed = False
 
-    def update_event(self, inp=-1):
+    def _representation_update(self, inp):
         self.representation_updated = True
 
     @property
@@ -51,9 +62,6 @@ class NodeWithRepresentation(NodeBase, ABC):
         return {
             o.label_str if o.label_str != "" else f"output{i}": o.val for i, o in enumerate(self.outputs)
         }
-
-    def output(self, i):
-        return self.outputs[i].val
 
 
 class Project_Node(NodeWithRepresentation):
@@ -74,7 +82,6 @@ class Project_Node(NodeWithRepresentation):
         self.update()
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         pr = Project(self.input(0))
         self.set_output_val(0, pr)
 
@@ -92,7 +99,7 @@ class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
     @abstractmethod
     def update_event(self, inp=-1):
         """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
-        super().update_event(inp=inp)
+        pass
 
     @property
     def representations(self) -> dict:
@@ -115,7 +122,6 @@ class BulkStructure_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         pr = self.input(0)
         self.set_output_val(
             0, pr.create.structure.bulk(self.input(1), cubic=self.input(2))
@@ -134,7 +140,6 @@ class Repeat_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).repeat(self.input(1)))
 
 
@@ -157,7 +162,6 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
@@ -228,7 +232,6 @@ class Lammps_Node(NodeWithRepresentation):
             potl_input.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         if inp == 0:
             self._run()
         elif inp == 1:
@@ -265,7 +268,6 @@ class GenericOutput_Node(NodeWithRepresentation):
         super().__init__(params)
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.inputs[1].dtype.items = self.input(0)["output/generic"].list_nodes()
         val = self.input(0)[f"output/generic/{self.input(1)}"]
         self.set_output_val(0, val)
@@ -287,7 +289,6 @@ class IntRand_Node(NodeWithRepresentation):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         val = np.random.randint(0, high=self.input(0), size=self.input(1))
         self.set_output_val(0, val)
 
@@ -306,7 +307,6 @@ class JobName_Node(NodeWithRepresentation):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         val = self.input(0) + f"{float(self.input(1))}".replace("-", "m").replace(
             ".", "p"
         )
@@ -333,9 +333,7 @@ class Linspace_Node(NodeWithRepresentation):
         self.update()    
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         val = np.linspace(self.input(0), self.input(1), self.input(2))
-        # val = 10
         self.set_output_val(0, val)
 
 
@@ -353,7 +351,6 @@ class Plot3d_Node(NodeWithRepresentation):
     color = "#5d95de"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).plot3d())
         self.set_output_val(1, self.input(0))
 
@@ -399,7 +396,6 @@ class Sin_Node(NodeWithRepresentation):
     color = "#5d95de"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, np.sin(self.input(0)))
 
 
