@@ -89,7 +89,6 @@ class FlowCanvas:
         self._mouse_is_down = False
         self._last_mouse_down = time()
         self._double_click_speed = 0.25  # In seconds. TODO: Put this in a config somewhere
-        self.redraw_on_mouse_up = False
 
         self._object_to_gui_dict = {}
 
@@ -167,9 +166,6 @@ class FlowCanvas:
 
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
-        if self.redraw_on_mouse_up:
-            self.redraw()
-            self.redraw_on_mouse_up = False
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
         for o in self.objects_to_draw:
