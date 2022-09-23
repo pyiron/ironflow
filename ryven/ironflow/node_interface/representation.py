@@ -61,7 +61,7 @@ class NodePresenter(NodeInterfaceBase):
     def _build_toggles(self, representations: dict) -> list[widgets.Checkbox]:
         toggles = []
         for i, label in enumerate(representations.keys()):
-            toggle = widgets.Checkbox(description=label, value=i == 0, indent=False)
+            toggle = widgets.Checkbox(description=label, value=i == 0, indent=False, layout={"width": "100px"})
             toggle.observe(self._on_toggle)
             toggles.append(toggle)
         return toggles
