@@ -125,7 +125,9 @@ class Project_Node(NodeWithRepresentation):
     def representations(self) -> dict:
         return {
             "name": str(self.input(0)),
-            "job_table": self._project.job_table() if self._project is not None else None
+            # "job_table": self._project.job_table() if self._project is not None else None
+            # TODO: Figure out how to display this without breaking the gui size; right now it automatically grows
+            # the gui because the table is so wide.
         }
 
 
