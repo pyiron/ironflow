@@ -118,8 +118,15 @@ class Project_Node(NodeWithRepresentation):
         self.set_output_val(0, pr)
 
     @property
+    def _project(self):
+        return self.output(0)
+
+    @property
     def representations(self) -> dict:
-        return {"name": str(self.input(0))}
+        return {
+            "name": str(self.input(0)),
+            "job_table": self._project.job_table() if self._project is not None else None
+        }
 
 
 class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
