@@ -87,7 +87,7 @@ class NodePresenter(NodeInterfaceBase):
         with self.output:
             display(
                 widgets.VBox([
-                    widgets.HBox(self._toggles),
+                    widgets.HBox(self._toggles, layout={"flex_flow": "row wrap"}),
                     *representations
                 ])
             )
