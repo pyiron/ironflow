@@ -204,11 +204,13 @@ class ExecButtonWidget(ButtonWidget):
         self.port = port
 
     def on_pressed(self):
-        self.unpress()
+        self.parent.parent.redraw()
         if isinstance(self.port, NodeInput):
             self.port.update()
         elif isinstance(self.port, NodeOutput):
             self.port.exec()
+        self.parent.parent.redraw_on_mouse_up = True
+        self.unpress()
 
     def on_unpressed(self):
         pass
