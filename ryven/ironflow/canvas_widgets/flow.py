@@ -100,6 +100,10 @@ class FlowCanvas:
     @property
     def gui(self):
         return self._gui
+    
+    @property
+    def flow_canvas(self) -> FlowCanvas:
+        return self
 
     def draw_connection(self, port_1: int, port_2: int) -> None:
         out = self._object_to_gui_dict[port_1]

@@ -204,12 +204,12 @@ class ExecButtonWidget(ButtonWidget):
         self.port = port
 
     def on_pressed(self):
-        self.parent.parent.redraw()
+        self.flow_canvas.redraw()
         if isinstance(self.port, NodeInput):
             self.port.update()
         elif isinstance(self.port, NodeOutput):
             self.port.exec()
-        self.parent.parent.redraw_on_mouse_up = True
+        self.flow_canvas.redraw_on_mouse_up = True
         self.unpress()
 
     def on_unpressed(self):
