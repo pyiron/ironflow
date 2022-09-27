@@ -3,7 +3,7 @@ import os
 from os.path import normpath, join, dirname, abspath, basename, expanduser
 import importlib.util
 
-from ryven.main.nodes_package import NodesPackage
+from ironflow.main.nodes_package import NodesPackage
 
 
 def load_from_file(file: str = None, components_list: [str] = []) -> tuple:
@@ -45,7 +45,7 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
             "For example set os.environ['RYVEN_MODE'] = 'no-gui' for gui-less deployment."
         )
 
-    from ryven import NENV
+    from ironflow import NENV
     load_from_file(package.file_path)
 
     nodes = NENV.NodesRegistry.exported_nodes[-1]

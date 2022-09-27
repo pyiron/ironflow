@@ -9,13 +9,13 @@ from abc import ABC, abstractmethod
 from ipycanvas import Canvas
 
 
-from ryven.ironflow.canvas_widgets.layouts import Layout
+from ironflow.ironflow.canvas_widgets.layouts import Layout
 
 from typing import TYPE_CHECKING, Optional, Union
 Number = Union[int, float]
 if TYPE_CHECKING:
-    from ryven.ironflow.gui import GUI
-    from ryven.ironflow.canvas_widgets.flow import FlowCanvas
+    from ironflow.ironflow.gui import GUI
+    from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
     from ryvencore import Flow
 
 __author__ = "Liam Huber, Joerg Neugebauer"

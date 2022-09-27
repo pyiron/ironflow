@@ -4,14 +4,14 @@
 
 from __future__ import annotations
 
-from ryven.ironflow.node_interface.base import NodeInterfaceBase
+from ironflow.ironflow.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 
 from typing import TYPE_CHECKING, Optional, Callable
 if TYPE_CHECKING:
-    from ryven.ironflow.gui import GUI
-    from ryven.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
+    from ironflow.ironflow.gui import GUI
+    from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
 
 __author__ = "Liam huber"
 __copyright__ = (

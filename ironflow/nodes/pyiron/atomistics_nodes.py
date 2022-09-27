@@ -10,11 +10,11 @@ import json
 from pyiron_atomistics import Project
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
-from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
-from ryven.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
+from ironflow.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
+from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
 
 from abc import ABC, abstractmethod
-from ryven.nodes.std.special_nodes import DualNodeBase
+from ironflow.nodes.std.special_nodes import DualNodeBase
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

@@ -1,9 +1,9 @@
 import code
 from contextlib import redirect_stdout, redirect_stderr
 
-from ryven.NENV import *
+from ironflow.NENV import *
 widgets = import_widgets(__file__)
-from ryven.ironflow.node_interface.input_widgets import SliderControl
+from ironflow.ironflow.node_interface.input_widgets import SliderControl
 
 
 class NodeBase(Node):
