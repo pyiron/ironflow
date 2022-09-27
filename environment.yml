@@ -2,7 +2,11 @@ channels:
 - conda-forge
 dependencies:
 - python >= 3.7
-- pyiron
+- ipython
+- ipywidgets
+- matplotlib
 - nglview
+- numpy
+- pyiron_base
+- pyiron_atomistics
 - ryvencore
-- ipycanvas
