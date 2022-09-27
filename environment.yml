@@ -9,5 +9,5 @@ dependencies:
 - nglview
 - numpy
 - pyiron_base
-- pyiron_atomistics
+- pyiron_atomistics >= 0.2.57
 - ryvencore
