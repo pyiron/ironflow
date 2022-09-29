@@ -18,13 +18,12 @@ __date__ = "May 10, 2022"
 import ipywidgets as widgets
 from IPython.display import display, HTML
 from ironflow.ironflow.model import HasSession
-from ironflow.ironflow.panels import NodeController, NodePresenter, TextOut
+from ironflow.ironflow.panels import Toolbar, NodeController, NodePresenter, TextOut
 from ironflow.ironflow.canvas_widgets import FlowCanvas
 
 from typing import Optional
 from ryvencore import Session
 
-alg_modes = ["data", "exec"]
 debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
@@ -33,6 +32,7 @@ class GUI(HasSession):
         super().__init__(session_title=session_title, session=session)
 
         self._flow_canvases = []
+        self.toolbar = Toolbar()
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
         self.text = TextOut()
@@ -101,72 +101,6 @@ class GUI(HasSession):
             layout=widgets.Layout(width="130px"),
         )
 
-        self.alg_mode_dropdown = widgets.Dropdown(
-            options=alg_modes,
-            value=alg_modes[0],
-            disabled=False,
-            layout=widgets.Layout(width="80px"),
-        )
-
-        button_layout = widgets.Layout(width="50px")
-        # Icon source: https://fontawesome.com
-        # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
-        # v4 icon search: https://fontawesome.com/v4/icons/
-        self.btn_load = widgets.Button(tooltip="Load session from JSON", icon="upload", layout=button_layout)
-        self.btn_save = widgets.Button(tooltip="Save session to JSON", icon="download", layout=button_layout)
-        self.btn_help_node = widgets.Button(
-            tooltip="Print docs for new node class", icon="question-circle", layout=button_layout
-        )
-        self.btn_add_node = widgets.Button(
-            tooltip="Add new node (or double-click on empty space)", icon="plus-circle", layout=button_layout
-        )
-        self.btn_delete_node = widgets.Button(
-            tooltip="Delete selected node (or double-click on the node)", icon="minus-circle", layout=button_layout
-        )
-        self.btn_create_script = widgets.Button(
-            tooltip="Create script (or click the '+' tab)", icon="plus-square-o", layout=button_layout
-        )
-        self.btn_rename_script = widgets.Button(
-            tooltip="Rename script",
-            icon="pencil-square-o",  # TODO: Use file-pen once this is available
-            layout=button_layout
-        )
-        self.btn_delete_script = widgets.Button(
-            tooltip="Delete script",
-            icon="minus-square-o",  # TODO: Use file-circle-minus once this is available
-            layout=button_layout
-        )
-        self.btn_zero_location = widgets.Button(
-            tooltip="Recenter script canvas at the origin",
-            icon="map-marker",  # TODO: Use location-dot once this is available
-            layout=button_layout
-        )
-        self.btn_zoom_in = widgets.Button(
-            tooltip="Zoom canvas in",
-            icon="search-plus",
-            layout=button_layout
-        )
-        self.btn_zoom_out = widgets.Button(
-            tooltip="Zoom canvas out",
-            icon="search-minus",
-            layout=button_layout
-        )
-        buttons = [
-            self.btn_save,
-            self.btn_load,
-            self.btn_help_node,
-            self.btn_add_node,
-            self.btn_delete_node,
-            self.btn_create_script,
-            self.btn_rename_script,
-            self.btn_delete_script,
-            self.btn_zero_location,
-            self.btn_zoom_in,
-            self.btn_zoom_out,
-        ]
-
-        toolbar = widgets.HBox([self.alg_mode_dropdown, *buttons])
-
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
         self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
@@ -193,29 +127,29 @@ class GUI(HasSession):
         node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
         # Wire callbacks
-        self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
+        self.toolbar.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
         self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
-        self.btn_help_node.on_click(self.click_node_help)
-        self.btn_load.on_click(self.click_load)
-        self.btn_save.on_click(self.click_save)
-        self.btn_add_node.on_click(self.click_add_node)
-        self.btn_delete_node.on_click(self.click_delete_node)
-        self.btn_create_script.on_click(self.click_create_script)
-        self.btn_rename_script.on_click(self.click_rename_script)
+        self.toolbar.buttons.help_node.on_click(self.click_node_help)
+        self.toolbar.buttons.load.on_click(self.click_load)
+        self.toolbar.buttons.save.on_click(self.click_save)
+        self.toolbar.buttons.add_node.on_click(self.click_add_node)
+        self.toolbar.buttons.delete_node.on_click(self.click_delete_node)
+        self.toolbar.buttons.create_script.on_click(self.click_create_script)
+        self.toolbar.buttons.rename_script.on_click(self.click_rename_script)
         self.btn_input_text_ok.on_click(self.click_input_text_ok)
         self.text_input_field.on_submit(self.click_input_text_ok)
         # ^ Ignore the deprecation warning, 'observe' doesn't function the way we actually want
         # https://github.com/jupyter-widgets/ipywidgets/issues/2446
         self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
-        self.btn_delete_script.on_click(self.click_delete_script)
-        self.btn_zero_location.on_click(self.click_zero_location)
-        self.btn_zoom_in.on_click(self.click_zoom_in)
-        self.btn_zoom_out.on_click(self.click_zoom_out)
+        self.toolbar.buttons.delete_script.on_click(self.click_delete_script)
+        self.toolbar.buttons.zero_location.on_click(self.click_zero_location)
+        self.toolbar.buttons.zoom_in.on_click(self.click_zoom_in)
+        self.toolbar.buttons.zoom_out.on_click(self.click_zoom_out)
         self.script_tabs.observe(self.change_script_tabs)
 
         return widgets.VBox(
             [
-                toolbar,
+                self.toolbar.panel,
                 self.text_input_panel,
                 flow_panel,
                 self.text.panel,
