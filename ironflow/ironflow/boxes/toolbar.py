@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import ipywidgets as widgets
+from ironflow.ironflow.boxes.base import Box
 
 
 class Buttons:
@@ -60,7 +61,7 @@ class Buttons:
         return self.__dict__.values().__iter__()
 
 
-class Toolbar:
+class Toolbar(Box):
     def __init__(self):
         alg_modes = ["data", "exec"]
         self.alg_mode_dropdown = widgets.Dropdown(
@@ -73,5 +74,5 @@ class Toolbar:
         self.buttons = Buttons()
 
     @property
-    def panel(self):
+    def box(self) -> widgets.HBox:
         return widgets.HBox([self.alg_mode_dropdown, *self.buttons])

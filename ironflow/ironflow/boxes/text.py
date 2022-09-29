@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 from IPython.display import display
+from ironflow.ironflow.boxes.base import Box
 
 
 class TextOut:
@@ -35,7 +36,7 @@ class TextOut:
         self._button.layout.height = "auto"
 
     @property
-    def panel(self):
+    def box(self) -> widgets.VBox:
         layout = widgets.Layout(
             width="100%",
             border="1px solid black",

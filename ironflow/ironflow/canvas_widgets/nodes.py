@@ -110,7 +110,7 @@ class NodeWidget(CanvasWidget):
                 self.gui.node_controller.draw_for_node(self.node)
                 return self
             except Exception as e:
-                self.gui.text.print(f"Failed to handle selection of {self} with exception {e}")
+                self.gui.text_out.print(f"Failed to handle selection of {self} with exception {e}")
                 self.gui.node_controller.clear_output()
                 self.deselect()
                 return None

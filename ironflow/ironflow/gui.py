@@ -18,7 +18,7 @@ __date__ = "May 10, 2022"
 import ipywidgets as widgets
 from IPython.display import display, HTML
 from ironflow.ironflow.model import HasSession
-from ironflow.ironflow.panels import Toolbar, NodeController, NodePresenter, TextOut
+from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut
 from ironflow.ironflow.canvas_widgets import FlowCanvas
 
 from typing import Optional
@@ -35,7 +35,7 @@ class GUI(HasSession):
         self.toolbar = Toolbar()
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
-        self.text = TextOut()
+        self.text_out = TextOut()
 
         self._context = None
         self._context_actions = {
@@ -150,10 +150,10 @@ class GUI(HasSession):
 
         return widgets.VBox(
             [
-                self.toolbar.panel,
+                self.toolbar.box,
                 self.text_input_panel,
                 flow_panel,
-                self.text.panel,
+                self.text_out.box,
                 node_box,
                 debug_view
             ]
@@ -178,11 +178,11 @@ class GUI(HasSession):
             description_tooltip="Save to file name"
         )
         self._set_context("save")
-        self.text.print("Choose a file name to save to (omit the file extension, .json)")
+        self.text_out.print("Choose a file name to save to (omit the file extension, .json)")
 
     def _save_context_action(self, file_name):
         self.save(f"{file_name}.json")
-        self.text.print(f"Session saved to {file_name}.json")
+        self.text_out.print(f"Session saved to {file_name}.json")
 
     def click_load(self, change: dict) -> None:
         self._depopulate_text_input_panel()
@@ -192,13 +192,13 @@ class GUI(HasSession):
             description_tooltip="Load from file name"
         )
         self._set_context("load")
-        self.text.print("Choose a file name to load (omit the file extension, .json)")
+        self.text_out.print("Choose a file name to load (omit the file extension, .json)")
 
     def _load_context_action(self, file_name):
         self.load(f"{file_name}.json")
         self._update_tabs_from_model()
         self.node_presenter.clear_output()
-        self.text.print(f"Session loaded from {file_name}.json")
+        self.text_out.print(f"Session loaded from {file_name}.json")
 
     def click_node_help(self, change: dict) -> None:
         def _pretty_docstring(node_class):
@@ -210,7 +210,7 @@ class GUI(HasSession):
             string = f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
             return HTML(string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;"))
 
-        self.text.print(_pretty_docstring(self.new_node_class))
+        self.text_out.print(_pretty_docstring(self.new_node_class))
 
     def click_add_node(self, change: dict) -> None:
         self.flow_canvas.add_node(10, 10, self.new_node_class)
@@ -233,16 +233,16 @@ class GUI(HasSession):
             description_tooltip="New script name"
         )
         self._set_context('rename')
-        self.text.print("Choose a new name for the current script")
+        self.text_out.print("Choose a new name for the current script")
 
     def _rename_context_action(self, new_name):
         old_name = self.script.title
         rename_success = self.rename_script(new_name)
         if rename_success:
             self.script_tabs.set_title(self.active_script_index, new_name)
-            self.text.print(f"Script '{old_name}' renamed '{new_name}'")
+            self.text_out.print(f"Script '{old_name}' renamed '{new_name}'")
         else:
-            self.text.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
+            self.text_out.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
     def click_delete_script(self, change: dict) -> None:
         self.delete_script()
@@ -279,7 +279,7 @@ class GUI(HasSession):
 
     def click_input_text_cancel(self, change: dict) -> None:
         self._depopulate_text_input_panel()
-        self.text.clear()
+        self.text_out.clear()
 
     def _set_context(self, context):
         if context not in self._context_actions.keys():

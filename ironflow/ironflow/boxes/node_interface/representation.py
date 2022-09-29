@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from ironflow.ironflow.panels.node_interface.base import NodeInterfaceBase
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 
