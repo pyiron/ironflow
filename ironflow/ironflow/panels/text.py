@@ -42,7 +42,7 @@ class TextOut:
         )
         return widgets.VBox([self._output, self._button], layout=layout)
 
-    def __call__(self, msg: str):
+    def print(self, msg: str):
         self._output.clear_output()
         with self._output:
             display(msg)
