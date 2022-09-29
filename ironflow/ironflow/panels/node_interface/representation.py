@@ -4,11 +4,12 @@
 
 from __future__ import annotations
 
-from ironflow.ironflow.node_interface.base import NodeInterfaceBase
+from ironflow.ironflow.panels.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 
-from typing import TYPE_CHECKING, Optional, Callable
+from typing import TYPE_CHECKING, Optional
+
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
     from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
