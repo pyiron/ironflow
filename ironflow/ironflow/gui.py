@@ -190,8 +190,6 @@ class GUI(HasSession):
 
         flow_panel = widgets.HBox([node_panel, self.script_tabs])
 
-        self.out_log = widgets.Output(layout={"border": "1px solid black"})
-
         node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
         # Wire callbacks
