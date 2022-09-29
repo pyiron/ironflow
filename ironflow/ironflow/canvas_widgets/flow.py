@@ -239,7 +239,7 @@ class FlowCanvas:
             self._canvas.height = self._height
             self.redraw()
         else:
-            self.gui._print("Zoom limit reached")
+            self.gui.text.print("Zoom limit reached")
 
     def zoom_in(self) -> None:
         self._zoom(max(self._zoom_index - 1, 0))
