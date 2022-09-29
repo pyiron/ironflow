@@ -164,6 +164,8 @@ class GUI(HasSession):
             self.btn_zoom_out,
         ]
 
+        toolbar = widgets.HBox([self.alg_mode_dropdown, *buttons])
+
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
         self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
@@ -177,13 +179,18 @@ class GUI(HasSession):
             disabled=False,
         )
         self.node_selector_box = widgets.VBox([self.node_selector])
-        self.node_selector_box.layout.width = "15%"
+
+        node_panel = widgets.VBox([self.modules_dropdown, self.node_selector_box])
+        node_panel.layout.width = "15%"
 
         self.script_tabs = widgets.Tab([])
-        self.script_tabs.layout.width = "95%"
+        self.script_tabs.layout.width = "85%"
         self._update_tabs_from_model()
 
+        flow_panel = widgets.HBox([node_panel, self.script_tabs])
+
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
+
         node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
         # Wire callbacks
@@ -209,17 +216,9 @@ class GUI(HasSession):
 
         return widgets.VBox(
             [
-                widgets.HBox(
-                    [
-                        self.modules_dropdown,
-                        self.alg_mode_dropdown,
-                        *buttons,
-                    ]
-                ),
+                toolbar,
                 self.text_input_panel,
-                widgets.HBox(
-                    [self.node_selector_box, self.script_tabs]
-                ),
+                flow_panel,
                 self.out_log,
                 node_box,
                 debug_view
