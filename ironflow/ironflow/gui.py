@@ -103,8 +103,9 @@ class GUI(HasSession):
 
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
-        self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
-        self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
+        layout = widgets.Layout(width="50px")
+        self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=layout)
+        self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=layout)
         # TODO: Use xmark once this is available
 
         nodes_options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
