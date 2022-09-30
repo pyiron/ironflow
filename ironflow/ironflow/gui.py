@@ -155,7 +155,7 @@ class GUI(HasSession):
             script.flow.set_algorithm_mode(self.toolbar.alg_mode_dropdown.value)
 
     def click_save(self, change: dict) -> None:
-        self.text_in.open(
+        self.text_in.open_text(
             "Save file",
             self.click_confirm_save,
             self.session_title,
@@ -170,7 +170,7 @@ class GUI(HasSession):
         self.text_in.clear()
 
     def click_load(self, change: dict) -> None:
-        self.text_in.open(
+        self.text_in.open_text(
             "Load file",
             self.click_confirm_load,
             self.session_title,
@@ -212,7 +212,7 @@ class GUI(HasSession):
         self.flow_canvas.redraw()
 
     def click_rename_script(self, change: dict) -> None:
-        self.text_in.open(
+        self.text_in.open_text(
             "New name",
             self.click_confirm_rename,
             self.script.title,
@@ -231,8 +231,16 @@ class GUI(HasSession):
             self.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
     def click_delete_script(self, change: dict) -> None:
+        self.text_in.open_bool(
+            f"Delete the entire script {self.script.title}?",
+            self.click_confirm_delete_script
+        )
+
+    def click_confirm_delete_script(self, change: dict) -> None:
+        script_name = self.script.title
         self.delete_script()
         self._update_tabs_from_model()
+        self.print(f"Script {script_name} deleted")
 
     def click_zero_location(self, change: dict) -> None:
         self.flow_canvas.x = 0
