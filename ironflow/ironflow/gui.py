@@ -18,7 +18,7 @@ __date__ = "May 10, 2022"
 import ipywidgets as widgets
 from IPython.display import display, HTML
 from ironflow.ironflow.model import HasSession
-from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, TextIn
+from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput
 from ironflow.ironflow.canvas_widgets import FlowCanvas
 
 from typing import Optional
@@ -36,7 +36,7 @@ class GUI(HasSession):
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
         self.text_out = TextOut()
-        self.text_in = TextIn()
+        self.text_in = UserInput()
 
         self.create_script(script_title)
 
