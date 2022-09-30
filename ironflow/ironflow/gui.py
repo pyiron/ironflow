@@ -36,13 +36,7 @@ class GUI(HasSession):
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
         self.text_out = TextOut()
-
-        self._context = None
-        self._context_actions = {
-            "rename": self._rename_context_action,
-            "save": self._save_context_action,
-            "load": self._load_context_action
-        }
+        self.text_in = TextIn()
 
         self.create_script(script_title)
 
@@ -101,13 +95,6 @@ class GUI(HasSession):
             layout=widgets.Layout(width="130px"),
         )
 
-        self.text_input_panel = widgets.HBox([])
-        self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
-        layout = widgets.Layout(width="50px")
-        self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=layout)
-        self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=layout)
-        # TODO: Use xmark once this is available
-
         nodes_options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
         self.node_selector = widgets.RadioButtons(
             options=nodes_options,
@@ -137,11 +124,8 @@ class GUI(HasSession):
         self.toolbar.buttons.delete_node.on_click(self.click_delete_node)
         self.toolbar.buttons.create_script.on_click(self.click_create_script)
         self.toolbar.buttons.rename_script.on_click(self.click_rename_script)
-        self.btn_input_text_ok.on_click(self.click_input_text_ok)
-        self.text_input_field.on_submit(self.click_input_text_ok)
         # ^ Ignore the deprecation warning, 'observe' doesn't function the way we actually want
         # https://github.com/jupyter-widgets/ipywidgets/issues/2446
-        self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.toolbar.buttons.delete_script.on_click(self.click_delete_script)
         self.toolbar.buttons.zero_location.on_click(self.click_zero_location)
         self.toolbar.buttons.zoom_in.on_click(self.click_zoom_in)
@@ -151,7 +135,7 @@ class GUI(HasSession):
         return widgets.VBox(
             [
                 self.toolbar.box,
-                self.text_input_panel,
+                self.text_in.box,
                 flow_panel,
                 self.text_out.box,
                 node_box,
@@ -168,37 +152,39 @@ class GUI(HasSession):
         # Current behaviour: Updates the flow mode for all scripts
         # TODO: Change only for the active script, and update the dropdown on tab (script) switching
         for script in self.session.scripts:
-            script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
+            script.flow.set_algorithm_mode(self.toolbar.alg_mode_dropdown.value)
 
     def click_save(self, change: dict) -> None:
-        self._depopulate_text_input_panel()
-        self._populate_text_input_panel(
+        self.text_in.open(
             "Save file",
+            self.click_confirm_save,
             self.session_title,
-            description_tooltip="Save to file name"
+            description_tooltip="Save to file name (omit the file extension, .json)"
         )
-        self._set_context("save")
         self.print("Choose a file name to save to (omit the file extension, .json)")
 
-    def _save_context_action(self, file_name):
+    def click_confirm_save(self, change: dict) -> None:
+        file_name = self.text_in.value
         self.save(f"{file_name}.json")
         self.print(f"Session saved to {file_name}.json")
+        self.text_in.clear()
 
     def click_load(self, change: dict) -> None:
-        self._depopulate_text_input_panel()
-        self._populate_text_input_panel(
+        self.text_in.open(
             "Load file",
+            self.click_confirm_load,
             self.session_title,
-            description_tooltip="Load from file name"
+            description_tooltip="Load from file name (omit the file extension, .json)."
         )
-        self._set_context("load")
         self.print("Choose a file name to load (omit the file extension, .json)")
 
-    def _load_context_action(self, file_name):
+    def click_confirm_load(self, change: dict) -> None:
+        file_name = self.text_in.value
         self.load(f"{file_name}.json")
         self._update_tabs_from_model()
         self.node_presenter.clear_output()
         self.print(f"Session loaded from {file_name}.json")
+        self.text_in.clear()
 
     def click_node_help(self, change: dict) -> None:
         def _pretty_docstring(node_class):
@@ -226,16 +212,16 @@ class GUI(HasSession):
         self.flow_canvas.redraw()
 
     def click_rename_script(self, change: dict) -> None:
-        self._depopulate_text_input_panel()
-        self._populate_text_input_panel(
+        self.text_in.open(
             "New name",
+            self.click_confirm_rename,
             self.script.title,
             description_tooltip="New script name"
         )
-        self._set_context('rename')
         self.print("Choose a new name for the current script")
 
-    def _rename_context_action(self, new_name):
+    def click_confirm_rename(self, change: dict) -> None:
+        new_name = self.text_in.value
         old_name = self.script.title
         rename_success = self.rename_script(new_name)
         if rename_success:
@@ -259,36 +245,13 @@ class GUI(HasSession):
     def click_zoom_out(self, change: dict) -> None:
         self.flow_canvas.zoom_out()
 
-    def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
-        self.text_input_panel.children = [
-            self.text_input_field,
-            self.btn_input_text_ok,
-            self.btn_input_text_cancel
-        ]
-        self.text_input_field.description = description
-        description_tooltip = description_tooltip if description_tooltip is not None else description
-        self.text_input_field.description_tooltip = description_tooltip
-        self.text_input_field.value = initial_value
-
-    def _depopulate_text_input_panel(self) -> None:
-        self.text_input_panel.children = []
-
-    def click_input_text_ok(self, change: dict) -> None:
-        self._context_actions[self._context](self.text_input_field.value)
-        self._depopulate_text_input_panel()
-
     def click_input_text_cancel(self, change: dict) -> None:
-        self._depopulate_text_input_panel()
+        self.text_in.clear()
         self.text_out.clear()
-
-    def _set_context(self, context):
-        if context not in self._context_actions.keys():
-            raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
-        self._context = context
 
     def change_script_tabs(self, change: dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
-            self._depopulate_text_input_panel()
+            self.text_in.clear()
             self.flow_canvas.deselect_all()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
@@ -317,4 +280,4 @@ class GUI(HasSession):
         self.script_tabs.set_title(len(self.session.scripts), "+")
 
     def print(self, msg: str):
-        self.print(msg)
+        self.text_out.print(msg)
