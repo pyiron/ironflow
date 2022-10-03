@@ -8,24 +8,21 @@ from ironflow.ironflow.boxes.base import Box
 
 
 class UserInput(Box):
-    def __init__(self):
-        self._box = widgets.HBox([])
+    box_class = widgets.HBox
 
+    def __init__(self):
+        super().__init__()
         self.input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
         self.decision_info = widgets.Label(value="INIT VALUE")
-        layout = widgets.Layout(width="50px")
-        self.ok_button = widgets.Button(tooltip="Confirm", icon="check", layout=layout)
+        button_layout = widgets.Layout(width="50px")
+        self.ok_button = widgets.Button(tooltip="Confirm", icon="check", layout=button_layout)
         self._last_ok_callback = None
-        self.cancel_button = widgets.Button(tooltip="Cancel", icon="ban", layout=layout)
+        self.cancel_button = widgets.Button(tooltip="Cancel", icon="ban", layout=button_layout)
         # TODO: Use xmark once this is available
         self.cancel_button.on_click(self.close)
 
-    @property
-    def box(self):
-        return self._box
-
     def clear(self):
-        self._box.children = []
+        super().clear()
         self._clear_callback()
 
     @property

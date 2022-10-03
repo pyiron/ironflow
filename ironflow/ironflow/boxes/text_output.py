@@ -7,15 +7,14 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 from IPython.display import display
+from ironflow.ironflow.boxes.base import Box
 
 
-class TextOut:
+class TextOut(Box):
+    box_class = widgets.VBox
+
     def __init__(self):
-        layout = widgets.Layout(
-            width="100%",
-            border="1px solid black",
-        )
-        self._box = widgets.VBox([], layout=layout)
+        super().__init__()
         self._output = widgets.Output()
         self._button = widgets.Button(
             tooltip="Clear output",
@@ -24,19 +23,22 @@ class TextOut:
         )
         self._button.on_click(self._click_button)
 
+    @property
+    def layout(self):
+        return widgets.Layout(
+            width="100%",
+            border="1px solid black",
+        )
+
     def clear(self):
+        super().clear()
         self._output.clear_output()
-        self._box.children = []
 
     def _click_button(self, change: dict) -> None:
         self.clear()
-
-    @property
-    def box(self) -> widgets.VBox:
-        return self._box
 
     def print(self, msg: str):
         self._output.clear_output()
         with self._output:
             display(msg)
-        self._box.children = [self._output, self._button]
+        self.box.children = [self._output, self._button]

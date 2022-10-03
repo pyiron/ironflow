@@ -62,7 +62,10 @@ class Buttons:
 
 
 class Toolbar(Box):
+    box_class = widgets.HBox
+
     def __init__(self):
+        super().__init__()
         alg_modes = ["data", "exec"]
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -70,9 +73,5 @@ class Toolbar(Box):
             disabled=False,
             layout=widgets.Layout(width="80px"),
         )
-
         self.buttons = Buttons()
-
-    @property
-    def box(self) -> widgets.HBox:
-        return widgets.HBox([self.alg_mode_dropdown, *self.buttons])
+        self.box.children = [self.alg_mode_dropdown, *self.buttons]
