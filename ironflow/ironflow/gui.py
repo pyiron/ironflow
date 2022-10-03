@@ -20,9 +20,12 @@ from IPython.display import display, HTML
 from ironflow.ironflow.model import HasSession
 from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput
 from ironflow.ironflow.canvas_widgets import FlowCanvas
+from ironflow.ironflow.boxes.flow import NodeSelector
 
-from typing import Optional
-from ryvencore import Session
+from typing import TYPE_CHECKING, Optional, Type
+if TYPE_CHECKING:
+    from ryvencore import Session
+    import ironflow.NENV as NENV
 
 debug_view = widgets.Output(layout={"border": "1px solid black"})
 
@@ -37,6 +40,7 @@ class GUI(HasSession):
         self.node_presenter = NodePresenter(self)
         self.text_out = TextOut()
         self.input = UserInput()
+        self.node_selector_box = NodeSelector(self._nodes_dict)
 
         self.create_script(script_title)
 
@@ -59,7 +63,7 @@ class GUI(HasSession):
 
     @property
     def new_node_class(self):
-        return self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
+        return self.node_selector_box.new_node_class
 
     def serialize(self) -> dict:
         data = super().serialize()
@@ -85,38 +89,24 @@ class GUI(HasSession):
             flow_canvas.redraw()
             self._flow_canvases.append(flow_canvas)
 
+    def register_user_node(self, node_class: Type[NENV.Node]):
+        super().register_user_node(node_class=node_class)
+        self.node_selector_box.update(self._nodes_dict)
+
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
-        module_options = sorted(self._nodes_dict.keys())
-        self.modules_dropdown = widgets.Dropdown(
-            options=module_options,
-            value=list(module_options)[0],
-            disabled=False,
-            layout=widgets.Layout(width="130px"),
-        )
-
-        nodes_options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
-        self.node_selector = widgets.RadioButtons(
-            options=nodes_options,
-            value=list(nodes_options)[0],
-            disabled=False,
-        )
-        self.node_selector_box = widgets.VBox([self.node_selector])
-
-        node_panel = widgets.VBox([self.modules_dropdown, self.node_selector_box])
-        node_panel.layout.width = "15%"
+        self.node_selector_box.box.layout.width = "15%"
 
         self.script_tabs = widgets.Tab([])
         self.script_tabs.layout.width = "85%"
         self._update_tabs_from_model()
 
-        flow_panel = widgets.HBox([node_panel, self.script_tabs])
+        flow_panel = widgets.HBox([self.node_selector_box.box, self.script_tabs])
 
         node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
         # Wire callbacks
         self.toolbar.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
-        self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
         self.toolbar.buttons.help_node.on_click(self.click_node_help)
         self.toolbar.buttons.load.on_click(self.click_load)
         self.toolbar.buttons.save.on_click(self.click_save)
@@ -145,9 +135,6 @@ class GUI(HasSession):
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def change_modules_dropdown(self, change: dict) -> None:
-        self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
-
     def change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # TODO: Change only for the active script, and update the dropdown on tab (script) switching
