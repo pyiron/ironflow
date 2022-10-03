@@ -29,7 +29,7 @@ class UserInput(Box):
         self._clear_callback()
 
     @property
-    def value(self):
+    def text(self):
         return self.input_field.value
 
     def wrap_callback(self, callback: callable) -> callable:

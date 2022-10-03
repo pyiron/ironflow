@@ -36,7 +36,7 @@ class GUI(HasSession):
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
         self.text_out = TextOut()
-        self.text_in = UserInput()
+        self.input = UserInput()
 
         self.create_script(script_title)
 
@@ -135,7 +135,7 @@ class GUI(HasSession):
         return widgets.VBox(
             [
                 self.toolbar.box,
-                self.text_in.box,
+                self.input.box,
                 flow_panel,
                 self.text_out.box,
                 node_box,
@@ -155,7 +155,7 @@ class GUI(HasSession):
             script.flow.set_algorithm_mode(self.toolbar.alg_mode_dropdown.value)
 
     def click_save(self, change: dict) -> None:
-        self.text_in.open_text(
+        self.input.open_text(
             "Save file",
             self.click_confirm_save,
             self.session_title,
@@ -164,13 +164,13 @@ class GUI(HasSession):
         self.print("Choose a file name to save to (omit the file extension, .json)")
 
     def click_confirm_save(self, change: dict) -> None:
-        file_name = self.text_in.value
+        file_name = self.input.text
         self.save(f"{file_name}.json")
         self.print(f"Session saved to {file_name}.json")
-        self.text_in.clear()
+        self.input.clear()
 
     def click_load(self, change: dict) -> None:
-        self.text_in.open_text(
+        self.input.open_text(
             "Load file",
             self.click_confirm_load,
             self.session_title,
@@ -179,12 +179,12 @@ class GUI(HasSession):
         self.print("Choose a file name to load (omit the file extension, .json)")
 
     def click_confirm_load(self, change: dict) -> None:
-        file_name = self.text_in.value
+        file_name = self.input.text
         self.load(f"{file_name}.json")
         self._update_tabs_from_model()
         self.node_presenter.clear_output()
         self.print(f"Session loaded from {file_name}.json")
-        self.text_in.clear()
+        self.input.clear()
 
     def click_node_help(self, change: dict) -> None:
         def _pretty_docstring(node_class):
@@ -212,7 +212,7 @@ class GUI(HasSession):
         self.flow_canvas.redraw()
 
     def click_rename_script(self, change: dict) -> None:
-        self.text_in.open_text(
+        self.input.open_text(
             "New name",
             self.click_confirm_rename,
             self.script.title,
@@ -221,7 +221,7 @@ class GUI(HasSession):
         self.print("Choose a new name for the current script")
 
     def click_confirm_rename(self, change: dict) -> None:
-        new_name = self.text_in.value
+        new_name = self.input.text
         old_name = self.script.title
         rename_success = self.rename_script(new_name)
         if rename_success:
@@ -231,7 +231,7 @@ class GUI(HasSession):
             self.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
     def click_delete_script(self, change: dict) -> None:
-        self.text_in.open_bool(
+        self.input.open_bool(
             f"Delete the entire script {self.script.title}?",
             self.click_confirm_delete_script
         )
@@ -254,12 +254,12 @@ class GUI(HasSession):
         self.flow_canvas.zoom_out()
 
     def click_input_text_cancel(self, change: dict) -> None:
-        self.text_in.clear()
+        self.input.clear()
         self.text_out.clear()
 
     def change_script_tabs(self, change: dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
-            self.text_in.clear()
+            self.input.clear()
             self.flow_canvas.deselect_all()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
