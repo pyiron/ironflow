@@ -18,9 +18,8 @@ __date__ = "May 10, 2022"
 import ipywidgets as widgets
 from IPython.display import display, HTML
 from ironflow.ironflow.model import HasSession
-from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput
+from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput, FlowBox
 from ironflow.ironflow.canvas_widgets import FlowCanvas
-from ironflow.ironflow.boxes.flow import NodeSelector
 
 from typing import TYPE_CHECKING, Optional, Type
 if TYPE_CHECKING:
@@ -40,9 +39,10 @@ class GUI(HasSession):
         self.node_presenter = NodePresenter(self)
         self.text_out = TextOut()
         self.input = UserInput()
-        self.node_selector_box = NodeSelector(self._nodes_dict)
+        self.flow_box = FlowBox(self._nodes_dict)
 
         self.create_script(script_title)
+        self.flow_box.update_tabs(self)
 
     def create_script(
             self,
@@ -63,7 +63,7 @@ class GUI(HasSession):
 
     @property
     def new_node_class(self):
-        return self.node_selector_box.new_node_class
+        return self.flow_box.node_selector.new_node_class
 
     def serialize(self) -> dict:
         data = super().serialize()
@@ -91,17 +91,10 @@ class GUI(HasSession):
 
     def register_user_node(self, node_class: Type[NENV.Node]):
         super().register_user_node(node_class=node_class)
-        self.node_selector_box.update(self._nodes_dict)
+        self.flow_box.node_selector.update(self._nodes_dict)
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
-        self.node_selector_box.box.layout.width = "15%"
-
-        self.script_tabs = widgets.Tab([])
-        self.script_tabs.layout.width = "85%"
-        self._update_tabs_from_model()
-
-        flow_panel = widgets.HBox([self.node_selector_box.box, self.script_tabs])
 
         node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
@@ -120,13 +113,13 @@ class GUI(HasSession):
         self.toolbar.buttons.zero_location.on_click(self.click_zero_location)
         self.toolbar.buttons.zoom_in.on_click(self.click_zoom_in)
         self.toolbar.buttons.zoom_out.on_click(self.click_zoom_out)
-        self.script_tabs.observe(self.change_script_tabs)
+        self.flow_box.script_tabs.observe(self.change_script_tabs)
 
         return widgets.VBox(
             [
                 self.toolbar.box,
                 self.input.box,
-                flow_panel,
+                self.flow_box.box,
                 self.text_out.box,
                 node_box,
                 debug_view
@@ -168,7 +161,7 @@ class GUI(HasSession):
     def click_confirm_load(self, change: dict) -> None:
         file_name = self.input.text
         self.load(f"{file_name}.json")
-        self._update_tabs_from_model()
+        self.flow_box.update_tabs(self)
         self.node_presenter.clear_output()
         self.print(f"Session loaded from {file_name}.json")
         self.input.clear()
@@ -193,9 +186,7 @@ class GUI(HasSession):
 
     def click_create_script(self, change: dict) -> None:
         self.create_script()
-        self._update_tabs_from_model()
-        self.script_tabs.selected_index = self.n_scripts - 1
-        self.active_script_index = self.script_tabs.selected_index
+        self.flow_box.update_tabs(self)
         self.flow_canvas.redraw()
 
     def click_rename_script(self, change: dict) -> None:
@@ -212,7 +203,7 @@ class GUI(HasSession):
         old_name = self.script.title
         rename_success = self.rename_script(new_name)
         if rename_success:
-            self.script_tabs.set_title(self.active_script_index, new_name)
+            self.flow_box.script_tabs.set_title(self.active_script_index, new_name)
             self.print(f"Script '{old_name}' renamed '{new_name}'")
         else:
             self.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
@@ -226,7 +217,7 @@ class GUI(HasSession):
     def click_confirm_delete_script(self, change: dict) -> None:
         script_name = self.script.title
         self.delete_script()
-        self._update_tabs_from_model()
+        self.flow_box.update_tabs(self)
         self.print(f"Script {script_name} deleted")
 
     def click_zero_location(self, change: dict) -> None:
@@ -248,31 +239,12 @@ class GUI(HasSession):
         if change['name'] == 'selected_index' and change['new'] is not None:
             self.input.clear()
             self.flow_canvas.deselect_all()
-            if self.script_tabs.selected_index == self.n_scripts:
+            if self.flow_box.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
-                self._update_tabs_from_model()
+                self.flow_box.update_tabs(self)
             else:
-                self.active_script_index = self.script_tabs.selected_index
+                self.active_script_index = self.flow_box.script_tabs.selected_index
             self.flow_canvas.redraw()
-
-    def _update_tabs_from_model(self):
-        self.script_tabs.selected_index = None
-        # ^ To circumvent a bug where the index gets set to 0 on child changes
-        # https://github.com/jupyter-widgets/ipywidgets/issues/2988
-        self.script_tabs.children = [
-            widgets.Output(layout={"border": "1px solid black"}) for _ in range(self.n_scripts)
-        ]
-        for i, child in enumerate(self.script_tabs.children):
-            self.script_tabs.set_title(i, self.session.scripts[i].title)
-            child.clear_output()
-            with child:
-                display(self._flow_canvases[i].canvas)
-        self._add_new_script_tab()
-        self.script_tabs.selected_index = self.active_script_index
-
-    def _add_new_script_tab(self):
-        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
-        self.script_tabs.set_title(len(self.session.scripts), "+")
 
     def print(self, msg: str):
         self.text_out.print(msg)
