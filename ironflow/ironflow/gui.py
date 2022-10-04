@@ -107,8 +107,6 @@ class GUI(HasSession):
         self.toolbar.buttons.delete_node.on_click(self.click_delete_node)
         self.toolbar.buttons.create_script.on_click(self.click_create_script)
         self.toolbar.buttons.rename_script.on_click(self.click_rename_script)
-        # ^ Ignore the deprecation warning, 'observe' doesn't function the way we actually want
-        # https://github.com/jupyter-widgets/ipywidgets/issues/2446
         self.toolbar.buttons.delete_script.on_click(self.click_delete_script)
         self.toolbar.buttons.zero_location.on_click(self.click_zero_location)
         self.toolbar.buttons.zoom_in.on_click(self.click_zoom_in)

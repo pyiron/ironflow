@@ -44,6 +44,8 @@ class UserInput(Box):
     def _set_callback(self, callback: callable):
         wrapped_callback = self.wrap_callback(callback)
         self.input_field.on_submit(wrapped_callback)
+        # ^ Ignore the deprecation warning, 'observe' doesn't function the way we actually want
+        # https://github.com/jupyter-widgets/ipywidgets/issues/2446
         self.ok_button.on_click(wrapped_callback)
         self._last_ok_callback = wrapped_callback
 
