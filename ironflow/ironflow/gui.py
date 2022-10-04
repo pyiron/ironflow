@@ -92,6 +92,9 @@ class GUI(HasSession):
     def register_user_node(self, node_class: Type[NENV.Node]):
         super().register_user_node(node_class=node_class)
         self.flow_box.node_selector.update(self._nodes_dict)
+        # TODO: Once there is a node editor *inside* the gui, move references to the flow_box down the corresponding
+        #       `click` method for consistency. Stuff up here is for GUI-model interaction; stuff below `draw` is for
+        #       GUI-subGUI interaction
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
