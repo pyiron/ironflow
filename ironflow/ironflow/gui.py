@@ -54,8 +54,8 @@ class GUI(HasSession):
         self.flow_canvases.append(FlowCanvas(gui=self))
 
     def delete_script(self) -> None:
-        self.flow_canvases.pop(self.active_script_index)
         super().delete_script()
+        self.flow_canvases.pop(self.active_script_index)
 
     @property
     def flow_canvas(self):
