@@ -33,7 +33,7 @@ class GUI(HasSession):
     def __init__(self, session_title: str, session: Optional[Session] = None, script_title: Optional[str] = None):
         super().__init__(session_title=session_title, session=session)
 
-        self._flow_canvases = []
+        self.flow_canvases = []
         self.toolbar = Toolbar()
         self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
@@ -51,15 +51,15 @@ class GUI(HasSession):
             data: Optional[dict] = None
     ) -> None:
         super().create_script(title=title, create_default_logs=create_default_logs, data=data)
-        self._flow_canvases.append(FlowCanvas(gui=self))
+        self.flow_canvases.append(FlowCanvas(gui=self))
 
     def delete_script(self) -> None:
-        self._flow_canvases.pop(self.active_script_index)
+        self.flow_canvases.pop(self.active_script_index)
         super().delete_script()
 
     @property
     def flow_canvas(self):
-        return self._flow_canvases[self.active_script_index]
+        return self.flow_canvases[self.active_script_index]
 
     @property
     def new_node_class(self):
@@ -79,7 +79,7 @@ class GUI(HasSession):
 
     def load_from_data(self, data: dict) -> None:
         super().load_from_data(data)
-        self._flow_canvases = []
+        self.flow_canvases = []
         for i_script, script in enumerate(self.session.scripts):
             flow_canvas = FlowCanvas(gui=self, flow=script.flow)
             all_data = data["scripts"][i_script]["flow"]["nodes"]
@@ -87,7 +87,7 @@ class GUI(HasSession):
                 flow_canvas.load_node(all_data[i_node]["pos x"], all_data[i_node]["pos y"], node)
             flow_canvas._built_object_to_gui_dict()
             flow_canvas.redraw()
-            self._flow_canvases.append(flow_canvas)
+            self.flow_canvases.append(flow_canvas)
 
     def register_user_node(self, node_class: Type[NENV.Node]):
         super().register_user_node(node_class=node_class)

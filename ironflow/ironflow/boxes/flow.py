@@ -81,7 +81,7 @@ class FlowBox(Box):
             self.script_tabs.set_title(i, gui.session.scripts[i].title)
             child.clear_output()
             with child:
-                display(gui._flow_canvases[i].canvas)
+                display(gui.flow_canvases[i].canvas)
         self._add_new_script_tab(gui)
         self.script_tabs.selected_index = gui.active_script_index
 
