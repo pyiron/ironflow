@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import ipywidgets as widgets
-from IPython.display import display
 from ironflow.ironflow.boxes.base import Box
 
 

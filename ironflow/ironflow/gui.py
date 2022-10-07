@@ -16,7 +16,7 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 import ipywidgets as widgets
-from IPython.display import display, HTML
+from IPython.display import HTML
 from ironflow.ironflow.model import HasSession
 from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput, FlowBox
 from ironflow.ironflow.canvas_widgets import FlowCanvas

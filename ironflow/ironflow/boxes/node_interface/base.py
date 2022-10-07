@@ -6,9 +6,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from ironflow.ironflow.boxes.base import Box
-from typing import TYPE_CHECKING, Optional
-if TYPE_CHECKING:
-    from ironflow.ironflow.gui import GUI
 import ipywidgets as widgets
 
 
@@ -21,15 +18,15 @@ class NodeInterfaceBase(Box, ABC):
         self.box.children = [self.output]
 
     @property
-    def layout(self):
+    def layout(self) -> widgets.Layout:
         return widgets.Layout(
             width="50%",
             border="1px solid black",
         )
 
     @abstractmethod
-    def draw(self):
+    def draw(self) -> None:
         pass
 
-    def clear_output(self):
+    def clear_output(self) -> None:
         self.output.clear_output()

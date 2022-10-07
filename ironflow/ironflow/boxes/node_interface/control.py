@@ -12,7 +12,7 @@ import numpy as np
 import pickle
 import base64
 
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
     from ironflow.NENV import Node
@@ -134,7 +134,7 @@ class NodeController(NodeInterfaceBase):
             return widgets.Output()
 
     @property
-    def info_box(self):
+    def info_box(self) -> widgets.VBox:
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
@@ -158,11 +158,11 @@ class NodeController(NodeInterfaceBase):
                 display(widgets.VBox([self.input_box, self.input_widget, self.info_box]))
                 # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
-    def draw_for_node(self, node: Node | None):
+    def draw_for_node(self, node: Node | None) -> None:
         self.node = node
         self.draw()
 
-    def close(self):
+    def close(self) -> None:
         self.draw_for_node(None)
 
 
