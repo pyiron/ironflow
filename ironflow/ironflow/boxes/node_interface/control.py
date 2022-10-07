@@ -38,8 +38,9 @@ class NodeController(NodeInterfaceBase):
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, gui: GUI, layout: Optional[dict] = None):
-        super().__init__(gui=gui, layout=layout)
+    def __init__(self, gui: GUI):
+        super().__init__()
+        self.gui = gui
         self.node = None
         self._margin = 5  # px
         self._row_height = 30  # px

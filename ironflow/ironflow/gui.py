@@ -37,7 +37,7 @@ class GUI(HasSession):
         self.flow_canvases = []
         self.toolbar = Toolbar()
         self.node_controller = NodeController(self)
-        self.node_presenter = NodePresenter(self)
+        self.node_presenter = NodePresenter()
         self.text_out = TextOut()
         self.input = UserInput()
         self.flow_box = FlowBox(self._nodes_dict)

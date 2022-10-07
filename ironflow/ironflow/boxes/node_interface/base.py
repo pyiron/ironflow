@@ -11,18 +11,17 @@ if TYPE_CHECKING:
 import ipywidgets as widgets
 
 
-def _default_layout():
-    return widgets.Layout(
-        width="50%",
-        border="1px solid black",
-    )
-
-
 class NodeInterfaceBase(ABC):
-    def __init__(self, gui: GUI, layout: Optional[dict] = None):
-        self.gui = gui
-        self.layout = layout if layout is not None else _default_layout()
+    def __init__(self):
         self._output = None
+
+    @property
+    def layout(self):
+        """Overwrite in children as desired"""
+        return widgets.Layout(
+            width="50%",
+            border="1px solid black",
+        )
 
     @abstractmethod
     def draw(self):

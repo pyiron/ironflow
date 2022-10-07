@@ -29,8 +29,8 @@ __date__ = "Sept 20, 2022"
 class NodePresenter(NodeInterfaceBase):
     """Handles the display of nodes with a representation."""
 
-    def __init__(self, gui: GUI, layout: Optional[dict] = None):
-        super().__init__(gui=gui, layout=layout)
+    def __init__(self):
+        super().__init__()
         self._node_widget = None
         self._widgets = []
         self._toggles = []
