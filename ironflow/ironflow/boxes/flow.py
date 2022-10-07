@@ -8,6 +8,17 @@ from __future__ import annotations
 import ipywidgets as widgets
 from ironflow.ironflow.boxes.base import Box
 
+__author__ = "Liam Huber"
+__copyright__ = (
+    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
+    "Computational Materials Design (CM) Department"
+)
+__version__ = "0.1"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
+__status__ = "production"
+__date__ = "Oct 7, 2022"
+
 
 class NodeSelector(Box):
     box_class = widgets.VBox

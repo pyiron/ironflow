@@ -8,6 +8,17 @@ from abc import ABC, abstractmethod
 from ironflow.ironflow.boxes.base import Box
 import ipywidgets as widgets
 
+__author__ = "Liam Huber"
+__copyright__ = (
+    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
+    "Computational Materials Design (CM) Department"
+)
+__version__ = "0.1"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
+__status__ = "production"
+__date__ = "Oct 7, 2022"
+
 
 class NodeInterfaceBase(Box, ABC):
     box_class = widgets.Box
