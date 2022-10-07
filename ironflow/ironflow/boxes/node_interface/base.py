@@ -5,19 +5,23 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from ironflow.ironflow.boxes.base import Box
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
 import ipywidgets as widgets
 
 
-class NodeInterfaceBase(ABC):
+class NodeInterfaceBase(Box, ABC):
+    box_class = widgets.Box
+
     def __init__(self):
-        self._output = None
+        super().__init__()
+        self.output = widgets.Output(layout={"width": "100%"})
+        self.box.children = [self.output]
 
     @property
     def layout(self):
-        """Overwrite in children as desired"""
         return widgets.Layout(
             width="50%",
             border="1px solid black",
@@ -26,12 +30,6 @@ class NodeInterfaceBase(ABC):
     @abstractmethod
     def draw(self):
         pass
-
-    @property
-    def output(self) -> widgets.Output:
-        if self._output is None:
-            self._output = widgets.Output(layout=self.layout)
-        return self._output
 
     def clear_output(self):
         self.output.clear_output()

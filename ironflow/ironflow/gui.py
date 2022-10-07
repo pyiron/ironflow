@@ -129,8 +129,6 @@ class GUI(HasSession):
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
 
-        node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
-
         # Wire callbacks
         self.toolbar.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
         self.toolbar.buttons.help_node.on_click(self.click_node_help)
@@ -152,7 +150,7 @@ class GUI(HasSession):
                 self.input.box,
                 self.flow_box.box,
                 self.text_out.box,
-                node_box,
+                widgets.HBox([self.node_controller.box, self.node_presenter.box]),
                 debug_view
             ]
         )
