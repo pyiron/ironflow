@@ -102,3 +102,7 @@ class NodePresenter(NodeInterfaceBase):
         for w in self._widgets:
             w.clear_output()
         super().clear_output()
+
+    def close(self):
+        self.node_widget = None
+        self.clear_output()

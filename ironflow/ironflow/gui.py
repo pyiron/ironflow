@@ -56,6 +56,8 @@ class GUI(HasSession):
 
     def delete_script(self) -> None:
         self.flow_canvases.pop(self.active_script_index)
+        self.node_controller.close()
+        self.node_presenter.close()
         super().delete_script()
 
     @property

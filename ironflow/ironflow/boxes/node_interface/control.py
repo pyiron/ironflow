@@ -161,4 +161,7 @@ class NodeController(NodeInterfaceBase):
         self.node = node
         self.draw()
 
+    def close(self):
+        self.draw_for_node(None)
+
 
