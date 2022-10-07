@@ -111,6 +111,9 @@ class GUI(HasSession):
     def open_node_control(self, node: Node) -> None:
         self.node_controller.draw_for_node(node)
 
+    def update_node_control(self) -> None:
+        self.node_controller.draw()
+
     def close_node_control(self) -> None:
         self.node_controller.node = None
         self.node_controller.clear_output()
@@ -119,12 +122,18 @@ class GUI(HasSession):
         if self.node_controller.node == node:
             self.node_controller.draw_for_node(None)
 
-    def ensure_node_not_presented(self, node_widget: NodeWidget) -> None:
-        if self.node_presenter.node_widget == node_widget:
-            self.node_presenter.node_widget = None
+    def open_node_presenter(self, node_widget: NodeWidget):
+        self.node_presenter.node_widget = node_widget
 
     def update_node_presenter(self):
         self.node_presenter.draw()
+
+    def close_node_presenter(self):
+        self.node_presenter.close()
+
+    def ensure_node_not_presented(self, node_widget: NodeWidget) -> None:
+        if self.node_presenter.node_widget == node_widget:
+            self.node_presenter.node_widget = None
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
