@@ -123,6 +123,9 @@ class GUI(HasSession):
         if self.node_presenter.node_widget == node_widget:
             self.node_presenter.node_widget = None
 
+    def update_node_presenter(self):
+        self.node_presenter.draw()
+
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
 
