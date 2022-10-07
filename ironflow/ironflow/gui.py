@@ -42,7 +42,7 @@ class GUI(HasSession):
         self.flow_box = FlowBox(self._nodes_dict)
 
         self.create_script(script_title)
-        self.flow_box.update_tabs(self)
+        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
 
     def create_script(
             self,
@@ -162,7 +162,7 @@ class GUI(HasSession):
     def click_confirm_load(self, change: dict) -> None:
         file_name = self.input.text
         self.load(f"{file_name}.json")
-        self.flow_box.update_tabs(self)
+        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
         self.node_presenter.clear_output()
         self.print(f"Session loaded from {file_name}.json")
         self.input.clear()
@@ -187,8 +187,7 @@ class GUI(HasSession):
 
     def click_create_script(self, change: dict) -> None:
         self.create_script()
-        self.flow_box.update_tabs(self)
-        self.flow_canvas.redraw()
+        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
 
     def click_rename_script(self, change: dict) -> None:
         self.input.open_text(
@@ -218,7 +217,7 @@ class GUI(HasSession):
     def click_confirm_delete_script(self, change: dict) -> None:
         script_name = self.script.title
         self.delete_script()
-        self.flow_box.update_tabs(self)
+        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
         self.print(f"Script {script_name} deleted")
 
     def click_zero_location(self, change: dict) -> None:
@@ -242,10 +241,9 @@ class GUI(HasSession):
             self.flow_canvas.deselect_all()
             if self.flow_box.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
-                self.flow_box.update_tabs(self)
+                self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
             else:
                 self.active_script_index = self.flow_box.script_tabs.selected_index
-            self.flow_canvas.redraw()
 
     def print(self, msg: str):
         self.text_out.print(msg)

@@ -112,6 +112,11 @@ class FlowCanvas:
     def title(self) -> str:
         return self.flow.script.title
 
+    def display(self):
+        self.output.clear_output()
+        with self.output:
+            display(self.canvas)
+
     def draw_connection(self, port_1: int, port_2: int) -> None:
         out = self._object_to_gui_dict[port_1]
         inp = self._object_to_gui_dict[port_2]
@@ -204,9 +209,6 @@ class FlowCanvas:
             [o.draw() for o in self.objects_to_draw]
             for c in self.flow.connections:
                 self.draw_connection(c.inp, c.out)
-        self.output.clear_output()
-        with self.output:
-            display(self.canvas)
         self.gui.node_presenter.draw()
 
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
