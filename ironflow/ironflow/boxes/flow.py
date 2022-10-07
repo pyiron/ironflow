@@ -70,16 +70,15 @@ class FlowBox(Box):
     def update_nodes(self, nodes_dictionary: dict):
         self.node_selector.update(nodes_dictionary=nodes_dictionary)
 
-    def update_tabs(self, flow_canvases: list, active_script_index: int):
+    def update_tabs(self, outputs: list[widgets.Output], titles: list[str], active_index: int):
         self.script_tabs.selected_index = None
         # ^ To circumvent a bug where the index gets set to 0 on child changes
         # https://github.com/jupyter-widgets/ipywidgets/issues/2988
-        self.script_tabs.children = [fc.output for fc in flow_canvases]
-        for i, fc in enumerate(flow_canvases):
-            self.script_tabs.set_title(i, fc.title)
-            fc.display()
+        self.script_tabs.children = outputs
+        for i, title in enumerate(titles):
+            self.script_tabs.set_title(i, title)
         self._add_new_script_tab()
-        self.script_tabs.selected_index = active_script_index
+        self.script_tabs.selected_index = active_index
 
     def _add_new_script_tab(self):
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)

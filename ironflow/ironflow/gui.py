@@ -42,7 +42,7 @@ class GUI(HasSession):
         self.flow_box = FlowBox(self._nodes_dict)
 
         self.create_script(script_title)
-        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
+        self.update_tabs()
 
     def create_script(
             self,
@@ -95,6 +95,15 @@ class GUI(HasSession):
         # TODO: Once there is a node editor *inside* the gui, move references to the flow_box down the corresponding
         #       `click` method for consistency. Stuff up here is for GUI-model interaction; stuff below `draw` is for
         #       GUI-subGUI interaction
+
+    def update_tabs(self):
+        self.flow_box.update_tabs(
+            outputs=[fc.output for fc in self.flow_canvases],
+            titles=[fc.title for fc in self.flow_canvases],
+            active_index=self.active_script_index
+        )
+        for fc in self.flow_canvases:
+            fc.display()
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
@@ -162,7 +171,7 @@ class GUI(HasSession):
     def click_confirm_load(self, change: dict) -> None:
         file_name = self.input.text
         self.load(f"{file_name}.json")
-        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
+        self.update_tabs()
         self.node_presenter.clear_output()
         self.print(f"Session loaded from {file_name}.json")
         self.input.clear()
@@ -187,7 +196,7 @@ class GUI(HasSession):
 
     def click_create_script(self, change: dict) -> None:
         self.create_script()
-        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
+        self.update_tabs()
 
     def click_rename_script(self, change: dict) -> None:
         self.input.open_text(
@@ -217,7 +226,7 @@ class GUI(HasSession):
     def click_confirm_delete_script(self, change: dict) -> None:
         script_name = self.script.title
         self.delete_script()
-        self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
+        self.update_tabs()
         self.print(f"Script {script_name} deleted")
 
     def click_zero_location(self, change: dict) -> None:
@@ -241,7 +250,7 @@ class GUI(HasSession):
             self.flow_canvas.deselect_all()
             if self.flow_box.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
-                self.flow_box.update_tabs(self.flow_canvases, self.active_script_index)
+                self.update_tabs()
             else:
                 self.active_script_index = self.flow_box.script_tabs.selected_index
 
