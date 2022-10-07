@@ -24,7 +24,7 @@ from ironflow.ironflow.canvas_widgets import FlowCanvas
 from typing import TYPE_CHECKING, Optional, Type
 if TYPE_CHECKING:
     from ryvencore import Session
-    import ironflow.NENV as NENV
+    from ironflow.NENV import Node
     from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 debug_view = widgets.Output(layout={"border": "1px solid black"})
@@ -92,7 +92,7 @@ class GUI(HasSession):
             flow_canvas.redraw()
             self.flow_canvases.append(flow_canvas)
 
-    def register_user_node(self, node_class: Type[NENV.Node]):
+    def register_user_node(self, node_class: Type[Node]):
         super().register_user_node(node_class=node_class)
         self.flow_box.node_selector.update(self._nodes_dict)
         # TODO: Once there is a node editor *inside* the gui, move references to the flow_box down the corresponding
@@ -108,14 +108,14 @@ class GUI(HasSession):
         for fc in self.flow_canvases:
             fc.display()
 
-    def open_node_control(self, node: NENV.Node) -> None:
+    def open_node_control(self, node: Node) -> None:
         self.node_controller.draw_for_node(node)
 
     def close_node_control(self) -> None:
         self.node_controller.node = None
         self.node_controller.clear_output()
 
-    def ensure_node_not_controlled(self, node: NENV.Node) -> None:
+    def ensure_node_not_controlled(self, node: Node) -> None:
         if self.node_controller.node == node:
             self.node_controller.draw_for_node(None)
 
