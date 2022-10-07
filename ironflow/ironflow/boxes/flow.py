@@ -74,16 +74,12 @@ class FlowBox(Box):
         self.script_tabs.selected_index = None
         # ^ To circumvent a bug where the index gets set to 0 on child changes
         # https://github.com/jupyter-widgets/ipywidgets/issues/2988
-        self.script_tabs.children = [
-            widgets.Output(layout={"border": "1px solid black"}) for _ in range(gui.n_scripts)
-        ]
-        for i, child in enumerate(self.script_tabs.children):
-            self.script_tabs.set_title(i, gui.session.scripts[i].title)
-            child.clear_output()
-            with child:
-                display(gui.flow_canvases[i].canvas)
+        self.script_tabs.children = [fc.output for fc in gui.flow_canvases]
+        for i, fc in enumerate(gui.flow_canvases):
+            self.script_tabs.set_title(i, fc.title)
         self._add_new_script_tab(gui)
         self.script_tabs.selected_index = gui.active_script_index
+        gui.flow_canvases[gui.active_script_index].redraw()
 
     def _add_new_script_tab(self, gui):
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
