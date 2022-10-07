@@ -135,6 +135,9 @@ class GUI(HasSession):
         if self.node_presenter.node_widget == node_widget:
             self.node_presenter.node_widget = None
 
+    def print(self, msg: str):
+        self.text_out.print(msg)
+
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
 
@@ -281,6 +284,3 @@ class GUI(HasSession):
                 self.update_tabs()
             else:
                 self.active_script_index = self.flow_box.script_tabs.selected_index
-
-    def print(self, msg: str):
-        self.text_out.print(msg)
