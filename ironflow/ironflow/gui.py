@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Optional, Type
 if TYPE_CHECKING:
     from ryvencore import Session
     import ironflow.NENV as NENV
+    from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 debug_view = widgets.Output(layout={"border": "1px solid black"})
 
@@ -104,6 +105,21 @@ class GUI(HasSession):
         )
         for fc in self.flow_canvases:
             fc.display()
+
+    def open_node_control(self, node: NENV.Node) -> None:
+        self.node_controller.draw_for_node(node)
+
+    def close_node_control(self) -> None:
+        self.node_controller.node = None
+        self.node_controller.clear_output()
+
+    def ensure_node_not_controlled(self, node: NENV.Node) -> None:
+        if self.node_controller.node == node:
+            self.node_controller.draw_for_node(None)
+
+    def ensure_node_not_presented(self, node_widget: NodeWidget) -> None:
+        if self.node_presenter.node_widget == node_widget:
+            self.node_presenter.node_widget = None
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:

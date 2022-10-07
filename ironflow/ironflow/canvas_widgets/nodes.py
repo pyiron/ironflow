@@ -107,11 +107,11 @@ class NodeWidget(CanvasWidget):
                 last_selected_object.deselect()
             self.select()
             try:
-                self.gui.node_controller.draw_for_node(self.node)
+                self.gui.open_node_control(self.node)
                 return self
             except Exception as e:
                 self.gui.print(f"Failed to handle selection of {self} with exception {e}")
-                self.gui.node_controller.clear_output()
+                self.gui.close_node_control()
                 self.deselect()
                 return None
 
@@ -185,13 +185,11 @@ class NodeWidget(CanvasWidget):
                 self.flow.remove_connection(c)
         self.flow.remove_node(self.node)
         self.parent.objects_to_draw.remove(self)
-        if self.gui.node_controller.node == self.node:
-            self.gui.node_controller.draw_for_node(None)
+        self.gui.ensure_node_not_controlled(self.node)
 
     def deselect(self) -> None:
         super().deselect()
-        if self.gui.node_controller.node == self.node:
-            self.gui.node_controller.draw_for_node(None)
+        self.gui.ensure_node_not_controlled(self.node)
 
     @property
     def port_widgets(self) -> list[PortWidget]:
@@ -278,8 +276,7 @@ class RepresentableNodeWidget(NodeWidget):
         self.add_widget(self.represent_button)
 
     def delete(self) -> None:
-        if self.gui.node_presenter.node_widget == self:
-            self.gui.node_presenter.node_widget = None
+        self.gui.ensure_node_not_presented(self)
         return super().delete()
 
 
