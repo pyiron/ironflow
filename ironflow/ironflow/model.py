@@ -4,17 +4,6 @@
 
 from __future__ import annotations
 
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "Sep 6, 2022"
-
 from pathlib import Path
 import os
 import json

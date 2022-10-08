@@ -21,18 +21,6 @@ if TYPE_CHECKING:
     from pyiron_base import HasGroups
 
 
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "May 10, 2022"
-
-
 class BeautifulHasGroups:
     def __init__(self, has_groups: HasGroups | None):
         self._has_groups = has_groups

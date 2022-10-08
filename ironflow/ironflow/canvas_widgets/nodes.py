@@ -19,17 +19,6 @@ if TYPE_CHECKING:
     from ironflow.NENV import Node, NodeInputBP, NodeOutputBP
     from ironflow.ironflow.canvas_widgets.base import Number
 
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "May 10, 2022"
-
 
 class NodeWidget(CanvasWidget):
     def __init__(

@@ -4,17 +4,6 @@
 
 from __future__ import annotations
 
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "May 10, 2022"
-
 import ipywidgets as widgets
 from IPython.display import HTML
 from ironflow.ironflow.model import HasSession
