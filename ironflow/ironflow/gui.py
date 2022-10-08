@@ -1,6 +1,9 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+Top-level objects for getting the front and back end (and various parts of the front end) to talk to each other.
+"""
 
 from __future__ import annotations
 

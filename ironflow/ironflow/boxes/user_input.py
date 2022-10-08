@@ -1,6 +1,9 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+For getting non-flow feedback from the user, e.g. filenames and confirmations.
+"""
 
 from __future__ import annotations
 
