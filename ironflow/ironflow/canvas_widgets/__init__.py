@@ -1,1 +1,1 @@
-from .flow import FlowCanvas
+from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
