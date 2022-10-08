@@ -6,8 +6,8 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 
-from ironflow.NENV import Node
 from ironflow.ironflow.gui import GUI
+from ironflow.NENV import Node
 
 
 class SliderControl:

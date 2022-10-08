@@ -5,12 +5,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional, Union
 
 from ipycanvas import Canvas
 
 from ironflow.ironflow.canvas_widgets.layouts import Layout
 
-from typing import TYPE_CHECKING, Optional, Union
 Number = Union[int, float]
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI

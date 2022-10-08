@@ -5,14 +5,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional
 
 from ryvencore.NodePort import NodePort, NodeInput, NodeOutput
 
 from ironflow.ironflow.canvas_widgets.base import CanvasWidget, HideableWidget
 from ironflow.ironflow.canvas_widgets.layouts import ButtonLayout
 
-
-from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.base import Number
     from ironflow.ironflow.canvas_widgets.nodes import NodeWidget, RepresentableNodeWidget

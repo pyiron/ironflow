@@ -4,11 +4,13 @@
 
 from __future__ import annotations
 
-from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
-from IPython.display import display
-import ipywidgets as widgets
-
 from typing import TYPE_CHECKING
+
+import ipywidgets as widgets
+from IPython.display import display
+
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
+
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
 

@@ -5,8 +5,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from ironflow.ironflow.boxes.base import Box
+
 import ipywidgets as widgets
+
+from ironflow.ironflow.boxes.base import Box
 
 
 class NodeInterfaceBase(Box, ABC):

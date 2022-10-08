@@ -4,10 +4,11 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional
+
 from ironflow.ironflow.canvas_widgets.base import HideableWidget, CanvasWidget
 from ironflow.ironflow.canvas_widgets.layouts import PortLayout
 
-from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
     from ironflow.ironflow.canvas_widgets.base import Number

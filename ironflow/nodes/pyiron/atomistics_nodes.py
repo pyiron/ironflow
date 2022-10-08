@@ -4,22 +4,22 @@
 
 from __future__ import annotations
 
+import json
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
 import matplotlib.pylab as plt
 import numpy as np
-import json
 from pyiron_atomistics import Project
-from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
+from pyiron_atomistics.lammps import list_potentials
+
 from ironflow.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
-
-from abc import ABC, abstractmethod
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
-
 
 class BeautifulHasGroups:
     def __init__(self, has_groups: HasGroups | None):

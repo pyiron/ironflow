@@ -4,16 +4,17 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import os
 import json
 from abc import ABC
-from ryvencore import Session, Script, Flow
-from ironflow.main.utils import import_nodes_package, NodesPackage
-
+from pathlib import Path
 from typing import Optional, Type
 
+from ryvencore import Session, Script, Flow
+
 import ironflow.NENV as NENV
+from ironflow.main.utils import import_nodes_package, NodesPackage
+
 
 os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()

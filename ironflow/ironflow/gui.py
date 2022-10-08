@@ -4,13 +4,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional, Type
+
 import ipywidgets as widgets
 from IPython.display import HTML
-from ironflow.ironflow.model import HasSession
+
 from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput, FlowBox
 from ironflow.ironflow.canvas_widgets import FlowCanvas
+from ironflow.ironflow.model import HasSession
 
-from typing import TYPE_CHECKING, Optional, Type
 if TYPE_CHECKING:
     from ryvencore import Session
     from ironflow.NENV import Node

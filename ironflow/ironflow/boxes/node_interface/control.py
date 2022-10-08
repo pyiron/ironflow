@@ -4,15 +4,17 @@
 
 from __future__ import annotations
 
-from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
-from IPython.display import display
-import ipywidgets as widgets
-import numpy as np
-
 import pickle
 import base64
-
 from typing import TYPE_CHECKING, Callable
+
+import ipywidgets as widgets
+import numpy as np
+from IPython.display import display
+
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
+
+
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
     from ironflow.NENV import Node

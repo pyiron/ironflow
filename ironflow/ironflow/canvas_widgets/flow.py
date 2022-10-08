@@ -4,24 +4,25 @@
 
 from __future__ import annotations
 
-from ipycanvas import Canvas, hold_canvas
 from time import time
+from typing import TYPE_CHECKING, Optional, Union
+
 import ipywidgets as widgets
+from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 
+from ironflow.ironflow.canvas_widgets.base import CanvasWidget
+from ironflow.ironflow.canvas_widgets.buttons import RepresentButtonWidget
+from ironflow.ironflow.canvas_widgets.layouts import NodeLayout
 from ironflow.ironflow.canvas_widgets.nodes import (
     NodeWidget, ButtonNodeWidget, RepresentableNodeWidget
 )
-from ironflow.ironflow.canvas_widgets.buttons import RepresentButtonWidget
 from ironflow.ironflow.canvas_widgets.ports import PortWidget
-from ironflow.ironflow.canvas_widgets.base import CanvasWidget
-from ironflow.ironflow.canvas_widgets.layouts import NodeLayout
 
-from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
+    from ironflow.ironflow.canvas_widgets.base import Number
     from ironflow.ironflow.gui import GUI
     from ironflow.NENV import Node
-    Number = Union[int, float]
     from ryvencore.Flow import Flow
 
 

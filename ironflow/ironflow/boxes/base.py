@@ -4,9 +4,10 @@
 
 from __future__ import annotations
 
-import ipywidgets as widgets
 from abc import ABC, abstractmethod
 from typing import Type
+
+import ipywidgets as widgets
 
 
 class Box(ABC):

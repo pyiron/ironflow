@@ -3,6 +3,7 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from __future__ import annotations
+
 from abc import ABC
 from dataclasses import dataclass
 
