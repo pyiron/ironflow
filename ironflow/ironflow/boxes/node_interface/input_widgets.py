@@ -35,4 +35,4 @@ class SliderControl:
     def widget_change(self, change: dict) -> None:
         self.node.set_state({"val": change["new"]}, 0)
         self.node.update_event()
-        self.gui.flow_canvas.redraw()
+        self.gui.redraw_active_flow_canvas()

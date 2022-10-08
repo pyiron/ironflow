@@ -135,6 +135,9 @@ class GUI(HasSession):
         if self.node_presenter.node_widget == node_widget:
             self.node_presenter.node_widget = None
 
+    def redraw_active_flow_canvas(self):
+        self.flow_canvas.redraw()
+
     def print(self, msg: str):
         self.text_out.print(msg)
 
