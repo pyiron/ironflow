@@ -146,10 +146,11 @@ class HasSession(ABC):
             loading the saved graph is possible.
 
         Args:
-            node_class Type[NENV.Node]: The new node class to register.
+            node_class Type[ironflow.ironflow.Node]: The new node class to register.
 
         Example:
-            >>> from ironflow.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> from ironflow import GUI
+            >>> from ironflow.ironflow import Node, NodeInputBP, NodeOutputBP, dtypes
             >>> gui = GUI(script_title='foo')
             >>>
             >>> class MyNode(Node):
@@ -166,6 +167,9 @@ class HasSession(ABC):
             >>>         self.set_output_val(0, self.input(0) + 42)
             >>>
             >>> gui.register_user_node(MyNode)
+
+        TODO:
+            Expose the more sophisticated pyironic nodes like `NodeWithRepresentation` for import.
         """
         if node_class in self.session.nodes:
             self.session.unregister_node(node_class)

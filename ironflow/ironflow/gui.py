@@ -25,7 +25,24 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI(HasSession):
+    """
+    The main ironflow object, connecting a ryven backend with a jupyter-friendly ipywidgets+ipycanvas frontend.
+
+    Methods:
+        draw: Build the ipywidget to interact with.
+        register_user_node: Register with ironflow a new node from the current python process.
+    """
+
     def __init__(self, session_title: str, session: Optional[Session] = None, script_title: Optional[str] = None):
+        """
+        Create a new gui instance.
+
+        Args:
+            session_title (str): Title of the session to use. Only impacts QoL stuff for saving/loading sessions.
+            session (ryvencore.Session|None): Ryven session to connect to. (Default is None, which starts a new
+                session.)
+            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0".)
+        """
         super().__init__(session_title=session_title, session=session)
 
         self.flow_canvases = []
@@ -87,11 +104,9 @@ class GUI(HasSession):
             self.flow_canvases.append(flow_canvas)
 
     def register_user_node(self, node_class: Type[Node]):
+        # Inherited __doc__ still applies just fine, all we do here is update a menu item afterwards.
         super().register_user_node(node_class=node_class)
         self.flow_box.node_selector.update(self._nodes_dict)
-        # TODO: Once there is a node editor *inside* the gui, move references to the flow_box down the corresponding
-        #       `click` method for consistency. Stuff up here is for GUI-model interaction; stuff below `draw` is for
-        #       GUI-subGUI interaction
 
     def update_tabs(self):
         self.flow_box.update_tabs(
@@ -137,6 +152,12 @@ class GUI(HasSession):
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
+        """
+        Build the gui.
+
+        Returns:
+            ipywidgets.VBox: The gui.
+        """
 
         # Wire callbacks
         self.toolbar.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
