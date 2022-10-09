@@ -23,9 +23,15 @@ from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
+    from pyiron_atomistics import Atoms
 
 
 class BeautifulHasGroups:
+    """
+    A helper class for giving classes that inherit from `pyiron_base.HasGroups` a more appealing representation in
+    ipywidgets.
+    """
+
     def __init__(self, has_groups: HasGroups | None):
         self._has_groups = has_groups
 
@@ -51,6 +57,13 @@ class BeautifulHasGroups:
 
 
 class NodeBase(Node):
+    """
+    A parent class for all pyiron ryven nodes. Apart from a small quality-of-life difference where outputs are 
+    accessible in the same way as inputs (i.e. with a method `output(i)`), the main change here is the list 
+    `_call_after_update` which can be appended to during the `__init__` of child classes. Appended methods get called 
+    after every update, allowing for significant customization to be added to the standard ryven update loop.
+    """
+
     color = "#ff69b4"  # Add an abrasive default color -- won't crash if you forget to add one, but pops out a bit
 
     def __init__(self, params):
@@ -70,6 +83,10 @@ class NodeBase(Node):
 
 
 class NodeWithRepresentation(NodeBase, ABC):
+    """
+    A node with a "representation" that gets used in the GUI to give a more detailed look at node data.
+    """
+
     main_widget_class = RepresentableNodeWidget
 
     def __init__(self, params):
@@ -89,7 +106,15 @@ class NodeWithRepresentation(NodeBase, ABC):
 
 
 class Project_Node(NodeWithRepresentation):
-    """Create a pyiron project node"""
+    """
+    Create a pyiron project.
+
+    Inputs:
+        name (str): The name of the project. Will access existing project data under that name. (Default is ".".)
+
+    Outputs:
+        project (pyiron_atomistics.Project): The project object.
+    """
 
     # this __doc__ string will be displayed as tooltip in the editor
 
@@ -124,6 +149,13 @@ class Project_Node(NodeWithRepresentation):
 
 
 class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
+    """
+    A helper class that manages representations for nodes whose only output is a `pyiron_atomistics.Atoms` object.
+
+    Outputs:
+        structure (pyiron_atomistics.Atoms): An atomic structure.
+    """
+
     init_outputs = [
         NodeOutputBP(label="structure"),
     ]
@@ -143,7 +175,17 @@ class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
-    """Generate a bulk atomic structure"""
+    """
+    Generate a bulk atomic structure.
+
+    Inputs:
+        project (pyiron_base.Project): Any atomistic project object.
+        element (str): The atomic symbol for the desired atoms. (Default is "Fe".)
+        cubic (bool): Whether to make a cubic structure. Not possible for some elements. (Default is True.)
+
+    Outputs:
+        structure (pyiron_atomistics.Atoms): A mono-species bulk structure.
+    """
 
     # this __doc__ string will be displayed as tooltip in the editor
 
@@ -162,7 +204,16 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 
 
 class Repeat_Node(OutputsOnlyAtoms):
-    """Repeat atomic structure supercell"""
+    """
+    Repeat atomic structure supercell.
+    
+    Inputs:
+        structure (pyiron_atomistics.Atoms): The structure to repeat periodically.
+        all (int): The number of times to repeat it in each of the three bravais lattice directions.
+        
+    Outputs:
+        structure (pyiron_atomistics.Atoms): A repeated copy of the input structure.
+    """
 
     # this __doc__ string will be displayed as tooltip in the editor
 
@@ -178,14 +229,14 @@ class Repeat_Node(OutputsOnlyAtoms):
 
 class ApplyStrain_Node(OutputsOnlyAtoms):
     """
-    Apply strain on atomic structure supercell
+    Apply strain on atomic structure supercell.
 
     Inputs:
-        structure (Atoms): The atomic structure to strain.
-        strain (float): The isotropic strain to apply.
+        structure (pyiron_atomistics.Atoms): The atomic structure to strain.
+        strain (float): The isotropic strain to apply, where 0 is unstrained. (Default is 0.)
 
     Outputs:
-        (Atoms): The strained structure.
+        (pyiron_atomistics.Atoms): A strained copy of the input structure.
     """
 
     title = "ApplyStrain"
@@ -199,6 +250,10 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
 
 class Lammps_Node(NodeWithRepresentation):
+    """
+    WIP.
+    """
+
     title = "Lammps"
     version = "v0.1"
     init_inputs = [
@@ -278,7 +333,17 @@ class Lammps_Node(NodeWithRepresentation):
 
 
 class GenericOutput_Node(NodeWithRepresentation):
-    """Select Generic Output item"""
+    """
+    Select Generic Output item.
+
+    Inputs:
+        job (AtomisticGenericJob): A job with an `output` attribute of type
+            `pyiron_atomistics.atomistics.job.atomistic.GenericOutput`.
+        field (dtypes.Choice): Which output field to look at. Automatically populates once the job is valid.
+
+    Outputs:
+        output (numpy.ndarray): The selected output field.
+    """
 
     version = "v0.1"
     title = "GenericOutput"
@@ -329,7 +394,16 @@ class GenericOutput_Node(NodeWithRepresentation):
 
 
 class IntRand_Node(NodeWithRepresentation):
-    """Generate a random number in a given range"""
+    """
+    Generate a random non-negative integer.
+
+    Inputs:
+        high (int): Biggest possible integer. (Default is 1).
+        length (int): How many random numbers to generate. (Default is 1.)
+
+    Outputs:
+        randint (int|numpy.ndarray): The randomly generated value(s).
+    """
 
     # this __doc__ string will be displayed as tooltip in the editor
 
@@ -349,7 +423,19 @@ class IntRand_Node(NodeWithRepresentation):
 
 
 class JobName_Node(NodeWithRepresentation):
-    """Create job name for parameters"""
+    """
+    Create job name for parameters.
+
+    Inputs:
+        base (str): The stem for the final name. (Default is "job_".)
+        float (float): The parameter value to add to the name.
+
+    Outputs:
+        job_name (str): The base plus float sanitized into a valid job name.
+
+    TODO:
+        There has been some work in pyiron_base on getting a cleaner job name sanitizer, so lean on that.
+    """
 
     title = "JobName"
     init_inputs = [
@@ -357,7 +443,7 @@ class JobName_Node(NodeWithRepresentation):
         NodeInputBP(dtype=dtypes.Float(default=0), label="float"),
     ]
     init_outputs = [
-        NodeOutputBP(label="job name"),
+        NodeOutputBP(label="job_name"),
     ]
     color = "#aabb44"
 
@@ -369,7 +455,17 @@ class JobName_Node(NodeWithRepresentation):
 
 
 class Linspace_Node(NodeWithRepresentation):
-    """Generate a linear mesh in a given range using np.linspace"""
+    """
+    Generate a linear mesh in a given range using `np.linspace`.
+
+    Inputs:
+        min (int): The lower bound (inclusive). (Default is 1.)
+        max (int): The upper bound (inclusive). (Default is 2.)
+        steps (int): How many samples to take inside (min, max). (Default is 10.)
+
+    Outputs:
+        linspace (numpy.ndarray): A uniform sampling over the requested range.
+    """
 
     # this __doc__ string will be displayed as tooltip in the editor
 
@@ -393,6 +489,17 @@ class Linspace_Node(NodeWithRepresentation):
 
 
 class Plot3d_Node(NodeWithRepresentation):
+    """
+    Plot a structure with NGLView.
+
+    Inputs:
+        structure (pyiron_atomistics.Atoms): The structure to plot.
+
+    Outputs:
+        plot3d (nglview.widget.NGLWidget): The plot object.
+        structure (pyiron_atomistics.Atoms): The raw structure object passed in.
+    """
+
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
@@ -410,6 +517,17 @@ class Plot3d_Node(NodeWithRepresentation):
 
 
 class Matplot_Node(NodeWithRepresentation):
+    """
+    A 2D matplotlib plot.
+
+    Inputs:
+        x (list|numpy.ndarray|...): Data for the x-axis.
+        y (list|numpy.ndarray|...): Data for the y-axis.
+
+    Outputs:
+        fig (matplotlib.figure.Figure): The resulting figure after a `matplotlib.pyplot.plot` call on x and y.
+    """
+
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
@@ -432,10 +550,20 @@ class Matplot_Node(NodeWithRepresentation):
 
 
 class Sin_Node(NodeWithRepresentation):
+    """
+    Call `numpy.sin` on a value.
+
+    Inputs:
+        x (int|float|list|numpy.ndarray|...): The value to sine transform.
+
+    Outputs:
+        sin (float|numpy.ndarray): The sine of x.
+    """
+
     title = "Sin"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m")),
+        NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
     ]
     init_outputs = [
         NodeOutputBP(label="sin"),
