@@ -38,7 +38,8 @@ class GUI(HasSession):
         Create a new gui instance.
 
         Args:
-            session_title (str): Title of the session to use. Only impacts QoL stuff for saving/loading sessions.
+            session_title (str): Title of the session to use. Will look for a json file of the same name and try to
+                read it. If no such file exists, simply makes a new script instead.
             session (ryvencore.Session|None): Ryven session to connect to. (Default is None, which starts a new
                 session.)
             script_title (str|None): Title for an initial script. (Default is None, which generates "script_0".)
@@ -53,7 +54,12 @@ class GUI(HasSession):
         self.input = UserInput()
         self.flow_box = FlowBox(self._nodes_dict)
 
-        self.create_script(script_title)
+        try:
+            self.load(f"{self.session_title}.json")
+            print(f"Loaded session data for {self.session_title}")
+        except FileNotFoundError:
+            print(f"No session data found for {self.session_title}, making a new script.")
+            self.create_script(script_title)
         self.update_tabs()
 
     def create_script(
