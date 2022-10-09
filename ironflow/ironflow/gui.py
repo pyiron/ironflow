@@ -40,7 +40,8 @@ class GUI(HasSession):
         Args:
             session_title (str): Title of the session to use. Will look for a json file of the same name and try to
                 read it. If no such file exists, simply makes a new script instead.
-            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0".)
+            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a 
+                new script is needed on initialization, i.e. when existing session data cannot be read.)
         """
         super().__init__(session_title=session_title)
 
