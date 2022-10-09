@@ -160,19 +160,19 @@ class GUI(HasSession):
         """
 
         # Wire callbacks
-        self.toolbar.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
-        self.toolbar.buttons.help_node.on_click(self.click_node_help)
-        self.toolbar.buttons.load.on_click(self.click_load)
-        self.toolbar.buttons.save.on_click(self.click_save)
-        self.toolbar.buttons.add_node.on_click(self.click_add_node)
-        self.toolbar.buttons.delete_node.on_click(self.click_delete_node)
-        self.toolbar.buttons.create_script.on_click(self.click_create_script)
-        self.toolbar.buttons.rename_script.on_click(self.click_rename_script)
-        self.toolbar.buttons.delete_script.on_click(self.click_delete_script)
-        self.toolbar.buttons.zero_location.on_click(self.click_zero_location)
-        self.toolbar.buttons.zoom_in.on_click(self.click_zoom_in)
-        self.toolbar.buttons.zoom_out.on_click(self.click_zoom_out)
-        self.flow_box.script_tabs.observe(self.change_script_tabs)
+        self.toolbar.alg_mode_dropdown.observe(self._change_alg_mode_dropdown, names="value")
+        self.toolbar.buttons.help_node.on_click(self._click_node_help)
+        self.toolbar.buttons.load.on_click(self._click_load)
+        self.toolbar.buttons.save.on_click(self._click_save)
+        self.toolbar.buttons.add_node.on_click(self._click_add_node)
+        self.toolbar.buttons.delete_node.on_click(self._click_delete_node)
+        self.toolbar.buttons.create_script.on_click(self._click_create_script)
+        self.toolbar.buttons.rename_script.on_click(self._click_rename_script)
+        self.toolbar.buttons.delete_script.on_click(self._click_delete_script)
+        self.toolbar.buttons.zero_location.on_click(self._click_zero_location)
+        self.toolbar.buttons.zoom_in.on_click(self._click_zoom_in)
+        self.toolbar.buttons.zoom_out.on_click(self._click_zoom_out)
+        self.flow_box.script_tabs.observe(self._change_script_tabs)
 
         return widgets.VBox(
             [
@@ -187,37 +187,37 @@ class GUI(HasSession):
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def change_alg_mode_dropdown(self, change: dict) -> None:
+    def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # TODO: Change only for the active script, and update the dropdown on tab (script) switching
         for script in self.session.scripts:
             script.flow.set_algorithm_mode(self.toolbar.alg_mode_dropdown.value)
 
-    def click_save(self, change: dict) -> None:
+    def _click_save(self, change: dict) -> None:
         self.input.open_text(
             "Save file",
-            self.click_confirm_save,
+            self._click_confirm_save,
             self.session_title,
             description_tooltip="Save to file name (omit the file extension, .json)"
         )
         self.print("Choose a file name to save to (omit the file extension, .json)")
 
-    def click_confirm_save(self, change: dict) -> None:
+    def _click_confirm_save(self, change: dict) -> None:
         file_name = self.input.text
         self.save(f"{file_name}.json")
         self.print(f"Session saved to {file_name}.json")
         self.input.clear()
 
-    def click_load(self, change: dict) -> None:
+    def _click_load(self, change: dict) -> None:
         self.input.open_text(
             "Load file",
-            self.click_confirm_load,
+            self._click_confirm_load,
             self.session_title,
             description_tooltip="Load from file name (omit the file extension, .json)."
         )
         self.print("Choose a file name to load (omit the file extension, .json)")
 
-    def click_confirm_load(self, change: dict) -> None:
+    def _click_confirm_load(self, change: dict) -> None:
         file_name = self.input.text
         self.load(f"{file_name}.json")
         self.update_tabs()
@@ -225,7 +225,7 @@ class GUI(HasSession):
         self.print(f"Session loaded from {file_name}.json")
         self.input.clear()
 
-    def click_node_help(self, change: dict) -> None:
+    def _click_node_help(self, change: dict) -> None:
         def _pretty_docstring(node_class):
             """
             If we just pass a string, `display` doesn't resolve newlines.
@@ -237,26 +237,26 @@ class GUI(HasSession):
 
         self.print(_pretty_docstring(self.new_node_class))
 
-    def click_add_node(self, change: dict) -> None:
+    def _click_add_node(self, change: dict) -> None:
         self.flow_canvas.add_node(10, 10, self.new_node_class)
 
-    def click_delete_node(self, change: dict) -> None:
+    def _click_delete_node(self, change: dict) -> None:
         self.flow_canvas.delete_selected()
 
-    def click_create_script(self, change: dict) -> None:
+    def _click_create_script(self, change: dict) -> None:
         self.create_script()
         self.update_tabs()
 
-    def click_rename_script(self, change: dict) -> None:
+    def _click_rename_script(self, change: dict) -> None:
         self.input.open_text(
             "New name",
-            self.click_confirm_rename,
+            self._click_confirm_rename,
             self.script.title,
             description_tooltip="New script name"
         )
         self.print("Choose a new name for the current script")
 
-    def click_confirm_rename(self, change: dict) -> None:
+    def _click_confirm_rename(self, change: dict) -> None:
         new_name = self.input.text
         old_name = self.script.title
         rename_success = self.rename_script(new_name)
@@ -266,34 +266,34 @@ class GUI(HasSession):
         else:
             self.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
-    def click_delete_script(self, change: dict) -> None:
+    def _click_delete_script(self, change: dict) -> None:
         self.input.open_bool(
             f"Delete the entire script {self.script.title}?",
-            self.click_confirm_delete_script
+            self._click_confirm_delete_script
         )
 
-    def click_confirm_delete_script(self, change: dict) -> None:
+    def _click_confirm_delete_script(self, change: dict) -> None:
         script_name = self.script.title
         self.delete_script()
         self.update_tabs()
         self.print(f"Script {script_name} deleted")
 
-    def click_zero_location(self, change: dict) -> None:
+    def _click_zero_location(self, change: dict) -> None:
         self.flow_canvas.x = 0
         self.flow_canvas.y = 0
         self.flow_canvas.redraw()
 
-    def click_zoom_in(self, change: dict) -> None:
+    def _click_zoom_in(self, change: dict) -> None:
         self.flow_canvas.zoom_in()
 
-    def click_zoom_out(self, change: dict) -> None:
+    def _click_zoom_out(self, change: dict) -> None:
         self.flow_canvas.zoom_out()
 
-    def click_input_text_cancel(self, change: dict) -> None:
+    def _click_input_text_cancel(self, change: dict) -> None:
         self.input.clear()
         self.text_out.clear()
 
-    def change_script_tabs(self, change: dict):
+    def _change_script_tabs(self, change: dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
             self.input.clear()
             self.flow_canvas.deselect_all()
