@@ -24,6 +24,7 @@ from ironflow.nodes.std.special_nodes import DualNodeBase
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
 
+
 class BeautifulHasGroups:
     def __init__(self, has_groups: HasGroups | None):
         self._has_groups = has_groups
