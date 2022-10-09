@@ -33,18 +33,16 @@ class GUI(HasSession):
         register_user_node: Register with ironflow a new node from the current python process.
     """
 
-    def __init__(self, session_title: str, session: Optional[Session] = None, script_title: Optional[str] = None):
+    def __init__(self, session_title: str, script_title: Optional[str] = None):
         """
         Create a new gui instance.
 
         Args:
             session_title (str): Title of the session to use. Will look for a json file of the same name and try to
                 read it. If no such file exists, simply makes a new script instead.
-            session (ryvencore.Session|None): Ryven session to connect to. (Default is None, which starts a new
-                session.)
             script_title (str|None): Title for an initial script. (Default is None, which generates "script_0".)
         """
-        super().__init__(session_title=session_title, session=session)
+        super().__init__(session_title=session_title)
 
         self.flow_canvases = []
         self.toolbar = Toolbar()
