@@ -4,7 +4,6 @@ dependencies:
 - python >= 3.7
 - ipycanvas
 - ipython
-- ipywidgets
 - lammps
 - matplotlib
 - nglview
