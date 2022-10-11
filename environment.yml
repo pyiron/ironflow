@@ -2,10 +2,10 @@ channels:
 - conda-forge
 dependencies:
 - python >= 3.7
-- jupyterlab=3
 - ipycanvas
 - ipython
 - ipywidgets
+- lammps
 - matplotlib
 - nglview
 - numpy
