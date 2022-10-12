@@ -1,27 +1,21 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+For richer representations of node data allowing deeper analysis.
+"""
 
 from __future__ import annotations
 
-from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
-from IPython.display import display
-import ipywidgets as widgets
-
 from typing import TYPE_CHECKING
+
+import ipywidgets as widgets
+from IPython.display import display
+
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
+
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
-
-__author__ = "Liam huber"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "Sept 20, 2022"
 
 
 class NodePresenter(NodeInterfaceBase):

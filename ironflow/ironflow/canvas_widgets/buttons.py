@@ -1,33 +1,23 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+Button-like canvas widgets.
+"""
 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional
 
 from ryvencore.NodePort import NodePort, NodeInput, NodeOutput
 
 from ironflow.ironflow.canvas_widgets.base import CanvasWidget, HideableWidget
 from ironflow.ironflow.canvas_widgets.layouts import ButtonLayout
 
-
-from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.base import Number
     from ironflow.ironflow.canvas_widgets.nodes import NodeWidget, RepresentableNodeWidget
-
-
-__author__ = "Liam Huber, Joerg Neugebauer"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "Sept 21, 2022"
 
 
 class ButtonWidget(CanvasWidget, ABC):

@@ -1,23 +1,15 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
-
+"""
+A place to collect all the UI buttons.
+"""
 
 from __future__ import annotations
 
 import ipywidgets as widgets
-from ironflow.ironflow.boxes.base import Box
 
-__author__ = "Liam Huber, Joerg Neugebauer"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "Oct 7, 2022"
+from ironflow.ironflow.boxes.base import Box
 
 
 class Buttons:

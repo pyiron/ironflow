@@ -1,8 +1,13 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+Canvas representations of the nodes.
+"""
 
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 
@@ -10,25 +15,13 @@ from ironflow.ironflow.canvas_widgets.base import CanvasWidget
 from ironflow.ironflow.canvas_widgets.buttons import (
     RepresentButtonWidget, ExpandButtonWidget, CollapseButtonWidget, ExecButtonWidget
 )
-from ironflow.ironflow.canvas_widgets.ports import PortWidget
 from ironflow.ironflow.canvas_widgets.layouts import NodeLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from ironflow.ironflow.canvas_widgets.ports import PortWidget
 
-from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
     from ironflow.NENV import Node, NodeInputBP, NodeOutputBP
     from ironflow.ironflow.canvas_widgets.base import Number
-
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "May 10, 2022"
 
 
 class NodeWidget(CanvasWidget):

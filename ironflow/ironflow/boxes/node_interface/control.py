@@ -1,32 +1,26 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+For directly controlling node IO (as opposed to giving it to nodes by connecting them to other OI).
+"""
 
 from __future__ import annotations
 
-from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
-from IPython.display import display
-import ipywidgets as widgets
-import numpy as np
-
 import pickle
 import base64
-
 from typing import TYPE_CHECKING, Callable
+
+import ipywidgets as widgets
+import numpy as np
+from IPython.display import display
+
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
+
+
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
     from ironflow.NENV import Node
-
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "May 10, 2022"
 
 
 def deserialize(data):

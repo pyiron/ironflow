@@ -1,39 +1,32 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+The parent canvas for the whole flow representation.
+"""
 
 from __future__ import annotations
 
-from ipycanvas import Canvas, hold_canvas
 from time import time
+from typing import TYPE_CHECKING, Optional, Union
+
 import ipywidgets as widgets
+from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 
+from ironflow.ironflow.canvas_widgets.base import CanvasWidget
+from ironflow.ironflow.canvas_widgets.buttons import RepresentButtonWidget
+from ironflow.ironflow.canvas_widgets.layouts import NodeLayout
 from ironflow.ironflow.canvas_widgets.nodes import (
     NodeWidget, ButtonNodeWidget, RepresentableNodeWidget
 )
-from ironflow.ironflow.canvas_widgets.buttons import RepresentButtonWidget
 from ironflow.ironflow.canvas_widgets.ports import PortWidget
-from ironflow.ironflow.canvas_widgets.base import CanvasWidget
-from ironflow.ironflow.canvas_widgets.layouts import NodeLayout
 
-from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
+    from ironflow.ironflow.canvas_widgets.base import Number
     from ironflow.ironflow.gui import GUI
     from ironflow.NENV import Node
-    Number = Union[int, float]
     from ryvencore.Flow import Flow
-
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "May 10, 2022"
 
 
 class FlowCanvas:

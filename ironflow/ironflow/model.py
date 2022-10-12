@@ -1,30 +1,23 @@
 # coding: utf-8
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
+"""
+The back-end model which interfaces with Ryven.
+"""
 
 from __future__ import annotations
 
-__author__ = "Joerg Neugebauer, Liam Huber"
-__copyright__ = (
-    "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "0.1"
-__maintainer__ = "Liam Huber"
-__email__ = "liamhuber@greyhavensolutions.com"
-__status__ = "production"
-__date__ = "Sep 6, 2022"
-
-from pathlib import Path
 import os
 import json
 from abc import ABC
-from ryvencore import Session, Script, Flow
-from ironflow.main.utils import import_nodes_package, NodesPackage
-
+from pathlib import Path
 from typing import Optional, Type
 
+from ryvencore import Session, Script, Flow
+
 import ironflow.NENV as NENV
+from ironflow.main.utils import import_nodes_package, NodesPackage
+
 
 os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
@@ -153,10 +146,11 @@ class HasSession(ABC):
             loading the saved graph is possible.
 
         Args:
-            node_class Type[NENV.Node]: The new node class to register.
+            node_class Type[ironflow.ironflow.Node]: The new node class to register.
 
         Example:
-            >>> from ironflow.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> from ironflow import GUI
+            >>> from ironflow.ironflow import Node, NodeInputBP, NodeOutputBP, dtypes
             >>> gui = GUI(script_title='foo')
             >>>
             >>> class MyNode(Node):
@@ -173,6 +167,9 @@ class HasSession(ABC):
             >>>         self.set_output_val(0, self.input(0) + 42)
             >>>
             >>> gui.register_user_node(MyNode)
+
+        TODO:
+            Expose the more sophisticated pyironic nodes like `NodeWithRepresentation` for import.
         """
         if node_class in self.session.nodes:
             self.session.unregister_node(node_class)
