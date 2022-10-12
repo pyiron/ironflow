@@ -123,7 +123,7 @@ class GUI(HasSession):
         with self.out_canvas:
             display(self.canvas_widget.canvas)
 
-        module_options = self._nodes_dict.keys()
+        module_options = sorted(self._nodes_dict.keys())
         self.modules_dropdown = widgets.Dropdown(
             options=module_options,
             value=list(module_options)[0],
@@ -156,7 +156,7 @@ class GUI(HasSession):
             layout=widgets.Layout(width="80px"),
         )
 
-        nodes_options = self._nodes_dict[self.modules_dropdown.value].keys()
+        nodes_options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
         self.node_selector = widgets.RadioButtons(
             options=nodes_options,
             value=list(nodes_options)[0],
@@ -212,7 +212,7 @@ class GUI(HasSession):
         self.canvas_widget.delete_selected()
 
     def on_value_change(self, change: Dict) -> None:
-        self.node_selector.options = self._nodes_dict[self.modules_dropdown.value].keys()
+        self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
     def on_nodes_change(self, change: Dict) -> None:
         self._selected_node = self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
