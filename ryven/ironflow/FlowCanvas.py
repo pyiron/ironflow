@@ -187,11 +187,19 @@ class FlowCanvas:
             return newly_selected_object
 
     def _handle_node_select(self, sel_object: NodeWidget) -> NodeWidget:
-        self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
-        with self.gui.out_status:
+        try:
+            self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
+            with self.gui.out_status:
+                self.gui.out_status.clear_output()
+                display(self._node_widget)
+                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+                return sel_object
+        except Exception as e:
+            self.gui._print(f"Failed to handle selection of {sel_object} with exception {e}")
             self.gui.out_status.clear_output()
-            display(self._node_widget)  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-        return sel_object
+            sel_object.deselect()
+            return None
+
 
     def _handle_port_select(self, sel_object: PortWidget) -> Union[PortWidget | None]:
         if isinstance(self._last_selected_object, PortWidget):
