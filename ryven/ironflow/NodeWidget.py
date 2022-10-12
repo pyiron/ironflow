@@ -7,6 +7,7 @@ from __future__ import annotations
 import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+import ipywidgets as widgets
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
@@ -281,7 +282,7 @@ class ButtonNodeWidget(NodeWidget):
             x: Number,
             y: Number,
             parent: Union[FlowCanvas, BaseCanvasWidget],
-            layout: ButtonLayout,
+            layout: NodeLayout,
             node: Node,
             selected: bool = False,
             port_radius: Number = 10,
@@ -296,3 +297,103 @@ class ButtonNodeWidget(NodeWidget):
     def handle_button_select(self, button: ButtonNodeWidget) -> None:
         button.parent.node.exec_output(0)
         button.deselect()
+
+
+class ButtonWidget(BaseCanvasWidget):
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: NodeWidget,
+            layout: ButtonLayout,
+            selected: bool = False,
+            title="Button",
+    ):
+        super().__init__(x, y, parent, layout, selected)
+        self.title = title
+        self.pressed = False
+
+    def draw_shape(self) -> None:
+        self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
+        self.canvas.fill_rect(
+            self.x,  # - (self.width * 0.5),
+            self.y,  # - (self.height * 0.5),
+            self.width,
+            self.height,
+        )
+
+    def draw_title(self) -> None:
+        self.canvas.font = self.layout.font_string
+        self.canvas.fill_style = self.layout.font_color
+        x = self.x + (self.width * 0.1)
+        y = self.y + (self.height * 0.1) + self.layout.font_size
+        self.canvas.fill_text(self.title, x, y)
+
+    def draw(self) -> None:
+        self.draw_shape()
+        self.draw_title()
+
+
+class DisplayButtonWidget(ButtonWidget):
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: DisplayableNodeWidget,
+            layout: ButtonLayout,
+            selected: bool = False,
+            title="Display",
+    ):
+        super().__init__(x, y, parent, layout, selected, title=title)
+
+    def handle_select(self, not_used):
+        if self.pressed:
+            self.pressed = False
+            self.parent.node.displayed = False
+            self.parent.parent.gui.out_plot.clear_output()
+            self.parent.parent.gui.displayed_node = None
+        else:
+            if self.parent.parent.gui.displayed_node is not None:
+                self.parent.parent.gui.displayed_node.node.displayed = False
+                self.parent.parent.gui.displayed_node.display_button.pressed = False
+            self.pressed = True
+            self.parent.node.displayed = True
+            self.parent.node.representation_updated = True
+            self.parent.parent.gui.displayed_node = self.parent
+        self.deselect()
+
+
+class DisplayableNodeWidget(NodeWidget):
+    """
+    Has a `Display` button that sends a representation over to the `ryven.ironflow.Gui.GUI.out_plot` window.
+    Display gets locked until the button is pressed again, or another node gets displayed.
+    While displayed, display updates automatically on changes to input.
+    """
+
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: Union[FlowCanvas, BaseCanvasWidget],
+            layout: NodeLayout,
+            node: Node,
+            selected: bool = False,
+            port_radius: Number = 10,
+    ):
+        super().__init__(x, y, parent, layout, node, selected, port_radius)
+
+        self.display_button = DisplayButtonWidget(80, 50, parent=self, layout=ButtonLayout())
+        self.add_widget(self.display_button)
+
+    def display_node(self):
+        if self.node.displayed and self.node.representation_updated:
+            self.parent.gui.out_plot.clear_output()
+            with self.parent.gui.out_plot:
+                for rep in self.node.representations:
+                    display(rep)
+            self.node.representation_updated = False
+
+    def draw(self):
+        super().draw()
+        self.display_node()
+

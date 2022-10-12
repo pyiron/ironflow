@@ -7,6 +7,7 @@ import numpy as np
 from pyiron_atomistics import Project
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 
+from abc import ABC, abstractmethod
 from ryven.nodes.std.special_nodes import DualNodeBase
 
 
@@ -28,10 +29,30 @@ class NodeBase(Node):
     def __init__(self, params):
         super().__init__(params)
 
-        # here we could add some stuff for all nodes below...
+    # here we could add some stuff for all nodes below...
 
 
-class Project_Node(NodeBase):
+class NodeWithDisplay(NodeBase, ABC):
+    main_widget_class = "DisplayableNodeWidget"
+
+    def __init__(self, params):
+        super().__init__(params)
+        self._representation = None
+        self.representation_updated = False
+        self.displayed = False
+
+    def update_event(self, inp=-1):
+        self.representation_updated = True
+
+    @property
+    def representations(self) -> tuple:
+        return tuple(o.val for o in self.outputs)
+
+    def output(self, i):
+        return self.outputs[i].val
+
+
+class Project_Node(NodeWithDisplay):
     """Create a pyiron project node"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -49,11 +70,32 @@ class Project_Node(NodeBase):
         self.update()
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         pr = Project(self.input(0))
         self.set_output_val(0, pr)
 
+    @property
+    def representations(self) -> tuple:
+        return str(self.input(0)),
 
-class BulkStructure_Node(NodeBase):
+
+class OutputsOnlyAtoms(NodeWithDisplay, ABC):
+    init_outputs = [
+        NodeOutputBP(),
+    ]
+    color = "#aabb44"
+
+    @abstractmethod
+    def update_event(self, inp=-1):
+        """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
+        super().update_event(inp=inp)
+
+    @property
+    def representations(self) -> tuple:
+        return self.output(0).plot3d(), self.output(0)
+
+
+class BulkStructure_Node(OutputsOnlyAtoms):
     """Generate a bulk atomic structure"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -64,19 +106,16 @@ class BulkStructure_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Char(default="Fe"), label="element"),
         NodeInputBP(dtype=dtypes.Boolean(default=True), label="cubic"),
     ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = "#aabb44"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         pr = self.input(0)
         self.set_output_val(
             0, pr.create.structure.bulk(self.input(1), cubic=self.input(2))
         )
 
 
-class Repeat_Node(NodeBase):
+class Repeat_Node(OutputsOnlyAtoms):
     """Repeat atomic structure supercell"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -86,17 +125,13 @@ class Repeat_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = "#aabb44"
 
     def update_event(self, inp=-1):
-        self.val = self.input(0)
+        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).repeat(self.input(1)))
 
 
-class ApplyStrain_Node(NodeBase):
+class ApplyStrain_Node(OutputsOnlyAtoms):
     """Apply strain on atomic structure supercell"""
 
     title = "ApplyStrain"
@@ -104,14 +139,10 @@ class ApplyStrain_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = "#aabb44"
 
     def update_event(self, inp=-1):
-        self.val = self.input(0)
-        self.set_output_val(0, self.input(0).apply_strain(self.input(1)))
+        super().update_event(inp=inp)
+        self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
 class Lammps_Node(DualNodeBase):
@@ -148,7 +179,7 @@ class Lammps_Node(DualNodeBase):
             self.val = self.input(0)
 
 
-class GenericOutput_Node(NodeBase):
+class GenericOutput_Node(NodeWithDisplay):
     """Select Generic Output item"""
 
     version = "v0.1"
@@ -173,16 +204,15 @@ class GenericOutput_Node(NodeBase):
 
     def __init__(self, params):
         super().__init__(params)
-        self.val = None
 
-    def update_event(self, input_called=-1):
+    def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         self.inputs[1].dtype.items = self.input(0)["output/generic"].list_nodes()
         val = self.input(0)[f"output/generic/{self.input(1)}"]
-        self.val = self.inputs[1].val
         self.set_output_val(0, val)
 
 
-class IntRand_Node(NodeBase):
+class IntRand_Node(NodeWithDisplay):
     """Generate a random number in a given range"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -198,11 +228,12 @@ class IntRand_Node(NodeBase):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         val = np.random.randint(0, high=self.input(0), size=self.input(1))
         self.set_output_val(0, val)
 
 
-class JobName_Node(NodeBase):
+class JobName_Node(NodeWithDisplay):
     """Create job name for parameters"""
 
     title = "JobName"
@@ -216,13 +247,14 @@ class JobName_Node(NodeBase):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         val = self.input(0) + f"{float(self.input(1))}".replace("-", "m").replace(
             ".", "p"
         )
         self.set_output_val(0, val)
 
 
-class Linspace_Node(NodeBase):
+class Linspace_Node(NodeWithDisplay):
     """Generate a linear mesh in a given range using np.linspace"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -242,64 +274,61 @@ class Linspace_Node(NodeBase):
         self.update()    
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         val = np.linspace(self.input(0), self.input(1), self.input(2))
         # val = 10
         self.set_output_val(0, val)
 
 
-class Plot3d_Node(DualNodeBase):
+class Plot3d_Node(NodeWithDisplay):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(type_="exec"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(dtype=dtypes.Boolean(default=False), label="print")
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec"),
+        NodeOutputBP(type_="data"),
+        NodeOutputBP(type_="data"),
     ]
     color = "#5d95de"
 
-    def __init__(self, params):
-        super().__init__(params, active=True)
-
     def update_event(self, inp=-1):
-        self._val_is_updated = True
-        if self.active:
-            self.val = self.input(1).plot3d()
-        elif not self.active:
-            self.val = self.input(0)
+        super().update_event(inp=inp)
+        self.set_output_val(0, self.input(0).plot3d())
+        self.set_output_val(1, self.input(0))
+
+    @property
+    def representations(self) -> tuple:
+        if self.input(1):
+            return self.output(0), self.output(1)
+        else:
+            return self.output(0),
 
 
-class Matplot_Node(DualNodeBase):
+class Matplot_Node(NodeWithDisplay):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(type_="exec"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="y"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec"),
+        NodeOutputBP(type_="data"),
     ]
     color = "#5d95de"
 
-    def __init__(self, params):
-        super().__init__(params, active=True)
-
     def update_event(self, inp=-1):
-        self._val_is_updated = True
-        if self.active:
-            plt.ioff()
-            fig = plt.figure()
-            plt.clf()
-            plt.plot(self.input(1), self.input(2))
-            self.val = fig
-            plt.ion()
-        elif not self.active:
-            self.val = self.input(0)
+        super().update_event()
+        plt.ioff()
+        fig = plt.figure()
+        plt.clf()
+        plt.plot(self.input(0), self.input(1))
+        self.set_output_val(0, fig)
+        plt.ion()
 
 
-class Sin_Node(NodeBase):
+class Sin_Node(NodeWithDisplay):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
@@ -311,6 +340,7 @@ class Sin_Node(NodeBase):
     color = "#5d95de"
 
     def update_event(self, inp=-1):
+        super().update_event(inp=inp)
         self.set_output_val(0, np.sin(self.input(0)))
 
 
@@ -379,28 +409,6 @@ class ForEach_Node(NodeBase):
         # self.exec_output(2)
 
 
-class Print_Node(DualNodeBase):
-    title = "Print"
-    version = "v0.1"
-    init_inputs = [
-        NodeInputBP(type_="exec"),
-        NodeInputBP(dtype=dtypes.Data(size="m")),
-    ]
-    init_outputs = [
-        NodeOutputBP(type_="exec"),
-    ]
-    color = "#5d95de"
-
-    def __init__(self, params):
-        super().__init__(params, active=True)
-
-    def update_event(self, inp=-1):
-        if self.active:
-            self.val = self.input(1)
-        elif not self.active:
-            self.val = self.input(0)
-
-
 class ExecCounter_Node(DualNodeBase):
     title = "ExecCounter"
     version = "v0.1"
@@ -450,7 +458,6 @@ nodes = [
     Linspace_Node,
     Sin_Node,
     Result_Node,
-    Print_Node,
     ExecCounter_Node,
     Matplot_Node,
     Click_Node,

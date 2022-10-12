@@ -67,6 +67,7 @@ class GUI:
         }
 
         self.create_script(script_title)
+        self.displayed_node = None
 
     @property
     def active_script_index(self) -> int:
