@@ -8,6 +8,7 @@ import os
 import ipywidgets as widgets
 from IPython.display import display
 from ryven.main.utils import import_nodes_package, NodesPackage
+from ryven.ironflow.node_widgets import NodeInterface
 
 from .flow_canvas import FlowCanvas
 from ryvencore import Session, Script, Flow
@@ -68,6 +69,7 @@ class GUI:
 
         self.create_script(script_title)
         self.displayed_node = None
+        self.node_interface = NodeInterface(self)
 
     @property
     def active_script_index(self) -> int:
@@ -337,6 +339,7 @@ class GUI:
                 self._update_tabs_from_model()
             else:
                 self.active_script_index = self.script_tabs.selected_index
+            self.flow_canvas_widget.redraw()
 
     def _populate_text_input_panel(self, description, initial_value):
         self.text_input_panel.children = [

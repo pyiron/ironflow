@@ -5,19 +5,19 @@
 from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
-from IPython.display import display
 from time import time
 
-from .canvas_widgets import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+from .canvas_widgets import (
+    NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+)
 from .layouts import NodeLayout
-from .node_widgets import NodeWidgets
 
 from typing import TYPE_CHECKING, Optional, Union, List
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
     Number = Union[int, float]
-    from ryvencore import Flow
+    from ryvencore.Flow import Flow
 
 __author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
@@ -41,6 +41,7 @@ class FlowCanvas:
         - Mouse down, hold, and move on a node element or any child element selects the (parent) node and moves it
         - Mouse click on nothing clears selection
         - Mouse double-click on nothing creates a new node of the type currently selected in the node menu
+        - Mouse click on a selected (pressed) port (button) deselects (unpresses) that port (button)
         - TODO: Mouse down, hold, and move on nothing draws a rectangle, everything inside is selected on release
 
     Keyboard behaviour: TODO
@@ -50,7 +51,7 @@ class FlowCanvas:
             - If a port is selected, deletes all connections it is part of
     """
     def __init__(self, gui: GUI, flow: Optional[Flow] = None, width: int = 2000, height: int = 1000):
-        self.gui = gui
+        self._gui = gui
         self.flow = flow if flow is not None else gui.flow
         self._width, self._height = width, height
 
@@ -93,6 +94,10 @@ class FlowCanvas:
     @property
     def canvas(self):
         return self._canvas
+
+    @property
+    def gui(self):
+        return self._gui
 
     def draw_connection(self, port_1: int, port_2: int) -> None:
         # i_out, i_in = path
@@ -152,19 +157,17 @@ class FlowCanvas:
         sel_object = self.get_element_at_xy(x, y)
         last_object = self._last_selected_object
 
-        if last_object is None:
-            if sel_object is not None:
-                sel_object = self._handle_new_object_selection(sel_object)
+        if sel_object is None:
+            if last_object is not None:
+                last_object.deselect()
             elif time_since_last_click < self._double_click_speed:
                 self.add_node(x, y, self.gui.new_node_class)
                 self._built_object_to_gui_dict()
         else:
-            if sel_object is not None:
-                if sel_object != last_object:
-                    last_object.deselect()
-                    sel_object = self._handle_new_object_selection(sel_object)
+            if sel_object == last_object and time_since_last_click < self._double_click_speed:
+                sel_object = sel_object.on_double_click()
             else:
-                last_object.deselect()
+                sel_object = sel_object.on_click(last_object)
 
         self._last_selected_object = sel_object
 
@@ -173,52 +176,13 @@ class FlowCanvas:
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
 
-    def _handle_new_object_selection(self, newly_selected_object: BaseCanvasWidget) -> Union[BaseCanvasWidget | None]:
-        newly_selected_object.select()
-
-        # if hasattr(newly_selected_object, "handle_select"):
-        #     newly_selected_object = newly_selected_object.handle_select(newly_selected_object)
-
-        if isinstance(newly_selected_object, NodeWidget):
-            return self._handle_node_select(newly_selected_object)
-        elif isinstance(newly_selected_object, PortWidget):
-            return self._handle_port_select(newly_selected_object)
-        elif isinstance(newly_selected_object, DisplayButtonWidget):
-            newly_selected_object.handle_select(None)
-            return None
-        else:
-            return newly_selected_object
-
-    def _handle_node_select(self, sel_object: NodeWidget) -> NodeWidget:
-        try:
-            self._node_widget = NodeWidgets(sel_object.node, self.gui).draw()
-            with self.gui.out_status:
-                self.gui.out_status.clear_output()
-                display(self._node_widget)
-                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-                return sel_object
-        except Exception as e:
-            self.gui._print(f"Failed to handle selection of {sel_object} with exception {e}")
-            self.gui.out_status.clear_output()
-            sel_object.deselect()
-            return None
-
-
-    def _handle_port_select(self, sel_object: PortWidget) -> Union[PortWidget | None]:
-        if isinstance(self._last_selected_object, PortWidget):
-            self.flow.connect_nodes(self._last_selected_object.port, sel_object.port)
-            self.deselect_all()
-            return None
-        else:
-            return sel_object
-
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
         for o in self.objects_to_draw:
             if o.is_here(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 
-    def get_selected_objects(self) -> List[BaseCanvasWidget]:
+    def get_selected_objects(self) -> List[CanvasWidget]:
         return [o for o in self.objects_to_draw if o.selected if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
@@ -268,13 +232,5 @@ class FlowCanvas:
     def delete_selected(self) -> None:
         for o in self.objects_to_draw:
             if o.selected:
-                self.objects_to_draw.remove(o)
-                self._remove_node_from_flow(o.node)
+                o.delete()
         self.redraw()
-
-    def _remove_node_from_flow(self, node: Node) -> None:
-        for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
-            # TODO: Can we be more efficient than looping over all nodes?
-            if (c.inp.node == node) or (c.out.node == node):
-                self.flow.remove_connection(c)
-        self.flow.remove_node(node)

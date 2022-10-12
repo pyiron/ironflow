@@ -7,15 +7,18 @@ from __future__ import annotations
 import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
-import ipywidgets as widgets
+from abc import ABC, abstractmethod
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
     from .flow_canvas import FlowCanvas
+    from ryven.ironflow.gui import GUI
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
     from ryvencore.NodePort import NodePort
+    from ryvencore.Flow import Flow
+
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -29,12 +32,16 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-class BaseCanvasWidget:
+class CanvasWidget(ABC):
+    """
+    Parent class for all "widgets" that exist inside the scope of the flow canvas.
+    """
+
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: Layout,
             selected: bool = False
     ):
@@ -48,6 +55,13 @@ class BaseCanvasWidget:
         self.objects_to_draw = []
 
         self._height = self.layout.height
+
+    @abstractmethod
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        pass
+
+    def on_double_click(self) -> Optional[CanvasWidget]:
+        return self
 
     def _init_after_parent_assignment(self):
         pass
@@ -72,7 +86,18 @@ class BaseCanvasWidget:
     def canvas(self) -> Canvas:
         return self.parent.canvas
 
-    def add_widget(self, widget: BaseCanvasWidget) -> None:
+    @property
+    def gui(self) -> GUI:
+        return self.parent.gui
+
+    @property
+    def flow(self) -> Flow:
+        return self.parent.flow
+
+    def deselect_all(self) -> None:
+        return self.parent.deselect_all()
+
+    def add_widget(self, widget: CanvasWidget) -> None:
         self.objects_to_draw.append(widget)
 
     def set_x_y(self, x_in: Number, y_in: Number) -> None:
@@ -102,7 +127,7 @@ class BaseCanvasWidget:
         y_coord = self.y  # - (self.height * 0.5)
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[BaseCanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
         if self._is_at_xy(x_in, y_in):
             for o in self.objects_to_draw:
                 if o.is_here(x_in, y_in):
@@ -126,12 +151,12 @@ class BaseCanvasWidget:
         return self._selected
 
 
-class PortWidget(BaseCanvasWidget):
+class PortWidget(CanvasWidget):
     def __init__(
         self,
         x: Number,
         y: Number,
-        parent: Union[FlowCanvas, BaseCanvasWidget],
+        parent: Union[FlowCanvas, CanvasWidget],
         layout: PortLayout,
         radius: Number = 10,
         port: Optional[NodePort] = None,
@@ -143,6 +168,20 @@ class PortWidget(BaseCanvasWidget):
         self.radius = radius
         self.port = port
         self.text_left = text_left
+
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        if last_selected_object == self:
+            self.deselect()
+            return None
+        elif isinstance(last_selected_object, PortWidget):
+            self.flow.connect_nodes(last_selected_object.port, self.port)
+            self.deselect_all()
+            return None
+        else:
+            if last_selected_object is not None:
+                last_selected_object.deselect()
+            self.select()
+            return self
 
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.background_color
@@ -162,12 +201,12 @@ class PortWidget(BaseCanvasWidget):
         return x_coord < x_in < (x_coord + 2 * self.radius) and y_coord < y_in < (y_coord + 2 * self.radius)
 
 
-class NodeWidget(BaseCanvasWidget):
+class NodeWidget(CanvasWidget):
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -194,6 +233,26 @@ class NodeWidget(BaseCanvasWidget):
         self.add_inputs()
         self.add_outputs()
 
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        if last_selected_object == self:
+            return self
+        else:
+            if last_selected_object is not None:
+                last_selected_object.deselect()
+            self.select()
+            try:
+                self.gui.node_interface.draw_for_node(self.node)
+                return self
+            except Exception as e:
+                self.gui._print(f"Failed to handle selection of {self} with exception {e}")
+                self.gui.out_status.clear_output()
+                self.deselect()
+                return None
+
+    def on_double_click(self) -> Optional[CanvasWidget]:
+        self.delete()
+        return None
+
     def draw_title(self, title: str) -> None:
         self.canvas.fill_style = self.node.color
         self.canvas.fill_rect(self.x, self.y, self.width, self._title_box_height)
@@ -209,11 +268,6 @@ class NodeWidget(BaseCanvasWidget):
         x = self.x + (self.width * 0.3)
         y = (self.y + (self.height * 0.65),)
         self.canvas.fill_text(str(val), x, y)
-        if val_is_updated:
-            if ("matplotlib" in str(type(val))) or ("NGLWidget" in str(type(val))):
-                self.parent.gui.out_plot.clear_output()
-                with self.parent.gui.out_plot:
-                    display(val)
 
     def _add_ports(
             self,
@@ -275,13 +329,23 @@ class NodeWidget(BaseCanvasWidget):
         for o in self.objects_to_draw:
             o.draw()
 
+    def delete(self) -> None:
+        for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
+            # TODO: Can we be more efficient than looping over all nodes?
+            if (c.inp.node == self.node) or (c.out.node == self.node):
+                self.flow.remove_connection(c)
+        self.flow.remove_node(self.node)
+        self.parent.objects_to_draw.remove(self)
+        if self.gui.node_interface.node == self.node:
+            self.gui.node_interface.draw_for_node(None)
+
 
 class ButtonNodeWidget(NodeWidget):
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -290,7 +354,7 @@ class ButtonNodeWidget(NodeWidget):
         super().__init__(x, y, parent, layout, node, selected, port_radius)
 
         layout = ButtonLayout()
-        s = BaseCanvasWidget(50, 50, parent=self, layout=layout)
+        s = CanvasWidget(50, 50, parent=self, layout=layout)
         s.handle_select = self.handle_button_select
         self.add_widget(s)
 
@@ -299,7 +363,7 @@ class ButtonNodeWidget(NodeWidget):
         button.deselect()
 
 
-class ButtonWidget(BaseCanvasWidget):
+class ButtonWidget(CanvasWidget, ABC):
     def __init__(
             self,
             x: Number,
@@ -312,6 +376,24 @@ class ButtonWidget(BaseCanvasWidget):
         super().__init__(x, y, parent, layout, selected)
         self.title = title
         self.pressed = False
+
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+        if self.pressed:
+            self.pressed = False
+            self.unpress()
+        else:
+            self.pressed = True
+            self.press()
+        self.deselect()
+        return last_selected_object
+
+    @abstractmethod
+    def press(self):
+        pass
+
+    @abstractmethod
+    def unpress(self):
+        pass
 
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
@@ -346,21 +428,13 @@ class DisplayButtonWidget(ButtonWidget):
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
-    def handle_select(self, not_used):
-        if self.pressed:
-            self.pressed = False
-            self.parent.node.displayed = False
-            self.parent.parent.gui.out_plot.clear_output()
-            self.parent.parent.gui.displayed_node = None
-        else:
-            if self.parent.parent.gui.displayed_node is not None:
-                self.parent.parent.gui.displayed_node.node.displayed = False
-                self.parent.parent.gui.displayed_node.display_button.pressed = False
-            self.pressed = True
-            self.parent.node.displayed = True
-            self.parent.node.representation_updated = True
-            self.parent.parent.gui.displayed_node = self.parent
-        self.deselect()
+    def press(self):
+        self.pressed = True
+        self.parent.set_display()
+
+    def unpress(self):
+        self.pressed = False
+        self.parent.clear_display()
 
 
 class DisplayableNodeWidget(NodeWidget):
@@ -374,7 +448,7 @@ class DisplayableNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, BaseCanvasWidget],
+            parent: Union[FlowCanvas, CanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -385,15 +459,33 @@ class DisplayableNodeWidget(NodeWidget):
         self.display_button = DisplayButtonWidget(80, 50, parent=self, layout=ButtonLayout())
         self.add_widget(self.display_button)
 
-    def display_node(self):
-        if self.node.displayed and self.node.representation_updated:
-            self.parent.gui.out_plot.clear_output()
-            with self.parent.gui.out_plot:
-                for rep in self.node.representations:
-                    display(rep)
-            self.node.representation_updated = False
+    def set_display(self):
+        if self.gui.displayed_node is not None:
+            self.gui.displayed_node.display_button.unpress()
+        self.node.displayed = True
+        self.node.representation_updated = True
+        self.gui.displayed_node = self
+
+    def clear_display(self):
+        self.node.displayed = False
+        if self.gui.displayed_node == self:
+            self.gui.out_plot.clear_output()
+            self.gui.displayed_node = None
+
+    def draw_display(self):
+        """Send the node's representation to a separate GUI window"""
+        self.parent.gui.out_plot.clear_output()
+        with self.parent.gui.out_plot:
+            for rep in self.node.representations:
+                display(rep)
+        self.node.representation_updated = False
 
     def draw(self):
         super().draw()
-        self.display_node()
+        if self.node.displayed and self.node.representation_updated:
+            self.draw_display()
+
+    def delete(self) -> None:
+        self.clear_display()
+        return super().delete()
 
