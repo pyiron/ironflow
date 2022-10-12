@@ -183,21 +183,17 @@ class FlowCanvas:
         return None
 
     def get_selected_objects(self) -> List[CanvasWidget]:
-        return [o for o in self.objects_to_draw if o.selected if o.selected]
+        return [o for o in self.objects_to_draw if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
-        # dx = x - self._x0_mouse
-        # dy = y - self._y0_mouse
-        # self._x0_mouse, self._y0_mouse = x, y
-
-        if [o for o in self.objects_to_draw if o.selected] and self._mouse_is_down:
-            with hold_canvas(self._canvas):
-                # [o.add_x_y(dx, dy) for o in self.objects_to_draw if o.selected]
-                [o.set_x_y(x, y) for o in self.objects_to_draw if o.selected]
-                self.redraw()
+        if self._mouse_is_down:
+            selected_objects = self.get_selected_objects()
+            if len(selected_objects) > 0:
+                with hold_canvas(self._canvas):
+                    [o.set_x_y(x, y) for o in selected_objects]
+                    self.redraw()
 
     def redraw(self) -> None:
-        self.canvas_restart()
         with hold_canvas(self._canvas):
             self.canvas_restart()
             [o.draw() for o in self.objects_to_draw]
