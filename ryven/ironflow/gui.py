@@ -8,7 +8,7 @@ import os
 import ipywidgets as widgets
 from IPython.display import display
 from ryven.main.utils import import_nodes_package, NodesPackage
-from ryven.ironflow.node_widgets import NodeInterface
+from ryven.ironflow.node_interface import NodeInterface
 
 from .flow_canvas import FlowCanvas
 from ryvencore import Session, Script, Flow

@@ -33,6 +33,10 @@ def deserialize(data):
 
 
 class NodeInterface:
+    """
+    Handles the creation of widgets for manually adjusting node input and viewing node info.
+    """
+
     def __init__(self, central_gui: GUI):
         self.node = None
         self._central_gui = central_gui
