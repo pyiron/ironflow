@@ -208,7 +208,7 @@ class HideableWidget(CanvasWidget, ABC):
 
     def is_here(self, x_in: Number, y_in: Number) -> bool:
         if self.visible:
-            return super()._is_at_xy(x_in=x_in, y_in=y_in)
+            return self._is_at_xy(x_in=x_in, y_in=y_in)
         else:
             return False
 
@@ -269,10 +269,7 @@ class PortWidget(HideableWidget):
         self.canvas.fill_text(self.title, self.x + self.radius + 3, self.y + self.radius // 2)
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
-        x_coord = self.x - self.radius
-        y_coord = self.y - self.radius
-
-        return x_coord < x_in < (x_coord + 2 * self.radius) and y_coord < y_in < (y_coord + 2 * self.radius)
+        return (x_in - self.x) ** 2 + (y_in - self.y) ** 2 < self.radius ** 2
 
 
 class NodeWidget(CanvasWidget):
