@@ -38,6 +38,7 @@ class NodeLayout(Layout):
     width: int = 200
     height: int = 100
     font_size: int = 22
+    title_box_height: int = 30
 
 
 @dataclass
@@ -61,7 +62,7 @@ class ExecPortLayout(PortLayout):
 @dataclass
 class ButtonLayout(Layout):
     font_size: int = 16
-    width: int = 50
+    width: int = 60
     height: int = 20
     background_color: str = "darkgray"
     pressed_color: str = "dimgray"

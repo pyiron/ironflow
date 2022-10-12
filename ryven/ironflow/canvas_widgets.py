@@ -6,13 +6,13 @@ from __future__ import annotations
 
 import numpy as np
 from IPython.display import display
-from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from ryven.ironflow.layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 from abc import ABC, abstractmethod
 from ryvencore.NodePort import NodeInput, NodeOutput
 
-from typing import TYPE_CHECKING, Optional, Union, List, Callable
+from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
-    from .flow_canvas import FlowCanvas
+    from ryven.ironflow.flow_canvas import FlowCanvas
     from ryven.ironflow.gui import GUI
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ryvencore.Flow import Flow
 
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
     "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
@@ -42,7 +42,7 @@ class CanvasWidget(ABC):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: Layout,
             selected: bool = False,
             title: Optional[str] = None,
@@ -60,14 +60,11 @@ class CanvasWidget(ABC):
         self._height = self.layout.height
 
     @abstractmethod
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> CanvasWidget | None:
         pass
 
-    def on_double_click(self) -> Optional[CanvasWidget]:
+    def on_double_click(self) -> CanvasWidget | None:
         return self
-
-    def _init_after_parent_assignment(self):
-        pass
 
     @property
     def width(self) -> int:
@@ -79,11 +76,11 @@ class CanvasWidget(ABC):
 
     @property
     def x(self) -> Number:
-        return self.parent.x + self._x  # - self.parent.width//2
+        return self.parent.x + self._x
 
     @property
     def y(self) -> Number:
-        return self.parent.y + self._y  # - self.parent.height//2
+        return self.parent.y + self._y
 
     @property
     def canvas(self) -> Canvas:
@@ -114,8 +111,8 @@ class CanvasWidget(ABC):
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
         self.canvas.fill_rect(
-            self.x,  # - (self.width * 0.5),
-            self.y,  # - (self.height * 0.5),
+            self.x,
+            self.y,
             self.width,
             self.height,
         )
@@ -132,11 +129,11 @@ class CanvasWidget(ABC):
             o.draw()
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
-        x_coord = self.x  # - (self.width * 0.5)
-        y_coord = self.y  # - (self.height * 0.5)
+        x_coord = self.x
+        y_coord = self.y
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
         if self.is_here(x_in, y_in):
             for o in self.objects_to_draw:
                 if o.is_here(x_in, y_in):
@@ -165,7 +162,7 @@ class HideableWidget(CanvasWidget, ABC):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: Layout,
             selected: bool = False,
             title: Optional[str] = None,
@@ -222,7 +219,7 @@ class PortWidget(HideableWidget):
         self,
         x: Number,
         y: Number,
-        parent: Union[FlowCanvas, CanvasWidget],
+        parent: FlowCanvas | CanvasWidget,
         layout: PortLayout,
         port: NodePort,
         selected: bool = False,
@@ -245,7 +242,7 @@ class PortWidget(HideableWidget):
         self.radius = radius
         self.port = port
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> PortWidget | None:
         if last_selected_object == self:
             self.deselect()
             return None
@@ -277,7 +274,7 @@ class NodeWidget(CanvasWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -303,26 +300,25 @@ class NodeWidget(CanvasWidget):
             'exec': ExecPortLayout()
         }
 
-        self._title_box_height = 30
-
-        n_ports_max = max(len(self.node.inputs), len(self.node.outputs))
-        n_ports_min = len([p for p in self.node.inputs if p.type_ == "exec"])
+        n_ports_max = max(len(self.node.inputs), len(self.node.outputs)) + 1  # Includes the expand/collapse button
+        exec_port_i = np.where([p.type_ == "exec" for p in self.node.inputs])[0]
+        n_ports_min = exec_port_i[-1] + 1 if len(exec_port_i) > 0 else 1
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
-        self._io_height = subwidget_size_and_buffer * n_ports_max
-        self._exec_height = subwidget_size_and_buffer * n_ports_min
-        # TODO: Right now we're hard-coding in that all the exec ports (which come with buttons) appear first in input
-        #       This isn't necessarily so, nor checked for anywhere. Do better.
-        self._expand_collapse_height = subwidget_size_and_buffer
+        self._title_box_height = self.layout.title_box_height
+        self._max_body_height = subwidget_size_and_buffer * n_ports_max
+        self._min_body_height = subwidget_size_and_buffer * n_ports_min
+        self._expanded_height = self._title_box_height + self._max_body_height
+        self._collapsed_height = self._title_box_height + self._min_body_height
         self._height = self._expanded_height
 
-        y_step = (self._io_height + self._expand_collapse_height) / (n_ports_max + 1)
-        self._port_y_locs = (np.arange(n_ports_max + 1) + 0.5) * y_step + self._title_box_height
+        y_step = self._max_body_height / n_ports_max
+        self._subwidget_y_locs = (np.arange(n_ports_max) + 0.5) * y_step + self._title_box_height
 
         self.add_inputs()
         self.add_outputs()
         self.expand_button = ExpandButtonWidget(
             x=0.5 * self.width - self.port_radius,
-            y=self._port_y_locs[0] - self.port_radius,
+            y=self._subwidget_y_locs[0] - self.port_radius,
             parent=self,
             layout=ButtonLayout(),
             pressed=True,
@@ -332,7 +328,7 @@ class NodeWidget(CanvasWidget):
         self.add_widget(self.expand_button)
         self.collapse_button = CollapseButtonWidget(
             x=0.5 * self.width - self.port_radius,
-            y=self._port_y_locs[-1] - self.port_radius,
+            y=self._subwidget_y_locs[-1] - self.port_radius,
             parent=self,
             layout=ButtonLayout(),
             pressed=False,
@@ -341,7 +337,7 @@ class NodeWidget(CanvasWidget):
         )
         self.add_widget(self.collapse_button)
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> NodeWidget | None:
         if last_selected_object == self:
             return self
         else:
@@ -357,7 +353,7 @@ class NodeWidget(CanvasWidget):
                 self.deselect()
                 return None
 
-    def on_double_click(self) -> Optional[CanvasWidget]:
+    def on_double_click(self) -> None:
         self.delete()
         return None
 
@@ -373,8 +369,8 @@ class NodeWidget(CanvasWidget):
     def _add_ports(
             self,
             radius: Number,
-            inputs: Optional[List[NodeInputBP]] = None,
-            outputs: Optional[List[NodeOutputBP]] = None,
+            inputs: Optional[list[NodeInputBP]] = None,
+            outputs: Optional[list[NodeOutputBP]] = None,
             border: Number = 1.4,
     ) -> None:
         if inputs is not None:
@@ -393,12 +389,12 @@ class NodeWidget(CanvasWidget):
             self.add_widget(
                 PortWidget(
                     x=x,
-                    y=self._port_y_locs[i_port],
+                    y=self._subwidget_y_locs[i_port],
                     parent=self,
                     layout=self.port_layouts[data_or_exec],
                     port=port,
                     hidden_x=x,
-                    hidden_y=self._port_y_locs[0],
+                    hidden_y=self._subwidget_y_locs[0],
                     radius=radius,
                 )
             )
@@ -406,8 +402,8 @@ class NodeWidget(CanvasWidget):
                 button_layout = ButtonLayout()
                 self.add_widget(
                     ExecButtonWidget(
-                        x=x + 0.3 * button_layout.width,
-                        y=self._port_y_locs[i_port] - 0.5 * button_layout.height,
+                        x=x + radius,
+                        y=self._subwidget_y_locs[i_port] - 0.5 * button_layout.height,
                         parent=self,
                         layout=button_layout,
                         port=port
@@ -434,29 +430,17 @@ class NodeWidget(CanvasWidget):
     def port_widgets(self) -> list[PortWidget]:
         return [o for o in self.objects_to_draw if isinstance(o, PortWidget)]
 
-    @property
-    def _expanded_height(self) -> Number:
-        return self._title_box_height + self._io_height + self._expand_collapse_height
-
-    @property
-    def _collapsed_height(self) -> Number:
-        return self._title_box_height + max(self._expand_collapse_height, self._exec_height)
-
     def expand_io(self):
         self._height = self._expanded_height
         for o in self.port_widgets:
             o.show()
-        # self.collapse_button.on_click()  # Why doesn't this do the same as the next two lines??
-        self.collapse_button.on_unpressed()
-        self.collapse_button.pressed = False
+        self.collapse_button.unpress()
 
     def collapse_io(self):
         self._height = self._collapsed_height
         for o in self.port_widgets:
             o.hide()
-        # TODO: The expand and collapse buttons are effectively an XOR toggle...improve this awkward implementation
-        self.expand_button.on_unpressed()
-        self.expand_button.pressed = False
+        self.expand_button.unpress()
 
 
 class ButtonNodeWidget(NodeWidget):
@@ -464,7 +448,7 @@ class ButtonNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -478,7 +462,7 @@ class ButtonNodeWidget(NodeWidget):
         button_layout = ButtonLayout()
         self.exec_button = ExecButtonWidget(
             x=0.8 * (self.width - button_layout.width),
-            y=self._port_y_locs[0] - 0.5 * button_layout.height,
+            y=self._subwidget_y_locs[0] - 0.5 * button_layout.height,
             parent=self,
             layout=button_layout,
             port=self.node.outputs[0],
@@ -501,7 +485,7 @@ class ButtonWidget(CanvasWidget, ABC):
         self.title = title
         self.pressed = pressed
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> Optional[CanvasWidget]:
+    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> CanvasWidget | None:
         if self.pressed:
             self.unpress()
         else:
@@ -550,7 +534,7 @@ class DisplayButtonWidget(ButtonWidget):
             parent: DisplayableNodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
-            title="PLOT",
+            title="SHOW",
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
@@ -572,7 +556,7 @@ class DisplayableNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[FlowCanvas, CanvasWidget],
+            parent: FlowCanvas | CanvasWidget,
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -647,9 +631,8 @@ class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
         if size is not None:
             layout.width = size
             layout.height = size
-        dpl = DataPortLayout()
-        layout.background_color = dpl.background_color
-        layout.pressed_color = dpl.background_color
+        layout.background_color = parent.node.color
+        layout.pressed_color = parent.node.color
 
         ButtonWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
                               pressed=pressed)
@@ -718,7 +701,7 @@ class ExecButtonWidget(ButtonWidget):
             parent=parent,
             layout=layout,
             selected=selected,
-            title=port.label_str if port.label_str is not None else title,
+            title=port.label_str if port.label_str != '' else title,
             pressed=pressed
         )
         self.port = port

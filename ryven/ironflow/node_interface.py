@@ -11,7 +11,7 @@ import numpy as np
 import pickle
 import base64
 
-from typing import TYPE_CHECKING, Dict, Union, Callable
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
@@ -42,7 +42,7 @@ class NodeInterface:
         self._central_gui = central_gui
         # self.input = []
 
-    def gui_object(self) -> Union[widgets.FloatSlider, widgets.Box]:
+    def gui_object(self) -> widgets.FloatSlider | widgets.Box:
         if "slider" in self.node.title.lower():
             self.gui = widgets.FloatSlider(
                 value=self.node.val, min=0, max=10, continuous_update=False
@@ -53,10 +53,10 @@ class NodeInterface:
             self.gui = widgets.Box()
         return self.gui
 
-    def gui_object_change(self, change: Dict) -> None:
+    def gui_object_change(self, change: dict) -> None:
         self.node.set_state({"val": change["new"]}, 0)
         self.node.update_event()
-        self._central_gui.flow_canvas_widget.redraw()
+        self._central_gui.flow_canvas.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -112,10 +112,10 @@ class NodeInterface:
             # inp_widget.value = dtype_state['default']
 
     def input_change_i(self, i_c) -> Callable:
-        def input_change(change: Dict) -> None:
+        def input_change(change: dict) -> None:
             self.node.inputs[i_c].val = change["new"]
             self.node.update_event()
-            self._central_gui.flow_canvas_widget.redraw()
+            self._central_gui.flow_canvas.redraw()
         return input_change
 
     def draw(self) -> widgets.HBox:

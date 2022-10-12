@@ -1,4 +1,4 @@
-__all__ = ['gui', 'flow_canvas', 'canvas_widgets', 'node_interface.py']
+__all__ = ['gui', 'flow_canvas', 'canvas_widgets', 'layouts', 'models', 'node_interface']
 
-from .gui import GUI
+from ryven.ironflow.gui import GUI
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes

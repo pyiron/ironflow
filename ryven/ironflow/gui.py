@@ -21,7 +21,7 @@ from ryven.ironflow.models import HasSession
 from ryven.ironflow.node_interface import NodeInterface
 from ryven.ironflow.flow_canvas import FlowCanvas
 
-from typing import Optional, Dict
+from typing import Optional
 from ryvencore import Session
 
 alg_modes = ["data", "exec"]
@@ -49,7 +49,7 @@ class GUI(HasSession):
             self,
             title: Optional[str] = None,
             create_default_logs: bool = True,
-            data: Optional[Dict] = None
+            data: Optional[dict] = None
     ) -> None:
         super().create_script(title=title, create_default_logs=create_default_logs, data=data)
         self._flow_canvases.append(FlowCanvas(gui=self))
@@ -59,14 +59,26 @@ class GUI(HasSession):
         super().delete_script()
 
     @property
-    def flow_canvas_widget(self):
+    def flow_canvas(self):
         return self._flow_canvases[self.active_script_index]
 
     @property
     def new_node_class(self):
         return self._nodes_dict[self.modules_dropdown.value][self.node_selector.value]
 
-    def load_from_data(self, data: Dict) -> None:
+    def serialize(self) -> dict:
+        data = super().serialize()
+        currently_active = self.active_script_index
+        for i_script, script in enumerate(self.session.scripts):
+            all_data = data["scripts"][i_script]["flow"]["nodes"]
+            self.active_script_index = i_script
+            for i, node_widget in enumerate(self.flow_canvas.objects_to_draw):
+                all_data[i]["pos x"] = node_widget.x
+                all_data[i]["pos y"] = node_widget.y
+        self.active_script_index = currently_active
+        return data
+
+    def load_from_data(self, data: dict) -> None:
         super().load_from_data(data)
         self._flow_canvases = []
         for i_script, script in enumerate(self.session.scripts):
@@ -126,6 +138,17 @@ class GUI(HasSession):
             icon="map-marker",  # TODO: Use location-dot once this is available
             layout=button_layout
         )
+        buttons = [
+            self.btn_save,
+            self.btn_load,
+            self.btn_help_node,
+            self.btn_add_node,
+            self.btn_delete_node,
+            self.btn_create_script,
+            self.btn_rename_script,
+            self.btn_delete_script,
+            self.btn_zero_location,
+        ]
 
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
@@ -144,8 +167,6 @@ class GUI(HasSession):
         self.node_selector = widgets.RadioButtons(
             options=nodes_options,
             value=list(nodes_options)[0],
-            #    layout={'width': 'max-content'}, # If the items' names are long
-            #     description='Nodes:',
             disabled=False,
         )
 
@@ -162,7 +183,7 @@ class GUI(HasSession):
         self.btn_rename_script.on_click(self.click_rename_script)
         self.btn_input_text_ok.on_click(self.click_input_text_ok)
         self.text_input_field.on_submit(self.click_input_text_ok)
-        # ^ Ignore the deprecation warning, 'observe' does function the way we actually want
+        # ^ Ignore the deprecation warning, 'observe' doesn't function the way we actually want
         # https://github.com/jupyter-widgets/ipywidgets/issues/2446
         self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.btn_delete_script.on_click(self.click_delete_script)
@@ -175,15 +196,7 @@ class GUI(HasSession):
                     [
                         self.modules_dropdown,
                         self.alg_mode_dropdown,
-                        self.btn_save,
-                        self.btn_load,
-                        self.btn_help_node,
-                        self.btn_add_node,
-                        self.btn_delete_node,
-                        self.btn_create_script,
-                        self.btn_rename_script,
-                        self.btn_delete_script,
-                        self.btn_zero_location,
+                        *buttons,
                     ]
                 ),
                 self.text_input_panel,
@@ -198,73 +211,16 @@ class GUI(HasSession):
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def click_add_node(self, change: dict) -> None:
-        self.flow_canvas_widget.add_node(10, 10, self.new_node_class)
-
-    def click_delete_node(self, change: Dict) -> None:
-        self.flow_canvas_widget.delete_selected()
-
-    def change_modules_dropdown(self, change: Dict) -> None:
+    def change_modules_dropdown(self, change: dict) -> None:
         self.node_selector.options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
 
-    def change_alg_mode_dropdown(self, change: Dict) -> None:
+    def change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # TODO: Change only for the active script, and update the dropdown on tab (script) switching
         for script in self.session.scripts:
             script.flow.set_algorithm_mode(self.alg_mode_dropdown.value)
 
-    def change_script_tabs(self, change: Dict):
-        if change['name'] == 'selected_index' and change['new'] is not None:
-            self._depopulate_text_input_panel()
-            if self.script_tabs.selected_index == self.n_scripts:
-                self.create_script()
-                self._update_tabs_from_model()
-            else:
-                self.active_script_index = self.script_tabs.selected_index
-            self.flow_canvas_widget.redraw()
-
-    def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
-        self.text_input_panel.children = [
-            self.text_input_field,
-            self.btn_input_text_ok,
-            self.btn_input_text_cancel
-        ]
-        self.text_input_field.description = description
-        description_tooltip = description_tooltip if description_tooltip is not None else description
-        self.text_input_field.description_tooltip = description_tooltip
-        self.text_input_field.value = initial_value
-
-    def _depopulate_text_input_panel(self) -> None:
-        self.text_input_panel.children = []
-
-    def click_input_text_ok(self, change: Dict) -> None:
-        self._context_actions[self._context](self.text_input_field.value)
-        self._depopulate_text_input_panel()
-
-    def click_input_text_cancel(self, change: Dict) -> None:
-        self._depopulate_text_input_panel()
-        self._print("")
-
-    def _set_context(self, context):
-        if context not in self._context_actions.keys():
-            raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
-        self._context = context
-
-    def click_node_help(self, change: dict) -> None:
-        def _pretty_docstring(node_class):
-            """
-            If we just pass a string, `display` doesn't resolve newlines.
-            If we pass a `print`ed string, `display` also shows the `None` value returned by `print`
-            So we use this ugly hack.
-            """
-            string = f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
-            return HTML(string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;"))
-
-        self.out_log.clear_output()
-        with self.out_log:
-            display(_pretty_docstring(self.new_node_class))
-
-    def click_save(self, change: Dict) -> None:
+    def click_save(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel(
             "Save file",
@@ -278,7 +234,7 @@ class GUI(HasSession):
         self.save(f"{file_name}.json")
         self._print(f"Session saved to {file_name}.json")
 
-    def click_load(self, change: Dict) -> None:
+    def click_load(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel(
             "Load file",
@@ -295,14 +251,34 @@ class GUI(HasSession):
         self.out_log.clear_output()
         self._print(f"Session loaded from {file_name}.json")
 
+    def click_node_help(self, change: dict) -> None:
+        def _pretty_docstring(node_class):
+            """
+            If we just pass a string, `display` doesn't resolve newlines.
+            If we pass a `print`ed string, `display` also shows the `None` value returned by `print`
+            So we use this ugly hack.
+            """
+            string = f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
+            return HTML(string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;"))
+
+        self.out_log.clear_output()
+        with self.out_log:
+            display(_pretty_docstring(self.new_node_class))
+
+    def click_add_node(self, change: dict) -> None:
+        self.flow_canvas.add_node(10, 10, self.new_node_class)
+
+    def click_delete_node(self, change: dict) -> None:
+        self.flow_canvas.delete_selected()
+
     def click_create_script(self, change: dict) -> None:
         self.create_script()
         self._update_tabs_from_model()
         self.script_tabs.selected_index = self.n_scripts - 1
         self.active_script_index = self.script_tabs.selected_index
-        self.flow_canvas_widget.redraw()
+        self.flow_canvas.redraw()
 
-    def click_rename_script(self, change: Dict) -> None:
+    def click_rename_script(self, change: dict) -> None:
         self._depopulate_text_input_panel()
         self._populate_text_input_panel(
             "New name",
@@ -321,14 +297,51 @@ class GUI(HasSession):
         else:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
-    def click_delete_script(self, change: Dict) -> None:
+    def click_delete_script(self, change: dict) -> None:
         self.delete_script()
         self._update_tabs_from_model()
 
     def click_zero_location(self, change: dict) -> None:
-        self.flow_canvas_widget.x = 0
-        self.flow_canvas_widget.y = 0
-        self.flow_canvas_widget.redraw()
+        self.flow_canvas.x = 0
+        self.flow_canvas.y = 0
+        self.flow_canvas.redraw()
+
+    def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
+        self.text_input_panel.children = [
+            self.text_input_field,
+            self.btn_input_text_ok,
+            self.btn_input_text_cancel
+        ]
+        self.text_input_field.description = description
+        description_tooltip = description_tooltip if description_tooltip is not None else description
+        self.text_input_field.description_tooltip = description_tooltip
+        self.text_input_field.value = initial_value
+
+    def _depopulate_text_input_panel(self) -> None:
+        self.text_input_panel.children = []
+
+    def click_input_text_ok(self, change: dict) -> None:
+        self._context_actions[self._context](self.text_input_field.value)
+        self._depopulate_text_input_panel()
+
+    def click_input_text_cancel(self, change: dict) -> None:
+        self._depopulate_text_input_panel()
+        self._print("")
+
+    def _set_context(self, context):
+        if context not in self._context_actions.keys():
+            raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
+        self._context = context
+
+    def change_script_tabs(self, change: dict):
+        if change['name'] == 'selected_index' and change['new'] is not None:
+            self._depopulate_text_input_panel()
+            if self.script_tabs.selected_index == self.n_scripts:
+                self.create_script()
+                self._update_tabs_from_model()
+            else:
+                self.active_script_index = self.script_tabs.selected_index
+            self.flow_canvas.redraw()
 
     def _update_tabs_from_model(self):
         self.script_tabs.selected_index = None
@@ -352,5 +365,4 @@ class GUI(HasSession):
     def _print(self, text: str) -> None:
         with self.out_log:
             self.out_log.clear_output()
-
             print(text)

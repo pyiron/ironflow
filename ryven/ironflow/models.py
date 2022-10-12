@@ -22,7 +22,7 @@ from abc import ABC
 from ryvencore import Session, Script, Flow
 from ryven.main.utils import import_nodes_package, NodesPackage
 
-from typing import Optional, Dict, Type
+from typing import Optional, Type
 
 import ryven.NENV as NENV
 
@@ -34,7 +34,7 @@ packages = [os.path.join(ryven_location, "nodes", *subloc) for subloc in [
     ("built_in",),
     ("std",),
     ("pyiron",),
-]]  # , ("mynodes",)
+]]
 
 
 class HasSession(ABC):
@@ -94,7 +94,7 @@ class HasSession(ABC):
             self,
             title: Optional[str] = None,
             create_default_logs: bool = True,
-            data: Optional[Dict] = None
+            data: Optional[dict] = None
     ) -> None:
         self.session.create_script(
             title=title if title is not None else self.next_auto_script_name,
@@ -120,17 +120,8 @@ class HasSession(ABC):
         with open(file_path, "w") as f:
             f.write(json.dumps(data, indent=4))
 
-    def serialize(self) -> Dict:
-        currently_active = self.active_script_index
-        data = self.session.serialize()
-        for i_script, script in enumerate(self.session.scripts):
-            all_data = data["scripts"][i_script]["flow"]["nodes"]
-            self.active_script_index = i_script
-            for i, node_widget in enumerate(self.flow_canvas_widget.objects_to_draw):
-                all_data[i]["pos x"] = node_widget.x
-                all_data[i]["pos y"] = node_widget.y
-        self.active_script_index = currently_active
-        return data
+    def serialize(self) -> dict:
+        return self.session.serialize()
 
     def load(self, file_path: str) -> None:
         with open(file_path, "r") as f:
@@ -138,7 +129,7 @@ class HasSession(ABC):
 
         self.load_from_data(data)
 
-    def load_from_data(self, data: Dict) -> None:
+    def load_from_data(self, data: dict) -> None:
         for script in self.session.scripts[::-1]:
             self.session.delete_script(script)
         self.session.load(data)

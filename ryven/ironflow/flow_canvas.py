@@ -7,12 +7,12 @@ from __future__ import annotations
 from ipycanvas import Canvas, hold_canvas
 from time import time
 
-from .canvas_widgets import (
+from ryven.ironflow.canvas_widgets import (
     NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
 )
-from .layouts import NodeLayout
+from ryven.ironflow.layouts import NodeLayout
 
-from typing import TYPE_CHECKING, Optional, Union, List
+from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
@@ -55,27 +55,23 @@ class FlowCanvas:
         self.flow = flow if flow is not None else gui.flow
         self._width, self._height = width, height
 
-        self._col_background = "black"  # "#584f4e"
-        self._col_node_header = "blue"  # "#38a8a4"
-        self._col_node_selected = "#9dcea6"
-        self._col_node_unselected = "#dee7bc"
-
-        self._font_size = 30
-        self._node_box_size = 160, 70
+        self._canvas_color = "black"  # "#584f4e"
+        self._connection_style = "white"
+        self._connection_width = 3
 
         self._canvas = Canvas(width=width, height=height)
-        self._canvas.fill_style = self._col_background
+        self._canvas.fill_style = self._canvas_color
         self._canvas.fill_rect(0, 0, width, height)
         self._canvas.layout.width = "100%"
         self._canvas.layout.height = "auto"
-
-        self.objects_to_draw = []
-        self.connections = []
 
         self._canvas.on_mouse_down(self.handle_mouse_down)
         self._canvas.on_mouse_up(self.handle_mouse_up)
         self._canvas.on_mouse_move(self.handle_mouse_move)
         self._canvas.on_key_down(self.handle_keyboard_event)
+
+        self.objects_to_draw = []
+        self.connections = []
 
         self.x = 0
         self.y = 0
@@ -88,9 +84,6 @@ class FlowCanvas:
         self._last_mouse_down = time()
         self._double_click_speed = 0.25  # In seconds. TODO: Put this in a config somewhere
 
-        self._connection_in = None
-        self._node_widget = None
-
         self._object_to_gui_dict = {}
 
     @property
@@ -102,15 +95,12 @@ class FlowCanvas:
         return self._gui
 
     def draw_connection(self, port_1: int, port_2: int) -> None:
-        # i_out, i_in = path
-        # out = self.objects_to_draw[i_out]
-        # inp = self.objects_to_draw[i_in]
         out = self._object_to_gui_dict[port_1]
         inp = self._object_to_gui_dict[port_2]
 
         canvas = self._canvas
-        canvas.stroke_style = "white"
-        canvas.line_width = 3
+        canvas.stroke_style = self._connection_style
+        canvas.line_width = self._connection_width
         canvas.move_to(out.x, out.y)
         canvas.line_to(inp.x, inp.y)
         canvas.stroke()
@@ -125,26 +115,11 @@ class FlowCanvas:
 
     def canvas_restart(self) -> None:
         self._canvas.clear()
-        self._canvas.fill_style = self._col_background
+        self._canvas.fill_style = self._canvas_color
         self._canvas.fill_rect(0, 0, self._width, self._height)
 
     def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
         pass  # TODO
-
-    def set_connection(self, ind_node: int) -> None:
-        if self._connection_in is None:
-            self._connection_in = ind_node
-        else:
-            out = self.objects_to_draw[self._connection_in].node.outputs[0]
-            inp = self.objects_to_draw[ind_node].node.inputs[-1]
-            if self.flow.connect_nodes(inp, out) is None:
-                i_con = self.connections.index([self._connection_in, ind_node])
-                del self.connections[i_con]
-            else:
-                self.connections.append([self._connection_in, ind_node])
-
-            self._connection_in = None
-            self.deselect_all()
 
     def deselect_all(self) -> None:
         [o.deselect() for o in self.objects_to_draw]
@@ -181,13 +156,13 @@ class FlowCanvas:
     def handle_mouse_up(self, x: Number, y: Number):
         self._mouse_is_down = False
 
-    def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
+    def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
         for o in self.objects_to_draw:
             if o.is_here(x_in, y_in):
                 return o.get_element_at_xy(x_in, y_in)
         return None
 
-    def get_selected_objects(self) -> List[CanvasWidget]:
+    def get_selected_objects(self) -> list[CanvasWidget]:
         return [o for o in self.objects_to_draw if o.selected]
 
     def handle_mouse_move(self, x: Number, y: Number) -> None:
@@ -212,20 +187,18 @@ class FlowCanvas:
                 self.draw_connection(c.inp, c.out)
 
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
-        #    print ('node: ', node.identifier, node.GLOBAL_ID)
-
         layout = NodeLayout()
 
-        if hasattr(node, "main_widget_class"):
-            if node.main_widget_class is not None:
-                # node.title = str(node.main_widget_class)
-                f = eval(node.main_widget_class)
-                s = f(x, y, parent=self, layout=layout, node=node)
+        if hasattr(node, "main_widget_class") and node.main_widget_class is not None:
+            if isinstance(node.main_widget_class, str):
+                node_class = eval(node.main_widget_class)
+            elif issubclass(node.main_widget_class, NodeWidget):
+                node_class = node.main_widget_class
             else:
-                s = NodeWidget(x, y, parent=self, layout=layout, node=node)
-            # print ('s: ', s)
+                raise TypeError(f"main_widget_class {node.main_widget_class} not recognized")
         else:
-            s = NodeWidget(x, y, parent=self, layout=layout, node=node)
+            node_class = NodeWidget
+        s = node_class(x=x, y=y, parent=self, layout=layout, node=node)
 
         self.objects_to_draw.append(s)
         return s
