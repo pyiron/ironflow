@@ -29,7 +29,11 @@ os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
 
 ryven_location = Path(__file__).parents[1]
-packages = [os.path.join(ryven_location, *subloc) for subloc in [("std",), ("nodes", "built_in")]]  # , ("mynodes",)
+packages = [os.path.join(ryven_location, "nodes", *subloc) for subloc in [
+    ("built_in",),
+    ("std",),
+    ("pyiron",),
+]]  # , ("mynodes",)
 alg_modes = ["data", "exec"]
 
 
