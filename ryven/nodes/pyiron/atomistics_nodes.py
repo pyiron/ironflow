@@ -6,6 +6,7 @@ import matplotlib.pylab as plt
 import numpy as np
 from pyiron_atomistics import Project
 from pyiron_atomistics.lammps import list_potentials
+from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 from ryven.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
 
@@ -30,31 +31,40 @@ class NodeBase(Node):
 
     def __init__(self, params):
         super().__init__(params)
+        self._call_after_update = []
 
-    # here we could add some stuff for all nodes below...
+    def update(self, inp=-1):
+        super().update(inp=inp)
+        self._after_update(inp)
 
-
-class NodeWithDisplay(NodeBase, ABC):
-    main_widget_class = RepresentableNodeWidget
-
-    def __init__(self, params):
-        super().__init__(params)
-        self._representation = None
-        self.representation_updated = False
-        self.displayed = False
-
-    def update_event(self, inp=-1):
-        self.representation_updated = True
-
-    @property
-    def representations(self) -> tuple:
-        return tuple(o.val for o in self.outputs)
+    def _after_update(self, inp: int):
+        for fnc in self._call_after_update:
+            fnc(inp)
 
     def output(self, i):
         return self.outputs[i].val
 
 
-class Project_Node(NodeWithDisplay):
+class NodeWithRepresentation(NodeBase, ABC):
+    main_widget_class = RepresentableNodeWidget
+
+    def __init__(self, params):
+        super().__init__(params)
+        self.representation_updated = False
+        self._call_after_update.append(self._representation_update)
+
+    def _representation_update(self, inp):
+        self.representation_updated = True
+
+    @property
+    def representations(self) -> dict:
+        return {
+            o.label_str if o.label_str != "" else f"output{i}": o.val
+            for i, o in enumerate(self.outputs) if o.type_ == "data"
+        }
+
+
+class Project_Node(NodeWithRepresentation):
     """Create a pyiron project node"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -64,7 +74,7 @@ class Project_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Char(default="."), label="name"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="project"),
     ]
     color = "#aabb44"
 
@@ -72,29 +82,31 @@ class Project_Node(NodeWithDisplay):
         self.update()
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         pr = Project(self.input(0))
         self.set_output_val(0, pr)
 
     @property
-    def representations(self) -> tuple:
-        return str(self.input(0)),
+    def representations(self) -> dict:
+        return {"name": str(self.input(0))}
 
 
-class OutputsOnlyAtoms(NodeWithDisplay, ABC):
+class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="structure"),
     ]
     color = "#aabb44"
 
     @abstractmethod
     def update_event(self, inp=-1):
         """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
-        super().update_event(inp=inp)
+        pass
 
     @property
-    def representations(self) -> tuple:
-        return self.output(0).plot3d(), self.output(0)
+    def representations(self) -> dict:
+        return {
+            "plot3d": self.output(0).plot3d(),
+            "print": self.output(0)
+        }
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -110,7 +122,6 @@ class BulkStructure_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         pr = self.input(0)
         self.set_output_val(
             0, pr.create.structure.bulk(self.input(1), cubic=self.input(2))
@@ -129,7 +140,6 @@ class Repeat_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).repeat(self.input(1)))
 
 
@@ -152,11 +162,10 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
-class Lammps_Node(NodeWithDisplay):
+class Lammps_Node(NodeWithRepresentation):
     title = "Lammps"
     version = "v0.1"
     init_inputs = [
@@ -171,7 +180,7 @@ class Lammps_Node(NodeWithDisplay):
     ]
     init_outputs = [
         NodeOutputBP(type_="exec"),
-        NodeOutputBP(),
+        NodeOutputBP(label="job"),
     ]
     color = "#5d95de"
 
@@ -223,7 +232,6 @@ class Lammps_Node(NodeWithDisplay):
             potl_input.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         if inp == 0:
             self._run()
         elif inp == 1:
@@ -232,12 +240,7 @@ class Lammps_Node(NodeWithDisplay):
             self._update_potential_choices()
 
 
-    @property
-    def representations(self) -> tuple:
-        return self.output(1),
-
-
-class GenericOutput_Node(NodeWithDisplay):
+class GenericOutput_Node(NodeWithRepresentation):
     """Select Generic Output item"""
 
     version = "v0.1"
@@ -246,27 +249,49 @@ class GenericOutput_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="job"),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="energy_tot", items=["energy_tot", "energy_pot"]
+                default="Input an atomistic job", items=["Input an atomistic job"]
             ),
-            label="Var",
+            label="field",
         ),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="output"),
     ]
     color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
 
-    def update_event(self, inp=-1):
-        super().update_event(inp=inp)
-        self.inputs[1].dtype.items = self.input(0)["output/generic"].list_nodes()
-        val = self.input(0)[f"output/generic/{self.input(1)}"]
+    @property
+    def _job(self):
+        return self.input(0)
+
+    def _update_fields(self):
+        if isinstance(self._job, AtomisticGenericJob):
+            self.inputs[1].dtype.items = self._job["output/generic"].list_nodes()
+            self.inputs[1].val = self.inputs[1].dtype.items[0]
+        else:
+            self.inputs[1].dtype.items = [self.init_inputs[1].dtype.default]
+            # Note: It would be sensible to use `self.init_outputs[1].dtype.items` above, but this field gets updated
+            # to `self.inputs[1].dtype.items`, probably because of the mutability of lists.
+            self.inputs[1].val = self.init_inputs[1].dtype.default
+
+    def _update_value(self):
+        if isinstance(self._job, AtomisticGenericJob):
+            val = self._job[f"output/generic/{self.input(1)}"]
+        else:
+            val = None
         self.set_output_val(0, val)
 
+    def update_event(self, inp=-1):
+        if inp == 0:
+            self._update_fields()
+            self._update_value()
+        elif inp == 1:
+            self._update_value()
 
-class IntRand_Node(NodeWithDisplay):
+
+class IntRand_Node(NodeWithRepresentation):
     """Generate a random number in a given range"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -277,17 +302,16 @@ class IntRand_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="length"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="randint"),
     ]
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         val = np.random.randint(0, high=self.input(0), size=self.input(1))
         self.set_output_val(0, val)
 
 
-class JobName_Node(NodeWithDisplay):
+class JobName_Node(NodeWithRepresentation):
     """Create job name for parameters"""
 
     title = "JobName"
@@ -296,19 +320,18 @@ class JobName_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Float(default=0), label="float"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="job name"),
     ]
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         val = self.input(0) + f"{float(self.input(1))}".replace("-", "m").replace(
             ".", "p"
         )
         self.set_output_val(0, val)
 
 
-class Linspace_Node(NodeWithDisplay):
+class Linspace_Node(NodeWithRepresentation):
     """Generate a linear mesh in a given range using np.linspace"""
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -320,7 +343,7 @@ class Linspace_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="linspace"),
     ]
     color = "#aabb44"
 
@@ -328,39 +351,28 @@ class Linspace_Node(NodeWithDisplay):
         self.update()    
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         val = np.linspace(self.input(0), self.input(1), self.input(2))
-        # val = 10
         self.set_output_val(0, val)
 
 
-class Plot3d_Node(NodeWithDisplay):
+class Plot3d_Node(NodeWithRepresentation):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
-        NodeInputBP(dtype=dtypes.Boolean(default=False), label="print")
     ]
     init_outputs = [
-        NodeOutputBP(type_="data"),
-        NodeOutputBP(type_="data"),
+        NodeOutputBP(type_="data", label="plot3d"),
+        NodeOutputBP(type_="data", label="structure"),
     ]
     color = "#5d95de"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, self.input(0).plot3d())
         self.set_output_val(1, self.input(0))
 
-    @property
-    def representations(self) -> tuple:
-        if self.input(1):
-            return self.output(0), self.output(1)
-        else:
-            return self.output(0),
 
-
-class Matplot_Node(NodeWithDisplay):
+class Matplot_Node(NodeWithRepresentation):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
@@ -368,7 +380,7 @@ class Matplot_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="y"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data"),
+        NodeOutputBP(type_="data", label="fig"),
     ]
     color = "#5d95de"
 
@@ -382,19 +394,18 @@ class Matplot_Node(NodeWithDisplay):
         plt.ion()
 
 
-class Sin_Node(NodeWithDisplay):
+class Sin_Node(NodeWithRepresentation):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
         NodeInputBP(dtype=dtypes.Data(size="m")),
     ]
     init_outputs = [
-        NodeOutputBP(),
+        NodeOutputBP(label="sin"),
     ]
     color = "#5d95de"
 
     def update_event(self, inp=-1):
-        super().update_event(inp=inp)
         self.set_output_val(0, np.sin(self.input(0)))
 
 
@@ -434,9 +445,9 @@ class ForEach_Node(NodeBase):
         NodeInputBP(dtype=dtypes.List(), label="elements"),
     ]
     init_outputs = [
-        NodeOutputBP("loop", type_="exec"),
-        NodeOutputBP("e", type_="data"),
-        NodeOutputBP("finished", type_="exec"),
+        NodeOutputBP(label="loop", type_="exec"),
+        NodeOutputBP(label="e", type_="data"),
+        NodeOutputBP(label="finished", type_="exec"),
     ]
     color = '#b33a27'
 
