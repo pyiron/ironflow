@@ -3,7 +3,7 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from unittest import TestCase
-from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+from ironflow.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
 import os
 
 

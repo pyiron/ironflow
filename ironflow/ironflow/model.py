@@ -20,11 +20,11 @@ import os
 import json
 from abc import ABC
 from ryvencore import Session, Script, Flow
-from ryven.main.utils import import_nodes_package, NodesPackage
+from ironflow.main.utils import import_nodes_package, NodesPackage
 
 from typing import Optional, Type
 
-import ryven.NENV as NENV
+import ironflow.NENV as NENV
 
 os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
@@ -156,7 +156,7 @@ class HasSession(ABC):
             node_class Type[NENV.Node]: The new node class to register.
 
         Example:
-            >>> from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> from ironflow.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
             >>> gui = GUI(script_title='foo')
             >>>
             >>> class MyNode(Node):

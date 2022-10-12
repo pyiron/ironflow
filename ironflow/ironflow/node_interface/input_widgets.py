@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 
-from ryven.NENV import Node
-from ryven.ironflow import GUI
+from ironflow.NENV import Node
+from ironflow.ironflow import GUI
 
 __author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (

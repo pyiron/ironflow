@@ -3,7 +3,6 @@ It should lie in the same location as Ryven.py so it can get imported directly f
 without path modifications which caused issues in the past."""
 
 import inspect
-import sys
 import os
 
 
@@ -13,6 +12,9 @@ NodeInputBP = None
 NodeOutputBP = None
 dtypes = None
 
+NO_GUI_MODE = RuntimeError("ironflow does not support Ryven's GUI mode; "
+                           "the gui is launched from a Jupyter environment relying on ryvencore")
+
 
 def init_node_env():
     global Node
@@ -20,20 +22,8 @@ def init_node_env():
     global NodeOutputBP
     global dtypes
 
-
     if os.environ['RYVEN_MODE'] == 'gui':
-
-        from ryvencore_qt import \
-            NodeInputBP as NodeInputBP_, \
-            NodeOutputBP as NodeOutputBP_, \
-            dtypes as dtypes_
-        from ryven.main.nodes.NodeBase import NodeBase as Node_
-
-        Node = Node_
-        NodeInputBP = NodeInputBP_
-        NodeOutputBP = NodeOutputBP_
-        dtypes = dtypes_
-
+        raise NO_GUI_MODE
     else:
 
         # import sources directly from backend if not running in gui mode
@@ -59,7 +49,7 @@ def init_node_env():
         dtypes = dtypes_
 
 
-from ryven.main.utils import load_from_file
+from ironflow.main.utils import load_from_file
 
 
 def import_widgets(origin_file: str, rel_file_path='widgets.py'):
@@ -73,17 +63,8 @@ def import_widgets(origin_file: str, rel_file_path='widgets.py'):
     # alternative solution without __file__ argument; does not work with debugging, so it's not the best idea
     #   caller_location = os.path.dirname(stack()[1].filename)  # getting caller file path from stack frame
 
-    abs_path = os.path.join(caller_location, rel_file_path)
-
     if os.environ['RYVEN_MODE'] == 'gui':
-
-        # import the widgets module
-        load_from_file(abs_path)
-
-        # in GUI mode, import the widgets container from NWENV containing all the exported widget classes
-        from ryven import NWENV
-        widgets_container = NWENV.WidgetsRegistry.exported_widgets[-1]
-
+        raise NO_GUI_MODE
     else:
         # in non-gui mode, return an object that just returns None for all accessed attributes
         # so widgets.MyWidget in the nodes file just returns None then

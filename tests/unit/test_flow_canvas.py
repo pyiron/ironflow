@@ -3,7 +3,7 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from unittest import TestCase
-from ryven.ironflow.gui import GUI
+from ironflow.ironflow.gui import GUI
 import os
 
 
