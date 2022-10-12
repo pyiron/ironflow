@@ -114,3 +114,14 @@ class TestGUI(TestCase):
         )
 
         os.remove(f"{gui.script_title}.json")
+
+    def test_repeated_instantiation(self):
+        gui = GUI(script_title='foo')
+        id0 = str(gui.session.nodes[0].identifier)
+        gui = GUI(script_title='foo')
+        self.assertEqual(
+            gui.session.nodes[0].identifier,
+            id0,
+            msg=f"Reinstantiating the gui should not change node identifiers, but got {id0} then "
+                f"{gui.session.nodes[0].identifier}"
+        )
