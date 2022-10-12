@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
 from time import time
+import ipywidgets as widgets
+from IPython.display import display
 
 from ironflow.ironflow.canvas_widgets.nodes import (
     NodeWidget, ButtonNodeWidget, RepresentableNodeWidget
@@ -76,6 +78,8 @@ class FlowCanvas:
         self._canvas.on_mouse_move(self.handle_mouse_move)
         self._canvas.on_key_down(self.handle_keyboard_event)
 
+        self.output = widgets.Output(layout={"border": "1px solid black"})
+
         self.objects_to_draw = []
         self.connections = []
 
@@ -103,6 +107,15 @@ class FlowCanvas:
     @property
     def flow_canvas(self) -> FlowCanvas:
         return self
+
+    @property
+    def title(self) -> str:
+        return self.flow.script.title
+
+    def display(self):
+        self.output.clear_output()
+        with self.output:
+            display(self.canvas)
 
     def draw_connection(self, port_1: int, port_2: int) -> None:
         out = self._object_to_gui_dict[port_1]
@@ -196,7 +209,7 @@ class FlowCanvas:
             [o.draw() for o in self.objects_to_draw]
             for c in self.flow.connections:
                 self.draw_connection(c.inp, c.out)
-        self.gui.node_presenter.draw()
+        self.gui.update_node_presenter()
 
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
         layout = NodeLayout()
@@ -239,7 +252,7 @@ class FlowCanvas:
             self._canvas.height = self._height
             self.redraw()
         else:
-            self.gui._print("Zoom limit reached")
+            self.gui.print("Zoom limit reached")
 
     def zoom_in(self) -> None:
         self._zoom(max(self._zoom_index - 1, 0))

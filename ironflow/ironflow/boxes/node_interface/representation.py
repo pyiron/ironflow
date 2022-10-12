@@ -4,13 +4,12 @@
 
 from __future__ import annotations
 
-from ironflow.ironflow.node_interface.base import NodeInterfaceBase
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 
-from typing import TYPE_CHECKING, Optional, Callable
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ironflow.ironflow.gui import GUI
     from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
 
 __author__ = "Liam huber"
@@ -28,8 +27,8 @@ __date__ = "Sept 20, 2022"
 class NodePresenter(NodeInterfaceBase):
     """Handles the display of nodes with a representation."""
 
-    def __init__(self, gui: GUI, layout: Optional[dict] = None):
-        super().__init__(gui=gui, layout=layout)
+    def __init__(self):
+        super().__init__()
         self._node_widget = None
         self._widgets = []
         self._toggles = []
@@ -92,12 +91,16 @@ class NodePresenter(NodeInterfaceBase):
                 ])
             )
 
-    def draw(self):
+    def draw(self) -> None:
         if self.node_widget is not None and self.node_widget.node.representation_updated:
             self._draw()
             self.node_widget.node.representation_updated = False
 
-    def clear_output(self):
+    def clear_output(self) -> None:
         for w in self._widgets:
             w.clear_output()
         super().clear_output()
+
+    def close(self) -> None:
+        self.node_widget = None
+        self.clear_output()

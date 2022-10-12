@@ -8,7 +8,7 @@ from __future__ import annotations
 import ipywidgets as widgets
 
 from ironflow.NENV import Node
-from ironflow.ironflow import GUI
+from ironflow.ironflow.gui import GUI
 
 __author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
@@ -35,4 +35,4 @@ class SliderControl:
     def widget_change(self, change: dict) -> None:
         self.node.set_state({"val": change["new"]}, 0)
         self.node.update_event()
-        self.gui.flow_canvas.redraw()
+        self.gui.redraw_active_flow_canvas()

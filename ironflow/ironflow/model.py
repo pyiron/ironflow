@@ -101,7 +101,7 @@ class HasSession(ABC):
             create_default_logs=create_default_logs,
             data=data
         )
-        self.active_script_index = -1
+        self.active_script_index = self.n_scripts - 1
 
     def delete_script(self) -> None:
         last_active = self.active_script_index

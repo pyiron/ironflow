@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from ironflow.ironflow.node_interface.base import NodeInterfaceBase
+from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 import numpy as np
@@ -12,7 +12,7 @@ import numpy as np
 import pickle
 import base64
 
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
     from ironflow.NENV import Node
@@ -38,8 +38,9 @@ class NodeController(NodeInterfaceBase):
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, gui: GUI, layout: Optional[dict] = None):
-        super().__init__(gui=gui, layout=layout)
+    def __init__(self, gui: GUI):
+        super().__init__()
+        self.gui = gui
         self.node = None
         self._margin = 5  # px
         self._row_height = 30  # px
@@ -109,7 +110,7 @@ class NodeController(NodeInterfaceBase):
             # TODO: Test this in exec mode
             self.node.inputs[i_c].val = change["new"]
             self.node.update(i_c)
-            self.gui.flow_canvas.redraw()
+            self.gui.redraw_active_flow_canvas()
         return input_change
 
     @property
@@ -133,7 +134,7 @@ class NodeController(NodeInterfaceBase):
             return widgets.Output()
 
     @property
-    def info_box(self):
+    def info_box(self) -> widgets.VBox:
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
@@ -157,8 +158,11 @@ class NodeController(NodeInterfaceBase):
                 display(widgets.VBox([self.input_box, self.input_widget, self.info_box]))
                 # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
-    def draw_for_node(self, node: Node | None):
+    def draw_for_node(self, node: Node | None) -> None:
         self.node = node
         self.draw()
+
+    def close(self) -> None:
+        self.draw_for_node(None)
 
 
