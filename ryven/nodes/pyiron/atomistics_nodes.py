@@ -264,7 +264,7 @@ class Plot3d_Node(DualNodeBase):
 
     def update_event(self, inp=-1):
         self._val_is_updated = True
-        if self.active and inp == 0:
+        if self.active:
             self.val = self.input(1).plot3d()
         elif not self.active:
             self.val = self.input(0)
@@ -288,11 +288,13 @@ class Matplot_Node(DualNodeBase):
 
     def update_event(self, inp=-1):
         self._val_is_updated = True
-        if self.active and inp == 0:
+        if self.active:
+            plt.ioff()
             fig = plt.figure()
             plt.clf()
             plt.plot(self.input(1), self.input(2))
             self.val = fig
+            plt.ion()
         elif not self.active:
             self.val = self.input(0)
 
@@ -393,7 +395,7 @@ class Print_Node(DualNodeBase):
         super().__init__(params, active=True)
 
     def update_event(self, inp=-1):
-        if self.active and inp == 0:
+        if self.active:
             self.val = self.input(1)
         elif not self.active:
             self.val = self.input(0)
