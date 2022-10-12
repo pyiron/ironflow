@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-import ipywidgets as widgets
+from ryven.ironflow.node_interface_abc import NodeInterfaceBase
 from IPython.display import display
 
 from typing import TYPE_CHECKING, Optional
@@ -24,20 +24,12 @@ __status__ = "production"
 __date__ = "Sept 20, 2022"
 
 
-class NodePresenter:
+class NodePresenter(NodeInterfaceBase):
     """Handles the display of nodes with a representation."""
 
     def __init__(self, gui: GUI, layout: Optional[dict] = None):
-        self.gui = gui
-        self.layout = layout if layout is not None else {"width": "50%", "border": "1px solid black"}
+        super().__init__(gui=gui, layout=layout)
         self._node_widget = None
-        self._output = None
-
-    @property
-    def output(self) -> widgets.Output:
-        if self._output is None:
-            self._output = widgets.Output(layout=self.layout)
-        return self._output
 
     @property
     def node_widget(self) -> RepresentableNodeWidget | None:
@@ -51,9 +43,6 @@ class NodePresenter:
         if new_node_widget is not None:
             new_node_widget.node.representation_updated = True
         self._node_widget = new_node_widget
-
-    def clear_output(self):
-        self.output.clear_output()
 
     def draw(self):
         if self.node_widget is not None and self.node_widget.node.representation_updated:

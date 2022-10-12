@@ -126,6 +126,7 @@ class FlowCanvas:
 
     def deselect_all(self) -> None:
         [o.deselect() for o in self.objects_to_draw]
+        self._last_selected_object = None
         self.redraw()
 
     def handle_mouse_down(self, x: Number, y: Number):

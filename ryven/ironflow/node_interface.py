@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from ryven.ironflow.node_interface_abc import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 import numpy as np
@@ -11,12 +12,12 @@ import numpy as np
 import pickle
 import base64
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Optional
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
     "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
@@ -32,139 +33,145 @@ def deserialize(data):
     return pickle.loads(base64.b64decode(data))
 
 
-class NodeInterface:
+class NodeController(NodeInterfaceBase):
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, central_gui: GUI):
+    def __init__(self, gui: GUI, layout: Optional[dict] = None):
+        super().__init__(gui=gui, layout=layout)
         self.node = None
-        self._central_gui = central_gui
-        # self.input = []
+        self._margin = 5  # px
+        self._row_height = 30  # px
 
-    def gui_object(self) -> widgets.FloatSlider | widgets.Box:
-        if "slider" in self.node.title.lower():
-            self.gui = widgets.FloatSlider(
-                value=self.node.val, min=0, max=10, continuous_update=False
+    def _box_height(self, n_rows: int) -> int:
+        return n_rows * self._row_height + 2 * self._margin
+
+    @property
+    def input_widget(self) -> widgets.Widget:
+        try:
+            widget = self.node.input_widget(self.gui, self.node).widget
+            widget.layout = widgets.Layout(
+                height="70px", border="solid 1px blue", margin=f"{self._margin}px", padding="10px", width="auto"
             )
+            return widget
+        except AttributeError:
+            return widgets.Output()
 
-            self.gui.observe(self.gui_object_change, names="value")
-        else:
-            self.gui = widgets.Box()
-        return self.gui
+    def input_field_list(self) -> list[list[widgets.Widget]]:
+        input = []
+        if hasattr(self.node, "inputs"):
+            for i_c, inp in enumerate(self.node.inputs[:]):
+                if inp.dtype is not None:
+                    dtype = str(inp.dtype).split(".")[-1]
+                    dtype_state = deserialize(inp.data()["dtype state"])
+                    if inp.val is None:
+                        inp.val = dtype_state["val"]
+                    if dtype == "Integer":
+                        inp_widget = widgets.IntText(
+                            value=inp.val,
+                            disabled=False,
+                            description="",
+                            continuous_update=False,
+                        )
+                    elif dtype == "Boolean":
+                        inp_widget = widgets.Checkbox(
+                            value=inp.val,
+                            indent=False,
+                            description="",
+                        )
+                    elif dtype == "Choice":
+                        inp_widget = widgets.Dropdown(
+                            value=inp.val,
+                            options=inp.dtype.items,
+                            description="",
+                            ensure_option=True,
+                        )
 
-    def gui_object_change(self, change: dict) -> None:
-        self.node.set_state({"val": change["new"]}, 0)
-        self.node.update_event()
-        self._central_gui.flow_canvas.redraw()
-
-    def input_widgets(self) -> None:
-        self._input = []
-        if not hasattr(self.node, "inputs"):
-            return
-        for i_c, inp in enumerate(self.node.inputs[:]):
-            if inp.dtype is not None:
-                dtype = str(inp.dtype).split(".")[-1]
-                dtype_state = deserialize(inp.data()["dtype state"])
-                if inp.val is None:
-                    inp.val = dtype_state["val"]
-                if dtype == "Integer":
-                    inp_widget = widgets.IntText(
-                        value=inp.val,
-                        disabled=False,
-                        description="",
-                        continuous_update=False,
-                        layout=widgets.Layout(width="110px", border="solid 1px"),
-                    )
-                elif dtype == "Boolean":
-                    inp_widget = widgets.Checkbox(
-                        value=inp.val,
-                        indent=True,
-                        description="",
-                        layout=widgets.Layout(width="110px", border="solid 1px"),
-                    )
-                elif dtype == "Choice":
-                    inp_widget = widgets.Dropdown(
-                        value=inp.val,
-                        options=inp.dtype.items,
-                        description="",
-                        ensure_option=True,
-                        layout=widgets.Layout(width="110px", border="solid 1px"),
-                    )
-
+                    else:
+                        inp_widget = widgets.Text(
+                            value=str(inp.val),
+                            continuous_update=False,
+                        )
+                    description = inp.label_str
+                elif inp.label_str != "":
+                    inp_widget = widgets.Label(value=inp.type_)
+                    description = inp.label_str
                 else:
-                    inp_widget = widgets.Text(
-                        value=str(inp.val),
-                        continuous_update=False,
-                    )
-                description = inp.label_str
-            elif inp.label_str != "":
-                inp_widget = widgets.Label(value=inp.type_)
-                description = inp.label_str
-            else:
-                inp_widget = widgets.Label(value=inp.type_)
-                description = inp.type_
-            self._input.append([widgets.Label(description), inp_widget])
-
-            inp_widget.observe(self.input_change_i(i_c), names="value")
-
-            # inp_widget.value = dtype_state['default']
+                    inp_widget = widgets.Label(value=inp.type_)
+                    description = inp.type_
+                inp_widget.observe(self.input_change_i(i_c), names="value")
+                input.append([widgets.Label(description), inp_widget])
+        return input
 
     def input_change_i(self, i_c) -> Callable:
         def input_change(change: dict) -> None:
             self.node.inputs[i_c].val = change["new"]
             self.node.update_event()
-            self._central_gui.flow_canvas.redraw()
+            self.gui.flow_canvas.redraw()
         return input_change
 
-    def draw(self) -> widgets.VBox:
-        self.inp_box = widgets.GridBox(
-            list(np.array(self._input).flatten()),
-            layout=widgets.Layout(
-                grid_template_columns="110px 50%",
-                border="solid 1px blue",
-                margin="10px",
-            ),
-        )
+    @property
+    def input_box(self) -> widgets.GridBox | widgets.Output:
+        input_fields = self.input_field_list()
+        n_fields = len(input_fields)
+        if n_fields > 0:
+            return widgets.GridBox(
+                list(np.array(input_fields).flatten()),
+                layout=widgets.Layout(
+                    grid_template_columns="110px auto",
+                    grid_auto_rows=f"{self._row_height}px",
+                    border="solid 1px blue",
+                    margin=f"{self._margin}px",
+                    height=f"{self._box_height(n_fields)}px",
+                    # Automatic height like this really should be doable just with the CSS,
+                    # but for the life of me I can't get a CSS solution working right -Liam
+                )
+            )
+        else:
+            return widgets.Output()
 
-        self.gui.layout = widgets.Layout(
-            height="70px", border="solid 1px red", margin="10px", padding="10px"
-        )
-
+    @property
+    def info_box(self):
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
-        global_id = widgets.Text(
-            value=str(glob_id_val), description="GLOBAL_ID:", disabled=True
-        )
-        # global_id.layout.width = '300px'
+        global_id = widgets.Text(value=str(glob_id_val), description="GLOBAL_ID:", disabled=True)
 
-        title = widgets.Text(
-            value=str(self.node.title),
-            # placeholder='Type something',
-            description="Title:",
-            disabled=True,
-        )
-        # title.layout.width = '300px'
+        title = widgets.Text(value=str(self.node.title), description="Title:", disabled=True)
 
-        info_box = widgets.VBox([global_id, title])
+        info_box = widgets.VBox([title, global_id])
         info_box.layout = widgets.Layout(
-            height="70px",
-            width="350px",
+            height=f"{self._box_height(2)}px",
             border="solid 1px red",
-            margin="10px",
+            margin=f"{self._margin}px",
             padding="0px",
         )
+        return info_box
 
-        return widgets.VBox([title, self.inp_box, info_box])  # self.gui
+    def draw(self) -> None:
+        self.clear_output()
+        if self.node is not None:
+            with self.output:
+                display(widgets.VBox([self.input_box, self.input_widget, self.info_box]))
+                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
     def draw_for_node(self, node: Node | None):
         self.node = node
-        with self._central_gui.out_status:
-            self._central_gui.out_status.clear_output()
-            if node is not None:
-                self.gui_object()
-                self.input_widgets()
-                display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-            else:
-                display(None)
+        self.draw()
+
+
+class SliderControl:
+    def __init__(self, gui: GUI, node: Node):
+        self.gui = gui
+        self.node = node
+        self.widget = widgets.FloatSlider(
+            value=self.node.val, min=0, max=10, continuous_update=False
+        )
+
+        self.widget.observe(self.widget_change, names="value")
+
+    def widget_change(self, change: dict) -> None:
+        self.node.set_state({"val": change["new"]}, 0)
+        self.node.update_event()
+        self.gui.flow_canvas.redraw()

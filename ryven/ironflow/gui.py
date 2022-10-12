@@ -18,7 +18,7 @@ __date__ = "May 10, 2022"
 import ipywidgets as widgets
 from IPython.display import display, HTML
 from ryven.ironflow.models import HasSession
-from ryven.ironflow.node_interface import NodeInterface
+from ryven.ironflow.node_interface import NodeController
 from ryven.ironflow.representation import NodePresenter
 from ryven.ironflow.flow_canvas import FlowCanvas
 
@@ -34,8 +34,7 @@ class GUI(HasSession):
         super().__init__(session_title=session_title, session=session)
 
         self._flow_canvases = []
-        self.displayed_node = None
-        self.node_interface = NodeInterface(self)
+        self.node_controller = NodeController(self)
         self.node_presenter = NodePresenter(self)
 
         self._context = None
@@ -186,8 +185,7 @@ class GUI(HasSession):
         self._update_tabs_from_model()
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
-        self.out_status = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
-        node_box = widgets.HBox([self.out_status, self.node_presenter.output])
+        node_box = widgets.HBox([self.node_controller.output, self.node_presenter.output])
 
         # Wire callbacks
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
@@ -362,6 +360,7 @@ class GUI(HasSession):
     def change_script_tabs(self, change: dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
             self._depopulate_text_input_panel()
+            self.flow_canvas.deselect_all()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
                 self._update_tabs_from_model()
