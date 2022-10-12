@@ -50,18 +50,21 @@ class FlowCanvas:
             - If a node is selected, deletes it
             - If a port is selected, deletes all connections it is part of
     """
-    def __init__(self, gui: GUI, flow: Optional[Flow] = None, width: int = 2000, height: int = 1000):
+    def __init__(self, gui: GUI, flow: Optional[Flow] = None):
         self._gui = gui
         self.flow = flow if flow is not None else gui.flow
-        self._width, self._height = width, height
+
+        self._standard_size = (1800, 800)
+        self._zoom_factors = [0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00]
+        self._zoom_index = 2
+        self._width, self._height = self._get_size()
 
         self._canvas_color = "black"  # "#584f4e"
         self._connection_style = "white"
         self._connection_width = 3
 
-        self._canvas = Canvas(width=width, height=height)
-        self._canvas.fill_style = self._canvas_color
-        self._canvas.fill_rect(0, 0, width, height)
+        self._canvas = Canvas(width=self._width, height=self._height)
+        self.canvas_restart()
         self._canvas.layout.width = "100%"
         self._canvas.layout.height = "auto"
 
@@ -214,3 +217,23 @@ class FlowCanvas:
             if o.selected:
                 o.delete()
         self.redraw()
+
+    def _get_size(self) -> tuple[int, int]:
+        scale = self._zoom_factors[self._zoom_index]
+        return int(self._standard_size[0] * scale), int(self._standard_size[1] * scale)
+
+    def _zoom(self, zoom_index) -> None:
+        if zoom_index != self._zoom_index:
+            self._zoom_index = zoom_index
+            self._width, self._height = self._get_size()
+            self._canvas.width = self._width
+            self._canvas.height = self._height
+            self.redraw()
+        else:
+            self.gui._print("Zoom limit reached")
+
+    def zoom_in(self) -> None:
+        self._zoom(max(self._zoom_index - 1, 0))
+
+    def zoom_out(self) -> None:
+        self._zoom(min(self._zoom_index + 1, len(self._zoom_factors) - 1))
