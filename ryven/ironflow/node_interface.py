@@ -63,20 +63,14 @@ class NodeInterface:
         if not hasattr(self.node, "inputs"):
             return
         for i_c, inp in enumerate(self.node.inputs[:]):
-            if inp.dtype is None:
-                # if inp.type_ == 'exec':
-                inp_widget = widgets.Label(value=inp.type_)
-                description = inp.type_
-                # inp_widget =
-            else:
+            if inp.dtype is not None:
                 dtype = str(inp.dtype).split(".")[-1]
                 dtype_state = deserialize(inp.data()["dtype state"])
                 if inp.val is None:
                     inp.val = dtype_state["val"]
-                # print (dtype)
                 if dtype == "Integer":
                     inp_widget = widgets.IntText(
-                        value=inp.val,  # dtype_state['val'],
+                        value=inp.val,
                         disabled=False,
                         description="",
                         continuous_update=False,
@@ -84,7 +78,7 @@ class NodeInterface:
                     )
                 elif dtype == "Boolean":
                     inp_widget = widgets.Checkbox(
-                        value=inp.val,  # dtype_state['val'],
+                        value=inp.val,
                         indent=True,
                         description="",
                         layout=widgets.Layout(width="110px", border="solid 1px"),
@@ -103,8 +97,13 @@ class NodeInterface:
                         value=str(inp.val),
                         continuous_update=False,
                     )
-
                 description = inp.label_str
+            elif inp.label_str != "":
+                inp_widget = widgets.Label(value=inp.type_)
+                description = inp.label_str
+            else:
+                inp_widget = widgets.Label(value=inp.type_)
+                description = inp.type_
             self._input.append([widgets.Label(description), inp_widget])
 
             inp_widget.observe(self.input_change_i(i_c), names="value")
@@ -118,13 +117,11 @@ class NodeInterface:
             self._central_gui.flow_canvas.redraw()
         return input_change
 
-    def draw(self) -> widgets.HBox:
+    def draw(self) -> widgets.VBox:
         self.inp_box = widgets.GridBox(
             list(np.array(self._input).flatten()),
             layout=widgets.Layout(
-                width="210px",
-                grid_template_columns="90px 110px",
-                # grid_gap='1px 1px',
+                grid_template_columns="110px 50%",
                 border="solid 1px blue",
                 margin="10px",
             ),
@@ -159,7 +156,7 @@ class NodeInterface:
             padding="0px",
         )
 
-        return widgets.HBox([self.inp_box, self.gui, info_box])
+        return widgets.VBox([title, self.inp_box, info_box])  # self.gui
 
     def draw_for_node(self, node: Node | None):
         self.node = node
@@ -169,3 +166,5 @@ class NodeInterface:
                 self.gui_object()
                 self.input_widgets()
                 display(self.draw())  # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+            else:
+                display(None)

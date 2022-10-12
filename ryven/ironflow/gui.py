@@ -92,18 +92,19 @@ class GUI(HasSession):
 
     @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
-        self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
-        self.out_log = widgets.Output(layout={"border": "1px solid black"})
-
-        self.script_tabs = widgets.Tab([])
-        self._update_tabs_from_model()
-
         module_options = sorted(self._nodes_dict.keys())
         self.modules_dropdown = widgets.Dropdown(
             options=module_options,
             value=list(module_options)[0],
             disabled=False,
             layout=widgets.Layout(width="130px"),
+        )
+
+        self.alg_mode_dropdown = widgets.Dropdown(
+            options=alg_modes,
+            value=alg_modes[0],
+            disabled=False,
+            layout=widgets.Layout(width="80px"),
         )
 
         button_layout = widgets.Layout(width="50px")
@@ -156,13 +157,6 @@ class GUI(HasSession):
         self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
         # TODO: Use xmark once this is available
 
-        self.alg_mode_dropdown = widgets.Dropdown(
-            options=alg_modes,
-            value=alg_modes[0],
-            disabled=False,
-            layout=widgets.Layout(width="80px"),
-        )
-
         nodes_options = sorted(self._nodes_dict[self.modules_dropdown.value].keys())
         self.node_selector = widgets.RadioButtons(
             options=nodes_options,
@@ -170,8 +164,14 @@ class GUI(HasSession):
             disabled=False,
         )
 
-        self.out_status = widgets.Output(layout={"border": "1px solid black"})
+        self.script_tabs = widgets.Tab([])
+        self._update_tabs_from_model()
 
+        self.out_log = widgets.Output(layout={"border": "1px solid black"})
+        self.out_plot = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
+        self.out_status = widgets.Output(layout={"width": "50%", "border": "1px solid black"})
+
+        # Wire callbacks
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
         self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
         self.btn_help_node.on_click(self.click_node_help)
@@ -201,10 +201,10 @@ class GUI(HasSession):
                 ),
                 self.text_input_panel,
                 widgets.HBox(
-                    [widgets.VBox([self.node_selector]), self.script_tabs, self.out_plot]
+                    [widgets.VBox([self.node_selector]), self.script_tabs]
                 ),
                 self.out_log,
-                self.out_status,
+                widgets.HBox([self.out_status, self.out_plot]),
                 debug_view
             ]
         )
