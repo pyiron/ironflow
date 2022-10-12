@@ -11,7 +11,7 @@ import numpy as np
 import pickle
 import base64
 
-from typing import TYPE_CHECKING, Dict, Union
+from typing import TYPE_CHECKING, Dict, Union, Callable
 if TYPE_CHECKING:
     from gui import GUI
     from ryven.NENV import Node
@@ -103,33 +103,16 @@ class NodeInterface:
                 description = inp.label_str
             self._input.append([widgets.Label(description), inp_widget])
 
-            inp_widget.observe(eval(f"self.input_change_{i_c}"), names="value")
+            inp_widget.observe(self.input_change_i(i_c), names="value")
 
             # inp_widget.value = dtype_state['default']
 
-    def input_change(self, i_c: int, change: Dict) -> None:
-        # print (change)
-        self.node.inputs[i_c].val = change["new"]
-        self.node.update_event()
-        self._central_gui.flow_canvas_widget.redraw()
-
-    def input_change_0(self, change: Dict) -> None:
-        self.input_change(0, change)
-
-    def input_change_1(self, change: Dict) -> None:
-        self.input_change(1, change)
-
-    def input_change_2(self, change: Dict) -> None:
-        self.input_change(2, change)
-
-    def input_change_3(self, change: Dict) -> None:
-        self.input_change(3, change)
-
-    def input_change_4(self, change: Dict) -> None:
-        self.input_change(4, change)
-
-    def input_change_5(self, change: Dict) -> None:
-        self.input_change(5, change)
+    def input_change_i(self, i_c) -> Callable:
+        def input_change(change: Dict) -> None:
+            self.node.inputs[i_c].val = change["new"]
+            self.node.update_event()
+            self._central_gui.flow_canvas_widget.redraw()
+        return input_change
 
     def draw(self) -> widgets.HBox:
         self.inp_box = widgets.GridBox(
