@@ -20,11 +20,10 @@ class TestGUI(TestCase):
         gui.flow_canvas_widget.add_node(0, 0, gui._nodes_dict['nodes']['val'])
         gui.create_script()
         gui.flow_canvas_widget.add_node(1, 1, gui._nodes_dict['nodes']['result'])
-        fname = 'my_session.json'
-        gui.save(fname)
+        canonical_file_name = f"{gui.session_title}.json"
+        gui.save(canonical_file_name)
         new_gui = GUI('something_random')
-        new_gui.draw()  # TODO: This is still just a hack to get new_gui.out_canvas to exist...
-        new_gui.load(fname)
+        new_gui.load(canonical_file_name)
 
         self.assertEqual(
             0,
@@ -41,7 +40,7 @@ class TestGUI(TestCase):
                 msg=f"Expected saved and loaded nodes to match, but got {saved_node} and {loaded_node}"
             )
 
-        os.remove(fname)
+        os.remove(canonical_file_name)
 
     def test_saving_and_loading(self):
         title = 'foo'
@@ -54,10 +53,11 @@ class TestGUI(TestCase):
         n1, n2 = flow.nodes
         flow.connect_nodes(n1.outputs[0], n2.inputs[0])
 
+        canonical_file_name = f"{gui.session_title}.json"
         with self.assertRaises(FileNotFoundError):
-            gui.click_load(None)
+            gui.load(canonical_file_name)  # Or any other non-existent file
 
-        gui.click_save(None)
+        gui.save(canonical_file_name)
 
         new_gui = GUI(title)
         self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
@@ -67,8 +67,7 @@ class TestGUI(TestCase):
         self.assertEqual(0, len(new_flow.nodes), msg="Fresh GUI shouldn't have any nodes yet.")
         self.assertEqual(0, len(new_flow.connections), msg="Fresh GUI shouldn't have any connections yet.")
 
-        new_gui.draw()  # TODO: Temporary hack to ensure new_gui.out_canvas exists, allow renderless loading
-        new_gui.click_load(None)
+        new_gui.load(canonical_file_name)
         new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
         print(new_gui._session.scripts, new_gui._session.scripts[0].flow)
         self.assertEqual(len(flow.nodes), len(new_flow.nodes), msg="Loaded GUI should recover nodes.")
@@ -125,14 +124,14 @@ class TestGUI(TestCase):
         gui.flow.nodes[1].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[1].outputs[0].val, -40, msg="New node instances should reflect updated class.")
 
-        gui.click_save(None)
+        canonical_file_name = f"{gui.session_title}.json"
+        gui.save(canonical_file_name)
         new_gui = GUI(gui.session_title)
-        new_gui.draw()  # TODO: Change the gui to allow renderless loading
-        with self.assertRaises(Exception):
-            new_gui.click_load(None)
+        with self.assertRaises(Exception):  # User node not registered yet
+            new_gui.load(canonical_file_name)
 
         new_gui.register_user_node(MyNode)
-        new_gui.click_load(None)
+        new_gui.load(canonical_file_name)
         new_gui.flow.nodes[0].inputs[0].update(3)
         new_gui.flow.nodes[1].inputs[0].update(3)
         self.assertEqual(
@@ -141,7 +140,7 @@ class TestGUI(TestCase):
             msg="The updated class was registered, so expect the same behaviour from both nodes now."
         )
 
-        os.remove(f"{gui.session_title}.json")
+        os.remove(canonical_file_name)
 
     def test_repeated_instantiation(self):
         gui = GUI('foo')

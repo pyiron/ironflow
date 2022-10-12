@@ -59,6 +59,13 @@ class GUI:
         for n in self.session.nodes:
             self._register_node(n)
 
+        self._context = None
+        self._context_actions = {
+            "rename": self._rename_context_action,
+            "save": self._save_context_action,
+            "load": self._load_context_action
+        }
+
         self.create_script(script_title)
 
     @property
@@ -246,10 +253,10 @@ class GUI:
         self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
         # TODO: Use file-circle-minus once this is available
 
-        self.script_rename_panel = widgets.HBox([])
-        self.script_name_box = widgets.Text(value=self.script.title, description="New script name:")
-        self.btn_confirm_script_name = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
-        self.btn_cancel_script_name = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
+        self.text_input_panel = widgets.HBox([])
+        self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
+        self.btn_input_text_ok = widgets.Button(tooltip="Confirm new name", icon="check", layout=button_layout)
+        self.btn_input_text_cancel = widgets.Button(tooltip="Cancel renaming", icon="ban", layout=button_layout)
         # TODO: Use xmark once this is available
 
         self.alg_mode_dropdown = widgets.Dropdown(
@@ -276,8 +283,11 @@ class GUI:
         self.btn_save.on_click(self.click_save)
         self.btn_delete_node.on_click(self.click_delete_node)
         self.btn_rename_script.on_click(self.click_rename_script)
-        self.btn_confirm_script_name.on_click(self.click_confirm_script_name)
-        self.btn_cancel_script_name.on_click(self.click_cancel_script_name)
+        self.btn_input_text_ok.on_click(self.click_input_text_ok)
+        self.text_input_field.on_submit(self.click_input_text_ok)
+        # ^ Ignore the deprecation warning, 'observe' does function the way we actually want
+        # https://github.com/jupyter-widgets/ipywidgets/issues/2446
+        self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.btn_delete_script.on_click(self.click_delete_script)
         self.script_tabs.observe(self.change_script_tabs)
 
@@ -294,7 +304,7 @@ class GUI:
                         self.btn_delete_script,
                     ]
                 ),
-                self.script_rename_panel,
+                self.text_input_panel,
                 widgets.HBox(
                     [widgets.VBox([self.node_selector]), self.script_tabs, self.out_plot]
                 ),
@@ -306,15 +316,6 @@ class GUI:
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def click_save(self, change: Dict) -> None:
-        self.save(f"{self.session_title}.json")
-
-    def click_load(self, change: Dict) -> None:
-        self.load(f"{self.session_title}.json")
-        self._update_tabs_from_model()
-        self.out_plot.clear_output()
-        self.out_log.clear_output()
-
     def click_delete_node(self, change: Dict) -> None:
         self.flow_canvas_widget.delete_selected()
 
@@ -326,32 +327,76 @@ class GUI:
 
     def change_script_tabs(self, change: Dict):
         if change['name'] == 'selected_index' and change['new'] is not None:
-            self._empty_script_rename_panel()
+            self._depopulate_text_input_panel()
             if self.script_tabs.selected_index == self.n_scripts:
                 self.create_script()
                 self._update_tabs_from_model()
             else:
                 self.active_script_index = self.script_tabs.selected_index
 
-    def click_rename_script(self, change: Dict) -> None:
-        self.script_name_box.value = self.script.title
-        self.script_rename_panel.children = [
-            self.script_name_box,
-            self.btn_confirm_script_name,
-            self.btn_cancel_script_name
+    def _populate_text_input_panel(self, description, initial_value):
+        self.text_input_panel.children = [
+            self.text_input_field,
+            self.btn_input_text_ok,
+            self.btn_input_text_cancel
         ]
+        self.text_input_field.description = description
+        self.text_input_field.value = initial_value
 
-    def click_confirm_script_name(self, change: Dict) -> None:
-        new_name = self.script_name_box.value
+    def _depopulate_text_input_panel(self) -> None:
+        self.text_input_panel.children = []
+
+    def click_input_text_ok(self, change: Dict) -> None:
+        self._context_actions[self._context](self.text_input_field.value)
+        self._depopulate_text_input_panel()
+
+    def click_input_text_cancel(self, change: Dict) -> None:
+        self._depopulate_text_input_panel()
+        self._print("")
+
+    def _set_context(self, context):
+        if context not in self._context_actions.keys():
+            raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
+        self._context = context
+
+    def click_save(self, change: Dict) -> None:
+        self._depopulate_text_input_panel()
+        self._populate_text_input_panel("Save file name", self.session_title)
+        self._set_context("save")
+        self._print("Choose a file name to save to (omit the file extension, .json)")
+
+    def _save_context_action(self, file_name):
+        self.save(f"{file_name}.json")
+        self._print(f"Session saved to {file_name}.json")
+
+    def click_load(self, change: Dict) -> None:
+        self._depopulate_text_input_panel()
+        self._populate_text_input_panel("Load file name", self.session_title)
+        self._set_context("load")
+        self._print("Choose a file name to load (omit the file extension, .json)")
+
+    def _load_context_action(self, file_name):
+        self.load(f"{file_name}.json")
+        self._update_tabs_from_model()
+        self.out_plot.clear_output()
+        self.out_log.clear_output()
+        self._print(f"Session loaded from {file_name}.json")
+
+    def click_rename_script(self, change: Dict) -> None:
+        self._depopulate_text_input_panel()
+        self._populate_text_input_panel("Script name", self.script.title)
+        self._set_context('rename')
+        self._print("Choose a new name for the current script")
+
+    def _rename_context_action(self, new_name):
+        old_name = self.script.title
         rename_success = self.rename_script(new_name)
         if rename_success:
             self.script_tabs.set_title(self.active_script_index, new_name)
+            self._print(f"Script '{old_name}' renamed '{new_name}'")
         else:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
-        self._empty_script_rename_panel()
 
-    def click_cancel_script_name(self, change: Dict) -> None:
-        self._empty_script_rename_panel()
 
     def click_delete_script(self, change: Dict) -> None:
         self.delete_script()
@@ -375,9 +420,6 @@ class GUI:
     def _add_new_script_tab(self):
         self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
         self.script_tabs.set_title(len(self.session.scripts), "+")
-
-    def _empty_script_rename_panel(self) -> None:
-        self.script_rename_panel.children = []
 
     def _print(self, text: str) -> None:
         with self.out_log:
