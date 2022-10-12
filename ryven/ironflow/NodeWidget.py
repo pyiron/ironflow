@@ -6,7 +6,7 @@ from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLay
 
 from typing import TYPE_CHECKING, Optional, Union, List, Any
 if TYPE_CHECKING:
-    from .CanvasObject import CanvasObject
+    from .FlowCanvas import FlowCanvas
     from ipycanvas import Canvas
     from ryven.NENV import Node, NodeInputBP, NodeOutputBP
     Number = Union[int, float]
@@ -29,7 +29,7 @@ class BaseCanvasWidget:
             self,
             x: Number,
             y: Number,
-            parent: Union[CanvasObject, BaseCanvasWidget],
+            parent: Union[FlowCanvas, BaseCanvasWidget],
             layout: Layout,
             selected: bool = False
     ):
@@ -126,7 +126,7 @@ class PortWidget(BaseCanvasWidget):
         self,
         x: Number,
         y: Number,
-        parent: Union[CanvasObject, BaseCanvasWidget],
+        parent: Union[FlowCanvas, BaseCanvasWidget],
         layout: PortLayout,
         radius: Number = 10,
         port: Optional[NodePort] = None,
@@ -162,7 +162,7 @@ class NodeWidget(BaseCanvasWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[CanvasObject, BaseCanvasWidget],
+            parent: Union[FlowCanvas, BaseCanvasWidget],
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
@@ -276,7 +276,7 @@ class ButtonNodeWidget(NodeWidget):
             self,
             x: Number,
             y: Number,
-            parent: Union[CanvasObject, BaseCanvasWidget],
+            parent: Union[FlowCanvas, BaseCanvasWidget],
             layout: ButtonLayout,
             node: Node,
             selected: bool = False,

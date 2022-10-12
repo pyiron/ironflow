@@ -15,9 +15,37 @@ class TestGUI(TestCase):
         except FileNotFoundError:
             pass
 
+    def test_multiple_scripts(self):
+        gui = GUI('foo')
+        gui.canvas_widget.add_node(0, 0, gui._nodes_dict['nodes']['val'])
+        gui.create_script(title='bar')
+        gui.canvas_widget.add_node(1, 1, gui._nodes_dict['nodes']['result'])
+        fname = 'my_session.json'
+        gui.save(fname)
+        new_gui = GUI('something_random')
+        new_gui.draw()  # TODO: This is still just a hack to get new_gui.out_canvas to exist...
+        new_gui.load(fname)
+
+        self.assertEqual(
+            0,
+            new_gui._active_script_index,
+            msg=f"Expected loaded sessions to start on the zeroth script, but got script {new_gui._active_script_index}"
+        )
+
+        for i in range(len(gui.session.scripts)):
+            saved_node = gui.session.scripts[i].flow.nodes[0].title
+            loaded_node = new_gui.session.scripts[i].flow.nodes[0].title
+            self.assertEqual(
+                saved_node,
+                loaded_node,
+                msg=f"Expected saved and loaded nodes to match, but got {saved_node} and {loaded_node}"
+            )
+
+        os.remove(fname)
+
     def test_saving_and_loading(self):
         title = 'foo'
-        gui = GUI(script_title=title)
+        gui = GUI(title)
         canvas = gui.canvas_widget
         flow = gui._session.scripts[0].flow
 
@@ -31,7 +59,7 @@ class TestGUI(TestCase):
 
         gui.on_file_save(None)
 
-        new_gui = GUI(script_title=title)
+        new_gui = GUI(title)
         self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
         # Maybe this will change in the future, but it's baked in the assumptions for now so let's make sure to test it
 
@@ -54,7 +82,7 @@ class TestGUI(TestCase):
 
     def test_user_node_registration(self):
         """TODO: This only tests the backend graph, need to test front end as well"""
-        gui = GUI(script_title='foo')
+        gui = GUI('foo')
 
         class MyNode(Node):
             title = "MyUserNode"
@@ -98,7 +126,7 @@ class TestGUI(TestCase):
         self.assertEqual(gui.flow.nodes[1].outputs[0].val, -40, msg="New node instances should reflect updated class.")
 
         gui.on_file_save(None)
-        new_gui = GUI(script_title=gui.script_title)
+        new_gui = GUI(gui.session_title)
         new_gui.draw()  # TODO: Change the gui to allow renderless loading
         with self.assertRaises(Exception):
             new_gui.on_file_load(None)
@@ -113,12 +141,12 @@ class TestGUI(TestCase):
             msg="The updated class was registered, so expect the same behaviour from both nodes now."
         )
 
-        os.remove(f"{gui.script_title}.json")
+        os.remove(f"{gui.session_title}.json")
 
     def test_repeated_instantiation(self):
-        gui = GUI(script_title='foo')
+        gui = GUI('foo')
         id0 = str(gui.session.nodes[0].identifier)
-        gui = GUI(script_title='foo')
+        gui = GUI(gui.session_title)
         self.assertEqual(
             gui.session.nodes[0].identifier,
             id0,

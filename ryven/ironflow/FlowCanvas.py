@@ -7,7 +7,6 @@ from time import time
 from .NodeWidget import NodeWidget, PortWidget, BaseCanvasWidget, ButtonNodeWidget
 from .layouts import NodeLayout
 from .NodeWidgets import NodeWidgets
-from .has_session import HasSession
 
 from typing import TYPE_CHECKING, Optional, Union, List
 if TYPE_CHECKING:
@@ -27,8 +26,10 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 
-class CanvasObject(HasSession):
+class FlowCanvas:
     """
+    A canvas for representing a particular Ryven script, which is determined at instantiation by the currently active
+    gui script.
 
     Mouse behaviour:
         - Mouse click (down and release) on a node element or any child element selects that element
@@ -45,7 +46,7 @@ class CanvasObject(HasSession):
     """
     def __init__(self, gui: Optional[GUI] = None, width: int = 2000, height: int = 1000):
         self.gui = gui
-        super().__init__(self.gui.session)
+        self.flow = gui.flow
         self._width, self._height = width, height
 
         self._col_background = "black"  # "#584f4e"

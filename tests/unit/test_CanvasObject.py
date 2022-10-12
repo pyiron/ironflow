@@ -10,7 +10,7 @@ import os
 class TestCanvasObect(TestCase):
 
     def setUp(self):
-        self.gui = GUI()
+        self.gui = GUI('gui')
         self.canvas = self.gui.canvas_widget
 
     @classmethod
@@ -21,7 +21,7 @@ class TestCanvasObect(TestCase):
             pass
 
     def test_remove_node_from_flow(self):
-        flow = self.canvas.script.flow
+        flow = self.canvas.flow
         val_node = self.gui._nodes_dict['nodes']['val']
         results_node = self.gui._nodes_dict['nodes']['result']
 
