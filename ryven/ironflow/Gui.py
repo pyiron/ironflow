@@ -12,7 +12,7 @@ from .has_session import HasSession
 import ryven.NENV as NENV
 from pathlib import Path
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Type
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -47,18 +47,58 @@ class GUI(HasSession):
                 import_nodes_package(NodesPackage(directory=package))
             )
 
-        nodes_dict = {}
+        self._nodes_dict = {}
         for n in self.session.nodes:
-            node_class = n.__module__  # n.identifier_prefix
-            if node_class not in nodes_dict.keys():
-                nodes_dict[node_class] = {}
-            nodes_dict[node_class][n.title] = n
-        self._nodes_dict = nodes_dict
+            self._register_node(n)
 
         self.canvas_widget = CanvasObject(gui=self)
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
+
+    def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
+        node_module = node_module or node_class.__module__  # n.identifier_prefix
+        if node_module not in self._nodes_dict.keys():
+            self._nodes_dict[node_module] = {}
+        self._nodes_dict[node_module][node_class.title] = node_class
+
+    def register_user_node(self, node_class: Type[NENV.Node]):
+        """
+        Register a custom node class from the gui's current working scope. These nodes are available under the
+        'notebook' module.
+
+        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
+                update. Already-placed nodes are still instances of the old class and need to be deleted.
+
+        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
+            loading the saved graph is possible.
+
+        Args:
+            node_class Type[NENV.Node]: The new node class to register.
+
+        Example:
+            >>> from ryven.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> gui = GUI(script_title='foo')
+            >>>
+            >>> class MyNode(Node):
+            >>>     title = "MyUserNode"
+            >>>     init_inputs = [
+            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
+            >>>     ]
+            >>>     init_outputs = [
+            >>>        NodeOutputBP(label="bar")
+            >>>    ]
+            >>>    color = 'cyan'
+            >>>
+            >>>     def update_event(self, inp=-1):
+            >>>         self.set_output_val(0, self.input(0) + 42)
+            >>>
+            >>> gui.register_user_node(MyNode)
+        """
+        if node_class in self.session.nodes:
+            self.session.unregister_node(node_class)
+        self.session.register_node(node_class)
+        self._register_node(node_class, node_module='user')
 
     @property
     def script_title(self) -> str:
