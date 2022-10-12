@@ -1,3 +1,7 @@
+# coding: utf-8
+# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
+# Distributed under the terms of "New BSD License", see the LICENSE file.
+
 from __future__ import annotations
 
 import ipywidgets as widgets
@@ -13,12 +17,12 @@ if TYPE_CHECKING:
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
-    "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
+    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
 )
 __version__ = "0.1"
-__maintainer__ = "Joerg Neugebauer"
-__email__ = "janssen@mpie.de"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
 __status__ = "production"
 __date__ = "May 10, 2022"
 
@@ -49,7 +53,7 @@ class NodeWidgets:
     def gui_object_change(self, change: Dict) -> None:
         self._node.set_state({"val": change["new"]}, 0)
         self._node.update_event()
-        self._central_gui.canvas_widget.redraw()
+        self._central_gui.flow_canvas_widget.redraw()
 
     def input_widgets(self) -> None:
         self._input = []
@@ -108,7 +112,7 @@ class NodeWidgets:
         # print (change)
         self._node.inputs[i_c].val = change["new"]
         self._node.update_event()
-        self._central_gui.canvas_widget.redraw()
+        self._central_gui.flow_canvas_widget.redraw()
 
     def input_change_0(self, change: Dict) -> None:
         self.input_change(0, change)

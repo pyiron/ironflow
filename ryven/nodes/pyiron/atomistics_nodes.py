@@ -1,3 +1,7 @@
+# coding: utf-8
+# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
+# Distributed under the terms of "New BSD License", see the LICENSE file.
+
 import matplotlib.pylab as plt
 import numpy as np
 from pyiron_atomistics import Project
@@ -12,8 +16,8 @@ __copyright__ = (
     "Computational Materials Design (CM) Department"
 )
 __version__ = "0.1"
-__maintainer__ = "Joerg Neugebauer"
-__email__ = "janssen@mpie.de"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
 __status__ = "production"
 __date__ = "May 10, 2022"
 

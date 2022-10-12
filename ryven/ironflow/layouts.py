@@ -1,6 +1,21 @@
+# coding: utf-8
+# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
+# Distributed under the terms of "New BSD License", see the LICENSE file.
+
 from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass
+
+__author__ = "Liam Huber"
+__copyright__ = (
+    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
+    "Computational Materials Design (CM) Department"
+)
+__version__ = "0.1"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
+__status__ = "production"
+__date__ = "July 25, 2022"
 
 
 @dataclass

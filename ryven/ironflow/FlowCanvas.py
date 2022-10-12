@@ -1,3 +1,7 @@
+# coding: utf-8
+# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
+# Distributed under the terms of "New BSD License", see the LICENSE file.
+
 from __future__ import annotations
 
 from ipycanvas import Canvas, hold_canvas
@@ -13,15 +17,16 @@ if TYPE_CHECKING:
     from Gui import GUI
     from ryven.NENV import Node
     Number = Union[int, float]
+    from ryvencore import Flow
 
-__author__ = "Joerg Neugebauer"
+__author__ = "Joerg Neugebauer, Liam Huber"
 __copyright__ = (
-    "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - "
+    "Copyright 2022, Max-Planck-Institut für Eisenforschung GmbH - "
     "Computational Materials Design (CM) Department"
 )
 __version__ = "0.1"
-__maintainer__ = "Joerg Neugebauer"
-__email__ = "janssen@mpie.de"
+__maintainer__ = "Liam Huber"
+__email__ = "liamhuber@greyhavensolutions.com"
 __status__ = "production"
 __date__ = "May 10, 2022"
 
@@ -44,9 +49,9 @@ class FlowCanvas:
             - If a node is selected, deletes it
             - If a port is selected, deletes all connections it is part of
     """
-    def __init__(self, gui: Optional[GUI] = None, width: int = 2000, height: int = 1000):
+    def __init__(self, gui: GUI, flow: Optional[Flow] = None, width: int = 2000, height: int = 1000):
         self.gui = gui
-        self.flow = gui.flow
+        self.flow = flow if flow is not None else gui.flow
         self._width, self._height = width, height
 
         self._col_background = "black"  # "#584f4e"
