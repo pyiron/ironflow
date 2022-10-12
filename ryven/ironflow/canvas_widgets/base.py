@@ -91,6 +91,10 @@ class CanvasWidget(ABC):
     def flow(self) -> Flow:
         return self.parent.flow
 
+    @property
+    def flow_canvas(self) -> FlowCanvas:
+        return self.parent.flow_canvas
+
     def deselect_all(self) -> None:
         return self.parent.deselect_all()
 

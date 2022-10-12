@@ -204,11 +204,13 @@ class ExecButtonWidget(ButtonWidget):
         self.port = port
 
     def on_pressed(self):
-        self.unpress()
+        self.flow_canvas.redraw()  # Draw the button pressed
         if isinstance(self.port, NodeInput):
             self.port.update()
         elif isinstance(self.port, NodeOutput):
             self.port.exec()
+        self.unpress()  # At the next re-draw, the button will appear unpressed again,
+        # i.e. at the end of the mouse-down that triggered this
 
     def on_unpressed(self):
         pass
