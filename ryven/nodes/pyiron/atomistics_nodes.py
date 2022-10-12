@@ -154,11 +154,12 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
-class Lammps_Node(DualNodeBase):
+class Lammps_Node(NodeWithDisplay):
     title = "Lammps"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(type_="exec"),
+        NodeInputBP(type_="exec", label="run"),
+        NodeInputBP(type_="exec", label="remove"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
         NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
@@ -170,22 +171,49 @@ class Lammps_Node(DualNodeBase):
     ]
     color = "#5d95de"
 
-    def __init__(self, params):
-        super().__init__(params, active=True)
+    @property
+    def _project(self):
+        return self.input(2)
+
+    @property
+    def _name(self):
+        return self.input(3)
+
+    @property
+    def _structure(self):
+        return self.input(4)
+
+    @property
+    def _potential(self):
+        return self.input(5)
+
+    def _run(self):
+        job = self._project.create.job.Lammps(self._name)
+        job.structure = self._structure
+        job.potential = self._potential
+        self._job = job
+        job.run()
+        self.set_output_val(1, job)
+        self.exec_output(0)
+
+    def _remove(self):
+        try:
+            name = self._job.name  # Remove based on the run job, not the input name which might have changed...
+            self._project.remove_job(name)
+            self.set_output_val(1, None)
+        except AttributeError:
+            pass
 
     def update_event(self, inp=-1):
-        self._val_is_updated = True
-        if self.active and inp == 0:
-            pr = self.input(1)
-            job = pr.create.job.Lammps(self.input(2))
-            job.structure = self.input(3)
-            job.potential = self.input(4)
-            self._job = job
-            job.run()
-            self.set_output_val(1, job)
-            self.exec_output(0)
-        elif not self.active:
-            self.val = self.input(0)
+        super().update_event(inp=inp)
+        if inp == 0:
+            self._run()
+        elif inp == 1:
+            self._remove()
+
+    @property
+    def representations(self) -> tuple:
+        return self.output(1),
 
 
 class GenericOutput_Node(NodeWithDisplay):

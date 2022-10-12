@@ -8,8 +8,9 @@ import numpy as np
 from IPython.display import display
 from .layouts import Layout, NodeLayout, PortLayout, DataPortLayout, ExecPortLayout, ButtonLayout
 from abc import ABC, abstractmethod
+from ryvencore.NodePort import NodeInput, NodeOutput
 
-from typing import TYPE_CHECKING, Optional, Union, List, Any
+from typing import TYPE_CHECKING, Optional, Union, List, Callable
 if TYPE_CHECKING:
     from .flow_canvas import FlowCanvas
     from ryven.ironflow.gui import GUI
@@ -308,8 +309,12 @@ class NodeWidget(CanvasWidget):
         self._title_box_height = 30
 
         n_ports_max = max(len(self.node.inputs), len(self.node.outputs))
+        n_ports_min = len([p for p in self.node.inputs if p.type_ == "exec"])
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
         self._io_height = subwidget_size_and_buffer * n_ports_max
+        self._exec_height = subwidget_size_and_buffer * n_ports_min
+        # TODO: Right now we're hard-coding in that all the exec ports (which come with buttons) appear first in input
+        #       This isn't necessarily so, nor checked for anywhere. Do better.
         self._expand_collapse_height = subwidget_size_and_buffer
         self._height = self._expanded_height
 
@@ -386,18 +391,31 @@ class NodeWidget(CanvasWidget):
 
         n_ports = len(data)
         for i_port in range(n_ports):
+            port = data[i_port]
+            data_or_exec = port.type_
             self.add_widget(
                 PortWidget(
                     x=x,
                     y=self._port_y_locs[i_port],
                     parent=self,
-                    layout=self.port_layouts[data[i_port].type_],
-                    port=data[i_port],
+                    layout=self.port_layouts[data_or_exec],
+                    port=port,
                     hidden_x=x,
                     hidden_y=self._port_y_locs[0],
                     radius=radius,
                 )
             )
+            if data_or_exec == "exec" and inputs is not None:
+                button_layout = ButtonLayout()
+                self.add_widget(
+                    ExecButtonWidget(
+                        x=x + 0.3 * button_layout.width,
+                        y=self._port_y_locs[i_port] - 0.5 * button_layout.height,
+                        parent=self,
+                        layout=button_layout,
+                        port=port
+                    )
+                )
 
     def add_inputs(self) -> None:
         self._add_ports(radius=self.port_radius, inputs=self.inputs)
@@ -425,7 +443,7 @@ class NodeWidget(CanvasWidget):
 
     @property
     def _collapsed_height(self) -> Number:
-        return self._title_box_height + self._expand_collapse_height
+        return self._title_box_height + max(self._expand_collapse_height, self._exec_height)
 
     def expand_io(self):
         self._height = self._expanded_height
@@ -453,18 +471,22 @@ class ButtonNodeWidget(NodeWidget):
             layout: NodeLayout,
             node: Node,
             selected: bool = False,
+            title: Optional[str] = None,
             port_radius: Number = 10,
     ):
-        super().__init__(x, y, parent, layout, node, selected, port_radius)
+        super().__init__(
+            x=x, y=y, parent=parent, layout=layout, node=node, selected=selected, title=title, port_radius=port_radius
+        )
 
-        layout = ButtonLayout()
-        s = CanvasWidget(50, 50, parent=self, layout=layout)
-        s.handle_select = self.handle_button_select
-        self.add_widget(s)
-
-    def handle_button_select(self, button: ButtonNodeWidget) -> None:
-        button.parent.node.exec_output(0)
-        button.deselect()
+        button_layout = ButtonLayout()
+        self.exec_button = ExecButtonWidget(
+            x=0.8 * (self.width - button_layout.width),
+            y=self._port_y_locs[0] - 0.5 * button_layout.height,
+            parent=self,
+            layout=button_layout,
+            port=self.node.outputs[0],
+        )
+        self.add_widget(self.exec_button)
 
 
 class ButtonWidget(CanvasWidget, ABC):
@@ -673,3 +695,37 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
     def press(self):
         super().press()
         self.parent.collapse_io()
+
+
+class ExecButtonWidget(ButtonWidget):
+    def __init__(
+            self,
+            x: Number,
+            y: Number,
+            parent: NodeWidget,
+            layout: ButtonLayout,
+            port: NodePort,
+            selected: bool = False,
+            title: str = "Exec",
+            pressed: Optional[bool] = False,
+    ):
+        super().__init__(
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            selected=selected,
+            title=port.label_str if port.label_str is not None else title,
+            pressed=pressed
+        )
+        self.port = port
+
+    def press(self):
+        self.unpress()
+        if isinstance(self.port, NodeInput):
+            self.port.update()
+        elif isinstance(self.port, NodeOutput):
+            self.port.exec()
+
+    def unpress(self):
+        self.pressed = False
