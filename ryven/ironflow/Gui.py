@@ -34,7 +34,8 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI:
-    def __init__(self):  # , onto_dic=onto_dic):
+    def __init__(self, script_title="test"):  # , onto_dic=onto_dic):
+        self._script_title = script_title
         session = rc.Session()
         for package in packages:
             session.register_nodes(
@@ -42,7 +43,7 @@ class GUI:
             )
 
         self._session = session
-        script = session.create_script(title="test")
+        script = session.create_script(title=self.script_title)
 
         nodes_dict = {}
         for n in self._session.nodes:
@@ -56,6 +57,10 @@ class GUI:
         # self.onto_dic = onto_dic
 
         self.out_log = widgets.Output(layout={"border": "1px solid black"})
+
+    @property
+    def script_title(self) -> str:
+        return self._script_title
 
     def save(self, file_path):
         data = self.serialize()
@@ -134,10 +139,10 @@ class GUI:
         )
 
         self.btn_load = widgets.Button(
-            tooltip="Load", icon="download", layout=widgets.Layout(width="50px")
+            tooltip="Load", icon="upload", layout=widgets.Layout(width="50px")
         )
         self.btn_save = widgets.Button(
-            tooltip="Save", icon="upload", layout=widgets.Layout(width="50px")
+            tooltip="Save", icon="download", layout=widgets.Layout(width="50px")
         )
         self.btn_delete_node = widgets.Button(
             tooltip="Delete Node", icon="trash", layout=widgets.Layout(width="50px")
@@ -195,10 +200,10 @@ class GUI:
         )
 
     def on_file_save(self, change):
-        self.save("test.json")
+        self.save(f"{self.script_title}.json")
 
     def on_file_load(self, change):
-        self.load("test.json")
+        self.load(f"{self.script_title}.json")
 
     def on_delete_node(self, change):
         self.canvas_widget.delete_selected()
