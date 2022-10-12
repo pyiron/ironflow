@@ -96,6 +96,7 @@ class GUI(HasSession):
 
         button_layout = widgets.Layout(width="50px")
         # Icon source: https://fontawesome.com
+        # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
         self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
         self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
         self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
@@ -103,6 +104,12 @@ class GUI(HasSession):
         # TODO: Use file-pen once this is available
         self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
         # TODO: Use file-circle-minus once this is available
+        self.btn_zero_location = widgets.Button(
+            tooltip="Recenter canvas at (0,0)",
+            icon="map-marker",
+            layout=button_layout
+        )
+        # TODO: Use location-dot once this is available
 
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
@@ -140,6 +147,7 @@ class GUI(HasSession):
         # https://github.com/jupyter-widgets/ipywidgets/issues/2446
         self.btn_input_text_cancel.on_click(self.click_input_text_cancel)
         self.btn_delete_script.on_click(self.click_delete_script)
+        self.btn_zero_location.on_click(self.click_zero_location)
         self.script_tabs.observe(self.change_script_tabs)
 
         return widgets.VBox(
@@ -153,6 +161,7 @@ class GUI(HasSession):
                         self.btn_delete_node,
                         self.btn_rename_script,
                         self.btn_delete_script,
+                        self.btn_zero_location,
                     ]
                 ),
                 self.text_input_panel,
@@ -252,10 +261,14 @@ class GUI(HasSession):
         else:
             self._print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
 
-
     def click_delete_script(self, change: Dict) -> None:
         self.delete_script()
         self._update_tabs_from_model()
+
+    def click_zero_location(self, change: dict) -> None:
+        self.flow_canvas_widget.x = 0
+        self.flow_canvas_widget.y = 0
+        self.flow_canvas_widget.redraw()
 
     def _update_tabs_from_model(self):
         self.script_tabs.selected_index = None
