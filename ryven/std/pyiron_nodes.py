@@ -1,5 +1,3 @@
-import random
-
 import matplotlib.pylab as plt
 import numpy as np
 from pyiron_atomistics import Project
@@ -18,6 +16,7 @@ __maintainer__ = "Joerg Neugebauer"
 __email__ = "janssen@mpie.de"
 __status__ = "production"
 __date__ = "May 10, 2022"
+
 
 class NodeBase(Node):
     def __init__(self, params):
@@ -330,7 +329,7 @@ class Result_Node(NodeBase):
     def view_place_event(self):
         self.main_widget().show_val(self.val)
 
-    def update_event(self, input_called=-1):
+    def update_event(self, inp=-1):
         self.val = self.input(0)
         if self.session.gui:
             self.main_widget().show_val(self.val)

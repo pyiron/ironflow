@@ -4,7 +4,7 @@ import os
 import ipywidgets as widgets
 import ryvencore as rc
 from IPython.display import display
-from ryven.main.utils import import_nodes_package, load_from_file, NodesPackage
+from ryven.main.utils import import_nodes_package, NodesPackage
 
 from .CanvasObject import CanvasObject, gui_modes
 from .has_session import HasSession
@@ -101,7 +101,7 @@ class GUI(HasSession):
 
         self.out_canvas.clear_output()
         with self.out_canvas:
-            display(self.canvas_widget._canvas)
+            display(self.canvas_widget.canvas)
 
         self.canvas_widget.redraw()
         self.out_plot.clear_output()
@@ -109,7 +109,7 @@ class GUI(HasSession):
 
     def _print(self, text: str) -> None:
         with self.out_log:
-            self.gui.out_log.clear_output()
+            self.out_log.clear_output()
 
             print(text)
 
@@ -121,7 +121,7 @@ class GUI(HasSession):
 
         self.out_canvas = widgets.Output(layout={"border": "1px solid black"})
         with self.out_canvas:
-            display(self.canvas_widget._canvas)
+            display(self.canvas_widget.canvas)
 
         module_options = self._nodes_dict.keys()
         self.modules_dropdown = widgets.Dropdown(
