@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from ryven.ironflow.node_interface_abc import NodeInterfaceBase
+from ryven.ironflow.node_interface.base import NodeInterfaceBase
 from IPython.display import display
 import ipywidgets as widgets
 import numpy as np
@@ -14,7 +14,7 @@ import base64
 
 from typing import TYPE_CHECKING, Callable, Optional
 if TYPE_CHECKING:
-    from gui import GUI
+    from ryven.ironflow.gui import GUI
     from ryven.NENV import Node
 
 __author__ = "Joerg Neugebauer, Liam Huber"
@@ -161,17 +161,3 @@ class NodeController(NodeInterfaceBase):
         self.draw()
 
 
-class SliderControl:
-    def __init__(self, gui: GUI, node: Node):
-        self.gui = gui
-        self.node = node
-        self.widget = widgets.FloatSlider(
-            value=self.node.val, min=0, max=10, continuous_update=False
-        )
-
-        self.widget.observe(self.widget_change, names="value")
-
-    def widget_change(self, change: dict) -> None:
-        self.node.set_state({"val": change["new"]}, 0)
-        self.node.update_event()
-        self.gui.flow_canvas.redraw()
