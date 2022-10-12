@@ -136,7 +136,7 @@ class CanvasWidget(ABC):
         return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> Union[CanvasWidget, None]:
-        if self._is_at_xy(x_in, y_in):
+        if self.is_here(x_in, y_in):
             for o in self.objects_to_draw:
                 if o.is_here(x_in, y_in):
                     return o.get_element_at_xy(x_in, y_in)
@@ -205,7 +205,7 @@ class HideableWidget(CanvasWidget, ABC):
     def hide(self):
         self.visible = False
 
-    def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
+    def is_here(self, x_in: Number, y_in: Number) -> bool:
         if self.visible:
             return super()._is_at_xy(x_in=x_in, y_in=y_in)
         else:
