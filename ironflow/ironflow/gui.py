@@ -17,7 +17,6 @@ from ironflow.ironflow.canvas_widgets import FlowCanvas
 from ironflow.ironflow.model import HasSession
 
 if TYPE_CHECKING:
-    from ryvencore import Session
     from ironflow.NENV import Node
     from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
@@ -33,17 +32,17 @@ class GUI(HasSession):
         register_user_node: Register with ironflow a new node from the current python process.
     """
 
-    def __init__(self, session_title: str, session: Optional[Session] = None, script_title: Optional[str] = None):
+    def __init__(self, session_title: str, script_title: Optional[str] = None):
         """
         Create a new gui instance.
 
         Args:
-            session_title (str): Title of the session to use. Only impacts QoL stuff for saving/loading sessions.
-            session (ryvencore.Session|None): Ryven session to connect to. (Default is None, which starts a new
-                session.)
-            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0".)
+            session_title (str): Title of the session to use. Will look for a json file of the same name and try to
+                read it. If no such file exists, simply makes a new script instead.
+            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a 
+                new script is needed on initialization, i.e. when existing session data cannot be read.)
         """
-        super().__init__(session_title=session_title, session=session)
+        super().__init__(session_title=session_title)
 
         self.flow_canvases = []
         self.toolbar = Toolbar()
@@ -53,7 +52,12 @@ class GUI(HasSession):
         self.input = UserInput()
         self.flow_box = FlowBox(self._nodes_dict)
 
-        self.create_script(script_title)
+        try:
+            self.load(f"{self.session_title}.json")
+            print(f"Loaded session data for {self.session_title}")
+        except FileNotFoundError:
+            print(f"No session data found for {self.session_title}, making a new script.")
+            self.create_script(script_title)
         self.update_tabs()
 
     def create_script(

@@ -33,8 +33,8 @@ packages = [os.path.join(ryven_location, "nodes", *subloc) for subloc in [
 class HasSession(ABC):
     """Mixin for an object which has a Ryven session as the underlying model"""
 
-    def __init__(self, session_title: str, session: Optional[Session] = None):
-        self._session = session if session is not None else Session()
+    def __init__(self, session_title: str):
+        self._session = Session()
         self.session_title = session_title
         self._active_script_index = 0
 
