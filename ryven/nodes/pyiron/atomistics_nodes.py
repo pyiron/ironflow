@@ -5,6 +5,7 @@
 import matplotlib.pylab as plt
 import numpy as np
 from pyiron_atomistics import Project
+from pyiron_atomistics.lammps import list_potentials
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 from ryven.ironflow.canvas_widgets import DisplayableNodeWidget, ButtonNodeWidget
 
@@ -164,7 +165,9 @@ class Lammps_Node(NodeWithDisplay):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
         NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
-        NodeInputBP(dtype=dtypes.Char(default="Al_Mg_Mendelev_eam"), label="potential"),
+        NodeInputBP(dtype=dtypes.Choice(
+            default="Set structure first", items=["Set structure first"]), label="potential"
+        )
     ]
     init_outputs = [
         NodeOutputBP(type_="exec"),
@@ -205,12 +208,29 @@ class Lammps_Node(NodeWithDisplay):
         except AttributeError:
             pass
 
+    def _update_potential_choices(self):
+        potl_input = self.inputs[5]
+        last_potential = potl_input.val
+        structure = self.inputs[4].val
+        available_potentials = list_potentials(structure)
+
+        if len(available_potentials) == 0:
+            potl_input.val = "No valid potential"
+            potl_input.dtype.items = ["No valid potential"]
+        else:
+            if last_potential not in available_potentials:
+                potl_input.val = available_potentials[0]
+            potl_input.dtype.items = available_potentials
+
     def update_event(self, inp=-1):
         super().update_event(inp=inp)
         if inp == 0:
             self._run()
         elif inp == 1:
             self._remove()
+        elif inp == 4:
+            self._update_potential_choices()
+
 
     @property
     def representations(self) -> tuple:
