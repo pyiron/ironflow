@@ -7,7 +7,7 @@ import numpy as np
 from pyiron_atomistics import Project
 from pyiron_atomistics.lammps import list_potentials
 from ryven.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
-from ryven.ironflow.canvas_widgets import DisplayableNodeWidget, ButtonNodeWidget
+from ryven.ironflow.canvas_widgets import RepresentableNodeWidget, ButtonNodeWidget
 
 from abc import ABC, abstractmethod
 from ryven.nodes.std.special_nodes import DualNodeBase
@@ -35,7 +35,7 @@ class NodeBase(Node):
 
 
 class NodeWithDisplay(NodeBase, ABC):
-    main_widget_class = DisplayableNodeWidget
+    main_widget_class = RepresentableNodeWidget
 
     def __init__(self, params):
         super().__init__(params)

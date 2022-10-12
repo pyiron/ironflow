@@ -531,12 +531,12 @@ class ButtonWidget(CanvasWidget, ABC):
         self.canvas.fill_text(self.title, x, y)
 
 
-class DisplayButtonWidget(ButtonWidget):
+class RepresentButtonWidget(ButtonWidget):
     def __init__(
             self,
             x: Number,
             y: Number,
-            parent: DisplayableNodeWidget,
+            parent: RepresentableNodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
             title="SHOW",
@@ -544,16 +544,17 @@ class DisplayButtonWidget(ButtonWidget):
         super().__init__(x, y, parent, layout, selected, title=title)
 
     def on_pressed(self):
-        self.parent.set_display()
+        self.gui.node_presenter.node_widget = self.parent
 
     def on_unpressed(self):
-        self.parent.clear_display()
+        self.gui.node_presenter.node_widget = None
 
 
-class DisplayableNodeWidget(NodeWidget):
+class RepresentableNodeWidget(NodeWidget):
     """
-    Has a `Display` button that sends a representation over to the `ryven.ironflow.Gui.GUI.out_plot` window.
-    Display gets locked until the button is pressed again, or another node gets displayed.
+    Has a `SHOW` button that sends a representation over to the `ryven.ironflow.Gui.GUI.node_presenter.output`
+    window.
+    Display gets locked until the button is pressed again, the node is deleted, or another node gets displayed.
     While displayed, display updates automatically on changes to input.
     """
 
@@ -581,42 +582,17 @@ class DisplayableNodeWidget(NodeWidget):
 
         button_layout = ButtonLayout()
         button_edge_offset = 5
-        self.display_button = DisplayButtonWidget(
+        self.represent_button = RepresentButtonWidget(
             x=self.width - button_layout.width - button_edge_offset,
             y=button_edge_offset,
             parent=self,
             layout=button_layout
         )
-        self.add_widget(self.display_button)
-
-    def set_display(self):
-        if self.gui.displayed_node is not None:
-            self.gui.displayed_node.display_button.unpress()
-        self.node.displayed = True
-        self.node.representation_updated = True
-        self.gui.displayed_node = self
-
-    def clear_display(self):
-        self.node.displayed = False
-        if self.gui.displayed_node == self:
-            self.gui.out_plot.clear_output()
-            self.gui.displayed_node = None
-
-    def draw_display(self):
-        """Send the node's representation to a separate GUI window"""
-        self.parent.gui.out_plot.clear_output()
-        with self.parent.gui.out_plot:
-            for rep in self.node.representations:
-                display(rep)
-        self.node.representation_updated = False
-
-    def draw(self):
-        super().draw()
-        if self.node.displayed and self.node.representation_updated:
-            self.draw_display()
+        self.add_widget(self.represent_button)
 
     def delete(self) -> None:
-        self.clear_display()
+        if self.gui.node_presenter.node_widget == self:
+            self.gui.node_presenter.node_widget = None
         return super().delete()
 
 

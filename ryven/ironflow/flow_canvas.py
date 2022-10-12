@@ -8,7 +8,7 @@ from ipycanvas import Canvas, hold_canvas
 from time import time
 
 from ryven.ironflow.canvas_widgets import (
-    NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, DisplayableNodeWidget, DisplayButtonWidget
+    NodeWidget, PortWidget, CanvasWidget, ButtonNodeWidget, RepresentableNodeWidget, RepresentButtonWidget
 )
 from ryven.ironflow.layouts import NodeLayout
 
@@ -188,6 +188,7 @@ class FlowCanvas:
             [o.draw() for o in self.objects_to_draw]
             for c in self.flow.connections:
                 self.draw_connection(c.inp, c.out)
+        self.gui.node_presenter.draw()
 
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
         layout = NodeLayout()
