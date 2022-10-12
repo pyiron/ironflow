@@ -9,6 +9,7 @@ from ryven.main.utils import import_nodes_package, load_from_file, NodesPackage
 from .CanvasObject import CanvasObject, gui_modes
 
 import ryven.NENV as NENV
+from pathlib import Path
 
 __author__ = "Joerg Neugebauer"
 __copyright__ = (
@@ -24,8 +25,8 @@ __date__ = "May 10, 2022"
 os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
 
-PACKAGES = ["ryven/std", "ryven/nodes/built_in/"]  # , 'ryven/mynodes']
-
+ryven_location = Path(__file__).parents[1]
+packages = [os.path.join(ryven_location, *subloc) for subloc in [("std",), ("nodes", "built_in")]]  # , ("mynodes",)
 alg_modes = ["data", "exec"]
 
 
@@ -33,9 +34,8 @@ debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI:
-    def __init__(self, packages=None):  # , onto_dic=onto_dic):
+    def __init__(self):  # , onto_dic=onto_dic):
         session = rc.Session()
-        packages = packages if packages is not None else PACKAGES
         for package in packages:
             session.register_nodes(
                 import_nodes_package(NodesPackage(directory=package))
