@@ -19,6 +19,8 @@ __date__ = "May 10, 2022"
 
 
 class NodeBase(Node):
+    color = "#ff69b4"  # Add an abrasive default color -- won't crash if you forget to add one, but pops out a bit
+
     def __init__(self, params):
         super().__init__(params)
 
@@ -348,6 +350,7 @@ class ForEach_Node(NodeBase):
         NodeOutputBP("e", type_="data"),
         NodeOutputBP("finished", type_="exec"),
     ]
+    color = '#b33a27'
 
     _count = 0
 
