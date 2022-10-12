@@ -16,7 +16,7 @@ __status__ = "production"
 __date__ = "May 10, 2022"
 
 import ipywidgets as widgets
-from IPython.display import display
+from IPython.display import display, HTML
 from ryven.ironflow.models import HasSession
 from ryven.ironflow.node_interface import NodeInterface
 from ryven.ironflow.flow_canvas import FlowCanvas
@@ -97,19 +97,35 @@ class GUI(HasSession):
         button_layout = widgets.Layout(width="50px")
         # Icon source: https://fontawesome.com
         # It looks like I'm stuck on v4, but this might just be a limitation of my jupyter environment -Liam
-        self.btn_load = widgets.Button(tooltip="Load", icon="upload", layout=button_layout)
-        self.btn_save = widgets.Button(tooltip="Save", icon="download", layout=button_layout)
-        self.btn_delete_node = widgets.Button(tooltip="Delete Node", icon="trash", layout=button_layout)
-        self.btn_rename_script = widgets.Button(tooltip="Rename script", icon="file", layout=button_layout)
-        # TODO: Use file-pen once this is available
-        self.btn_delete_script = widgets.Button(tooltip="Delete script", icon="minus", layout=button_layout)
-        # TODO: Use file-circle-minus once this is available
-        self.btn_zero_location = widgets.Button(
-            tooltip="Recenter canvas at (0,0)",
-            icon="map-marker",
+        self.btn_load = widgets.Button(tooltip="Load session from JSON", icon="upload", layout=button_layout)
+        self.btn_save = widgets.Button(tooltip="Save session to JSON", icon="download", layout=button_layout)
+        self.btn_help_node = widgets.Button(
+            tooltip="Print docs for new node class", icon="question-circle", layout=button_layout
+        )
+        self.btn_add_node = widgets.Button(
+            tooltip="Add new node (or double-click on empty space)", icon="plus-circle", layout=button_layout
+        )
+        self.btn_delete_node = widgets.Button(
+            tooltip="Delete selected node (or double-click on the node)", icon="minus-circle", layout=button_layout
+        )
+        self.btn_create_script = widgets.Button(
+            tooltip="Create script (or click the '+' tab)", icon="plus-square-o", layout=button_layout
+        )
+        self.btn_rename_script = widgets.Button(
+            tooltip="Rename script",
+            icon="pencil-square-o",  # TODO: Use file-pen once this is available
             layout=button_layout
         )
-        # TODO: Use location-dot once this is available
+        self.btn_delete_script = widgets.Button(
+            tooltip="Delete script",
+            icon="minus-square-o",  # TODO: Use file-circle-minus once this is available
+            layout=button_layout
+        )
+        self.btn_zero_location = widgets.Button(
+            tooltip="Recenter script canvas at the origin",
+            icon="map-marker",  # TODO: Use location-dot once this is available
+            layout=button_layout
+        )
 
         self.text_input_panel = widgets.HBox([])
         self.text_input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
@@ -137,9 +153,12 @@ class GUI(HasSession):
 
         self.alg_mode_dropdown.observe(self.change_alg_mode_dropdown, names="value")
         self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
+        self.btn_help_node.on_click(self.click_node_help)
         self.btn_load.on_click(self.click_load)
         self.btn_save.on_click(self.click_save)
+        self.btn_add_node.on_click(self.click_add_node)
         self.btn_delete_node.on_click(self.click_delete_node)
+        self.btn_create_script.on_click(self.click_create_script)
         self.btn_rename_script.on_click(self.click_rename_script)
         self.btn_input_text_ok.on_click(self.click_input_text_ok)
         self.text_input_field.on_submit(self.click_input_text_ok)
@@ -158,7 +177,10 @@ class GUI(HasSession):
                         self.alg_mode_dropdown,
                         self.btn_save,
                         self.btn_load,
+                        self.btn_help_node,
+                        self.btn_add_node,
                         self.btn_delete_node,
+                        self.btn_create_script,
                         self.btn_rename_script,
                         self.btn_delete_script,
                         self.btn_zero_location,
@@ -176,6 +198,9 @@ class GUI(HasSession):
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
+    def click_add_node(self, change: dict) -> None:
+        self.flow_canvas_widget.add_node(10, 10, self.new_node_class)
+
     def click_delete_node(self, change: Dict) -> None:
         self.flow_canvas_widget.delete_selected()
 
@@ -198,13 +223,15 @@ class GUI(HasSession):
                 self.active_script_index = self.script_tabs.selected_index
             self.flow_canvas_widget.redraw()
 
-    def _populate_text_input_panel(self, description, initial_value):
+    def _populate_text_input_panel(self, description, initial_value, description_tooltip=None):
         self.text_input_panel.children = [
             self.text_input_field,
             self.btn_input_text_ok,
             self.btn_input_text_cancel
         ]
         self.text_input_field.description = description
+        description_tooltip = description_tooltip if description_tooltip is not None else description
+        self.text_input_field.description_tooltip = description_tooltip
         self.text_input_field.value = initial_value
 
     def _depopulate_text_input_panel(self) -> None:
@@ -223,9 +250,27 @@ class GUI(HasSession):
             raise KeyError(f"Expected a context action among {list(self._context_actions.keys())} but got {context}.")
         self._context = context
 
+    def click_node_help(self, change: dict) -> None:
+        def _pretty_docstring(node_class):
+            """
+            If we just pass a string, `display` doesn't resolve newlines.
+            If we pass a `print`ed string, `display` also shows the `None` value returned by `print`
+            So we use this ugly hack.
+            """
+            string = f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
+            return HTML(string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;"))
+
+        self.out_log.clear_output()
+        with self.out_log:
+            display(_pretty_docstring(self.new_node_class))
+
     def click_save(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
-        self._populate_text_input_panel("Save file name", self.session_title)
+        self._populate_text_input_panel(
+            "Save file",
+            self.session_title,
+            description_tooltip="Save to file name"
+        )
         self._set_context("save")
         self._print("Choose a file name to save to (omit the file extension, .json)")
 
@@ -235,7 +280,11 @@ class GUI(HasSession):
 
     def click_load(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
-        self._populate_text_input_panel("Load file name", self.session_title)
+        self._populate_text_input_panel(
+            "Load file",
+            self.session_title,
+            description_tooltip="Load from file name"
+        )
         self._set_context("load")
         self._print("Choose a file name to load (omit the file extension, .json)")
 
@@ -246,9 +295,20 @@ class GUI(HasSession):
         self.out_log.clear_output()
         self._print(f"Session loaded from {file_name}.json")
 
+    def click_create_script(self, change: dict) -> None:
+        self.create_script()
+        self._update_tabs_from_model()
+        self.script_tabs.selected_index = self.n_scripts - 1
+        self.active_script_index = self.script_tabs.selected_index
+        self.flow_canvas_widget.redraw()
+
     def click_rename_script(self, change: Dict) -> None:
         self._depopulate_text_input_panel()
-        self._populate_text_input_panel("Script name", self.script.title)
+        self._populate_text_input_panel(
+            "New name",
+            self.script.title,
+            description_tooltip="New script name"
+        )
         self._set_context('rename')
         self._print("Choose a new name for the current script")
 

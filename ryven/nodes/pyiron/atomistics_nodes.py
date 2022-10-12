@@ -132,7 +132,16 @@ class Repeat_Node(OutputsOnlyAtoms):
 
 
 class ApplyStrain_Node(OutputsOnlyAtoms):
-    """Apply strain on atomic structure supercell"""
+    """
+    Apply strain on atomic structure supercell
+
+    Inputs:
+        structure (Atoms): The atomic structure to strain.
+        strain (float): The isotropic strain to apply.
+
+    Outputs:
+        (Atoms): The strained structure.
+    """
 
     title = "ApplyStrain"
     init_inputs = [
