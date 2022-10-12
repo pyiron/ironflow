@@ -61,7 +61,7 @@ class NodePresenter(NodeInterfaceBase):
     def _build_toggles(self, representations: dict) -> list[widgets.Checkbox]:
         toggles = []
         for i, label in enumerate(representations.keys()):
-            toggle = widgets.Checkbox(description=label, value=i == 0)
+            toggle = widgets.Checkbox(description=label, value=i == 0, indent=False, layout={"width": "100px"})
             toggle.observe(self._on_toggle)
             toggles.append(toggle)
         return toggles
@@ -87,7 +87,7 @@ class NodePresenter(NodeInterfaceBase):
         with self.output:
             display(
                 widgets.VBox([
-                    widgets.HBox(self._toggles),
+                    widgets.HBox(self._toggles, layout={"flex_flow": "row wrap"}),
                     *representations
                 ])
             )

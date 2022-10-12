@@ -2,8 +2,11 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
+from __future__ import annotations
+
 import matplotlib.pylab as plt
 import numpy as np
+import json
 from pyiron_atomistics import Project
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
@@ -12,6 +15,10 @@ from ryven.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonN
 
 from abc import ABC, abstractmethod
 from ryven.nodes.std.special_nodes import DualNodeBase
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from pyiron_base import HasGroups
 
 
 __author__ = "Joerg Neugebauer, Liam Huber"
@@ -24,6 +31,31 @@ __maintainer__ = "Liam Huber"
 __email__ = "liamhuber@greyhavensolutions.com"
 __status__ = "production"
 __date__ = "May 10, 2022"
+
+
+class BeautifulHasGroups:
+    def __init__(self, has_groups: HasGroups | None):
+        self._has_groups = has_groups
+
+    def to_builtin(self, has_groups=None):
+        has_groups = has_groups if has_groups is not None else self._has_groups
+        if has_groups is not None:
+            repr_dict = {}
+            for k in has_groups.list_groups():
+                repr_dict[k] = self.to_builtin(has_groups[k])
+            for k in has_groups.list_nodes():
+                repr_dict[k] = str(has_groups[k])
+            return repr_dict
+        else:
+            return None
+
+    def _repr_json_(self):
+        return self.to_builtin()
+
+    def _repr_html_(self):
+        name = self._has_groups.__class__.__name__
+        plain = f"{name}({json.dumps(self.to_builtin(), indent=2, default=str)})"
+        return "<pre>" + plain + "</pre>"
 
 
 class NodeBase(Node):
@@ -86,8 +118,17 @@ class Project_Node(NodeWithRepresentation):
         self.set_output_val(0, pr)
 
     @property
+    def _project(self):
+        return self.output(0)
+
+    @property
     def representations(self) -> dict:
-        return {"name": str(self.input(0))}
+        return {
+            "name": str(self.input(0)),
+            # "job_table": self._project.job_table() if self._project is not None else None
+            # TODO: Figure out how to display this without breaking the gui size; right now it automatically grows
+            # the gui because the table is so wide.
+        }
 
 
 class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
@@ -238,6 +279,10 @@ class Lammps_Node(NodeWithRepresentation):
             self._remove()
         elif inp == 4:
             self._update_potential_choices()
+
+    @property
+    def representations(self) -> dict:
+        return {'job': BeautifulHasGroups(self.output(1))}
 
 
 class GenericOutput_Node(NodeWithRepresentation):

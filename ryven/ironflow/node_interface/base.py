@@ -11,10 +11,17 @@ if TYPE_CHECKING:
 import ipywidgets as widgets
 
 
+def _default_layout():
+    return widgets.Layout(
+        width="50%",
+        border="1px solid black",
+    )
+
+
 class NodeInterfaceBase(ABC):
     def __init__(self, gui: GUI, layout: Optional[dict] = None):
         self.gui = gui
-        self.layout = layout if layout is not None else {"width": "50%", "border": "1px solid black"}
+        self.layout = layout if layout is not None else _default_layout()
         self._output = None
 
     @abstractmethod
