@@ -129,7 +129,7 @@ class HasSession(ABC):
         self.active_script_index = 0
 
     def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
-        node_module = node_module or node_class.__module__  # n.identifier_prefix
+        node_module = node_module or node_class.__module__.split('.')[-1]  # n.identifier_prefix
         if node_module not in self._nodes_dict.keys():
             self._nodes_dict[node_module] = {}
         self._nodes_dict[node_module][node_class.title] = node_class
