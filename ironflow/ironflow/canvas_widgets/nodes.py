@@ -49,6 +49,12 @@ class NodeWidget(CanvasWidget):
         self.inputs = node.inputs
         self.outputs = node.outputs
 
+        # Register callback to change color on updates
+        self.node.widget = self
+        self._updating = False
+        self.node.before_update.connect(self._draw_before_updating)
+        self.node.after_update.connect(self._draw_after_updating)
+
         self.port_radius = port_radius
         self.port_layouts = {
             'data': DataPortLayout(),
@@ -111,6 +117,26 @@ class NodeWidget(CanvasWidget):
     def on_double_click(self) -> None:
         self.delete()
         return None
+
+    @staticmethod
+    def _draw_before_updating(node: Node, inp: int) -> None:
+        node.widget.gui.print(f"Updating {node}")
+        node.widget._updating = True
+        node.widget.draw()
+
+    @staticmethod
+    def _draw_after_updating(node: Node, inp: int) -> None:
+        node.widget._updating = False
+        node.widget.draw()
+
+    @property
+    def color(self) -> str:
+        if self._updating:
+            return self.layout.updating_color
+        elif self.selected:
+            return self.layout.selected_color
+        else:
+            return self.layout.background_color
 
     def draw_title(self) -> None:
         self.canvas.fill_style = self.node.color

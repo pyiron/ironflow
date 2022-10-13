@@ -32,6 +32,7 @@ class NodeLayout(Layout):
     height: int = 100
     font_size: int = 22
     title_box_height: int = 30
+    updating_color: str = "red"
 
 
 @dataclass

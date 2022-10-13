@@ -73,9 +73,9 @@ class NodeBase(Node):
         self.after_update = Event(self, int)
 
     def update(self, inp=-1):
-        self.before_update.emit(inp)
+        self.before_update.emit(self, inp)
         super().update(inp=inp)
-        self.after_update.emit(inp)
+        self.after_update.emit(self, inp)
 
     def output(self, i):
         return self.outputs[i].val
@@ -93,6 +93,7 @@ class NodeWithRepresentation(NodeBase, ABC):
         self.representation_updated = False
         self.after_update.connect(self._representation_update)
 
+    @staticmethod
     def _representation_update(self, inp):
         self.representation_updated = True
 
