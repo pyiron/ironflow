@@ -16,6 +16,7 @@ import numpy as np
 from pyiron_atomistics import Project
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
+from ryvencore.Base import Event
 
 from ironflow.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
 from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
@@ -68,15 +69,11 @@ class NodeBase(Node):
 
     def __init__(self, params):
         super().__init__(params)
-        self._call_after_update = []
+        self.after_update = Event(self, int)
 
     def update(self, inp=-1):
         super().update(inp=inp)
-        self._after_update(inp)
-
-    def _after_update(self, inp: int):
-        for fnc in self._call_after_update:
-            fnc(inp)
+        self.after_update.emit(inp)
 
     def output(self, i):
         return self.outputs[i].val
@@ -92,7 +89,7 @@ class NodeWithRepresentation(NodeBase, ABC):
     def __init__(self, params):
         super().__init__(params)
         self.representation_updated = False
-        self._call_after_update.append(self._representation_update)
+        self.after_update.connect(self._representation_update)
 
     def _representation_update(self, inp):
         self.representation_updated = True
