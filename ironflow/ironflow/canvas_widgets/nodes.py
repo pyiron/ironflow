@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
+from ipycanvas import hold_canvas
 
 from ironflow.ironflow.canvas_widgets.base import CanvasWidget
 from ironflow.ironflow.canvas_widgets.buttons import (
@@ -120,14 +121,15 @@ class NodeWidget(CanvasWidget):
 
     @staticmethod
     def _draw_before_updating(node: Node, inp: int) -> None:
-        node.widget.gui.print(f"Updating {node}")
         node.widget._updating = True
-        node.widget.draw()
+        with hold_canvas(node.widget.canvas):
+            node.widget.draw()
 
     @staticmethod
     def _draw_after_updating(node: Node, inp: int) -> None:
         node.widget._updating = False
-        node.widget.draw()
+        with hold_canvas(node.widget.canvas):
+            node.widget.draw()
 
     @property
     def color(self) -> str:
