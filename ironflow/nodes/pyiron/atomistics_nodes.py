@@ -69,9 +69,11 @@ class NodeBase(Node):
 
     def __init__(self, params):
         super().__init__(params)
+        self.before_update = Event(self, int)
         self.after_update = Event(self, int)
 
     def update(self, inp=-1):
+        self.before_update.emit(inp)
         super().update(inp=inp)
         self.after_update.emit(inp)
 
