@@ -18,8 +18,6 @@ from ryvencore import Session, Script, Flow
 import ironflow.NENV as NENV
 from ironflow.main.utils import import_nodes_package, NodesPackage
 
-
-os.environ["RYVEN_MODE"] = "no-gui"
 NENV.init_node_env()
 
 ryven_location = Path(__file__).parents[1]

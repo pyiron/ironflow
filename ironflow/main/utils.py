@@ -30,8 +30,6 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
     """
     This function is an interface to the node packages system in Ryven.
     It loads nodes from a Ryven nodes package and returns them in a list.
-    It can be used without a running Ryven instance, but you need to specify in which mode nodes should be loaded
-    by setting the environment variable RYVEN_MODE to either 'gui' (gui imports enabled) or 'no-gui'.
     You can either pass a NodesPackage object or a path to the directory where the nodes.py file is located.
     """
 
@@ -39,45 +37,10 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
         package = NodesPackage(directory)
         print ('package: ', package)
 
-    if 'RYVEN_MODE' not in os.environ:
-        raise Exception(
-            "Please specify the environment variable RYVEN_MODE ('gui' or 'no-gui') before loading any packages. "
-            "For example set os.environ['RYVEN_MODE'] = 'no-gui' for gui-less deployment."
-        )
-
     from ironflow import NENV
     load_from_file(package.file_path)
 
     nodes = NENV.NodesRegistry.exported_nodes[-1]
-
-    if os.environ['RYVEN_MODE'] == 'gui':
-
-        # ADD SOURCES
-
-        # because all the node package modules are named 'nodes.py' now, we need to retrieve the sources via inspect here
-        # since inspect will be unable to do so once we imported another 'nodes' module.
-
-        node_cls_sources = NENV.NodesRegistry.exported_node_sources[-1]
-        node_mod_sources = [inspect.getsource(inspect.getmodule(n)) for n in nodes]
-
-        for i in range(len(nodes)):
-            n = nodes[i]
-
-            mw_cls_src = inspect.getsource(n.main_widget_class) if n.main_widget_class else None
-            mw_mod_src = inspect.getsource(inspect.getmodule(n.main_widget_class)) if n.main_widget_class else None
-
-            n.__class_codes__ = {
-                'node cls': node_cls_sources[i],
-                'node mod': node_mod_sources[i],
-                'main widget cls': mw_cls_src,
-                'main widget mod': mw_mod_src,
-                'custom input widgets': {
-                    name: {
-                        'cls': inspect.getsource(inp_cls),
-                        'mod': inspect.getsource(inspect.getmodule(inp_cls))
-                    } for name, inp_cls in n.input_widget_classes.items()
-                }
-            }
 
     # -----------
 
