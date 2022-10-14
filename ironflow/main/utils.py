@@ -1,10 +1,9 @@
 import inspect
 import os
-from os.path import basename
+from os.path import basename, normpath, join
 import importlib.util
 
 from ironflow.main.node import Node
-from ironflow.main.nodes_package import NodesPackage
 
 
 def load_from_file(file: str = None, components_list: [str] = []) -> tuple:
@@ -25,6 +24,25 @@ def load_from_file(file: str = None, components_list: [str] = []) -> tuple:
     comps = tuple([getattr(mod, c) for c in components_list])
 
     return comps
+
+
+class NodesPackage:
+    """
+    A small container to store meta data about imported node packages.
+    """
+
+    def __init__(self, directory: str):
+
+        self.name = basename(normpath(directory))
+        self.directory = directory
+
+        self.file_path = normpath(join(directory, 'nodes.py'))
+
+    def config_data(self):
+        return {
+            'name': self.name,
+            'dir': self.directory,
+        }
 
 
 def import_nodes_package(package: NodesPackage = None, directory: str = None) -> list:
