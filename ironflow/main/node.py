@@ -18,15 +18,24 @@ class Node(NodeCore):
     and `after_update` events. Callbacks to happen before and after the update can be added to (removed from) these with
     the `connect` (`disconnect`) methods on the event. Such callbacks need to take the node itself as the first
     argument, and the integer specifying which input channel is being updated as the second argument.
+
+    Also provides a "representation" that gets used in the GUI to give a more detailed look at node data, which defaults
+    to showing output channel values.
     """
+
+    main_widget_class = RepresentableNodeWidget
 
     color = "#ff69b4"  # Add an abrasive default color -- won't crash if you forget to add one, but pops out a bit
 
     def __init__(self, params):
         super().__init__(params)
+
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)
         self.actions = dict()  # Resolves TODO from ryven.NENV, moving it to our node class instead of ryvencore
+
+        self.representation_updated = False
+        self.after_update.connect(self._representation_update)
 
     def update(self, inp=-1):
         self.before_update.emit(self, inp)
@@ -35,19 +44,6 @@ class Node(NodeCore):
 
     def output(self, i):
         return self.outputs[i].val
-
-
-class NodeWithRepresentation(Node, ABC):
-    """
-    A node with a "representation" that gets used in the GUI to give a more detailed look at node data.
-    """
-
-    main_widget_class = RepresentableNodeWidget
-
-    def __init__(self, params):
-        super().__init__(params)
-        self.representation_updated = False
-        self.after_update.connect(self._representation_update)
 
     @staticmethod
     def _representation_update(self, inp):
