@@ -12,7 +12,6 @@ from ryvencore import (
 )
 
 from ironflow.main.node import Node
-from ironflow.main.utils import load_from_file
 
 
 def import_widgets(origin_file: str, rel_file_path='widgets.py'):
