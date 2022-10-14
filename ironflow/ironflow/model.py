@@ -7,6 +7,7 @@ The back-end model which interfaces with Ryven.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 from abc import ABC
 from inspect import isclass
@@ -152,7 +153,25 @@ class HasSession(ABC):
             self.register_node(node_class=node)
 
     def register_nodes_from_file(self, file_path: str | Path):
-        raise NotImplementedError
+        """
+        Loads a .py file as a module, then searches through it for all subclasses `ironflow.main.node.Node` whose name
+        ends with `'_Node'` and register them with the ryven session and the model's `_nodes_dict`.
+
+        Args:
+            file_path (str | pathlib.Path): The .py file to load.
+        """
+        path = Path(file_path)
+        resolved = path.resolve().__str__()
+        if not path.is_file():
+            raise ValueError(f'No file found at {resolved}')
+
+        spec = importlib.util.spec_from_file_location(
+            resolved.replace('/', '.').lstrip('.').rpartition('.')[0],
+            resolved
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.register_nodes_from_module(module)
 
     def register_user_node(self, node_class: Type[Node]):
         """
