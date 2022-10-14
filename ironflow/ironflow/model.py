@@ -7,24 +7,16 @@ The back-end model which interfaces with Ryven.
 
 from __future__ import annotations
 
-import os
 import json
 from abc import ABC
+from inspect import isclass
 from pathlib import Path
+from types import ModuleType
 from typing import Optional, Type
 
 from ryvencore import Session, Script, Flow
 
 from ironflow.main.node import Node
-from ironflow.main.utils import import_nodes_package, NodesPackage
-
-
-ryven_location = Path(__file__).parents[1]
-packages = [os.path.join(ryven_location, "nodes", *subloc) for subloc in [
-    ("built_in",),
-    ("std",),
-    ("pyiron",),
-]]
 
 
 class HasSession(ABC):
@@ -35,14 +27,18 @@ class HasSession(ABC):
         self.session_title = session_title
         self._active_script_index = 0
 
-        for package in packages:
-            self.session.register_nodes(
-                import_nodes_package(NodesPackage(directory=package))
-            )
-
         self._nodes_dict = {}
-        for n in self.session.nodes:
-            self._register_node(n)
+        from ironflow.nodes.built_in import nodes as built_in
+        from ironflow.nodes.pyiron import atomistics_nodes
+        from ironflow.nodes.std import basic_operators, control_structures, special_nodes
+        for module in [
+            built_in,
+            atomistics_nodes,
+            basic_operators,
+            control_structures,
+            special_nodes
+        ]:
+            self.register_nodes_from_module(module)
 
     @property
     def active_script_index(self) -> int:
@@ -125,11 +121,38 @@ class HasSession(ABC):
         self.session.load(data)
         self.active_script_index = 0
 
-    def _register_node(self, node_class: Type[Node], node_module: Optional[str] = None):
+    def register_node(self, node_class: Type[Node], node_module: Optional[str] = None):
+        if node_class in self.session.nodes:
+            self.session.unregister_node(node_class)
+        self.session.register_node(node_class)
+
         node_module = node_module or node_class.__module__.split('.')[-1]  # n.identifier_prefix
         if node_module not in self._nodes_dict.keys():
             self._nodes_dict[node_module] = {}
         self._nodes_dict[node_module][node_class.title] = node_class
+
+    def register_nodes_from_module(self, module: ModuleType) -> None:
+        """
+        Search through the provided python module for all subclasses `ironflow.main.node.Node` whose name ends with
+        `'_Node'` and register them with the ryven session and the model's `_nodes_dict`.
+
+        Args:
+            module (types.ModuleType): The module to register from.
+        """
+        for name in [key for key in module.__dir__() if key.endswith('_Node')]:
+            node = getattr(module, name)
+            if not isclass(node) or not issubclass(node, Node):
+                raise TypeError(
+                    f'Tried to import {name} from {module}, but it was a {node.__class__} instead of {Node}')
+            self.register_node(node_class=node)
+            node.type_ = node.__class__.__name__ if not node.type_ else module.__name__+f'[{node.type_}]'
+            node.identifier_prefix = module.__name__.rpartition('.')[0]
+            # Note: I'm deleting some stuff with compatible names in this commit (Node.identifier_comp)
+            #       I think these should be put on the node classes themselves, but in case you need to see
+            #       how it *used* to be done, look at the diff here.
+
+    def register_nodes_from_file(self, file_path: str | Path):
+        raise NotImplementedError
 
     def register_user_node(self, node_class: Type[Node]):
         """
@@ -168,7 +191,4 @@ class HasSession(ABC):
         TODO:
             Expose the more sophisticated pyironic nodes like `NodeWithRepresentation` for import.
         """
-        if node_class in self.session.nodes:
-            self.session.unregister_node(node_class)
-        self.session.register_node(node_class)
-        self._register_node(node_class, node_module='user')
+        self.register_node(node_class, node_module='user')
