@@ -17,9 +17,7 @@ from IPython.display import display
 from ironflow.ironflow.canvas_widgets.base import CanvasWidget
 from ironflow.ironflow.canvas_widgets.buttons import RepresentButtonWidget
 from ironflow.ironflow.canvas_widgets.layouts import NodeLayout
-from ironflow.ironflow.canvas_widgets.nodes import (
-    NodeWidget, ButtonNodeWidget, RepresentableNodeWidget
-)
+from ironflow.ironflow.canvas_widgets.nodes import NodeWidget, ButtonNodeWidget
 from ironflow.ironflow.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:

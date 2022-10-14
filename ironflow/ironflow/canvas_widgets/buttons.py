@@ -17,7 +17,7 @@ from ironflow.ironflow.canvas_widgets.layouts import ButtonLayout
 
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.base import Number
-    from ironflow.ironflow.canvas_widgets.nodes import NodeWidget, RepresentableNodeWidget
+    from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 
 class ButtonWidget(CanvasWidget, ABC):
@@ -88,7 +88,7 @@ class RepresentButtonWidget(ButtonWidget):
             self,
             x: Number,
             y: Number,
-            parent: RepresentableNodeWidget,
+            parent: NodeWidget,
             layout: ButtonLayout,
             selected: bool = False,
             title="SHOW",

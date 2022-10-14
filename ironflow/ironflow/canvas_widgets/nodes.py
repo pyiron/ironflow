@@ -27,6 +27,13 @@ if TYPE_CHECKING:
 
 
 class NodeWidget(CanvasWidget):
+    """
+    The main ipycanvas representation of a node. Has graphical elements for IO ports. Collapsable to save space.
+
+    Also has a `SHOW` button that sends a representation over to the `ironflow.GUI.node_presenter` window.
+    Presentation gets locked until the button is pressed again, the node is deleted, or another node gets presented.
+    While presented, representation updates automatically on changes to input.
+    """
     def __init__(
             self,
             x: Number,
@@ -99,6 +106,16 @@ class NodeWidget(CanvasWidget):
             size=2 * self.port_radius
         )
         self.add_widget(self.collapse_button)
+
+        button_layout = ButtonLayout()
+        button_edge_offset = 5
+        self.represent_button = RepresentButtonWidget(
+            x=self.width - button_layout.width - button_edge_offset,
+            y=button_edge_offset,
+            parent=self,
+            layout=button_layout
+        )
+        self.add_widget(self.represent_button)
 
     def on_click(self, last_selected_object: Optional[CanvasWidget]) -> NodeWidget | None:
         if last_selected_object == self:
@@ -201,13 +218,14 @@ class NodeWidget(CanvasWidget):
         self._add_ports(radius=self.port_radius, outputs=self.outputs)
 
     def delete(self) -> None:
+        self.gui.ensure_node_not_presented(self)
+        self.gui.ensure_node_not_controlled(self.node)
         for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
             # TODO: Can we be more efficient than looping over all nodes?
             if (c.inp.node == self.node) or (c.out.node == self.node):
                 self.flow.remove_connection(c)
         self.flow.remove_node(self.node)
         self.parent.objects_to_draw.remove(self)
-        self.gui.ensure_node_not_controlled(self.node)
 
     def deselect(self) -> None:
         super().deselect()
@@ -255,50 +273,3 @@ class ButtonNodeWidget(NodeWidget):
             port=self.node.outputs[0],
         )
         self.add_widget(self.exec_button)
-
-
-class RepresentableNodeWidget(NodeWidget):
-    """
-    Has a `SHOW` button that sends a representation over to the `ryven.ironflow.Gui.GUI.node_presenter.output`
-    window.
-    Display gets locked until the button is pressed again, the node is deleted, or another node gets displayed.
-    While displayed, display updates automatically on changes to input.
-    """
-
-    def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: FlowCanvas | CanvasWidget,
-            layout: NodeLayout,
-            node: Node,
-            selected: bool = False,
-            title: Optional[str] = None,
-            port_radius: Number = 10,
-    ):
-        super().__init__(
-            x=x,
-            y=y,
-            parent=parent,
-            layout=layout,
-            node=node,
-            selected=selected,
-            title=title,
-            port_radius=port_radius,
-        )
-
-        button_layout = ButtonLayout()
-        button_edge_offset = 5
-        self.represent_button = RepresentButtonWidget(
-            x=self.width - button_layout.width - button_edge_offset,
-            y=button_edge_offset,
-            parent=self,
-            layout=button_layout
-        )
-        self.add_widget(self.represent_button)
-
-    def delete(self) -> None:
-        self.gui.ensure_node_not_presented(self)
-        return super().delete()
-
-

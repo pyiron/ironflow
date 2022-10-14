@@ -8,7 +8,7 @@ from abc import ABC
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 
-from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
+from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 
 class Node(NodeCore):
@@ -23,7 +23,7 @@ class Node(NodeCore):
     to showing output channel values.
     """
 
-    main_widget_class = RepresentableNodeWidget
+    main_widget_class = NodeWidget
 
     color = "#ff69b4"  # Add an abrasive default color -- won't crash if you forget to add one, but pops out a bit
 
