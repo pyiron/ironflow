@@ -1,6 +1,6 @@
 import inspect
 import os
-from os.path import normpath, join, dirname, abspath, basename, expanduser
+from os.path import basename
 import importlib.util
 
 from ironflow.main.node import Node
@@ -51,31 +51,6 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
         n.type_ = package.name if not n.type_ else package.name+f'[{n.type_}]'
 
     return nodes
-
-
-def ryven_dir_path() -> str:
-    """
-    :return: absolute path the (OS-specific) '~/.ryven/' folder
-    """
-    return normpath(join(expanduser('~'), '.ryven/'))
-
-
-def abs_path_from_package_dir(path_rel_to_ryven: str):
-    """Given a path string relative to the ryven package, return the file/folder absolute path
-    :param path_rel_to_ryven: path relative to ryven package (e.g. main/NENV.py)
-    :type path_rel_to_ryven: str
-    """
-    ryven_path = dirname(dirname(__file__))
-    return abspath(join(ryven_path, path_rel_to_ryven))
-
-
-def abs_path_from_ryven_dir(path_rel_to_ryven_dir: str):
-    """Given a path string relative to the ryven dir '~/.ryven/', return the file/folder absolute path
-    :param path_rel_to_ryven_dir: path relative to ryven dir (e.g. saves)
-    :return: file/folder absolute path
-    """
-
-    return abspath(join(ryven_dir_path(), path_rel_to_ryven_dir))
 
 
 def import_widgets(origin_file: str, rel_file_path='widgets.py'):
