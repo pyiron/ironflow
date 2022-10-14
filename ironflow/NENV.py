@@ -5,7 +5,7 @@ without path modifications which caused issues in the past."""
 import inspect
 import os
 
-from ironflow.main.node import NodeBase as Node
+from ironflow.main.node import Node
 
 # types
 NodeInputBP = None

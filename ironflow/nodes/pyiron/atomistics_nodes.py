@@ -19,7 +19,7 @@ from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 
 from ironflow.NENV import NodeInputBP, NodeOutputBP, dtypes
-from ironflow.main.node import NodeBase, NodeWithRepresentation
+from ironflow.main.node import Node, NodeWithRepresentation
 from ironflow.ironflow.canvas_widgets.nodes import ButtonNodeWidget
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
@@ -526,7 +526,7 @@ class Sin_Node(NodeWithRepresentation):
         self.set_output_val(0, np.sin(self.input(0)))
 
 
-class Result_Node(NodeBase):
+class Result_Node(Node):
     """Simply shows a value converted to str"""
 
     version = "v0.1"
@@ -553,7 +553,7 @@ class Result_Node(NodeBase):
             self.main_widget().show_val(self.val)
 
 
-class ForEach_Node(NodeBase):
+class ForEach_Node(Node):
     title = "ForEach"
     version = "v0.1"
     init_inputs = [
@@ -607,7 +607,7 @@ class ExecCounter_Node(DualNodeBase):
             self.val = self.input(0)
 
 
-class Click_Node(NodeBase):
+class Click_Node(Node):
     title = "Click"
     version = "v0.1"
     main_widget_class = ButtonNodeWidget

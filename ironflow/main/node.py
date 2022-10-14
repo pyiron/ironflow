@@ -5,13 +5,13 @@ from __future__ import annotations
 
 from abc import ABC
 
-from ryvencore import Node
+from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 
 from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
 
 
-class NodeBase(Node):
+class Node(NodeCore):
     """
     A parent class for all ironflow nodes. Apart from a small quality-of-life difference where outputs are
     accessible in the same way as inputs (i.e. with a method `output(i)`), the main change here is the `before_update`
@@ -37,7 +37,7 @@ class NodeBase(Node):
         return self.outputs[i].val
 
 
-class NodeWithRepresentation(NodeBase, ABC):
+class NodeWithRepresentation(Node, ABC):
     """
     A node with a "representation" that gets used in the GUI to give a more detailed look at node data.
     """
