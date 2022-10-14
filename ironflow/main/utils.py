@@ -37,10 +37,10 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
         package = NodesPackage(directory)
         print ('package: ', package)
 
-    from ironflow import NENV
+    from ironflow.NENV import NodesRegistry
     load_from_file(package.file_path)
 
-    nodes = NENV.NodesRegistry.exported_nodes[-1]
+    nodes = NodesRegistry.exported_nodes[-1]
 
     # -----------
 

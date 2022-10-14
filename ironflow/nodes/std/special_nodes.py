@@ -1,10 +1,11 @@
 import code
 from contextlib import redirect_stdout, redirect_stderr
 
-from ironflow.NENV import *
+from ironflow.NENV import import_widgets, NodeInputBP, NodeOutputBP, dtypes
 from ironflow.main.node import Node
-widgets = import_widgets(__file__)
 from ironflow.ironflow.boxes.node_interface.input_widgets import SliderControl
+
+widgets = import_widgets(__file__)
 
 
 class NodeBase(Node):
