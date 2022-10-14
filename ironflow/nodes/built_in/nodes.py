@@ -1,8 +1,8 @@
 from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
-from ironflow.main.utils import import_widgets, export_nodes
-from ironflow.main.node import Node
+from ironflow.main.utils import export_nodes
+from ironflow.main.node import Node, PlaceholderWidgetsContainer
 
-widgets = import_widgets(__file__)
+widgets = PlaceholderWidgetsContainer()
 
 
 class NodeBase(Node):

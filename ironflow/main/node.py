@@ -59,3 +59,13 @@ class NodeWithRepresentation(Node, ABC):
             o.label_str if o.label_str != "" else f"output{i}": o.val
             for i, o in enumerate(self.outputs) if o.type_ == "data"
         }
+
+
+class PlaceholderWidgetsContainer:
+    """
+    An object that just returns None for all accessed attributes so widgets.MyWidget in the non-ironflow nodes files
+    just returns None.
+    """
+    def __getattr__(self, item):
+        return None
+
