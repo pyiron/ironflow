@@ -15,10 +15,9 @@ from typing import Optional, Type
 
 from ryvencore import Session, Script, Flow
 
-import ironflow.NENV as NENV
+from ironflow.main.node import Node
 from ironflow.main.utils import import_nodes_package, NodesPackage
 
-NENV.init_node_env()
 
 ryven_location = Path(__file__).parents[1]
 packages = [os.path.join(ryven_location, "nodes", *subloc) for subloc in [
@@ -126,13 +125,13 @@ class HasSession(ABC):
         self.session.load(data)
         self.active_script_index = 0
 
-    def _register_node(self, node_class: Type[NENV.Node], node_module: Optional[str] = None):
+    def _register_node(self, node_class: Type[Node], node_module: Optional[str] = None):
         node_module = node_module or node_class.__module__.split('.')[-1]  # n.identifier_prefix
         if node_module not in self._nodes_dict.keys():
             self._nodes_dict[node_module] = {}
         self._nodes_dict[node_module][node_class.title] = node_class
 
-    def register_user_node(self, node_class: Type[NENV.Node]):
+    def register_user_node(self, node_class: Type[Node]):
         """
         Register a custom node class from the gui's current working scope. These nodes are available under the
         'user' module. You will need to (re-)draw your GUI to see the change.

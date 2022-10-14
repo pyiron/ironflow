@@ -5,30 +5,13 @@ without path modifications which caused issues in the past."""
 import inspect
 import os
 
+from ryvencore import (
+    NodeInputBP,
+    NodeOutputBP,
+    dtypes
+)
+
 from ironflow.main.node import Node
-
-# types
-NodeInputBP = None
-NodeOutputBP = None
-dtypes = None
-
-
-def init_node_env():
-    global NodeInputBP
-    global NodeOutputBP
-    global dtypes
-
-    # import sources directly from backend if not running in gui mode
-    from ryvencore import \
-        NodeInputBP as NodeInputBP_, \
-        NodeOutputBP as NodeOutputBP_, \
-        dtypes as dtypes_
-
-    NodeInputBP = NodeInputBP_
-    NodeOutputBP = NodeOutputBP_
-    dtypes = dtypes_
-
-
 from ironflow.main.utils import load_from_file
 
 
