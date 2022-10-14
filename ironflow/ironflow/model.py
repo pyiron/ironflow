@@ -122,7 +122,21 @@ class HasSession(ABC):
         self.session.load(data)
         self.active_script_index = 0
 
-    def register_node(self, node_class: Type[Node], node_module: Optional[str] = None):
+    def register_node(self, node_class: Type[Node], node_group: Optional[str] = None) -> None:
+        """
+        Registers a node class with the ryven session and model, storing it in `_nodes_dict`. Some node attributes
+        (`identifier_prefix` and `type_`) are also set on the Node class.
+
+        Args:
+            node_class (Type[Node]): The node class to register.
+            node_group (str | None): The sub-collection to which this node belongs. (Default is None, which uses the
+                last bit of the module path.)
+
+
+        Note: The sub-collection in the `_nodes_dict` to which the node gets added depends only on the *tail* of its
+              module path, so it is possible that nodes from two different sources get grouped together. In case this
+              leads to a conflict, `node_module` can be explicitly provided and this will be used instead.
+        """
         if node_class in self.session.nodes:
             self.session.unregister_node(node_class)
         self.session.register_node(node_class)
@@ -132,33 +146,37 @@ class HasSession(ABC):
         node_class.identifier_prefix = identifier_prefix
         node_class.type_ = module + node_class.type_ if not node_class.type_ else node_class.type_
 
-        node_module = node_module or module_shorthand
-        if node_module not in self._nodes_dict.keys():
-            self._nodes_dict[node_module] = {}
-        self._nodes_dict[node_module][node_class.title] = node_class
+        node_group = node_group or module_shorthand
+        if node_group not in self._nodes_dict.keys():
+            self._nodes_dict[node_group] = {}
+        self._nodes_dict[node_group][node_class.title] = node_class
 
-    def register_nodes_from_module(self, module: ModuleType) -> None:
+    def register_nodes_from_module(self, module: ModuleType, node_group: Optional[str] = None) -> None:
         """
         Search through the provided python module for all subclasses `ironflow.main.node.Node` whose name ends with
         `'_Node'` and register them with the ryven session and the model's `_nodes_dict`.
 
         Args:
             module (types.ModuleType): The module to register from.
+            node_group (str | None): The sub-collection to which this node belongs. (Default is None, which uses the
+                last bit of the module path.)
         """
         for name in [key for key in module.__dir__() if key.endswith('_Node')]:
             node = getattr(module, name)
             if not isclass(node) or not issubclass(node, Node):
                 raise TypeError(
                     f'Tried to import {name} from {module}, but it was a {node.__class__} instead of {Node}')
-            self.register_node(node_class=node)
+            self.register_node(node_class=node, node_group=node_group)
 
-    def register_nodes_from_file(self, file_path: str | Path):
+    def register_nodes_from_file(self, file_path: str | Path, node_group: Optional[str] = None) -> None:
         """
         Loads a .py file as a module, then searches through it for all subclasses `ironflow.main.node.Node` whose name
         ends with `'_Node'` and register them with the ryven session and the model's `_nodes_dict`.
 
         Args:
             file_path (str | pathlib.Path): The .py file to load.
+            node_group (str | None): The sub-collection to which this node belongs. (Default is None, which uses the
+                file name stripped of its .py suffix.)
         """
         path = Path(file_path)
         resolved = path.resolve().__str__()
@@ -171,7 +189,7 @@ class HasSession(ABC):
         )
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        self.register_nodes_from_module(module)
+        self.register_nodes_from_module(module, node_group=node_group)
 
     def register_user_node(self, node_class: Type[Node]):
         """
@@ -210,4 +228,4 @@ class HasSession(ABC):
         TODO:
             Expose the more sophisticated pyironic nodes like `NodeWithRepresentation` for import.
         """
-        self.register_node(node_class, node_module='user')
+        self.register_node(node_class, node_group='user')
