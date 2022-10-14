@@ -1,4 +1,4 @@
-from ironflow.NENV import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
 from ironflow.main.node import Node
 
 

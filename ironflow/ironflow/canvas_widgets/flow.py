@@ -25,7 +25,7 @@ from ironflow.ironflow.canvas_widgets.ports import PortWidget
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.base import Number
     from ironflow.ironflow.gui import GUI
-    from ironflow.NENV import Node
+    from ironflow.main.node import Node
     from ryvencore.Flow import Flow
 
 

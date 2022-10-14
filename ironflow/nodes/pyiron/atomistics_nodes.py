@@ -18,7 +18,7 @@ from pyiron_atomistics import Project
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 
-from ironflow.NENV import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
 from ironflow.main.node import Node, NodeWithRepresentation
 from ironflow.ironflow.canvas_widgets.nodes import ButtonNodeWidget
 from ironflow.nodes.std.special_nodes import DualNodeBase

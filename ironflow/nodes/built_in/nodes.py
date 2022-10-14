@@ -1,4 +1,5 @@
-from ironflow.NENV import import_widgets, NodeInputBP, NodeOutputBP, dtypes, export_nodes
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main.utils import import_widgets, export_nodes
 from ironflow.main.node import Node
 
 widgets = import_widgets(__file__)

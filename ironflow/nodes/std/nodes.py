@@ -1,4 +1,4 @@
-from ironflow.NENV import export_nodes
+from ironflow.main.utils import export_nodes
 
 from ironflow.nodes.std.special_nodes import nodes as special_nodes
 from ironflow.nodes.std.basic_operators import nodes as operator_nodes

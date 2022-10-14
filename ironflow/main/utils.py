@@ -1,6 +1,9 @@
+import inspect
+import os
 from os.path import normpath, join, dirname, abspath, basename, expanduser
 import importlib.util
 
+from ironflow.main.node import Node
 from ironflow.main.nodes_package import NodesPackage
 
 
@@ -35,7 +38,6 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
         package = NodesPackage(directory)
         print ('package: ', package)
 
-    from ironflow.NENV import NodesRegistry
     load_from_file(package.file_path)
 
     nodes = NodesRegistry.exported_nodes[-1]
@@ -74,3 +76,54 @@ def abs_path_from_ryven_dir(path_rel_to_ryven_dir: str):
     """
 
     return abspath(join(ryven_dir_path(), path_rel_to_ryven_dir))
+
+
+def import_widgets(origin_file: str, rel_file_path='widgets.py'):
+    """
+    Import all exported widgets from 'widgets.py' with respect to the origin_file location.
+    Returns an object with all exported widgets as attributes for direct access.
+    """
+
+    caller_location = os.path.dirname(origin_file)
+
+    # alternative solution without __file__ argument; does not work with debugging, so it's not the best idea
+    #   caller_location = os.path.dirname(stack()[1].filename)  # getting caller file path from stack frame
+
+    # in non-gui mode, return an object that just returns None for all accessed attributes
+    # so widgets.MyWidget in the nodes file just returns None then
+    class PlaceholderWidgetsContainer:
+        def __getattr__(self, item):
+            return None
+    widgets_container = PlaceholderWidgetsContainer()
+
+    return widgets_container
+
+
+class NodesRegistry:
+    """
+    Stores the nodes exported via export_nodes on import of a nodes package.
+    After running the imported nodes.py module (which causes export_nodes() to run),
+    Ryven can find the exported nodes in exported_nodes.
+    """
+    exported_nodes: [[Node]] = []
+    exported_node_sources: [[str]] = []
+
+
+def export_nodes(*args):
+    """
+    Exports/exposes the specified nodes to Ryven for use in flows.
+    """
+
+    if not isinstance(args, tuple):
+        if issubclass(args, Node):
+            nodes = tuple(args)
+        else:
+            return
+    else:
+        nodes = list(args)
+
+    NodesRegistry.exported_nodes.append(nodes)
+
+    # get sources
+    node_sources = [inspect.getsource(n) for n in nodes]
+    NodesRegistry.exported_node_sources.append(node_sources)

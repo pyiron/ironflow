@@ -2,7 +2,7 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
-from ironflow.NENV import export_nodes
+from ironflow.main.utils import export_nodes
 
 from ironflow.nodes.pyiron.atomistics_nodes import nodes as atomistics_nodes
 

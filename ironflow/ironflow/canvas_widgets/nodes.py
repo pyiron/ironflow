@@ -22,7 +22,7 @@ from ironflow.ironflow.canvas_widgets.ports import PortWidget
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
     from ironflow.main.node import Node
-    from ironflow.NENV import NodeInputBP, NodeOutputBP
+    from ironflow.main import NodeInputBP, NodeOutputBP
     from ironflow.ironflow.canvas_widgets.base import Number
 
 

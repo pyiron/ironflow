@@ -17,7 +17,7 @@ from ironflow.ironflow.canvas_widgets import FlowCanvas
 from ironflow.ironflow.model import HasSession
 
 if TYPE_CHECKING:
-    from ironflow.NENV import Node
+    from ironflow.main.node import Node
     from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 debug_view = widgets.Output(layout={"border": "1px solid black"})
