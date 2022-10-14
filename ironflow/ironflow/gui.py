@@ -50,7 +50,7 @@ class GUI(HasSession):
         self.node_presenter = NodePresenter()
         self.text_out = TextOut()
         self.input = UserInput()
-        self.flow_box = FlowBox(self._nodes_dict)
+        self.flow_box = FlowBox(self.nodes_dictionary)
 
         try:
             self.load(f"{self.session_title}.json")
@@ -110,7 +110,7 @@ class GUI(HasSession):
     def register_user_node(self, node_class: Type[Node]):
         # Inherited __doc__ still applies just fine, all we do here is update a menu item afterwards.
         super().register_user_node(node_class=node_class)
-        self.flow_box.node_selector.update(self._nodes_dict)
+        self.flow_box.node_selector.update(self.nodes_dictionary)
 
     def update_tabs(self):
         self.flow_box.update_tabs(

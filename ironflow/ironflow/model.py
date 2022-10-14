@@ -28,7 +28,7 @@ class HasSession(ABC):
         self.session_title = session_title
         self._active_script_index = 0
 
-        self._nodes_dict = {}
+        self.nodes_dictionary = {}
         from ironflow.nodes.built_in import nodes as built_in
         from ironflow.nodes.pyiron import atomistics_nodes
         from ironflow.nodes.std import basic_operators, control_structures, special_nodes
@@ -124,7 +124,7 @@ class HasSession(ABC):
 
     def register_node(self, node_class: Type[Node], node_group: Optional[str] = None) -> None:
         """
-        Registers a node class with the ryven session and model, storing it in `_nodes_dict`. Some node attributes
+        Registers a node class with the ryven session and model, storing it in `nodes_dictionary`. Some node attributes
         (`identifier_prefix` and `type_`) are also set on the Node class.
 
         Args:
@@ -133,7 +133,7 @@ class HasSession(ABC):
                 last bit of the module path.)
 
 
-        Note: The sub-collection in the `_nodes_dict` to which the node gets added depends only on the *tail* of its
+        Note: The sub-collection in the `nodes_dictionary` to which the node gets added depends only on the *tail* of its
               module path, so it is possible that nodes from two different sources get grouped together. In case this
               leads to a conflict, `node_module` can be explicitly provided and this will be used instead.
         """
@@ -147,14 +147,14 @@ class HasSession(ABC):
         node_class.type_ = module + node_class.type_ if not node_class.type_ else node_class.type_
 
         node_group = node_group or module_shorthand
-        if node_group not in self._nodes_dict.keys():
-            self._nodes_dict[node_group] = {}
-        self._nodes_dict[node_group][node_class.title] = node_class
+        if node_group not in self.nodes_dictionary.keys():
+            self.nodes_dictionary[node_group] = {}
+        self.nodes_dictionary[node_group][node_class.title] = node_class
 
     def register_nodes_from_module(self, module: ModuleType, node_group: Optional[str] = None) -> None:
         """
         Search through the provided python module for all subclasses `ironflow.main.node.Node` whose name ends with
-        `'_Node'` and register them with the ryven session and the model's `_nodes_dict`.
+        `'_Node'` and register them with the ryven session and the model's `nodes_dictionary`.
 
         Args:
             module (types.ModuleType): The module to register from.
@@ -171,7 +171,7 @@ class HasSession(ABC):
     def register_nodes_from_file(self, file_path: str | Path, node_group: Optional[str] = None) -> None:
         """
         Loads a .py file as a module, then searches through it for all subclasses `ironflow.main.node.Node` whose name
-        ends with `'_Node'` and register them with the ryven session and the model's `_nodes_dict`.
+        ends with `'_Node'` and register them with the ryven session and the model's `nodes_dictionary`.
 
         Args:
             file_path (str | pathlib.Path): The .py file to load.
