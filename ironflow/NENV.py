@@ -5,38 +5,25 @@ without path modifications which caused issues in the past."""
 import inspect
 import os
 
+from ironflow.main.node import NodeBase as Node
 
 # types
-Node = None
 NodeInputBP = None
 NodeOutputBP = None
 dtypes = None
 
 
 def init_node_env():
-    global Node
     global NodeInputBP
     global NodeOutputBP
     global dtypes
 
     # import sources directly from backend if not running in gui mode
     from ryvencore import \
-        Node as _Node, \
         NodeInputBP as NodeInputBP_, \
         NodeOutputBP as NodeOutputBP_, \
         dtypes as dtypes_
 
-    class NodeWrp(_Node):
-        """
-        Wraps the nodes s.t. their usages of ryvencore-qt or Ryven features don't brake them.
-        TODO: move actions to ryvencore
-        """
-
-        def __init__(self, params):
-            self.actions = dict()
-            super().__init__(params)
-
-    Node = NodeWrp
     NodeInputBP = NodeInputBP_
     NodeOutputBP = NodeOutputBP_
     dtypes = dtypes_

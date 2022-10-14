@@ -5,9 +5,9 @@ from __future__ import annotations
 
 from abc import ABC
 
+from ryvencore import Node
 from ryvencore.Base import Event
 
-from ironflow.NENV import Node
 from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
 
 
@@ -26,6 +26,7 @@ class NodeBase(Node):
         super().__init__(params)
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)
+        self.actions = dict()  # Resolves TODO from ryven.NENV, moving it to our node class instead of ryvencore
 
     def update(self, inp=-1):
         self.before_update.emit(self, inp)
