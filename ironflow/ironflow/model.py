@@ -126,7 +126,12 @@ class HasSession(ABC):
             self.session.unregister_node(node_class)
         self.session.register_node(node_class)
 
-        node_module = node_module or node_class.__module__.split('.')[-1]  # n.identifier_prefix
+        module = node_class.__module__
+        identifier_prefix, _, module_shorthand = module.rpartition('.')
+        node_class.identifier_prefix = identifier_prefix
+        node_class.type_ = module + node_class.type_ if not node_class.type_ else node_class.type_
+
+        node_module = node_module or module_shorthand
         if node_module not in self._nodes_dict.keys():
             self._nodes_dict[node_module] = {}
         self._nodes_dict[node_module][node_class.title] = node_class
@@ -145,11 +150,6 @@ class HasSession(ABC):
                 raise TypeError(
                     f'Tried to import {name} from {module}, but it was a {node.__class__} instead of {Node}')
             self.register_node(node_class=node)
-            node.type_ = node.__class__.__name__ if not node.type_ else module.__name__+f'[{node.type_}]'
-            node.identifier_prefix = module.__name__.rpartition('.')[0]
-            # Note: I'm deleting some stuff with compatible names in this commit (Node.identifier_comp)
-            #       I think these should be put on the node classes themselves, but in case you need to see
-            #       how it *used* to be done, look at the diff here.
 
     def register_nodes_from_file(self, file_path: str | Path):
         raise NotImplementedError
