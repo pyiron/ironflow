@@ -22,7 +22,7 @@ Example:
     >>>     def update_event(self, inp=-1):
     >>>         self.set_output_val(0, self.input(0) + 42)
     >>>
-    >>> gui.register_user_node(MyNode)
+    >>> gui.register_node(MyNode)
 """
 
 import ironflow.custom_nodes.input_widgets

@@ -136,6 +136,32 @@ class HasSession(ABC):
         Note: The sub-collection in the `nodes_dictionary` to which the node gets added depends only on the *tail* of its
               module path, so it is possible that nodes from two different sources get grouped together. In case this
               leads to a conflict, `node_module` can be explicitly provided and this will be used instead.
+
+        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
+                update. Already-placed nodes are still instances of the old class and need to be deleted.
+
+        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
+            loading the saved graph is possible.
+
+        Example:
+            >>> from ironflow import GUI
+            >>> from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
+            >>> gui = GUI(script_title='foo')
+            >>>
+            >>> class MyNode(Node):
+            >>>     title = "MyUserNode"
+            >>>     init_inputs = [
+            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
+            >>>     ]
+            >>>     init_outputs = [
+            >>>        NodeOutputBP(label="bar")
+            >>>    ]
+            >>>    color = 'cyan'
+            >>>
+            >>>     def update_event(self, inp=-1):
+            >>>         self.set_output_val(0, self.input(0) + 42)
+            >>>
+            >>> gui.register_node(MyNode)
         """
         if node_class in self.session.nodes:
             self.session.unregister_node(node_class)
@@ -191,41 +217,15 @@ class HasSession(ABC):
         spec.loader.exec_module(module)
         self.register_nodes_from_module(module, node_group=node_group)
 
-    def register_user_node(self, node_class: Type[Node]):
-        """
-        Register a custom node class from the gui's current working scope. These nodes are available under the
-        'user' module. You will need to (re-)draw your GUI to see the change.
-
-        Note: You can re-register a class to update its functionality, but only *newly placed* nodes will see this
-                update. Already-placed nodes are still instances of the old class and need to be deleted.
-
-        Note: You can save the graph as normal, but new gui instances will need to register the same custom nodes before
-            loading the saved graph is possible.
-
-        Args:
-            node_class Type[ironflow.ironflow.Node]: The new node class to register.
-
-        Example:
-            >>> from ironflow import GUI
-            >>> from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
-            >>> gui = GUI(script_title='foo')
-            >>>
-            >>> class MyNode(Node):
-            >>>     title = "MyUserNode"
-            >>>     init_inputs = [
-            >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
-            >>>     ]
-            >>>     init_outputs = [
-            >>>        NodeOutputBP(label="bar")
-            >>>    ]
-            >>>    color = 'cyan'
-            >>>
-            >>>     def update_event(self, inp=-1):
-            >>>         self.set_output_val(0, self.input(0) + 42)
-            >>>
-            >>> gui.register_user_node(MyNode)
-
-        TODO:
-            Expose the more sophisticated pyironic nodes like `NodeWithRepresentation` for import.
-        """
-        self.register_node(node_class, node_group='user')
+    def register_nodes(
+            self,
+            source: str | Path | types.ModuleType | list | tuple,
+            node_group: Optional[str] = None
+    ) -> None:
+        if isinstance(source, (str, Path)):
+            self.register_nodes_from_file(source, node_group=node_group)
+        elif isinstance(source, types.ModuleType):
+            self.register_nodes_from_module(source, node_group=node_group)
+        elif isinstance(source, (list, tuple)) and all([issubclass(item, Node) for item in source]):
+            for node_class in source:
+                self.register_node(node_class, node_group=node_group)
