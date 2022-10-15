@@ -2,8 +2,7 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-Combines ryven, ipywidgets/ipycanvas, and pyiron to facilitate visual scripting of pyiron workflows.
+Widgets with which to populate the `input_widget` field of a new `ironflow.model.node.Node`.
 """
 
-import ironflow.custom_nodes
-from ironflow.gui.gui import GUI
+from ironflow.gui.boxes.node_interface.input_widgets import SliderControl

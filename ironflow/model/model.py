@@ -207,7 +207,7 @@ class HasSession(ABC):
 
         Example:
             >>> from ironflow import GUI
-            >>> from ironflow.model import Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
             >>> gui = GUI(script_title='foo')
             >>>
             >>> class MyNode(Node):
