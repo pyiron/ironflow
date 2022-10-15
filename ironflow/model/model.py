@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import types
 from abc import ABC
 from inspect import isclass
 from pathlib import Path
@@ -23,7 +24,7 @@ from ironflow.model.node import Node
 class HasSession(ABC):
     """Mixin for an object which has a Ryven session as the underlying model"""
 
-    def __init__(self, session_title: str):
+    def __init__(self, session_title: str, extra_nodes_packages: Optional[list] = None):
         self._session = Session()
         self.session_title = session_title
         self._active_script_index = 0
@@ -40,6 +41,11 @@ class HasSession(ABC):
             special_nodes
         ]:
             self.register_nodes_from_module(module)
+
+        if extra_nodes_packages is not None:
+            for package in extra_nodes_packages:
+                # TODO: Figure out how to allow node_group to be passed in in an elegant way here for each package
+                self.register_nodes(package)
 
     @property
     def active_script_index(self) -> int:
