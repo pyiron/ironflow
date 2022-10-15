@@ -12,10 +12,10 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from IPython.display import display
 
-from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
+from ironflow.gui.boxes.node_interface.base import NodeInterfaceBase
 
 if TYPE_CHECKING:
-    from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
+    from ironflow.gui.canvas_widgets import NodeWidget
 
 
 class NodePresenter(NodeInterfaceBase):

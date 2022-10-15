@@ -2,13 +2,8 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-Wrappers and extensions of the underlying ryven model.
+More detailed representations of data from the nodes.
 """
 
-from ryvencore import (
-    NodeInputBP,
-    NodeOutputBP,
-    dtypes
-)
-
-from ironflow.main.node import Node
+from ironflow.gui.boxes.node_interface.control import NodeController
+from ironflow.gui.boxes.node_interface.representation import NodePresenter

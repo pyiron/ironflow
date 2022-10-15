@@ -15,12 +15,12 @@ import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
 
-from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
+from ironflow.gui.boxes.node_interface.base import NodeInterfaceBase
 
 
 if TYPE_CHECKING:
-    from ironflow.ironflow.gui import GUI
-    from ironflow.main.node import Node
+    from ironflow.gui.gui import GUI
+    from ironflow.model.node import Node
 
 
 def deserialize(data):

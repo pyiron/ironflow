@@ -8,23 +8,23 @@ The parent canvas for the whole flow representation.
 from __future__ import annotations
 
 from time import time
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional
 
 import ipywidgets as widgets
 from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 
-from ironflow.ironflow.canvas_widgets.base import CanvasWidget
-from ironflow.ironflow.canvas_widgets.buttons import RepresentButtonWidget
-from ironflow.ironflow.canvas_widgets.layouts import NodeLayout
-from ironflow.ironflow.canvas_widgets.nodes import NodeWidget, ButtonNodeWidget
-from ironflow.ironflow.canvas_widgets.ports import PortWidget
+from ironflow.gui.canvas_widgets.base import CanvasWidget
+from ironflow.gui.canvas_widgets.buttons import RepresentButtonWidget
+from ironflow.gui.canvas_widgets.layouts import NodeLayout
+from ironflow.gui.canvas_widgets.nodes import NodeWidget, ButtonNodeWidget
+from ironflow.gui.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
-    from ironflow.ironflow.canvas_widgets.base import Number
-    from ironflow.ironflow.gui import GUI
-    from ironflow.main.node import Node
-    from ryvencore.Flow import Flow
+    from ironflow.gui.canvas_widgets.base import Number
+    from ironflow.gui.gui import GUI
+    from ironflow.model import Flow
+    from ironflow.model.node import Node
 
 
 class FlowCanvas:

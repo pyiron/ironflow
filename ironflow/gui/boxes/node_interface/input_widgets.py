@@ -7,10 +7,13 @@ Specialty widgets for directly controlling node input.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import ipywidgets as widgets
 
-from ironflow.ironflow.gui import GUI
-from ironflow.main.node import Node
+if TYPE_CHECKING:
+    from ironflow.model.node import Node
+    from ironflow.gui.gui import GUI
 
 
 class SliderControl:

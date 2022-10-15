@@ -8,7 +8,7 @@ from abc import ABC
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 
-from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
+from ironflow.gui.canvas_widgets import NodeWidget
 
 
 class Node(NodeCore):
