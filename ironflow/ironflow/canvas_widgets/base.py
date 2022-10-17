@@ -100,8 +100,12 @@ class CanvasWidget(ABC):
         self._x += dx_in
         self._y += dy_in
 
+    @property
+    def color(self) -> str:
+        return self.layout.selected_color if self.selected else self.layout.background_color
+
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
+        self.canvas.fill_style = self.color
         self.canvas.fill_rect(
             self.x,
             self.y,

@@ -1,5 +1,5 @@
 from ironflow.NENV import *
-
+from ironflow.main.node import NodeBase as Node
 # import math
 
 

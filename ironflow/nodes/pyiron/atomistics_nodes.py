@@ -13,17 +13,18 @@ from typing import TYPE_CHECKING
 
 import matplotlib.pylab as plt
 import numpy as np
+
 from pyiron_atomistics import Project
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 
-from ironflow.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
-from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget, ButtonNodeWidget
+from ironflow.NENV import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main.node import NodeBase, NodeWithRepresentation
+from ironflow.ironflow.canvas_widgets.nodes import ButtonNodeWidget
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
-    from pyiron_atomistics import Atoms
 
 
 class BeautifulHasGroups:
@@ -54,55 +55,6 @@ class BeautifulHasGroups:
         name = self._has_groups.__class__.__name__
         plain = f"{name}({json.dumps(self.to_builtin(), indent=2, default=str)})"
         return "<pre>" + plain + "</pre>"
-
-
-class NodeBase(Node):
-    """
-    A parent class for all pyiron ryven nodes. Apart from a small quality-of-life difference where outputs are 
-    accessible in the same way as inputs (i.e. with a method `output(i)`), the main change here is the list 
-    `_call_after_update` which can be appended to during the `__init__` of child classes. Appended methods get called 
-    after every update, allowing for significant customization to be added to the standard ryven update loop.
-    """
-
-    color = "#ff69b4"  # Add an abrasive default color -- won't crash if you forget to add one, but pops out a bit
-
-    def __init__(self, params):
-        super().__init__(params)
-        self._call_after_update = []
-
-    def update(self, inp=-1):
-        super().update(inp=inp)
-        self._after_update(inp)
-
-    def _after_update(self, inp: int):
-        for fnc in self._call_after_update:
-            fnc(inp)
-
-    def output(self, i):
-        return self.outputs[i].val
-
-
-class NodeWithRepresentation(NodeBase, ABC):
-    """
-    A node with a "representation" that gets used in the GUI to give a more detailed look at node data.
-    """
-
-    main_widget_class = RepresentableNodeWidget
-
-    def __init__(self, params):
-        super().__init__(params)
-        self.representation_updated = False
-        self._call_after_update.append(self._representation_update)
-
-    def _representation_update(self, inp):
-        self.representation_updated = True
-
-    @property
-    def representations(self) -> dict:
-        return {
-            o.label_str if o.label_str != "" else f"output{i}": o.val
-            for i, o in enumerate(self.outputs) if o.type_ == "data"
-        }
 
 
 class Project_Node(NodeWithRepresentation):

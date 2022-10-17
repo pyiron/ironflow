@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
+from ipycanvas import hold_canvas
 
 from ironflow.ironflow.canvas_widgets.base import CanvasWidget
 from ironflow.ironflow.canvas_widgets.buttons import (
@@ -20,7 +21,8 @@ from ironflow.ironflow.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
     from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
-    from ironflow.NENV import Node, NodeInputBP, NodeOutputBP
+    from ironflow.main.node import NodeBase as Node
+    from ironflow.NENV import NodeInputBP, NodeOutputBP
     from ironflow.ironflow.canvas_widgets.base import Number
 
 
@@ -48,6 +50,12 @@ class NodeWidget(CanvasWidget):
         self.node = node
         self.inputs = node.inputs
         self.outputs = node.outputs
+
+        # Register callback to change color on updates
+        self.node.widget = self
+        self._updating = False
+        self.node.before_update.connect(self._draw_before_updating)
+        self.node.after_update.connect(self._draw_after_updating)
 
         self.port_radius = port_radius
         self.port_layouts = {
@@ -111,6 +119,27 @@ class NodeWidget(CanvasWidget):
     def on_double_click(self) -> None:
         self.delete()
         return None
+
+    @staticmethod
+    def _draw_before_updating(node: Node, inp: int) -> None:
+        node.widget._updating = True
+        with hold_canvas(node.widget.canvas):
+            node.widget.draw()
+
+    @staticmethod
+    def _draw_after_updating(node: Node, inp: int) -> None:
+        node.widget._updating = False
+        with hold_canvas(node.widget.canvas):
+            node.widget.draw()
+
+    @property
+    def color(self) -> str:
+        if self._updating:
+            return self.layout.updating_color
+        elif self.selected:
+            return self.layout.selected_color
+        else:
+            return self.layout.background_color
 
     def draw_title(self) -> None:
         self.canvas.fill_style = self.node.color
