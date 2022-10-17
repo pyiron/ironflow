@@ -1,0 +1,89 @@
+{
+    "scripts": [
+        {
+            "title": "loaded_custom",
+            "variables": {},
+            "flow": {
+                "algorithm mode": "data",
+                "nodes": [
+                    {
+                        "identifier": ".My_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "foo",
+                                "GID": 66,
+                                "val": "gARLAi4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVLAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE51Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "bar",
+                                "GID": 67
+                            }
+                        ],
+                        "GID": 65,
+                        "pos x": 335.3346282888928,
+                        "pos y": 298.3050847457627
+                    },
+                    {
+                        "identifier": "ironflow.nodes.pyiron.IntRand_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "high",
+                                "GID": 69,
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsKS2SGlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "length",
+                                "GID": 70,
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsBS2SGlHUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "randint",
+                                "GID": 71
+                            }
+                        ],
+                        "GID": 68,
+                        "pos x": 740.6414312703434,
+                        "pos y": 306.88524590163934
+                    }
+                ],
+                "connections": [
+                    {
+                        "GID": 72,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 73,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 1
+                    }
+                ],
+                "GID": 64
+            },
+            "GID": 59
+        }
+    ]
+}

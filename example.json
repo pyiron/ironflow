@@ -1,0 +1,380 @@
+{
+    "scripts": [
+        {
+            "title": "lammps",
+            "variables": {},
+            "flow": {
+                "algorithm mode": "data",
+                "nodes": [
+                    {
+                        "identifier": "Project_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 42,
+                                "val": "gASVCwAAAAAAAACMB2V4YW1wbGWULg==",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVLgAAAAAAAAB9lCiMB2RlZmF1bHSUjAEulIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTnUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 43
+                            }
+                        ],
+                        "GID": 41,
+                        "pos x": 192.5482760525008,
+                        "pos y": 303.44827586206895
+                    },
+                    {
+                        "identifier": "BulkStructure_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 45,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "element",
+                                "GID": 46,
+                                "val": "gASVBgAAAAAAAACMAkFslC4=",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVLwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJGZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE51Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "cubic",
+                                "GID": 47,
+                                "val": "gASILg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASVKgAAAAAAAAB9lCiMB2RlZmF1bHSUiIwDdmFslIiMA2RvY5SMAJSMBmJvdW5kc5ROdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 48
+                            }
+                        ],
+                        "GID": 44,
+                        "pos x": 497.921690628279,
+                        "pos y": 133.68700265251988
+                    },
+                    {
+                        "identifier": "Plot3d_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 50,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "plot3d",
+                                "GID": 51
+                            },
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 52
+                            }
+                        ],
+                        "GID": 49,
+                        "pos x": 775.7266719437439,
+                        "pos y": 505.0397877984085
+                    },
+                    {
+                        "identifier": "Lammps_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "run",
+                                "GID": 54,
+                                "val": "gAROLg=="
+                            },
+                            {
+                                "type": "exec",
+                                "label": "remove",
+                                "GID": 55,
+                                "val": "gAROLg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 56,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 57,
+                                "val": "gASVBwAAAAAAAACMA2pvYpQu",
+                                "dtype": "DType.Char",
+                                "dtype state": "gASVMAAAAAAAAAB9lCiMB2RlZmF1bHSUjANqb2KUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 58,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "potential",
+                                "GID": 59,
+                                "val": "gASVKwAAAAAAAACMJzE5OTUtLUFuZ2Vsby1KLUUtLU5pLUFsLUgtLUxBTU1QUy0taXByMZQu",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVWxkAAAAAAAB9lCiMB2RlZmF1bHSUjBNTZXQgc3RydWN0dXJlIGZpcnN0lIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowFaXRlbXOUXZQojCcxOTk1LS1BbmdlbG8tSi1FLS1OaS1BbC1ILS1MQU1NUFMtLWlwcjGUjCYxOTk2LS1GYXJrYXMtRC0tTmItVGktQWwtLUxBTU1QUy0taXByMZSMIjE5OTctLUxpdS1YLVktLUFsLU1nLS1MQU1NUFMtLWlwcjGUjCIxOTk4LS1MaXUtWC1ZLS1BbC1NZy0tTEFNTVBTLS1pcHIxlIwiMTk5OS0tTGl1LVgtWS0tQWwtQ3UtLUxBTU1QUy0taXByMZSMIDE5OTktLU1pc2hpbi1ZLS1BbC0tTEFNTVBTLS1pcHIxlIwiMjAwMC0tTGFuZGEtQS0tQWwtUGItLUxBTU1QUy0taXByMZSMJDIwMDAtLVN0dXJnZW9uLUotQi0tQWwtLUxBTU1QUy0taXByMZSMIzIwMDItLU1pc2hpbi1ZLS1OaS1BbC0tTEFNTVBTLS1pcHIxlIwfMjAwMy0tTGVlLUItSi0tQWwtLUxBTU1QUy0taXByMZSMIDIwMDMtLVpvcGUtUi1SLS1BbC0tTEFNTVBTLS1pcHIxlIwjMjAwMy0tWm9wZS1SLVItLVRpLUFsLS1MQU1NUFMtLWlwcjGUjB8yMDA0LS1MaXUtWC1ZLS1BbC0tTEFNTVBTLS1pcHIxlIwjMjAwNC0tTWlzaGluLVktLU5pLUFsLS1MQU1NUFMtLWlwcjGUjCMyMDA0LS1NaXNoaW4tWS0tTmktQWwtLUxBTU1QUy0taXByMpSMIDIwMDQtLVpob3UtWC1XLS1BbC0tTEFNTVBTLS1pcHIylIwnMjAwNS0tTWVuZGVsZXYtTS1JLS1BbC1GZS0tTEFNTVBTLS1pcHIxlIwkMjAwNy0tU2lsdmEtQS1DLS1BbC1OaS0tTEFNTVBTLS1pcHIxlIwkMjAwOC0tTWVuZGVsZXYtTS1JLS1BbC0tTEFNTVBTLS1pcHIxlIwiMjAwOS0tS2ltLVktTS0tTWctQWwtLUxBTU1QUy0taXByMZSMJzIwMDktLU1lbmRlbGV2LU0tSS0tQWwtTWctLUxBTU1QUy0taXByMZSMKDIwMDktLVB1cmphLVB1bi1HLVAtLU5pLUFsLS1MQU1NUFMtLWlwcjGUjCcyMDA5LS1aaGFraG92c2tpaS1WLVYtLUFsLS1MQU1NUFMtLWlwcjKUjCAyMDEwLS1MZWUtRS0tRmUtQWwtLUxBTU1QUy0taXByMZSMMDIwMTAtLU1lbmRlbGV2LU0tSS0tZmljdGlvbmFsLUFsLTEtLUxBTU1QUy0taXByMZSMMDIwMTAtLU1lbmRlbGV2LU0tSS0tZmljdGlvbmFsLUFsLTItLUxBTU1QUy0taXByMZSMMDIwMTAtLU1lbmRlbGV2LU0tSS0tZmljdGlvbmFsLUFsLTMtLUxBTU1QUy0taXByMZSMITIwMTAtLVdpbmV5LUotTS0tQWwtLUxBTU1QUy0taXByMZSMJDIwMTEtLUFwb3N0b2wtRi0tQWwtQ3UtLUxBTU1QUy0taXByMZSMIDIwMTEtLUtvLVctUy0tQWwtSC0tTEFNTVBTLS1pcHIxlIwjMjAxMi0tRG9uZy1XLVAtLUNvLUFsLS1MQU1NUFMtLWlwcjGUjC0yMDEyLS1KZWxpbmVrLUItLUFsLVNpLU1nLUN1LUZlLS1MQU1NUFMtLWlwcjKUjCYyMDEyLS1TY2hvcGYtRC0tQWwtTW4tUGQtLUxBTU1QUy0taXByMZSMIjIwMTMtLVNoaW0tSi1ILS1WLUFsLS1MQU1NUFMtLWlwcjGUjCQyMDEzLS1TaGltLUotSC0tVi1BbC1ILS1MQU1NUFMtLWlwcjGUjCMyMDE1LS1DaG91ZGhhcnktSy0tQWwtLUxBTU1QUy0taXByMZSMJTIwMTUtLUNob3VkaGFyeS1LLS1BbC1PLS1MQU1NUFMtLWlwcjGUjCUyMDE1LS1LaW0tWS1LLS1OaS1BbC1Dby0tTEFNTVBTLS1pcHIxlIwiMjAxNS0tS3VtYXItQS0tQWwtTmktLUxBTU1QUy0taXByMZSMJDIwMTUtLUt1bWFyLUEtLUFsLU5pLU8tLUxBTU1QUy0taXByMZSMJzIwMTUtLU1lbmRlbGV2LU0tSS0tQWwtU20tLUxBTU1QUy0taXByMZSMIzIwMTUtLVBhc2N1ZXQtTS1JLS1BbC0tTEFNTVBTLS1pcHIxlIwlMjAxNS0tUGFzY3VldC1NLUktLUFsLVUtLUxBTU1QUy0taXByMpSMKDIwMTUtLVB1cmphLVB1bi1HLVAtLUFsLUNvLS1MQU1NUFMtLWlwcjKUjCsyMDE1LS1QdXJqYS1QdW4tRy1QLS1OaS1BbC1Dby0tTEFNTVBTLS1pcHIylIwiMjAxNi0tS2ltLVktSy0tQWwtVGktLUxBTU1QUy0taXByMZSMIzIwMTYtLVpob3UtWC1XLS1BbC1DdS0tTEFNTVBTLS1pcHIylIweMjAxNy0tQm90dS1WLS1BbC0tTEFNTVBTLS1pcHIxlIwiMjAxNy0tS2ltLUotUy0tUHQtQWwtLUxBTU1QUy0taXByMZSMJTIwMTctLUtpbS1ZLUstLU5pLUFsLVRpLS1MQU1NUFMtLWlwcjGUjCgyMDE4LS1EaWNrZWwtRC1FLS1NZy1BbC1abi0tTEFNTVBTLS1pcHIxlIwkMjAxOC0tSmVvbmctRy1VLS1QZC1BbC0tTEFNTVBTLS1pcHIxlIwlMjAxOC0tWmhvdS1YLVctLUFsLUN1LUgtLUxBTU1QUy0taXByMZSMLDIwMjAtLUZhcmthcy1ELS1GZS1OaS1Dci1Dby1BbC0tTEFNTVBTLS1pcHIxlIwoMjAyMC0tU3Rhcmlrb3YtUy0tU2ktQXUtQWwtLUxBTU1QUy0taXByMZSMKDIwMjAtLVN0YXJpa292LVMtLVNpLUF1LUFsLS1MQU1NUFMtLWlwcjKUjEJFQU1fQ3ViaWNOYXR1cmFsU3BsaW5lX0VyY29sZXNzaUFkYW1zXzE5OTRfQWxfX01PXzgwMDUwOTQ1ODcxMl8wMDKUjDxFQU1fRHluYW1vX0FuZ2Vsb01vb2R5QmFza2VzXzE5OTVfTmlBbEhfX01PXzQxODk3ODIzNzA1OF8wMDWUjC9FQU1fRHluYW1vX0NhaVllXzE5OTZfQWxDdV9fTU9fOTQyNTUxMDQwMDQ3XzAwNZSMNkVBTV9EeW5hbW9fRXJjb2xlc3NpQWRhbXNfMTk5NF9BbF9fTU9fMTIzNjI5NDIyMDQ1XzAwNZSMN0VBTV9EeW5hbW9fRmFya2FzSm9uZXNfMTk5Nl9OYlRpQWxfX01PXzA0MjY5MTM2Nzc4MF8wMDCUjDxFQU1fRHluYW1vX0phY29ic2VuTm9yc2tvdlB1c2thXzE5ODdfQWxfX01PXzQxMTY5MjEzMzM2Nl8wMDCUjD1FQU1fRHluYW1vX0xhbmRhV3luYmxhdHRTaWVnZWxfMjAwMF9BbFBiX19NT182OTkxMzczOTYzODFfMDA1lIwyRUFNX0R5bmFtb19MaXVBZGFtc18xOTk4X0FsTWdfX01PXzAxOTg3MzcxNTc4Nl8wMDCUjDlFQU1fRHluYW1vX0xpdUVyY29sZXNzaUFkYW1zXzIwMDRfQWxfX01PXzA1MTE1NzY3MTUwNV8wMDCUjDdFQU1fRHluYW1vX0xpdUxpdUJvcnVja2lfMTk5OV9BbEN1X19NT18wMjA4NTEwNjk1NzJfMDAwlIw7RUFNX0R5bmFtb19MaXVPaG90bmlja3lBZGFtc18xOTk3X0FsTWdfX01PXzU1OTg3MDYxMzU0OV8wMDCUjDxFQU1fRHluYW1vX01lbmRlbGV2QXN0YVJhaG1hbl8yMDA5X0FsTWdfX01PXzY1ODI3ODU0OTc4NF8wMDWUjDhFQU1fRHluYW1vX01lbmRlbGV2RmFuZ1llXzIwMTVfQWxTbV9fTU9fMzM4NjAwMjAwNzM5XzAwMJSMPEVBTV9EeW5hbW9fTWVuZGVsZXZLcmFtZXJCZWNrZXJfMjAwOF9BbF9fTU9fMTA2OTY5NzAxMDIzXzAwNZSMQkVBTV9EeW5hbW9fTWVuZGVsZXZTcm9sb3ZpdHpBY2tsYW5kXzIwMDVfQWxGZV9fTU9fNTc3NDUzODkxOTQxXzAwNZSMOEVBTV9EeW5hbW9fTWlzaGluRmFya2FzTWVobF8xOTk5X0FsX19NT182NTE4MDE0ODY2NzlfMDA1lIxHRUFNX0R5bmFtb19NaXNoaW5NZWhsUGFwYWNvbnN0YW50b3BvdWxvc18yMDAyX05pQWxfX01PXzEwOTkzMzU2MTUwN18wMDWUjDBFQU1fRHluYW1vX01pc2hpbl8yMDA0X05pQWxfX01PXzEwMTIxNDMxMDY4OV8wMDWUjDNFQU1fRHluYW1vX1B1bk1pc2hpbl8yMDA5X05pQWxfX01PXzc1MTM1NDQwMzc5MV8wMDWUjDpFQU1fRHluYW1vX1B1bllhbWFrb3ZNaXNoaW5fMjAxM19BbENvX19NT182Nzg5NTI2MTI0MTNfMDAwlIw8RUFNX0R5bmFtb19QdW5ZYW1ha292TWlzaGluXzIwMTNfTmlBbENvX19NT184MjY1OTEzNTk1MDhfMDAwlIw/RUFNX0R5bmFtb19TY2hvcGZCcm9tbWVyRnJpZ2FuXzIwMTJfQWxNblBkX19NT18xMzc1NzI4MTc4NDJfMDAwlIw1RUFNX0R5bmFtb19TdHVyZ2VvbkxhaXJkXzIwMDBfQWxfX01PXzEyMDgwODgwNTU0MV8wMDWUjDZFQU1fRHluYW1vX1ZhaWxoZUZhcmthc18xOTk3X0NvQWxfX01PXzI4NDk2MzE3OTQ5OF8wMDWUjDhFQU1fRHluYW1vX1dpbmV5S3Vib3RhR3VwdGFfMjAxMF9BbF9fTU9fMTQ5MzE2ODY1NjA4XzAwNZSMMkVBTV9EeW5hbW9fWmhha2hvdnNreV8yMDA5X0FsX19NT181MTk2MTM4OTMxOTZfMDAwlIxJRUFNX0R5bmFtb19aaG91Sm9obnNvbldhZGxleV8yMDA0TklTVHJldGFidWxhdGlvbl9BbF9fTU9fMDYwNTY3ODY4NTU4XzAwMJSMOUVBTV9EeW5hbW9fWmhvdUpvaG5zb25XYWRsZXlfMjAwNF9BbF9fTU9fMTMxNjUwMjYxNTEwXzAwNZSMOUVBTV9EeW5hbW9fWmhvdVdhZGxleUpvaG5zb25fMjAwMV9BbF9fTU9fMDQ5MjQzNDk4NTU1XzAwMJSMMkVBTV9EeW5hbW9fWm9wZU1pc2hpbl8yMDAzX0FsX19NT182NjQ0NzAxMTQzMTFfMDA1lIw0RUFNX0R5bmFtb19ab3BlTWlzaGluXzIwMDNfVGlBbF9fTU9fMTE3NjU2Nzg2NzYwXzAwNZSML0VBTV9FcmNvbGVzc2lBZGFtc18xOTk0X0FsX19NT18zMjQ1MDc1MzYzNDVfMDAzlIw4RUFNX0lNRF9Ccm9tbWVyR2FlaGxlcl8yMDA2QV9BbE5pQ29fX01PXzEyMjcwMzcwMDIyM18wMDOUjDhFQU1fSU1EX0Jyb21tZXJHYWVobGVyXzIwMDZCX0FsTmlDb19fTU9fMTI4MDM3NDg1Mjc2XzAwM5SMPEVBTV9JTURfU2Nob3BmQnJvbW1lckZyaWdhbl8yMDEyX0FsTW5QZF9fTU9fODc4NzEyOTc4MDYyXzAwM5SMREVBTV9RdWludGljQ2xhbXBlZFNwbGluZV9FcmNvbGVzc2lBZGFtc18xOTk0X0FsX19NT180NTAwOTM3MjczOTZfMDAylIxERUFNX1F1aW50aWNIZXJtaXRlU3BsaW5lX0VyY29sZXNzaUFkYW1zXzE5OTRfQWxfX01PXzc4MTEzODY3MTg2M18wMDKUjFFFTVRfQXNhcF9TdGFuZGFyZF9KYWNvYnNlblN0b2x0emVOb3Jza292XzE5OTZfQWxBZ0F1Q3VOaVBkUHRfX01PXzExNTMxNjc1MDk4Nl8wMDGUjEVFTVRfQXNhcF9TdGFuZGFyZF9KYWNvYnNlblN0b2x0emVOb3Jza292XzE5OTZfQWxfX01PXzYyMzM3NjEyNDg2Ml8wMDGUjEdNRUFNX0xBTU1QU19BbG15cmFzU2FuZ2lvdmFubmlTYXJha2lub3NfMjAxOV9OQWxUaV9fTU9fOTU4Mzk1MTkwNjI3XzAwMJSMP01FQU1fTEFNTVBTX0Nvc3RhQWdyZW5DbGF2YWd1ZXJhXzIwMDdfQWxOaV9fTU9fMTMxNjQyNzY4Mjg4XzAwMJSMNE1FQU1fTEFNTVBTX0RvbmdLaW1Lb18yMDEyX0NvQWxfX01PXzA5OTcxNjQxNjIxNl8wMDCUjEdNRUFNX0xBTU1QU19KZWxpbmVrR3JvaEhvcnN0ZW1leWVyXzIwMTJfQWxTaU1nQ3VGZV9fTU9fMjYyNTE5NTIwNjc4XzAwMJSMNk1FQU1fTEFNTVBTX0plb25nUGFya0RvXzIwMThfUGRBbF9fTU9fNjE2NDgyMzU4ODA3XzAwMJSMN01FQU1fTEFNTVBTX0tpbUp1bmdMZWVfMjAxNV9OaUFsQ29fX01PXzg3NjY4NzE2NjUxOV8wMDCUjDVNRUFNX0xBTU1QU19LaW1LaW1KdW5nXzIwMTZfQWxUaV9fTU9fNjE4MTMzNzYzMzc1XzAwMJSMN01FQU1fTEFNTVBTX0tpbUtpbUp1bmdfMjAxN19OaUFsVGlfX01PXzQ3ODk2NzI1NTQzNV8wMDCUjDRNRUFNX0xBTU1QU19LaW1LaW1MZWVfMjAwOV9BbE1nX19NT18wNTg1MzcwODczODRfMDAwlIw0TUVBTV9MQU1NUFNfS2ltU2VvbEppXzIwMTdfUHRBbF9fTU9fNzkzMTQxMDM3NzA2XzAwMJSMM01FQU1fTEFNTVBTX0tvU2hpbUxlZV8yMDExX0FsSF9fTU9fMTI3ODQ3MDgwNzUxXzAwMJSMMU1FQU1fTEFNTVBTX0xlZUxlZV8yMDEwX0ZlQWxfX01PXzMzMjIxMTUyMjA1MF8wMDCUjDpNRUFNX0xBTU1QU19QYXNjdWV0RmVybmFuZGV6XzIwMTVfQWxVX19NT181OTYzMDA2NzM5MTdfMDAwlIw5TUVBTV9MQU1NUFNfUGFzY3VldEZlcm5hbmRlel8yMDE1X0FsX19NT18zMTU4MjA5NzQxNDlfMDAwlIw0TUVBTV9MQU1NUFNfU2hpbUtvS2ltXzIwMTNfQWxWSF9fTU9fMzQ0NzI0MTQ1MzM5XzAwMJSMRE1vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlIaWdoQ3V0b2ZmX0FsX19NT18xNDAxNzU3NDg2MjZfMDA0lIxDTW9yc2VfU2hpZnRlZF9HaXJpZmFsY29XZWl6ZXJfMTk1OUxvd0N1dG9mZl9BbF9fTU9fNDExODk4OTUzNjYxXzAwNJSMQ01vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlNZWRDdXRvZmZfQWxfX01PXzI3OTU0NDc0NjA5N18wMDSUjDtTaW1fTEFNTVBTX0FEUF9BcG9zdG9sTWlzaGluXzIwMTFfQWxDdV9fU01fNjY3Njk2NzYzNTYxXzAwMJSMSlNpbV9MQU1NUFNfQURQX1N0YXJpa292R29yZGVldkx5c29nb3Jza2l5XzIwMjBfU2lBdUFsX19TTV8xMTM4NDM4MzA2MDJfMDAwlIw9U2ltX0xBTU1QU19BR05JX0JvdHVCYXRyYUNoYXBtYW5fMjAxN19BbF9fU01fNjY2MTgzNjM2ODk2XzAwMJSMPFNpbV9MQU1NUFNfQk9QX1pob3VXYXJkRm9zdGVyXzIwMTZfQWxDdV9fU01fNTY2Mzk5MjU4Mjc5XzAwMJSMS1NpbV9MQU1NUFNfTUVBTV9BbG15cmFzU2FuZ2lvdmFubmlTYXJha2lub3NfMjAxOV9OQWxUaV9fU01fODcxNzk1MjQ5MDUyXzAwMJSMS1NpbV9MQU1NUFNfTUVBTV9KZWxpbmVrR3JvaEhvcnN0ZW1leWVyXzIwMTJfQWxTaU1nQ3VGZV9fU01fNjU2NTE3MzUyNDg1XzAwMJSMPlNpbV9MQU1NUFNfTUVBTV9QYXNjdWV0RmVybmFuZGV6XzIwMTVfQWxVX19TTV83MjE5MzAzOTEwMDNfMDAwlIw9U2ltX0xBTU1QU19NRUFNX1Bhc2N1ZXRGZXJuYW5kZXpfMjAxNV9BbF9fU01fODExNTg4OTU3MTg3XzAwMJSMRVNpbV9MQU1NUFNfU01UQlFfU2FsbGVzUG9saXRhbm9BbXphbGxhZ18yMDE2X0FsT19fU01fODUzOTY3MzU1OTc2XzAwMJSMRFNpbV9MQU1NUFNfU01UQlFfU2FsbGVzUG9saXRhbm9BbXphbGxhZ18yMDE2X0FsX19TTV80MDQwOTc2MzM5MjRfMDAwlGV1Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "",
+                                "GID": 60
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 61
+                            }
+                        ],
+                        "GID": 53,
+                        "pos x": 894.4829998343243,
+                        "pos y": 182.49336870026525
+                    },
+                    {
+                        "identifier": "GenericOutput_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 67,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "field",
+                                "GID": 68,
+                                "val": "gASVGgAAAAAAAACMFklucHV0IGFuIGF0b21pc3RpYyBqb2KULg==",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVUAAAAAAAAAB9lCiMB2RlZmF1bHSUjBZJbnB1dCBhbiBhdG9taXN0aWMgam9ilIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowFaXRlbXOUXZRoAmF1Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "output",
+                                "GID": 69
+                            }
+                        ],
+                        "GID": 66,
+                        "pos x": 1227.4248476704158,
+                        "pos y": 280.106100795756
+                    }
+                ],
+                "connections": [
+                    {
+                        "GID": 62,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 64,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 3,
+                        "connected input port index": 2
+                    },
+                    {
+                        "GID": 63,
+                        "parent node index": 1,
+                        "output port index": 0,
+                        "connected node": 3,
+                        "connected input port index": 4
+                    },
+                    {
+                        "GID": 65,
+                        "parent node index": 1,
+                        "output port index": 0,
+                        "connected node": 2,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 70,
+                        "parent node index": 3,
+                        "output port index": 1,
+                        "connected node": 4,
+                        "connected input port index": 0
+                    }
+                ],
+                "GID": 40
+            },
+            "GID": 35
+        },
+        {
+            "title": "plotting",
+            "variables": {},
+            "flow": {
+                "algorithm mode": "data",
+                "nodes": [
+                    {
+                        "identifier": "Linspace_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "min",
+                                "GID": 78,
+                                "val": "gARLAS4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsAS2SGlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "max",
+                                "GID": 79,
+                                "val": "gARLAy4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwKMA3ZhbJRLAowDZG9jlIwAlIwGYm91bmRzlEsAS2SGlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "steps",
+                                "GID": 80,
+                                "val": "gARLCi4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwqMA3ZhbJRLCowDZG9jlIwAlIwGYm91bmRzlEsBS2SGlHUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "linspace",
+                                "GID": 81
+                            }
+                        ],
+                        "GID": 77,
+                        "pos x": 154.3765992305285,
+                        "pos y": 322.54641909814325
+                    },
+                    {
+                        "identifier": "Sin_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "x",
+                                "GID": 83,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "sin",
+                                "GID": 84
+                            }
+                        ],
+                        "GID": 82,
+                        "pos x": 491.5597444912836,
+                        "pos y": 496.55172413793105
+                    },
+                    {
+                        "identifier": "Matplot_Node",
+                        "version": "v0.1",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "x",
+                                "GID": 86,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "y",
+                                "GID": 87,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "fig",
+                                "GID": 88
+                            }
+                        ],
+                        "GID": 85,
+                        "pos x": 809.6570513410526,
+                        "pos y": 345.8885941644562
+                    }
+                ],
+                "connections": [
+                    {
+                        "GID": 89,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 91,
+                        "parent node index": 0,
+                        "output port index": 0,
+                        "connected node": 2,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 90,
+                        "parent node index": 1,
+                        "output port index": 0,
+                        "connected node": 2,
+                        "connected input port index": 1
+                    }
+                ],
+                "GID": 76
+            },
+            "GID": 71
+        }
+    ]
+}
