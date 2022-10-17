@@ -1,13 +1,13 @@
 {
     "scripts": [
         {
-            "title": "loaded_custom",
+            "title": "script_0",
             "variables": {},
             "flow": {
                 "algorithm mode": "data",
                 "nodes": [
                     {
-                        "identifier": ".My_Node",
+                        "identifier": "My_Node",
                         "version": null,
                         "state data": "gAR9lC4=",
                         "additional data": {},
@@ -29,11 +29,11 @@
                             }
                         ],
                         "GID": 65,
-                        "pos x": 335.3346282888928,
-                        "pos y": 298.3050847457627
+                        "pos x": 285.33018171074013,
+                        "pos y": 266.6666666666667
                     },
                     {
-                        "identifier": "ironflow.nodes.pyiron.IntRand_Node",
+                        "identifier": "IntRand_Node",
                         "version": null,
                         "state data": "gAR9lC4=",
                         "additional data": {},
@@ -61,8 +61,8 @@
                             }
                         ],
                         "GID": 68,
-                        "pos x": 740.6414312703434,
-                        "pos y": 306.88524590163934
+                        "pos x": 648.3971044467424,
+                        "pos y": 292.1985815602837
                     }
                 ],
                 "connections": [
