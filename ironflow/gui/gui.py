@@ -32,17 +32,26 @@ class GUI(HasSession):
         register_user_node: Register with ironflow a new node from the current python process.
     """
 
-    def __init__(self, session_title: str, script_title: Optional[str] = None):
+    def __init__(
+            self,
+            session_title: str,
+            extra_nodes_packages: Optional[list] = None,
+            script_title: Optional[str] = None
+    ):
         """
         Create a new gui instance.
 
         Args:
             session_title (str): Title of the session to use. Will look for a json file of the same name and try to
                 read it. If no such file exists, simply makes a new script instead.
+            extra_nodes_packages (list | None): an optional list of nodes to register at instantiation. List items can
+                be either a list of `ironflow.model.node.Node` subclasses, a module containing such subclasses, or a .py
+                file of a module containing such subclasses. In all cases only those subclasses with the name pattern
+                `*_Node` will be registered. (Default is None, don't register any extra nodes.)
             script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a 
                 new script is needed on initialization, i.e. when existing session data cannot be read.)
         """
-        super().__init__(session_title=session_title)
+        super().__init__(session_title=session_title, extra_nodes_packages=extra_nodes_packages)
 
         self.flow_canvases = []
         self.toolbar = Toolbar()
@@ -107,10 +116,13 @@ class GUI(HasSession):
             flow_canvas.redraw()
             self.flow_canvases.append(flow_canvas)
 
-    def register_user_node(self, node_class: Type[Node]):
+    def register_node(self, node_class: Type[Node], node_group: Optional[str] = None):
         # Inherited __doc__ still applies just fine, all we do here is update a menu item afterwards.
-        super().register_user_node(node_class=node_class)
-        self.flow_box.node_selector.update(self.nodes_dictionary)
+        super().register_node(node_class=node_class, node_group=node_group)
+        try:
+            self.flow_box.node_selector.update(self.nodes_dictionary)
+        except AttributeError:
+            pass  # It's not defined yet in the super().__init__ call, which is fine
 
     def update_tabs(self):
         self.flow_box.update_tabs(
