@@ -5,4 +5,5 @@
 Everything that lives inside the ipycanvas visual representation of the computational graph.
 """
 
-from ironflow.ironflow.canvas_widgets.flow import FlowCanvas
+from ironflow.gui.canvas_widgets.nodes import ButtonNodeWidget, NodeWidget
+from ironflow.gui.canvas_widgets.flow import FlowCanvas

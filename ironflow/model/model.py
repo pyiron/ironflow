@@ -17,7 +17,7 @@ from typing import Optional, Type
 
 from ryvencore import Session, Script, Flow
 
-from ironflow.main.node import Node
+from ironflow.model.node import Node
 
 
 class HasSession(ABC):
@@ -29,7 +29,7 @@ class HasSession(ABC):
         self._active_script_index = 0
 
         self.nodes_dictionary = {}
-        from ironflow.nodes.built_in import nodes as built_in
+        from ironflow.nodes import built_in
         from ironflow.nodes.pyiron import atomistics_nodes
         from ironflow.nodes.std import basic_operators, control_structures, special_nodes
         for module in [
@@ -207,7 +207,7 @@ class HasSession(ABC):
 
         Example:
             >>> from ironflow import GUI
-            >>> from ironflow.ironflow import Node, NodeInputBP, NodeOutputBP, dtypes
+            >>> from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
             >>> gui = GUI(script_title='foo')
             >>>
             >>> class MyNode(Node):

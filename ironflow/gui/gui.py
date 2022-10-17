@@ -12,13 +12,13 @@ from typing import TYPE_CHECKING, Optional, Type
 import ipywidgets as widgets
 from IPython.display import HTML
 
-from ironflow.ironflow.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput, FlowBox
-from ironflow.ironflow.canvas_widgets import FlowCanvas
-from ironflow.ironflow.model import HasSession
+from ironflow.gui.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput, FlowBox
+from ironflow.gui.canvas_widgets import FlowCanvas
+from ironflow.model.model import HasSession
 
 if TYPE_CHECKING:
-    from ironflow.main.node import Node
-    from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
+    from ironflow.model.node import Node
+    from ironflow.gui.canvas_widgets.nodes import NodeWidget
 
 debug_view = widgets.Output(layout={"border": "1px solid black"})
 
