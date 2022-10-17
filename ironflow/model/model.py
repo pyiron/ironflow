@@ -175,7 +175,7 @@ class HasSession(ABC):
 
         module = node_class.__module__
         identifier_prefix, _, module_shorthand = module.rpartition('.')
-        node_class.identifier_prefix = identifier_prefix
+        node_class.identifier_prefix = identifier_prefix if node_class.identifier is None else None
         node_class.type_ = module + node_class.type_ if not node_class.type_ else node_class.type_
 
         node_group = node_group or module_shorthand
