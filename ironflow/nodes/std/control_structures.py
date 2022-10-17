@@ -1,5 +1,5 @@
-from ironflow.NENV import *
-from ironflow.main.node import NodeBase as Node
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main.node import Node
 
 
 class CSNodeBase(Node):

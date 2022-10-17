@@ -18,8 +18,8 @@ from pyiron_atomistics import Project
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 
-from ironflow.NENV import NodeInputBP, NodeOutputBP, dtypes
-from ironflow.main.node import NodeBase, NodeWithRepresentation
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main.node import Node
 from ironflow.ironflow.canvas_widgets.nodes import ButtonNodeWidget
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
@@ -57,7 +57,7 @@ class BeautifulHasGroups:
         return "<pre>" + plain + "</pre>"
 
 
-class Project_Node(NodeWithRepresentation):
+class Project_Node(Node):
     """
     Create a pyiron project.
 
@@ -100,7 +100,7 @@ class Project_Node(NodeWithRepresentation):
         }
 
 
-class OutputsOnlyAtoms(NodeWithRepresentation, ABC):
+class OutputsOnlyAtoms(Node, ABC):
     """
     A helper class that manages representations for nodes whose only output is a `pyiron_atomistics.Atoms` object.
 
@@ -201,7 +201,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
 
 
-class Lammps_Node(NodeWithRepresentation):
+class Lammps_Node(Node):
     """
     WIP.
     """
@@ -284,7 +284,7 @@ class Lammps_Node(NodeWithRepresentation):
         return {'job': BeautifulHasGroups(self.output(1))}
 
 
-class GenericOutput_Node(NodeWithRepresentation):
+class GenericOutput_Node(Node):
     """
     Select Generic Output item.
 
@@ -345,7 +345,7 @@ class GenericOutput_Node(NodeWithRepresentation):
             self._update_value()
 
 
-class IntRand_Node(NodeWithRepresentation):
+class IntRand_Node(Node):
     """
     Generate a random non-negative integer.
 
@@ -374,7 +374,7 @@ class IntRand_Node(NodeWithRepresentation):
         self.set_output_val(0, val)
 
 
-class JobName_Node(NodeWithRepresentation):
+class JobName_Node(Node):
     """
     Create job name for parameters.
 
@@ -406,7 +406,7 @@ class JobName_Node(NodeWithRepresentation):
         self.set_output_val(0, val)
 
 
-class Linspace_Node(NodeWithRepresentation):
+class Linspace_Node(Node):
     """
     Generate a linear mesh in a given range using `np.linspace`.
 
@@ -440,7 +440,7 @@ class Linspace_Node(NodeWithRepresentation):
         self.set_output_val(0, val)
 
 
-class Plot3d_Node(NodeWithRepresentation):
+class Plot3d_Node(Node):
     """
     Plot a structure with NGLView.
 
@@ -468,7 +468,7 @@ class Plot3d_Node(NodeWithRepresentation):
         self.set_output_val(1, self.input(0))
 
 
-class Matplot_Node(NodeWithRepresentation):
+class Matplot_Node(Node):
     """
     A 2D matplotlib plot.
 
@@ -501,7 +501,7 @@ class Matplot_Node(NodeWithRepresentation):
         plt.ion()
 
 
-class Sin_Node(NodeWithRepresentation):
+class Sin_Node(Node):
     """
     Call `numpy.sin` on a value.
 
@@ -526,7 +526,7 @@ class Sin_Node(NodeWithRepresentation):
         self.set_output_val(0, np.sin(self.input(0)))
 
 
-class Result_Node(NodeBase):
+class Result_Node(Node):
     """Simply shows a value converted to str"""
 
     version = "v0.1"
@@ -553,7 +553,7 @@ class Result_Node(NodeBase):
             self.main_widget().show_val(self.val)
 
 
-class ForEach_Node(NodeBase):
+class ForEach_Node(Node):
     title = "ForEach"
     version = "v0.1"
     init_inputs = [
@@ -607,7 +607,7 @@ class ExecCounter_Node(DualNodeBase):
             self.val = self.input(0)
 
 
-class Click_Node(NodeBase):
+class Click_Node(Node):
     title = "Click"
     version = "v0.1"
     main_widget_class = ButtonNodeWidget

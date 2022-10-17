@@ -20,7 +20,7 @@ from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
 
 if TYPE_CHECKING:
     from ironflow.ironflow.gui import GUI
-    from ironflow.NENV import Node
+    from ironflow.main.node import Node
 
 
 def deserialize(data):

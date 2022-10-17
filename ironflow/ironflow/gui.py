@@ -17,7 +17,7 @@ from ironflow.ironflow.canvas_widgets import FlowCanvas
 from ironflow.ironflow.model import HasSession
 
 if TYPE_CHECKING:
-    from ironflow.NENV import Node
+    from ironflow.main.node import Node
     from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 debug_view = widgets.Output(layout={"border": "1px solid black"})
@@ -50,7 +50,7 @@ class GUI(HasSession):
         self.node_presenter = NodePresenter()
         self.text_out = TextOut()
         self.input = UserInput()
-        self.flow_box = FlowBox(self._nodes_dict)
+        self.flow_box = FlowBox(self.nodes_dictionary)
 
         try:
             self.load(f"{self.session_title}.json")
@@ -110,7 +110,7 @@ class GUI(HasSession):
     def register_user_node(self, node_class: Type[Node]):
         # Inherited __doc__ still applies just fine, all we do here is update a menu item afterwards.
         super().register_user_node(node_class=node_class)
-        self.flow_box.node_selector.update(self._nodes_dict)
+        self.flow_box.node_selector.update(self.nodes_dictionary)
 
     def update_tabs(self):
         self.flow_box.update_tabs(

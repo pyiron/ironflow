@@ -6,4 +6,5 @@ Code for interfacing with ryven (and pyrion-specific ryven nodes) via ipywidgets
 """
 
 from ironflow.ironflow.gui import GUI
-from ironflow.NENV import Node, NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main.node import Node
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes

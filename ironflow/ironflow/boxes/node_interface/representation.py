@@ -15,7 +15,7 @@ from IPython.display import display
 from ironflow.ironflow.boxes.node_interface.base import NodeInterfaceBase
 
 if TYPE_CHECKING:
-    from ironflow.ironflow.canvas_widgets.nodes import RepresentableNodeWidget
+    from ironflow.ironflow.canvas_widgets.nodes import NodeWidget
 
 
 class NodePresenter(NodeInterfaceBase):
@@ -28,11 +28,11 @@ class NodePresenter(NodeInterfaceBase):
         self._toggles = []
 
     @property
-    def node_widget(self) -> RepresentableNodeWidget | None:
+    def node_widget(self) -> NodeWidget | None:
         return self._node_widget
 
     @node_widget.setter
-    def node_widget(self, new_node_widget: RepresentableNodeWidget | None):
+    def node_widget(self, new_node_widget: NodeWidget | None):
         if self._node_widget is not None:
             self.clear_output()
             self._node_widget.represent_button.pressed = False

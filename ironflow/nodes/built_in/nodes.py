@@ -1,6 +1,7 @@
-from ironflow.NENV import *
-from ironflow.main.node import NodeBase as Node
-widgets = import_widgets(__file__)
+from ironflow.main import NodeInputBP, NodeOutputBP, dtypes
+from ironflow.main.node import Node, PlaceholderWidgetsContainer
+
+widgets = PlaceholderWidgetsContainer()
 
 
 class NodeBase(Node):
@@ -272,12 +273,3 @@ class SetVarsPassive_Node(NodeBase):
 
     def set_state(self, data, version):
         self.num_vars = data['num vars']
-
-
-export_nodes(
-    SetVar_Node,
-    GetVar_Node,
-    Val_Node,
-    Result_Node,
-    SetVarsPassive_Node,
-)
