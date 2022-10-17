@@ -36,6 +36,7 @@ class NodePresenter(NodeInterfaceBase):
         if self._node_widget is not None:
             self.clear_output()
             self._node_widget.represent_button.pressed = False
+            self._node_widget.represent_button.draw()  # Re-draw it as un-pressed
 
         if new_node_widget is not None:
             new_node_widget.node.representation_updated = True
