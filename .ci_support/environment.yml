@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+dependencies:
+  - coveralls
+  - coverage
+  - codacy-coverage
+  - pyiron_base
+  

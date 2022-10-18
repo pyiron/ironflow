@@ -1,0 +1,10 @@
+# pip install master
+pip install .
+
+# clean up
+if [ -d "notebooks" ]; then
+    mv notebooks/* .
+fi
+if [ -d "${HOME}/pyiron_module" ]; then
+    rm -r ${HOME}/binder ${HOME}/.ci_support ${HOME}/.github ${HOME}/docs ${HOME}/pyiron_module ${HOME}/notebooks ${HOME}/LICENSE ${HOME}/MANIFEST.in ${HOME}/setup.cfg ${HOME}/setup.py ${HOME}/versioneer.py ${HOME}/CONTRIBUTING.rst ${HOME}/README.md ${HOME}/CODE_OF_CONDUCT.md
+fi

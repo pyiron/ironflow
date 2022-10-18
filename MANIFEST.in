@@ -1,0 +1,3 @@
+include versioneer.py
+include pyiron_module/_version.py
+include LICENSE
