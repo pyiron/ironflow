@@ -5,14 +5,14 @@ from setuptools import setup, find_packages
 import versioneer
 
 setup(
-    name='pyiron_module',
+    name='ironflow',
     version=versioneer.get_version(),
-    description='pyiron_module - module extension to pyiron.',
+    description='ironflow - module extension to pyiron.',
     long_description='http://pyiron.org',
 
-    url='https://github.com/pyiron/pyiron_module',
+    url='https://github.com/pyiron/ironflow',
     author='Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department',
-    author_email='@mpie.de',
+    author_email='liamhuber@greyhavensolutions.com',
     license='BSD',
 
     classifiers=['Development Status :: 5 - Production/Stable',
@@ -20,7 +20,6 @@ setup(
                  'License :: OSI Approved :: BSD License',
                  'Intended Audience :: Science/Research',
                  'Operating System :: OS Independent',
-                 'Programming Language :: Python :: 3.6',
                  'Programming Language :: Python :: 3.7',
                  'Programming Language :: Python :: 3.8',
                  'Programming Language :: Python :: 3.9'],
@@ -28,7 +27,17 @@ setup(
     keywords='pyiron',
     packages=find_packages(exclude=["*tests*", "*docs*", "*binder*", "*conda*", "*notebooks*", "*.ci_support*"]),
     install_requires=[
-        'pyiron_base'
+        'python >= 3.7',
+        'ipycanvas',
+        'ipython',
+        'ipywidgets == 7.*',
+        'lammps',
+        'matplotlib',
+        'nglview',
+        'numpy',
+        'pyiron_base',
+        'pyiron_atomistics >= 0.2.57',
+        'ryvencore'
     ],
     cmdclass=versioneer.get_cmdclass(),
 

@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pyiron'
-copyright = u'2021, Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department ' \
+copyright = u'2022, Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department ' \
             u'All rights reserved'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -275,10 +275,10 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index',
-   'pyiron_module',
+   'ironflow',
    u'pyiron Documentation',
    u'Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department',
-   'pyiron_module',
+   'ironflow',
    'One line description of project.',
    'Miscellaneous'),
 ]
@@ -295,7 +295,7 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-main(['-e', '-o', 'apidoc', '../pyiron_module', '--force'])
+main(['-e', '-o', 'apidoc', '../ironflow', '--force'])
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists(os.path.join(curdir, 'source/notebooks')):

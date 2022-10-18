@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report to help us eliminate issues and improve pyiron_module
+about: Create a bug report to help us eliminate issues and improve ironflow
 title: ''
 labels: bug
 assignees: ''

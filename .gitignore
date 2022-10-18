@@ -1,4 +1,10 @@
 **/*.pyc
 **/*checkpoint.py
+.coverage
 info.log
 pyiron.log
+.idea/
+inspectionProfiles/
+_build/
+apidoc/
+.ipynb_checkpoints/
