@@ -27,11 +27,9 @@ setup(
     keywords='pyiron',
     packages=find_packages(exclude=["*tests*", "*docs*", "*binder*", "*conda*", "*notebooks*", "*.ci_support*"]),
     install_requires=[
-        'python >= 3.7',
         'ipycanvas',
         'ipython',
         'ipywidgets == 7.*',
-        'lammps',
         'matplotlib',
         'nglview',
         'numpy',
