@@ -62,8 +62,10 @@ jobs:
     - name: Coverage
       if: matrix.label == 'linux-64-py-3-10'
       shell: bash -l {0}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         coverage combine
-        coveralls
+        coveralls --service=github
         coverage xml
         python-codacy-coverage -r coverage.xml
