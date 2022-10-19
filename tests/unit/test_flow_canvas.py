@@ -22,8 +22,9 @@ class TestCanvasObect(TestCase):
 
     def test_remove_node_from_flow(self):
         flow = self.canvas.flow
-        val_node = self.gui.nodes_dictionary['nodes']['val']
-        results_node = self.gui.nodes_dictionary['nodes']['result']
+
+        val_node = self.gui.nodes_dictionary['built_in']['val']
+        results_node = self.gui.nodes_dictionary['built_in']['result']
 
         self.canvas.add_node(0, 0, val_node)
         self.canvas.add_node(0, 0, results_node)

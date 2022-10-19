@@ -18,9 +18,9 @@ class TestGUI(TestCase):
 
     def test_multiple_scripts(self):
         gui = GUI('foo')
-        gui.flow_canvas.add_node(0, 0, gui.nodes_dictionary['nodes']['val'])
+        gui.flow_canvas.add_node(0, 0, gui.nodes_dictionary['built_in']['val'])
         gui.create_script()
-        gui.flow_canvas.add_node(1, 1, gui.nodes_dictionary['nodes']['result'])
+        gui.flow_canvas.add_node(1, 1, gui.nodes_dictionary['built_in']['result'])
         canonical_file_name = f"{gui.session_title}.json"
         gui.save(canonical_file_name)
         new_gui = GUI('something_random')
@@ -49,8 +49,8 @@ class TestGUI(TestCase):
         canvas = gui.flow_canvas
         flow = gui._session.scripts[0].flow
 
-        canvas.add_node(0, 0, gui.nodes_dictionary['nodes']['val'])  # Need to create with canvas instead of flow
-        canvas.add_node(1, 0, gui.nodes_dictionary['nodes']['result'])  # because serialization includes xy location
+        canvas.add_node(0, 0, gui.nodes_dictionary['built_in']['val'])  # Need to create with canvas instead of flow
+        canvas.add_node(1, 0, gui.nodes_dictionary['built_in']['result'])  # because serialization includes xy location
         n1, n2 = flow.nodes
         flow.connect_nodes(n1.outputs[0], n2.inputs[0])
 
