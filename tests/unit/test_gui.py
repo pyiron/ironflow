@@ -110,7 +110,7 @@ class TestGUI(TestCase):
             def update_event(self, inp=-1):
                 self.set_output_val(0, self.input(0) + 42)
 
-        gui.register_user_node(MyNode)
+        gui.register_node(MyNode, node_group="user")
         self.assertIn(MyNode, gui.session.nodes)
 
         gui.flow_canvas.add_node(0, 0, gui.nodes_dictionary["user"][MyNode.title])
@@ -130,7 +130,7 @@ class TestGUI(TestCase):
             def update_event(self, inp=-1):
                 self.set_output_val(0, self.input(0) - 42)
 
-        gui.register_user_node(MyNode)
+        gui.register_node(MyNode, node_group="user")
         gui.flow.nodes[0].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[0].outputs[0].val, 44, msg="Expected to be using instance of old class")
 
@@ -140,11 +140,13 @@ class TestGUI(TestCase):
 
         canonical_file_name = f"{gui.session_title}.json"
         gui.save(canonical_file_name)
-        new_gui = GUI(gui.session_title)
-        with self.assertRaises(Exception):  # User node not registered yet
-            new_gui.load(canonical_file_name)
 
-        new_gui.register_user_node(MyNode)
+        with self.assertRaises(Exception):  # User node not registered yet
+            new_gui = GUI(gui.session_title)
+
+        new_gui = GUI(gui.session_title, extra_nodes_packages=[[MyNode]])  # Register at instantiation
+        # Note: Until extra_nodes_packages lets us specify an equivalent to node_group, this loaded GUI will *look*
+        # different because the registered node is under '__main__' instead of 'user'. Doesn't stop our tests though.
         new_gui.load(canonical_file_name)
         new_gui.flow.nodes[0].inputs[0].update(3)
         new_gui.flow.nodes[1].inputs[0].update(3)
