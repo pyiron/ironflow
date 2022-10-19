@@ -3,7 +3,7 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from unittest import TestCase
-from ironflow.ironflow.gui import GUI
+from ironflow.gui.gui import GUI
 import os
 
 

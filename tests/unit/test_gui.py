@@ -3,7 +3,8 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from unittest import TestCase
-from ironflow.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+from ironflow.gui.gui import GUI
+from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes
 import os
 
 
