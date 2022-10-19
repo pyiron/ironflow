@@ -17,7 +17,7 @@ class TestCanvasObect(TestCase):
     def tearDownClass(cls):
         try:
             os.remove(os.path.join('.', "pyiron.log"))
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
 
     def test_remove_node_from_flow(self):

@@ -13,7 +13,7 @@ class TestGUI(TestCase):
     def tearDown(self) -> None:
         try:
             os.remove("pyiron.log")
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
 
     def test_multiple_scripts(self):
