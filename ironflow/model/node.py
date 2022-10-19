@@ -49,7 +49,7 @@ class Node(NodeCore):
 
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)
-        self.actions = dict()  # Resolves TODO from ryven.NENV, moving it to our node class instead of ryvencore
+        self.actions = dict()  # Resolves Todo from ryven.NENV, moving it to our node class instead of ryvencore
 
         self.representation_updated = False
         self.after_update.connect(self._representation_update)

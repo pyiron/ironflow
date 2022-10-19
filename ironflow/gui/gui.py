@@ -205,7 +205,7 @@ class GUI(HasSession):
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
     def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
-        # TODO: Change only for the active script, and update the dropdown on tab (script) switching
+        # Todo: Change only for the active script, and update the dropdown on tab (script) switching
         for script in self.session.scripts:
             script.flow.set_algorithm_mode(self.toolbar.alg_mode_dropdown.value)
 

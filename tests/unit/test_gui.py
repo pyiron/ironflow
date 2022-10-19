@@ -80,7 +80,7 @@ class TestGUI(TestCase):
         os.remove(f"{title}.json")
 
     def test_user_node_registration(self):
-        """TODO: This only tests the backend graph, need to test front end as well"""
+        """Todo: This only tests the backend graph, need to test front end as well"""
         gui = GUI('foo')
 
         class MyNode(Node):

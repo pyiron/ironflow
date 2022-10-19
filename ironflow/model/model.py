@@ -44,7 +44,7 @@ class HasSession(ABC):
 
         if extra_nodes_packages is not None:
             for package in extra_nodes_packages:
-                # TODO: Figure out how to allow node_group to be passed in in an elegant way here for each package
+                # Todo: Figure out how to allow node_group to be passed in in an elegant way here for each package
                 self.register_nodes(package)
 
     @property
