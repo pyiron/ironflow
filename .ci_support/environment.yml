@@ -7,7 +7,6 @@ dependencies:
   - ipycanvas
   - ipython
   - ipywidgets == 7.*
-  - lammps
   - matplotlib
   - nglview
   - numpy
