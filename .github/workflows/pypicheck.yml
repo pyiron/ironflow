@@ -26,5 +26,7 @@ jobs:
     - name: Setup
       shell: bash -l {0}
       run: |
+        conda list
+        which python
         pip install --no-deps .
         pip check
