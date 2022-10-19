@@ -49,6 +49,8 @@ class TestGUI(TestCase):
         canvas = gui.flow_canvas
         flow = gui._session.scripts[0].flow
 
+        self.assertEqual(0, len(flow.nodes), msg="Fresh GUI shouldn't have any nodes yet.")
+
         canvas.add_node(0, 0, gui.nodes_dictionary['built_in']['val'])  # Need to create with canvas instead of flow
         canvas.add_node(1, 0, gui.nodes_dictionary['built_in']['result'])  # because serialization includes xy location
         n1, n2 = flow.nodes
@@ -60,23 +62,34 @@ class TestGUI(TestCase):
 
         gui.save(canonical_file_name)
 
-        new_gui = GUI(title)
-        self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
-        # Maybe this will change in the future, but it's baked in the assumptions for now so let's make sure to test it
+        with self.subTest("Explicit loading"):
+            new_gui = GUI('some_other_title')
+            self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
 
-        new_flow = new_gui._session.scripts[0].flow
-        self.assertEqual(0, len(new_flow.nodes), msg="Fresh GUI shouldn't have any nodes yet.")
-        self.assertEqual(0, len(new_flow.connections), msg="Fresh GUI shouldn't have any connections yet.")
+            new_gui.load(canonical_file_name)
+            new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
+            self.assertEqual(len(flow.nodes), len(new_flow.nodes), msg="Explicitly loaded GUI should recover nodes.")
+            self.assertEqual(
+                len(flow.connections),
+                len(new_flow.connections),
+                msg="Explicitly loaded GUI should recover connections."
+            )
 
-        new_gui.load(canonical_file_name)
-        new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
-        print(new_gui._session.scripts, new_gui._session.scripts[0].flow)
-        self.assertEqual(len(flow.nodes), len(new_flow.nodes), msg="Loaded GUI should recover nodes.")
-        self.assertEqual(
-            len(flow.connections),
-            len(new_flow.connections),
-            msg="Loaded GUI should recover connections."
-        )
+        with self.subTest("Implicit loading"):
+            new_gui = GUI(title)
+            self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
+
+            new_flow = new_gui._session.scripts[0].flow
+            self.assertEqual(
+                len(flow.nodes),
+                len(new_flow.nodes),
+                msg="GUI with same title should get automatically loaded."
+            )
+            self.assertEqual(
+                len(flow.connections),
+                len(new_flow.connections),
+                msg="GUI with same title should get automatically loaded."
+            )
 
         os.remove(f"{title}.json")
 
