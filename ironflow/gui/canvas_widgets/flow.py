@@ -38,9 +38,9 @@ class FlowCanvas:
         - Mouse click on nothing clears selection
         - Mouse double-click on nothing creates a new node of the type currently selected in the node menu
         - Mouse click on a selected (pressed) port (button) deselects (unpresses) that port (button)
-        - TODO: Mouse down, hold, and move on nothing draws a rectangle, everything inside is selected on release
+        - Todo: Mouse down, hold, and move on nothing draws a rectangle, everything inside is selected on release
 
-    Keyboard behaviour: TODO
+    Keyboard behaviour: Todo
         - ESC: Deselect all.
         - Backspace/Delete:
             - If a node is selected, deletes it
@@ -83,7 +83,7 @@ class FlowCanvas:
 
         self._mouse_is_down = False
         self._last_mouse_down = time()
-        self._double_click_speed = 0.25  # In seconds. TODO: Put this in a config somewhere
+        self._double_click_speed = 0.25  # In seconds. Todo: Put this in a config somewhere
 
         self._object_to_gui_dict = {}
 
@@ -133,7 +133,7 @@ class FlowCanvas:
         self._canvas.fill_rect(0, 0, self._width, self._height)
 
     def handle_keyboard_event(self, key: str, shift_key, ctrl_key, meta_key) -> None:
-        pass  # TODO
+        pass  # Todo
 
     def deselect_all(self) -> None:
         [o.deselect() for o in self.objects_to_draw]

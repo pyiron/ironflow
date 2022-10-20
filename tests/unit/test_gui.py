@@ -3,7 +3,8 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from unittest import TestCase
-from ironflow.ironflow import GUI, Node, NodeInputBP, NodeOutputBP, dtypes
+from ironflow.gui.gui import GUI
+from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes
 import os
 
 
@@ -12,14 +13,14 @@ class TestGUI(TestCase):
     def tearDown(self) -> None:
         try:
             os.remove("pyiron.log")
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
 
     def test_multiple_scripts(self):
         gui = GUI('foo')
-        gui.flow_canvas.add_node(0, 0, gui.nodes_dictionary['nodes']['val'])
+        gui.flow_canvas.add_node(0, 0, gui.nodes_dictionary['built_in']['val'])
         gui.create_script()
-        gui.flow_canvas.add_node(1, 1, gui.nodes_dictionary['nodes']['result'])
+        gui.flow_canvas.add_node(1, 1, gui.nodes_dictionary['built_in']['result'])
         canonical_file_name = f"{gui.session_title}.json"
         gui.save(canonical_file_name)
         new_gui = GUI('something_random')
@@ -48,8 +49,10 @@ class TestGUI(TestCase):
         canvas = gui.flow_canvas
         flow = gui._session.scripts[0].flow
 
-        canvas.add_node(0, 0, gui.nodes_dictionary['nodes']['val'])  # Need to create with canvas instead of flow
-        canvas.add_node(1, 0, gui.nodes_dictionary['nodes']['result'])  # because serialization includes xy location
+        self.assertEqual(0, len(flow.nodes), msg="Fresh GUI shouldn't have any nodes yet.")
+
+        canvas.add_node(0, 0, gui.nodes_dictionary['built_in']['val'])  # Need to create with canvas instead of flow
+        canvas.add_node(1, 0, gui.nodes_dictionary['built_in']['result'])  # because serialization includes xy location
         n1, n2 = flow.nodes
         flow.connect_nodes(n1.outputs[0], n2.inputs[0])
 
@@ -59,28 +62,39 @@ class TestGUI(TestCase):
 
         gui.save(canonical_file_name)
 
-        new_gui = GUI(title)
-        self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
-        # Maybe this will change in the future, but it's baked in the assumptions for now so let's make sure to test it
+        with self.subTest("Explicit loading"):
+            new_gui = GUI('some_other_title')
+            self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
 
-        new_flow = new_gui._session.scripts[0].flow
-        self.assertEqual(0, len(new_flow.nodes), msg="Fresh GUI shouldn't have any nodes yet.")
-        self.assertEqual(0, len(new_flow.connections), msg="Fresh GUI shouldn't have any connections yet.")
+            new_gui.load(canonical_file_name)
+            new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
+            self.assertEqual(len(flow.nodes), len(new_flow.nodes), msg="Explicitly loaded GUI should recover nodes.")
+            self.assertEqual(
+                len(flow.connections),
+                len(new_flow.connections),
+                msg="Explicitly loaded GUI should recover connections."
+            )
 
-        new_gui.load(canonical_file_name)
-        new_flow = new_gui._session.scripts[0].flow  # Session script gets reloaded, so grab this again
-        print(new_gui._session.scripts, new_gui._session.scripts[0].flow)
-        self.assertEqual(len(flow.nodes), len(new_flow.nodes), msg="Loaded GUI should recover nodes.")
-        self.assertEqual(
-            len(flow.connections),
-            len(new_flow.connections),
-            msg="Loaded GUI should recover connections."
-        )
+        with self.subTest("Implicit loading"):
+            new_gui = GUI(title)
+            self.assertNotEqual(new_gui._session, gui._session, msg="New instance expected to get its own session")
+
+            new_flow = new_gui._session.scripts[0].flow
+            self.assertEqual(
+                len(flow.nodes),
+                len(new_flow.nodes),
+                msg="GUI with same title should get automatically loaded."
+            )
+            self.assertEqual(
+                len(flow.connections),
+                len(new_flow.connections),
+                msg="GUI with same title should get automatically loaded."
+            )
 
         os.remove(f"{title}.json")
 
     def test_user_node_registration(self):
-        """TODO: This only tests the backend graph, need to test front end as well"""
+        """Todo: This only tests the backend graph, need to test front end as well"""
         gui = GUI('foo')
 
         class MyNode(Node):
@@ -96,7 +110,7 @@ class TestGUI(TestCase):
             def update_event(self, inp=-1):
                 self.set_output_val(0, self.input(0) + 42)
 
-        gui.register_user_node(MyNode)
+        gui.register_node(MyNode, node_group="user")
         self.assertIn(MyNode, gui.session.nodes)
 
         gui.flow_canvas.add_node(0, 0, gui.nodes_dictionary["user"][MyNode.title])
@@ -116,7 +130,7 @@ class TestGUI(TestCase):
             def update_event(self, inp=-1):
                 self.set_output_val(0, self.input(0) - 42)
 
-        gui.register_user_node(MyNode)
+        gui.register_node(MyNode, node_group="user")
         gui.flow.nodes[0].inputs[0].update(2)
         self.assertEqual(gui.flow.nodes[0].outputs[0].val, 44, msg="Expected to be using instance of old class")
 
@@ -126,11 +140,13 @@ class TestGUI(TestCase):
 
         canonical_file_name = f"{gui.session_title}.json"
         gui.save(canonical_file_name)
-        new_gui = GUI(gui.session_title)
-        with self.assertRaises(Exception):  # User node not registered yet
-            new_gui.load(canonical_file_name)
 
-        new_gui.register_user_node(MyNode)
+        with self.assertRaises(Exception):  # User node not registered yet
+            new_gui = GUI(gui.session_title)
+
+        new_gui = GUI(gui.session_title, extra_nodes_packages=[[MyNode]])  # Register at instantiation
+        # Note: Until extra_nodes_packages lets us specify an equivalent to node_group, this loaded GUI will *look*
+        # different because the registered node is under '__main__' instead of 'user'. Doesn't stop our tests though.
         new_gui.load(canonical_file_name)
         new_gui.flow.nodes[0].inputs[0].update(3)
         new_gui.flow.nodes[1].inputs[0].update(3)

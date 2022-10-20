@@ -25,7 +25,7 @@ class UserInput(Box):
         self.ok_button = widgets.Button(tooltip="Confirm", icon="check", layout=button_layout)
         self._last_ok_callback = None
         self.cancel_button = widgets.Button(tooltip="Cancel", icon="ban", layout=button_layout)
-        # TODO: Use xmark once this is available
+        # Todo: Use xmark once this is available
         self.cancel_button.on_click(self.close)
 
     def clear(self):

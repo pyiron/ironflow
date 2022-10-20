@@ -1,0 +1,15 @@
+channels:
+  - conda-forge
+dependencies:
+  - coveralls
+  - coverage
+  - codacy-coverage
+  - ipycanvas
+  - ipython
+  - ipywidgets == 7.*
+  - matplotlib
+  - nglview
+  - numpy
+  - pyiron_base
+  - pyiron_atomistics >= 0.2.57
+  - ryvencore

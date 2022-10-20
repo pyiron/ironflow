@@ -101,7 +101,7 @@ class NodeController(NodeInterfaceBase):
 
     def input_change_i(self, i_c) -> Callable:
         def input_change(change: dict) -> None:
-            # TODO: Test this in exec mode
+            # Todo: Test this in exec mode
             self.node.inputs[i_c].val = change["new"]
             self.node.update(i_c)
             self.gui.redraw_active_flow_canvas()

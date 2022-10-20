@@ -1,0 +1,14 @@
+channels:
+  - conda-forge
+dependencies:
+  - nbsphinx
+  - ipycanvas
+  - ipython
+  - ipywidgets == 7.*
+  - lammps
+  - matplotlib
+  - nglview
+  - numpy
+  - pyiron_base
+  - pyiron_atomistics >= 0.2.57
+  - ryvencore

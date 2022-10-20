@@ -221,7 +221,7 @@ class NodeWidget(CanvasWidget):
         self.gui.ensure_node_not_presented(self)
         self.gui.ensure_node_not_controlled(self.node)
         for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
-            # TODO: Can we be more efficient than looping over all nodes?
+            # Todo: Can we be more efficient than looping over all nodes?
             if (c.inp.node == self.node) or (c.out.node == self.node):
                 self.flow.remove_connection(c)
         self.flow.remove_node(self.node)

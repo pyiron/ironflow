@@ -3,7 +3,7 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 from unittest import TestCase
-from ironflow.ironflow.gui import GUI
+from ironflow.gui.gui import GUI
 import os
 
 
@@ -17,13 +17,14 @@ class TestCanvasObect(TestCase):
     def tearDownClass(cls):
         try:
             os.remove(os.path.join('.', "pyiron.log"))
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
 
     def test_remove_node_from_flow(self):
         flow = self.canvas.flow
-        val_node = self.gui.nodes_dictionary['nodes']['val']
-        results_node = self.gui.nodes_dictionary['nodes']['result']
+
+        val_node = self.gui.nodes_dictionary['built_in']['val']
+        results_node = self.gui.nodes_dictionary['built_in']['result']
 
         self.canvas.add_node(0, 0, val_node)
         self.canvas.add_node(0, 0, results_node)

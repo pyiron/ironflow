@@ -1,0 +1,3 @@
+include versioneer.py
+include ironflow/_version.py
+include LICENSE

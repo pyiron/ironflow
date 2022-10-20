@@ -35,17 +35,17 @@ class Buttons:
         )
         self.rename_script = widgets.Button(
             tooltip="Rename script",
-            icon="pencil-square-o",  # TODO: Use file-pen once this is available
+            icon="pencil-square-o",  # Todo: Use file-pen once this is available
             layout=layout
         )
         self.delete_script = widgets.Button(
             tooltip="Delete script",
-            icon="minus-square-o",  # TODO: Use file-circle-minus once this is available
+            icon="minus-square-o",  # Todo: Use file-circle-minus once this is available
             layout=layout
         )
         self.zero_location = widgets.Button(
             tooltip="Recenter script canvas at the origin",
-            icon="map-marker",  # TODO: Use location-dot once this is available
+            icon="map-marker",  # Todo: Use location-dot once this is available
             layout=layout
         )
         self.zoom_in = widgets.Button(

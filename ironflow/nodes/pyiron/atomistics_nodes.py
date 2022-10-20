@@ -95,7 +95,7 @@ class Project_Node(Node):
         return {
             "name": str(self.input(0)),
             # "job_table": self._project.job_table() if self._project is not None else None
-            # TODO: Figure out how to display this without breaking the gui size; right now it automatically grows
+            # Todo: Figure out how to display this without breaking the gui size; right now it automatically grows
             # the gui because the table is so wide.
         }
 
@@ -385,7 +385,7 @@ class JobName_Node(Node):
     Outputs:
         job_name (str): The base plus float sanitized into a valid job name.
 
-    TODO:
+    Todo:
         There has been some work in pyiron_base on getting a cleaner job name sanitizer, so lean on that.
     """
 
