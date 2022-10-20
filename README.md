@@ -3,6 +3,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyiron/ironflow/HEAD?labpath=example.ipynb)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f21027e6a1fd40bd8ff93b0314a64725)](https://www.codacy.com/gh/pyiron/ironflow/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pyiron/ironflow&amp;utm_campaign=Badge_Grade)
+[![Coverage Status](https://coveralls.io/repos/github/pyiron/ironflow/badge.svg?branch=main)](https://coveralls.io/github/pyiron/ironflow?branch=main)
 
 Ironflow combines [ryven](https://ryven.org), [ipycanvas](https://ipycanvas.readthedocs.io/) and [ipywidgets](https://ipywidgets.readthedocs.io/en/stable/) to provide a Jupyter-based visual scripting gui for running [pyiron](https://pyiron.org) workflow graphs.
 This project is under active development, and in particular the set of nodes available for the workflow graphs is still limited. 
