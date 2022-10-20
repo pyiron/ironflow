@@ -29,7 +29,7 @@ setup(
     install_requires=[
         'ipycanvas',
         'ipython',
-        'ipywidgets == 7.*',
+        'ipywidgets >= 7,< 8',
         'matplotlib',
         'nglview',
         'numpy',
