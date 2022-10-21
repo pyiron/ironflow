@@ -31,11 +31,7 @@ jobs:
     - name: Set cache date and number
       run: |
         echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
-        if [ -f github/variables/cache_number.env ]; then
-          cat .github/variables/cache_number.env >> $GITHUB_ENV
-        else
-          echo "CACHE_NUMBER=0" >> $GITHUB_ENV 
-        fi
+        cat .github/variables/cache_number.env >> $GITHUB_ENV
     - uses: actions/cache@v2
       with:
         path: /usr/share/miniconda3/envs/my-env
