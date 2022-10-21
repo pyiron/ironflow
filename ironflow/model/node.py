@@ -54,6 +54,15 @@ class Node(NodeCore):
         self.representation_updated = False
         self.after_update.connect(self._representation_update)
 
+    def place_event(self):
+        # place_event() is executed *before* the connections are built
+        super().place_event()
+        for inp in self.inputs:
+            if inp.dtype is not None:
+                inp.update(inp.dtype.default)
+            elif 'val' in inp.add_data.keys():
+                inp.update(inp.add_data['val'])
+
     def update(self, inp=-1):
         self.before_update.emit(self, inp)
         super().update(inp=inp)
