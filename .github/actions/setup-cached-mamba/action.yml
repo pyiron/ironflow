@@ -23,6 +23,7 @@ runs:
   steps:
   - uses: actions/checkout@v2
   - name: Write environment
+    shell: bash -l {0}
     run: |
       if [ "${{ inputs.additional-env-file }}" == "" ]; then
         cp .ci_support/environment.yml environment.yml
@@ -39,6 +40,7 @@ runs:
       activate-environment: my-env
       use-mamba: true
   - name: Set cache date and number
+    shell: bash -l {0}
     run: |
       echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
       cat .github/variables/cache_number.env >> $GITHUB_ENV
@@ -48,6 +50,7 @@ runs:
       key: ${{ inputs.env-label }}-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
     id: cache
   - name: Update environment
+    shell: bash -l {0}
     run: mamba env update -n my-env -f environment.yml
     if: steps.cache.outputs.cache-hit != 'true'
   - name: Run pyironconfig
