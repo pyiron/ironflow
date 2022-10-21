@@ -47,34 +47,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup environment
-      run: cp .ci_support/environment.yml environment.yml
-    - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v2
+    - uses: pyiron/ironflow/.github/setup-cached-mamba.yml@main
       with:
         python-version: ${{ matrix.python-version }}
-        miniforge-variant: Mambaforge
-        channels: conda-forge
-        channel-priority: strict
-        activate-environment: my-env
-        use-mamba: true
-    - name: Set cache date and number
-      run: |
-        echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
-        cat .github/variables/cache_number.env >> $GITHUB_ENV
-    - uses: actions/cache@v2
-      with:
-        path: ${{ matrix.prefix }}
-        key: ${{ matrix.label }}-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
-      id: cache
-    - name: Update environment
-      run: mamba env update -n my-env -f environment.yml
-      if: steps.cache.outputs.cache-hit != 'true'
-    - name: Setup
-      shell: bash -l {0}
-      run: |
-        python .ci_support/pyironconfig.py
-        pip install --no-deps .
+        env-prefix: ${{ matrix.prefix }}
+        env-label: ${{ matrix.label }}
+        run-pyironconfig: true
     - name: Test
       shell: bash -l {0}
       run: coverage run --omit pyiron/_version.py -m unittest discover tests
