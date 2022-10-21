@@ -31,8 +31,6 @@ jobs:
     - name: Set cache date and number
       run: |
         echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
-        ls .github
-        ls .github/variables
         if [ -f github/variables/cache_number.env ]; then
           cat .github/variables/cache_number.env >> $GITHUB_ENV
         else
