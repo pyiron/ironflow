@@ -24,3 +24,8 @@ formats: all
 # Install pyiron from conda 
 conda:
   environment: .ci_support/environment-docs.yml
+
+python:
+  install:
+    - method: pip
+      path: .
