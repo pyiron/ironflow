@@ -80,6 +80,7 @@ class Project_Node(Node):
     color = "#aabb44"
 
     def place_event(self):
+        super().place_event()
         self.update()
 
     def update_event(self, inp=-1):
@@ -433,6 +434,7 @@ class Linspace_Node(Node):
     color = "#aabb44"
 
     def place_event(self):
+        super().place_event()
         self.update()    
 
     def update_event(self, inp=-1):
@@ -542,6 +544,7 @@ class Result_Node(Node):
         self.val = None
 
     def place_event(self):
+        super().place_event()
         self.update()
 
     def view_place_event(self):
