@@ -10,19 +10,11 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  call-build-docs:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - uses: pyiron/pyiron_github/actions/cached-mamba@main
+    - uses: pyiron/pyiron_github/actions/build-docs@main
       with:
         python-version: '3.10'
         env-prefix: /usr/share/miniconda3/envs/my-env
         env-label: linux-64-py-3-10
-        additional-env-file: .ci_support/environment-docs.yml
-    - uses: pyiron/pyiron_github/actions/pyiron-config@main
-    - name: Documentation
-      shell: bash -l {0}
-      run: ./.ci_support/build_docs.sh
