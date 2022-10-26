@@ -46,13 +46,13 @@ jobs:
             prefix: /usr/share/miniconda3/envs/my-env
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/setup-cached-mamba
+    - uses: actions/checkout@v3
+    - uses: pyiron/pyiron_github/actions/cached-mamba@main
       with:
         python-version: ${{ matrix.python-version }}
         env-prefix: ${{ matrix.prefix }}
         env-label: ${{ matrix.label }}
-        run-pyironconfig: true
+    - uses: pyiron/pyiron_github/actions/pyiron-config@main
     - name: Test
       shell: bash -l {0}
       run: coverage run --omit pyiron/_version.py -m unittest discover tests

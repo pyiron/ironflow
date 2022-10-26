@@ -22,9 +22,7 @@ jobs:
         env-prefix: /usr/share/miniconda3/envs/my-env
         env-label: linux-64-py-3-10
         additional-env-file: .ci_support/environment-docs.yml
-    - name: Run pyironconfig
-      shell: bash -l {0}
-      run: python .ci_support/pyironconfig.py
+    - uses: pyiron/pyiron_github/actions/pyiron-config@main
     - name: Documentation
       shell: bash -l {0}
       run: ./.ci_support/build_docs.sh
