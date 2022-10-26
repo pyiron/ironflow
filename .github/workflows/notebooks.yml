@@ -15,14 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
-    - uses: pyiron/pyiron_github/actions/cached-mamba@main
+    - uses: pyiron/pyiron_github/actions/build-notebooks@main
       with:
         python-version: '3.10'
         env-prefix: /usr/share/miniconda3/envs/my-env
         env-label: linux-64-py-3-10
-        env-files: .ci_support/environment.yml .ci_support/environment-notebooks.yml
-    - uses: pyiron/pyiron_github/actions/pyiron-config@main
-    - name: Tests
-      shell: bash -l {0}
-      run: ./.ci_support/build_notebooks.sh
