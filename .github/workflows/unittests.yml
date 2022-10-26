@@ -46,16 +46,12 @@ jobs:
             prefix: /usr/share/miniconda3/envs/my-env
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: pyiron/pyiron_github/actions/cached-mamba@main
+    - uses: pyiron/pyiron_github/actions/unit-tests@main
       with:
         python-version: ${{ matrix.python-version }}
         env-prefix: ${{ matrix.prefix }}
         env-label: ${{ matrix.label }}
-    - uses: pyiron/pyiron_github/actions/pyiron-config@main
-    - name: Test
-      shell: bash -l {0}
-      run: coverage run --omit pyiron/_version.py -m unittest discover tests
+        env-files: .ci_support/environment-unittests.yml .ci_support/environment.yml
     - name: Coverage
       if: matrix.label == 'linux-64-py-3-10'
       shell: bash -l {0}
