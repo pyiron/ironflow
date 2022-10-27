@@ -1,0 +1,10 @@
+name: UpdateDependabotPR
+
+on:
+  pull_request_target:
+    branches: [ main ]
+
+jobs:
+  dependabot:
+    uses: pyiron/pyiron_github/.github/workflows/dependabot-pr.yml@main
+    secrets: inherit
