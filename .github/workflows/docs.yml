@@ -10,5 +10,9 @@ on:
     branches: [ main ]
 
 jobs:
-  call-build-docs:
+  call-build-docs-from-workflow:
     uses: pyiron/pyiron_github/workflows/push-pull-to-main.yml@main
+  call-build-docs-from-github-workflow:
+    uses: pyiron/pyiron_github/.github/workflows/push-pull-to-main.yml@main
+  call-build-docs-from-root:
+    uses: pyiron/pyiron_github/push-pull-to-main.yml@main
