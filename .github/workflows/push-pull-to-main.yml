@@ -8,6 +8,6 @@ on:
     branches: [ main ]
 
 jobs:
-  call-centralized-workflow:
+  call-push-or-pull-to-main-jobs:
     uses: pyiron/pyiron_github/.github/workflows/push-pull-to-main.yml@main
     secrets: inherit
