@@ -1,4 +1,4 @@
-# This runs jobs which pyiron modules should run when a PR is opened
+# This runs jobs which pyiron modules should run when a PR target is opened
 
 name: PR opened
 
