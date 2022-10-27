@@ -54,9 +54,15 @@ jobs:
         env-files: .ci_support/environment-unittests.yml .ci_support/environment.yml
     - name: Coverage
       if: matrix.label == 'linux-64-py-3-10'
+      continue-on-error: True
       shell: bash -l {0}
       run: |
         coverage combine
-        coveralls --service=github
+        coveralls
         coverage xml
+    - name: Codacy
+      if: matrix.label == 'linux-64-py-3-10' && github.event_name != 'push'
+      continue-on-error: True
+      shell: bash -l {0}
+      run: |
         python-codacy-coverage -r coverage.xml
