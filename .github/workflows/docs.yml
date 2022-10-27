@@ -11,10 +11,4 @@ on:
 
 jobs:
   call-build-docs:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: pyiron/pyiron_github/actions/build-docs@main
-      with:
-        python-version: '3.10'
-        env-prefix: /usr/share/miniconda3/envs/my-env
-        env-label: linux-64-py-3-10
+    uses: pyiron/pyiron_github/workflows/push-pull-to-main.yml@main
