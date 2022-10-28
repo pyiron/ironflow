@@ -11,21 +11,19 @@ class NodeBase(Node):
 class GetVar_Node(NodeBase):
     """Gets the value of a script variable"""
 
-    version = 'v0.1'
+    version = "v0.1"
 
-    title = 'get var'
+    title = "get var"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.String(size='m')),
+        NodeInputBP(dtype=dtypes.String(size="m")),
     ]
-    init_outputs = [
-        NodeOutputBP(label='val')
-    ]
-    color = '#c69a15'
+    init_outputs = [NodeOutputBP(label="val")]
+    color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
 
-        self.var_name = ''
+        self.var_name = ""
         self.temp_var_val = None
 
     def place_event(self):
@@ -37,7 +35,7 @@ class GetVar_Node(NodeBase):
     def update_event(self, input_called=-1):
         if self.input(0) != self.var_name:
 
-            if self.var_name != '':  # disconnect old var val update connection
+            if self.var_name != "":  # disconnect old var val update connection
                 self.unregister_var_receiver(self.var_name, self.var_val_changed)
 
             self.var_name = self.input(0)
@@ -54,15 +52,15 @@ class GetVar_Node(NodeBase):
 class Result_Node(NodeBase):
     """Simply shows a value converted to str"""
 
-    version = 'v0.1'
+    version = "v0.1"
 
-    title = 'result'
+    title = "result"
     init_inputs = [
-        NodeInputBP(type_='data'),
+        NodeInputBP(type_="data"),
     ]
     main_widget_class = widgets.Result_Node_MainWidget
-    main_widget_pos = 'between ports'
-    color = '#c69a15'
+    main_widget_pos = "between ports"
+    color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
@@ -83,25 +81,24 @@ class Result_Node(NodeBase):
 class Val_Node(NodeBase):
     """Evaluates a string from the input field"""
 
-    version = 'v0.1'
+    version = "v0.1"
 
-    title = 'val'
+    title = "val"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size='s')),
+        NodeInputBP(dtype=dtypes.Data(size="s")),
     ]
     init_outputs = [
-        NodeInputBP(type_='data'),
+        NodeInputBP(type_="data"),
     ]
-    style = 'small'
-    color = '#c69a15'
+    style = "small"
+    color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
 
-        self.display_title = ''
-        self.actions['edit val via dialog'] = {'method': self.action_edit_via_dialog}
+        self.display_title = ""
+        self.actions["edit val via dialog"] = {"method": self.action_edit_via_dialog}
         self.val = None
-
 
     def place_event(self):
         self.update()
@@ -125,50 +122,47 @@ class Val_Node(NodeBase):
         return self.input(0)
 
     def get_state(self):
-        return {
-            'val': self.val  # self.main_widget().get_val()
-        }
+        return {"val": self.val}  # self.main_widget().get_val()
 
     def set_state(self, data, version):
-        self.val = data['val']
+        self.val = data["val"]
 
         if version is None:
 
-            self.display_title = ''
+            self.display_title = ""
 
-            self.create_input_dt(dtype=dtypes.Data(size='s'))
+            self.create_input_dt(dtype=dtypes.Data(size="s"))
 
             # the old version didn't use a dtype
             self.inputs[0].dtype.val = self.val
             self.inputs[0].update(self.val)
 
 
-
 class SetVar_Node(NodeBase):
     """Sets the value of a script variable"""
 
-    version = 'v0.1'
+    version = "v0.1"
 
-    title = 'set var'
+    title = "set var"
     init_inputs = [
-        NodeInputBP(type_='exec'),
-        NodeInputBP(dtype=dtypes.String(), label='var'),
-        NodeInputBP(dtype=dtypes.Data(size='s'), label='val'),
+        NodeInputBP(type_="exec"),
+        NodeInputBP(dtype=dtypes.String(), label="var"),
+        NodeInputBP(dtype=dtypes.Data(size="s"), label="val"),
     ]
     init_outputs = [
-        NodeOutputBP(type_='exec'),
-        NodeOutputBP(type_='data', label='val'),
+        NodeOutputBP(type_="exec"),
+        NodeOutputBP(type_="data", label="val"),
     ]
-    style = 'normal'
-    color = '#c69a15'
+    style = "normal"
+    color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
 
-        self.actions['make passive'] = {'method': self.action_make_passive}
+        self.actions["make passive"] = {"method": self.action_make_passive}
         self.active = True
 
-        self.var_name = ''
+        self.var_name = ""
         self.num_vars = 1
 
     def update_event(self, input_called=-1):
@@ -189,38 +183,38 @@ class SetVar_Node(NodeBase):
         self.active = False
         self.delete_input(0)
         self.delete_output(0)
-        del self.actions['make passive']
-        self.actions['make active'] = {'method': self.action_make_active}
+        del self.actions["make passive"]
+        self.actions["make active"] = {"method": self.action_make_active}
 
     def action_make_active(self):
         self.active = True
-        self.create_input(type_='exec', pos=0)
-        self.create_output(type_='exec', pos=0)
-        del self.actions['make active']
-        self.actions['make passive'] = {'method': self.action_make_passive}
+        self.create_input(type_="exec", pos=0)
+        self.create_output(type_="exec", pos=0)
+        del self.actions["make active"]
+        self.actions["make passive"] = {"method": self.action_make_passive}
 
     def get_state(self):
-        return {'active': self.active}
+        return {"active": self.active}
 
     def set_state(self, data, version):
-        self.active = data['active']
+        self.active = data["active"]
 
 
 class SetVarsPassive_Node(NodeBase):
     """Sets the values of multiple script variables"""
 
-    version = 'v0.1'
+    version = "v0.1"
 
-    title = 'set vars passive'
+    title = "set vars passive"
     init_inputs = []
     init_outputs = []
-    style = 'normal'
-    color = '#c69a15'
+    style = "normal"
+    color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
 
-        self.actions['add var input'] = {'method': self.add_var_input}
+        self.actions["add var input"] = {"method": self.add_var_input}
 
         self.num_vars = 0
 
@@ -229,18 +223,18 @@ class SetVarsPassive_Node(NodeBase):
             self.add_var_input()
 
     def add_var_input(self):
-        self.create_input_dt(label='var', dtype=dtypes.String(size='l'))
-        self.create_input_dt(label='val', dtype=dtypes.Data(size='l'))
+        self.create_input_dt(label="var", dtype=dtypes.String(size="l"))
+        self.create_input_dt(label="val", dtype=dtypes.Data(size="l"))
         self.num_vars += 1
 
-        self.actions[f'remove var {self.num_vars}'] = {
-            'method': self.remove_var_input,
-            'data': self.num_vars
+        self.actions[f"remove var {self.num_vars}"] = {
+            "method": self.remove_var_input,
+            "data": self.num_vars,
         }
 
     def remove_var_input(self, number):
-        self.delete_input((number-1)*2)
-        self.delete_input((number-1)*2)
+        self.delete_input((number - 1) * 2)
+        self.delete_input((number - 1) * 2)
         self.num_vars -= 1
         self.rebuild_remove_actions()
 
@@ -248,16 +242,16 @@ class SetVarsPassive_Node(NodeBase):
 
         remove_keys = []
         for k, v in self.actions.items():
-            if k.startswith('remove var'):
+            if k.startswith("remove var"):
                 remove_keys.append(k)
 
         for k in remove_keys:
             del self.actions[k]
 
         for i in range(self.num_vars):
-            self.actions[f'remove var {i+1}'] = {
-                'method': self.remove_var_input,
-                'data': i+1
+            self.actions[f"remove var {i+1}"] = {
+                "method": self.remove_var_input,
+                "data": i + 1,
             }
 
     def update_event(self, input_called=-1):
@@ -269,7 +263,7 @@ class SetVarsPassive_Node(NodeBase):
             self.set_var_val(var_names[i], values[i])
 
     def get_state(self):
-        return {'num vars': self.num_vars}
+        return {"num vars": self.num_vars}
 
     def set_state(self, data, version):
-        self.num_vars = data['num vars']
+        self.num_vars = data["num vars"]

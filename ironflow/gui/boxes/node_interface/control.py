@@ -47,7 +47,11 @@ class NodeController(NodeInterfaceBase):
         try:
             widget = self.node.input_widget(self.gui, self.node).widget
             widget.layout = widgets.Layout(
-                height="70px", border="solid 1px blue", margin=f"{self._margin}px", padding="10px", width="auto"
+                height="70px",
+                border="solid 1px blue",
+                margin=f"{self._margin}px",
+                padding="10px",
+                width="auto",
             )
             return widget
         except AttributeError:
@@ -105,6 +109,7 @@ class NodeController(NodeInterfaceBase):
             self.node.inputs[i_c].val = change["new"]
             self.node.update(i_c)
             self.gui.redraw_active_flow_canvas()
+
         return input_change
 
     @property
@@ -122,7 +127,7 @@ class NodeController(NodeInterfaceBase):
                     height=f"{self._box_height(n_fields)}px",
                     # Automatic height like this really should be doable just with the CSS,
                     # but for the life of me I can't get a CSS solution working right -Liam
-                )
+                ),
             )
         else:
             return widgets.Output()
@@ -132,9 +137,13 @@ class NodeController(NodeInterfaceBase):
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
-        global_id = widgets.Text(value=str(glob_id_val), description="GLOBAL_ID:", disabled=True)
+        global_id = widgets.Text(
+            value=str(glob_id_val), description="GLOBAL_ID:", disabled=True
+        )
 
-        title = widgets.Text(value=str(self.node.title), description="Title:", disabled=True)
+        title = widgets.Text(
+            value=str(self.node.title), description="Title:", disabled=True
+        )
 
         info_box = widgets.VBox([title, global_id])
         info_box.layout = widgets.Layout(
@@ -149,7 +158,9 @@ class NodeController(NodeInterfaceBase):
         self.clear_output()
         if self.node is not None:
             with self.output:
-                display(widgets.VBox([self.input_box, self.input_widget, self.info_box]))
+                display(
+                    widgets.VBox([self.input_box, self.input_widget, self.info_box])
+                )
                 # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
 
     def draw_for_node(self, node: Node | None) -> None:
@@ -158,5 +169,3 @@ class NodeController(NodeInterfaceBase):
 
     def close(self) -> None:
         self.draw_for_node(None)
-
-

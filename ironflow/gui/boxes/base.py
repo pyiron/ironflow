@@ -34,4 +34,3 @@ class Box(ABC):
 
     def clear(self):
         self.box.children = []
-
