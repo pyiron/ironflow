@@ -5,6 +5,6 @@ on:
   release:
 
 jobs:
-  pypi-release:
+  pyiron_github:
     uses: pyiron/pyiron_github/.github/workflows/release.yml@main
     secrets: inherit

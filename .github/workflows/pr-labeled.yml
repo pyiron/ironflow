@@ -7,6 +7,6 @@ on:
     types: [labeled]
 
 jobs:
-  pr-labeled:
+  pyiron_github:
     uses: pyiron/pyiron_github/.github/workflows/pr-labeled.yml@main
     secrets: inherit
