@@ -14,9 +14,17 @@ from ipycanvas import hold_canvas
 
 from ironflow.gui.canvas_widgets.base import CanvasWidget
 from ironflow.gui.canvas_widgets.buttons import (
-    RepresentButtonWidget, ExpandButtonWidget, CollapseButtonWidget, ExecButtonWidget
+    RepresentButtonWidget,
+    ExpandButtonWidget,
+    CollapseButtonWidget,
+    ExecButtonWidget,
 )
-from ironflow.gui.canvas_widgets.layouts import NodeLayout, DataPortLayout, ExecPortLayout, ButtonLayout
+from ironflow.gui.canvas_widgets.layouts import (
+    NodeLayout,
+    DataPortLayout,
+    ExecPortLayout,
+    ButtonLayout,
+)
 from ironflow.gui.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
@@ -34,16 +42,17 @@ class NodeWidget(CanvasWidget):
     Presentation gets locked until the button is pressed again, the node is deleted, or another node gets presented.
     While presented, representation updates automatically on changes to input.
     """
+
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: FlowCanvas | CanvasWidget,
-            layout: NodeLayout,
-            node: Node,
-            selected: bool = False,
-            title: Optional[str] = None,
-            port_radius: Number = 10,
+        self,
+        x: Number,
+        y: Number,
+        parent: FlowCanvas | CanvasWidget,
+        layout: NodeLayout,
+        node: Node,
+        selected: bool = False,
+        title: Optional[str] = None,
+        port_radius: Number = 10,
     ):
         super().__init__(
             x=x,
@@ -65,12 +74,11 @@ class NodeWidget(CanvasWidget):
         self.node.after_update.connect(self._draw_after_updating)
 
         self.port_radius = port_radius
-        self.port_layouts = {
-            'data': DataPortLayout(),
-            'exec': ExecPortLayout()
-        }
+        self.port_layouts = {"data": DataPortLayout(), "exec": ExecPortLayout()}
 
-        n_ports_max = max(len(self.node.inputs), len(self.node.outputs)) + 1  # Includes the expand/collapse button
+        n_ports_max = (
+            max(len(self.node.inputs), len(self.node.outputs)) + 1
+        )  # Includes the expand/collapse button
         exec_port_i = np.where([p.type_ == "exec" for p in self.node.inputs])[0]
         n_ports_min = exec_port_i[-1] + 1 if len(exec_port_i) > 0 else 1
         subwidget_size_and_buffer = 1.33 * 2 * self.port_radius
@@ -82,7 +90,9 @@ class NodeWidget(CanvasWidget):
         self._height = self._expanded_height
 
         y_step = self._max_body_height / n_ports_max
-        self._subwidget_y_locs = (np.arange(n_ports_max) + 0.5) * y_step + self._title_box_height
+        self._subwidget_y_locs = (
+            np.arange(n_ports_max) + 0.5
+        ) * y_step + self._title_box_height
 
         self.add_inputs()
         self.add_outputs()
@@ -93,7 +103,7 @@ class NodeWidget(CanvasWidget):
             layout=ButtonLayout(),
             pressed=True,
             visible=False,
-            size=2 * self.port_radius
+            size=2 * self.port_radius,
         )
         self.add_widget(self.expand_button)
         self.collapse_button = CollapseButtonWidget(
@@ -103,7 +113,7 @@ class NodeWidget(CanvasWidget):
             layout=ButtonLayout(),
             pressed=False,
             visible=True,
-            size=2 * self.port_radius
+            size=2 * self.port_radius,
         )
         self.add_widget(self.collapse_button)
 
@@ -113,11 +123,13 @@ class NodeWidget(CanvasWidget):
             x=self.width - button_layout.width - button_edge_offset,
             y=button_edge_offset,
             parent=self,
-            layout=button_layout
+            layout=button_layout,
         )
         self.add_widget(self.represent_button)
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> NodeWidget | None:
+    def on_click(
+        self, last_selected_object: Optional[CanvasWidget]
+    ) -> NodeWidget | None:
         if last_selected_object == self:
             return self
         else:
@@ -128,7 +140,9 @@ class NodeWidget(CanvasWidget):
                 self.gui.open_node_control(self.node)
                 return self
             except Exception as e:
-                self.gui.print(f"Failed to handle selection of {self} with exception {e}")
+                self.gui.print(
+                    f"Failed to handle selection of {self} with exception {e}"
+                )
                 self.gui.close_node_control()
                 self.deselect()
                 return None
@@ -168,11 +182,11 @@ class NodeWidget(CanvasWidget):
         self.canvas.fill_text(self.title, x, y)
 
     def _add_ports(
-            self,
-            radius: Number,
-            inputs: Optional[list[NodeInputBP]] = None,
-            outputs: Optional[list[NodeOutputBP]] = None,
-            border: Number = 1.4,
+        self,
+        radius: Number,
+        inputs: Optional[list[NodeInputBP]] = None,
+        outputs: Optional[list[NodeOutputBP]] = None,
+        border: Number = 1.4,
     ) -> None:
         if inputs is not None:
             x = radius * border
@@ -207,7 +221,7 @@ class NodeWidget(CanvasWidget):
                         y=self._subwidget_y_locs[i_port] - 0.5 * button_layout.height,
                         parent=self,
                         layout=button_layout,
-                        port=port
+                        port=port,
                     )
                 )
 
@@ -220,7 +234,9 @@ class NodeWidget(CanvasWidget):
     def delete(self) -> None:
         self.gui.ensure_node_not_presented(self)
         self.gui.ensure_node_not_controlled(self.node)
-        for c in self.flow.connections[::-1]:  # Reverse to make sure we traverse whole thing even if we delete
+        for c in self.flow.connections[
+            ::-1
+        ]:  # Reverse to make sure we traverse whole thing even if we delete
             # Todo: Can we be more efficient than looping over all nodes?
             if (c.inp.node == self.node) or (c.out.node == self.node):
                 self.flow.remove_connection(c)
@@ -250,18 +266,25 @@ class NodeWidget(CanvasWidget):
 
 class ButtonNodeWidget(NodeWidget):
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: FlowCanvas | CanvasWidget,
-            layout: NodeLayout,
-            node: Node,
-            selected: bool = False,
-            title: Optional[str] = None,
-            port_radius: Number = 10,
+        self,
+        x: Number,
+        y: Number,
+        parent: FlowCanvas | CanvasWidget,
+        layout: NodeLayout,
+        node: Node,
+        selected: bool = False,
+        title: Optional[str] = None,
+        port_radius: Number = 10,
     ):
         super().__init__(
-            x=x, y=y, parent=parent, layout=layout, node=node, selected=selected, title=title, port_radius=port_radius
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            node=node,
+            selected=selected,
+            title=title,
+            port_radius=port_radius,
         )
 
         button_layout = ButtonLayout()

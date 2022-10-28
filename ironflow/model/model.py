@@ -32,13 +32,18 @@ class HasSession(ABC):
         self.nodes_dictionary = {}
         from ironflow.nodes import built_in
         from ironflow.nodes.pyiron import atomistics_nodes
-        from ironflow.nodes.std import basic_operators, control_structures, special_nodes
+        from ironflow.nodes.std import (
+            basic_operators,
+            control_structures,
+            special_nodes,
+        )
+
         for module in [
             built_in,
             atomistics_nodes,
             basic_operators,
             control_structures,
-            special_nodes
+            special_nodes,
         ]:
             self.register_nodes_from_module(module)
 
@@ -84,15 +89,15 @@ class HasSession(ABC):
         return f"script_{i}"
 
     def create_script(
-            self,
-            title: Optional[str] = None,
-            create_default_logs: bool = True,
-            data: Optional[dict] = None
+        self,
+        title: Optional[str] = None,
+        create_default_logs: bool = True,
+        data: Optional[dict] = None,
     ) -> None:
         self.session.create_script(
             title=title if title is not None else self.next_auto_script_name,
             create_default_logs=create_default_logs,
-            data=data
+            data=data,
         )
         self.active_script_index = self.n_scripts - 1
 
@@ -128,7 +133,9 @@ class HasSession(ABC):
         self.session.load(data)
         self.active_script_index = 0
 
-    def register_node(self, node_class: Type[Node], node_group: Optional[str] = None) -> None:
+    def register_node(
+        self, node_class: Type[Node], node_group: Optional[str] = None
+    ) -> None:
         """
         Registers a node class with the ryven session and model, storing it in `nodes_dictionary`. Some node attributes
         (`identifier_prefix` and `type_`) are also set on the Node class.
@@ -174,16 +181,22 @@ class HasSession(ABC):
         self.session.register_node(node_class)
 
         module = node_class.__module__
-        identifier_prefix, _, module_shorthand = module.rpartition('.')
-        node_class.identifier_prefix = identifier_prefix if node_class.identifier is None else None
-        node_class.type_ = module + node_class.type_ if not node_class.type_ else node_class.type_
+        identifier_prefix, _, module_shorthand = module.rpartition(".")
+        node_class.identifier_prefix = (
+            identifier_prefix if node_class.identifier is None else None
+        )
+        node_class.type_ = (
+            module + node_class.type_ if not node_class.type_ else node_class.type_
+        )
 
         node_group = node_group or module_shorthand
         if node_group not in self.nodes_dictionary.keys():
             self.nodes_dictionary[node_group] = {}
         self.nodes_dictionary[node_group][node_class.title] = node_class
 
-    def register_nodes_from_module(self, module: ModuleType, node_group: Optional[str] = None) -> None:
+    def register_nodes_from_module(
+        self, module: ModuleType, node_group: Optional[str] = None
+    ) -> None:
         """
         Search through the provided python module for all subclasses `ironflow.main.node.Node` whose name ends with
         `'_Node'` and register them with the ryven session and the model's `nodes_dictionary`.
@@ -193,14 +206,17 @@ class HasSession(ABC):
             node_group (str | None): The sub-collection to which this node belongs. (Default is None, which uses the
                 last bit of the module path.)
         """
-        for name in [key for key in module.__dir__() if key.endswith('_Node')]:
+        for name in [key for key in module.__dir__() if key.endswith("_Node")]:
             node = getattr(module, name)
             if not isclass(node) or not issubclass(node, Node):
                 raise TypeError(
-                    f'Tried to import {name} from {module}, but it was a {node.__class__} instead of {Node}')
+                    f"Tried to import {name} from {module}, but it was a {node.__class__} instead of {Node}"
+                )
             self.register_node(node_class=node, node_group=node_group)
 
-    def register_nodes_from_file(self, file_path: str | Path, node_group: Optional[str] = None) -> None:
+    def register_nodes_from_file(
+        self, file_path: str | Path, node_group: Optional[str] = None
+    ) -> None:
         """
         Loads a .py file as a module, then searches through it for all subclasses `ironflow.main.node.Node` whose name
         ends with `'_Node'` and register them with the ryven session and the model's `nodes_dictionary`.
@@ -213,25 +229,26 @@ class HasSession(ABC):
         path = Path(file_path)
         resolved = path.resolve().__str__()
         if not path.is_file():
-            raise ValueError(f'No file found at {resolved}')
+            raise ValueError(f"No file found at {resolved}")
 
         spec = importlib.util.spec_from_file_location(
-            resolved.replace('/', '.').lstrip('.').rpartition('.')[0],
-            resolved
+            resolved.replace("/", ".").lstrip(".").rpartition(".")[0], resolved
         )
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self.register_nodes_from_module(module, node_group=node_group)
 
     def register_nodes(
-            self,
-            source: str | Path | types.ModuleType | list | tuple,
-            node_group: Optional[str] = None
+        self,
+        source: str | Path | types.ModuleType | list | tuple,
+        node_group: Optional[str] = None,
     ) -> None:
         if isinstance(source, (str, Path)):
             self.register_nodes_from_file(source, node_group=node_group)
         elif isinstance(source, types.ModuleType):
             self.register_nodes_from_module(source, node_group=node_group)
-        elif isinstance(source, (list, tuple)) and all([issubclass(item, Node) for item in source]):
+        elif isinstance(source, (list, tuple)) and all(
+            [issubclass(item, Node) for item in source]
+        ):
             for node_class in source:
                 self.register_node(node_class, node_group=node_group)

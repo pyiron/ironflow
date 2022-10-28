@@ -27,13 +27,13 @@ class CanvasWidget(ABC):
     """
 
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: FlowCanvas | CanvasWidget,
-            layout: Layout,
-            selected: bool = False,
-            title: Optional[str] = None,
+        self,
+        x: Number,
+        y: Number,
+        parent: FlowCanvas | CanvasWidget,
+        layout: Layout,
+        selected: bool = False,
+        title: Optional[str] = None,
     ):
         self._x = x  # relative to parent
         self._y = y
@@ -48,7 +48,9 @@ class CanvasWidget(ABC):
         self._height = self.layout.height
 
     @abstractmethod
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> CanvasWidget | None:
+    def on_click(
+        self, last_selected_object: Optional[CanvasWidget]
+    ) -> CanvasWidget | None:
         pass
 
     def on_double_click(self) -> CanvasWidget | None:
@@ -102,7 +104,11 @@ class CanvasWidget(ABC):
 
     @property
     def color(self) -> str:
-        return self.layout.selected_color if self.selected else self.layout.background_color
+        return (
+            self.layout.selected_color
+            if self.selected
+            else self.layout.background_color
+        )
 
     def draw_shape(self) -> None:
         self.canvas.fill_style = self.color
@@ -127,7 +133,9 @@ class CanvasWidget(ABC):
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         x_coord = self.x
         y_coord = self.y
-        return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (y_coord + self.height)
+        return x_coord < x_in < (x_coord + self.width) and y_coord < y_in < (
+            y_coord + self.height
+        )
 
     def get_element_at_xy(self, x_in: Number, y_in: Number) -> CanvasWidget | None:
         if self.is_here(x_in, y_in):
@@ -155,18 +163,20 @@ class CanvasWidget(ABC):
 
 class HideableWidget(CanvasWidget, ABC):
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: FlowCanvas | CanvasWidget,
-            layout: Layout,
-            selected: bool = False,
-            title: Optional[str] = None,
-            visible: bool = True,
-            hidden_x: Optional[Number] = None,
-            hidden_y: Optional[Number] = None,
+        self,
+        x: Number,
+        y: Number,
+        parent: FlowCanvas | CanvasWidget,
+        layout: Layout,
+        selected: bool = False,
+        title: Optional[str] = None,
+        visible: bool = True,
+        hidden_x: Optional[Number] = None,
+        hidden_y: Optional[Number] = None,
     ):
-        super().__init__(x=x, y=y, parent=parent, layout=layout, selected=selected, title=title)
+        super().__init__(
+            x=x, y=y, parent=parent, layout=layout, selected=selected, title=title
+        )
         self._hidden_x = hidden_x if hidden_x is not None else x
         self._hidden_y = hidden_y if hidden_y is not None else y
         self.visible = visible

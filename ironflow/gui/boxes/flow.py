@@ -37,11 +37,15 @@ class NodeSelector(Box):
         self.box.children = [self.modules_dropdown, self.node_selector]
 
     def change_modules_dropdown(self, change: dict) -> None:
-        self.node_selector.options = sorted(self._nodes_dictionary[self.modules_dropdown.value].keys())
+        self.node_selector.options = sorted(
+            self._nodes_dictionary[self.modules_dropdown.value].keys()
+        )
 
     @property
     def new_node_class(self):
-        return self._nodes_dictionary[self.modules_dropdown.value][self.node_selector.value]
+        return self._nodes_dictionary[self.modules_dropdown.value][
+            self.node_selector.value
+        ]
 
     @property
     def module_options(self) -> list[str]:
@@ -72,7 +76,9 @@ class FlowBox(Box):
     def update_nodes(self, nodes_dictionary: dict):
         self.node_selector.update(nodes_dictionary=nodes_dictionary)
 
-    def update_tabs(self, outputs: list[widgets.Output], titles: list[str], active_index: int):
+    def update_tabs(
+        self, outputs: list[widgets.Output], titles: list[str], active_index: int
+    ):
         self.script_tabs.selected_index = None
         # ^ To circumvent a bug where the index gets set to 0 on child changes
         # https://github.com/jupyter-widgets/ipywidgets/issues/2988
@@ -83,5 +89,7 @@ class FlowBox(Box):
         self.script_tabs.selected_index = active_index
 
     def _add_new_script_tab(self):
-        self.script_tabs.children += (widgets.Output(layout={"border": "1px solid black"}),)
+        self.script_tabs.children += (
+            widgets.Output(layout={"border": "1px solid black"}),
+        )
         self.script_tabs.set_title(len(self.script_tabs.children) - 1, "+")

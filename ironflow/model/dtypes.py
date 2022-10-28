@@ -13,10 +13,16 @@ from ryvencore.dtypes import DType, Data, Integer, Float, String, Boolean, Char
 
 
 class Choice(DType):
-    def __init__(self, default=None, items: Optional[list] = None, doc: str = "", _load_state=None):
+    def __init__(
+        self,
+        default=None,
+        items: Optional[list] = None,
+        doc: str = "",
+        _load_state=None,
+    ):
         self.items = items if items is not None else []
         super().__init__(default=default, doc=doc, _load_state=_load_state)
-        self.add_data('items')
+        self.add_data("items")
 
 
 class List(DType):

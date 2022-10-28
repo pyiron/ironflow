@@ -40,13 +40,15 @@ class PortWidget(HideableWidget):
             selected=selected,
             title=title if title is not None else port.label_str,
             hidden_x=hidden_x,
-            hidden_y=hidden_y
+            hidden_y=hidden_y,
         )
 
         self.radius = radius
         self.port = port
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> PortWidget | None:
+    def on_click(
+        self, last_selected_object: Optional[CanvasWidget]
+    ) -> PortWidget | None:
         if last_selected_object == self:
             self.deselect()
             return None
@@ -61,13 +63,19 @@ class PortWidget(HideableWidget):
             return self
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.selected_color if self.selected else self.layout.background_color
+        self.canvas.fill_style = (
+            self.layout.selected_color
+            if self.selected
+            else self.layout.background_color
+        )
         self.canvas.fill_circle(self.x, self.y, self.radius)
 
     def draw_title(self) -> None:
         self.canvas.font = self.layout.font_string
         self.canvas.fill_style = self.layout.font_color
-        self.canvas.fill_text(self.title, self.x + self.radius + 3, self.y + self.radius // 2)
+        self.canvas.fill_text(
+            self.title, self.x + self.radius + 3, self.y + self.radius // 2
+        )
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
-        return (x_in - self.x) ** 2 + (y_in - self.y) ** 2 < self.radius ** 2
+        return (x_in - self.x) ** 2 + (y_in - self.y) ** 2 < self.radius**2
