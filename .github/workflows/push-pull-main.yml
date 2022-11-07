@@ -10,5 +10,5 @@ on:
 
 jobs:
   pyiron:
-    uses: pyiron/actions/.github/workflows/push-pull-main.yml@main
+    uses: pyiron/actions/.github/workflows/push-pull-main.yml@help_readthedocs
     secrets: inherit
