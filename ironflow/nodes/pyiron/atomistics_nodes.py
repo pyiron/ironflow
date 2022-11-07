@@ -195,6 +195,10 @@ class BulkStructure_Node(OutputsOnlyAtoms):
             )
         )
 
+    def place_event(self):
+        super().place_event()
+        self.update()
+
 
 class Repeat_Node(OutputsOnlyAtoms):
     """
