@@ -58,7 +58,7 @@ class Node(NodeCore):
         # place_event() is executed *before* the connections are built
         super().place_event()
         for inp in self.inputs:
-            if inp is None:  # Don't over-write data from loaded sessions with defaults
+            if inp.val is None:  # Don't over-write data from loaded sessions with defaults
                 if inp.dtype is not None:
                     inp.update(inp.dtype.default)
                 elif 'val' in inp.add_data.keys():
