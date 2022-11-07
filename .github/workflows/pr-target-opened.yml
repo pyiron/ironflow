@@ -7,6 +7,6 @@ on:
     types: [opened]
 
 jobs:
-  pyiron_github:
-    uses: pyiron/pyiron_github/.github/workflows/pr-target-opened.yml@main
+  pyiron:
+    uses: pyiron/actions/.github/workflows/pr-target-opened.yml@main
     secrets: inherit

@@ -5,6 +5,6 @@ on:
   release:
 
 jobs:
-  pyiron_github:
-    uses: pyiron/pyiron_github/.github/workflows/release.yml@main
+  pyiron:
+    uses: pyiron/actions/.github/workflows/release.yml@main
     secrets: inherit
