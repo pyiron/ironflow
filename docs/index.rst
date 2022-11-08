@@ -3,7 +3,12 @@
 .. _index:
 
 
-=============
+=========
 ironflow
-=============
+=========
 
+
+.. toctree::
+   :hidden:
+
+    source/indices.rst

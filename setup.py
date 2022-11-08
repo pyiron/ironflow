@@ -34,7 +34,7 @@ setup(
         'nglview',
         'numpy',
         'pyiron_base',
-        'pyiron_atomistics >= 0.2.57',
+        'pyiron_atomistics',
         'ryvencore'
     ],
     cmdclass=versioneer.get_cmdclass(),

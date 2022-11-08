@@ -46,6 +46,7 @@ class FlowCanvas:
             - If a node is selected, deletes it
             - If a port is selected, deletes all connections it is part of
     """
+
     def __init__(self, gui: GUI, flow: Optional[Flow] = None):
         self._gui = gui
         self.flow = flow if flow is not None else gui.flow
@@ -83,7 +84,9 @@ class FlowCanvas:
 
         self._mouse_is_down = False
         self._last_mouse_down = time()
-        self._double_click_speed = 0.25  # In seconds. Todo: Put this in a config somewhere
+        self._double_click_speed = (
+            0.25  # In seconds. Todo: Put this in a config somewhere
+        )
 
         self._object_to_gui_dict = {}
 
@@ -94,7 +97,7 @@ class FlowCanvas:
     @property
     def gui(self):
         return self._gui
-    
+
     @property
     def flow_canvas(self) -> FlowCanvas:
         return self
@@ -159,7 +162,10 @@ class FlowCanvas:
                 self.add_node(x, y, self.gui.new_node_class)
                 self._built_object_to_gui_dict()
         else:
-            if sel_object == last_object and time_since_last_click < self._double_click_speed:
+            if (
+                sel_object == last_object
+                and time_since_last_click < self._double_click_speed
+            ):
                 sel_object = sel_object.on_double_click()
             else:
                 sel_object = sel_object.on_click(last_object)
@@ -211,7 +217,9 @@ class FlowCanvas:
             elif issubclass(node.main_widget_class, NodeWidget):
                 node_class = node.main_widget_class
             else:
-                raise TypeError(f"main_widget_class {node.main_widget_class} not recognized")
+                raise TypeError(
+                    f"main_widget_class {node.main_widget_class} not recognized"
+                )
         else:
             node_class = NodeWidget
         s = node_class(x=x, y=y, parent=self, layout=layout, node=node)

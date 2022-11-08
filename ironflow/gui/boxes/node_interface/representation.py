@@ -50,18 +50,22 @@ class NodePresenter(NodeInterfaceBase):
 
     @staticmethod
     def _build_widgets(representations: dict) -> list[widgets.Output]:
-        return [widgets.Output(layout={"border": "solid 1px gray"}) for _ in representations]
+        return [
+            widgets.Output(layout={"border": "solid 1px gray"}) for _ in representations
+        ]
 
     def _build_toggles(self, representations: dict) -> list[widgets.Checkbox]:
         toggles = []
         for i, label in enumerate(representations.keys()):
-            toggle = widgets.Checkbox(description=label, value=i == 0, indent=False, layout={"width": "100px"})
+            toggle = widgets.Checkbox(
+                description=label, value=i == 0, indent=False, layout={"width": "100px"}
+            )
             toggle.observe(self._on_toggle)
             toggles.append(toggle)
         return toggles
 
     def _on_toggle(self, change: dict) -> None:
-        if change['name'] == 'value':
+        if change["name"] == "value":
             self._draw()
 
     def _draw(self):
@@ -69,9 +73,7 @@ class NodePresenter(NodeInterfaceBase):
 
         representations = []
         for (toggle, widget, representation) in zip(
-                self._toggles,
-                self._widgets,
-                self.node_widget.node.representations.values()
+            self._toggles, self._widgets, self.node_widget.node.representations.values()
         ):
             if toggle.value:
                 with widget:
@@ -80,14 +82,19 @@ class NodePresenter(NodeInterfaceBase):
 
         with self.output:
             display(
-                widgets.VBox([
-                    widgets.HBox(self._toggles, layout={"flex_flow": "row wrap"}),
-                    *representations
-                ])
+                widgets.VBox(
+                    [
+                        widgets.HBox(self._toggles, layout={"flex_flow": "row wrap"}),
+                        *representations,
+                    ]
+                )
             )
 
     def draw(self) -> None:
-        if self.node_widget is not None and self.node_widget.node.representation_updated:
+        if (
+            self.node_widget is not None
+            and self.node_widget.node.representation_updated
+        ):
             self._draw()
             self.node_widget.node.representation_updated = False
 

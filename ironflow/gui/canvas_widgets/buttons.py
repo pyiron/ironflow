@@ -22,20 +22,22 @@ if TYPE_CHECKING:
 
 class ButtonWidget(CanvasWidget, ABC):
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: NodeWidget,
-            layout: ButtonLayout,
-            selected: bool = False,
-            title: str = "Button",
-            pressed: Optional[bool] = False,
+        self,
+        x: Number,
+        y: Number,
+        parent: NodeWidget,
+        layout: ButtonLayout,
+        selected: bool = False,
+        title: str = "Button",
+        pressed: Optional[bool] = False,
     ):
         super().__init__(x, y, parent, layout, selected)
         self.title = title
         self.pressed = pressed
 
-    def on_click(self, last_selected_object: Optional[CanvasWidget]) -> CanvasWidget | None:
+    def on_click(
+        self, last_selected_object: Optional[CanvasWidget]
+    ) -> CanvasWidget | None:
         if self.pressed:
             self.unpress()
         else:
@@ -67,7 +69,9 @@ class ButtonWidget(CanvasWidget, ABC):
         pass
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
+        self.canvas.fill_style = (
+            self.layout.pressed_color if self.pressed else self.layout.background_color
+        )
         self.canvas.fill_rect(
             self.x,
             self.y,
@@ -85,13 +89,13 @@ class ButtonWidget(CanvasWidget, ABC):
 
 class RepresentButtonWidget(ButtonWidget):
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: NodeWidget,
-            layout: ButtonLayout,
-            selected: bool = False,
-            title="SHOW",
+        self,
+        x: Number,
+        y: Number,
+        parent: NodeWidget,
+        layout: ButtonLayout,
+        selected: bool = False,
+        title="SHOW",
     ):
         super().__init__(x, y, parent, layout, selected, title=title)
 
@@ -104,16 +108,16 @@ class RepresentButtonWidget(ButtonWidget):
 
 class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: NodeWidget,
-            layout: ButtonLayout,
-            selected: bool = False,
-            pressed: bool = False,
-            visible: bool = True,
-            title: Optional[str] = None,
-            size: Optional[Number] = None,
+        self,
+        x: Number,
+        y: Number,
+        parent: NodeWidget,
+        layout: ButtonLayout,
+        selected: bool = False,
+        pressed: bool = False,
+        visible: bool = True,
+        title: Optional[str] = None,
+        size: Optional[Number] = None,
     ):
         if size is not None:
             layout.width = size
@@ -121,10 +125,26 @@ class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
         layout.background_color = parent.node.color
         layout.pressed_color = parent.node.color
 
-        ButtonWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
-                              pressed=pressed)
-        HideableWidget.__init__(self, x=x, y=y, parent=parent, layout=layout, selected=selected, title=title,
-                                visible=visible)
+        ButtonWidget.__init__(
+            self,
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            selected=selected,
+            title=title,
+            pressed=pressed,
+        )
+        HideableWidget.__init__(
+            self,
+            x=x,
+            y=y,
+            parent=parent,
+            layout=layout,
+            selected=selected,
+            title=title,
+            visible=visible,
+        )
 
     def on_pressed(self):
         self.hide()
@@ -133,7 +153,9 @@ class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):
         self.show()
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = self.layout.pressed_color if self.pressed else self.layout.background_color
+        self.canvas.fill_style = (
+            self.layout.pressed_color if self.pressed else self.layout.background_color
+        )
         self.canvas.fill_polygon(self._points)
 
     @property
@@ -148,7 +170,7 @@ class ExpandButtonWidget(ExpandCollapseButtonWidget):
         return [
             (self.x, self.y),
             (self.x + self.width, self.y),
-            (self.x + 0.5 * self.width, self.y + self.height)
+            (self.x + 0.5 * self.width, self.y + self.height),
         ]
 
     def on_pressed(self):
@@ -162,7 +184,7 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
         return [
             (self.x, self.y + self.height),
             (self.x + 0.5 * self.width, self.y),
-            (self.x + self.width, self.y + self.height)
+            (self.x + self.width, self.y + self.height),
         ]
 
     def on_pressed(self):
@@ -172,15 +194,15 @@ class CollapseButtonWidget(ExpandCollapseButtonWidget):
 
 class ExecButtonWidget(ButtonWidget):
     def __init__(
-            self,
-            x: Number,
-            y: Number,
-            parent: NodeWidget,
-            layout: ButtonLayout,
-            port: NodePort,
-            selected: bool = False,
-            title: str = "Exec",
-            pressed: Optional[bool] = False,
+        self,
+        x: Number,
+        y: Number,
+        parent: NodeWidget,
+        layout: ButtonLayout,
+        port: NodePort,
+        selected: bool = False,
+        title: str = "Exec",
+        pressed: Optional[bool] = False,
     ):
         super().__init__(
             x=x,
@@ -188,8 +210,8 @@ class ExecButtonWidget(ButtonWidget):
             parent=parent,
             layout=layout,
             selected=selected,
-            title=port.label_str if port.label_str != '' else title,
-            pressed=pressed
+            title=port.label_str if port.label_str != "" else title,
+            pressed=pressed,
         )
         self.port = port
 

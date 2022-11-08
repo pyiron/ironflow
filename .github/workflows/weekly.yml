@@ -1,0 +1,12 @@
+# This runs cron jobs weekly
+
+name: Weekly
+
+on:
+  schedule:
+    - cron: '0 23 * * 2'
+
+jobs:
+  codeql:
+    uses: pyiron/actions/.github/workflows/codeql.yml@main
+    secrets: inherit

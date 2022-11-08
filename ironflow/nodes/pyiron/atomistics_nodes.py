@@ -123,10 +123,7 @@ class OutputsOnlyAtoms(Node, ABC):
 
     @property
     def representations(self) -> dict:
-        return {
-            "plot3d": self.output(0).plot3d(),
-            "print": self.output(0)
-        }
+        return {"plot3d": self.output(0).plot3d(), "print": self.output(0)}
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -203,11 +200,11 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 class Repeat_Node(OutputsOnlyAtoms):
     """
     Repeat atomic structure supercell.
-    
+
     Inputs:
         structure (pyiron_atomistics.Atoms): The structure to repeat periodically.
         all (int): The number of times to repeat it in each of the three bravais lattice directions.
-        
+
     Outputs:
         structure (pyiron_atomistics.Atoms): A repeated copy of the input structure.
     """
@@ -243,7 +240,9 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, self.input(0).apply_strain(float(self.input(1)), return_box=True))
+        self.set_output_val(
+            0, self.input(0).apply_strain(float(self.input(1)), return_box=True)
+        )
 
 
 class Lammps_Node(Node):
@@ -259,9 +258,12 @@ class Lammps_Node(Node):
         NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
         NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
         NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
-        NodeInputBP(dtype=dtypes.Choice(
-            default="Set structure first", items=["Set structure first"]), label="potential"
-        )
+        NodeInputBP(
+            dtype=dtypes.Choice(
+                default="Set structure first", items=["Set structure first"]
+            ),
+            label="potential",
+        ),
     ]
     init_outputs = [
         NodeOutputBP(type_="exec"),
@@ -296,7 +298,9 @@ class Lammps_Node(Node):
 
     def _remove(self):
         try:
-            name = self._job.name  # Remove based on the run job, not the input name which might have changed...
+            name = (
+                self._job.name
+            )  # Remove based on the run job, not the input name which might have changed...
             self._project.remove_job(name)
             self.set_output_val(1, None)
         except AttributeError:
@@ -326,7 +330,7 @@ class Lammps_Node(Node):
 
     @property
     def representations(self) -> dict:
-        return {'job': BeautifulHasGroups(self.output(1))}
+        return {"job": BeautifulHasGroups(self.output(1))}
 
 
 class GenericOutput_Node(Node):
@@ -479,7 +483,7 @@ class Linspace_Node(Node):
 
     def place_event(self):
         super().place_event()
-        self.update()    
+        self.update()
 
     def update_event(self, inp=-1):
         val = np.linspace(self.input(0), self.input(1), self.input(2))
@@ -613,7 +617,7 @@ class ForEach_Node(Node):
         NodeOutputBP(label="e", type_="data"),
         NodeOutputBP(label="finished", type_="exec"),
     ]
-    color = '#b33a27'
+    color = "#b33a27"
 
     _count = 0
 
