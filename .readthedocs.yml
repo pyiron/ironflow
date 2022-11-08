@@ -21,7 +21,6 @@ formats: []
 conda:
   environment: docs/environment.yml
 
-
 python:
   install:
     - method: pip
