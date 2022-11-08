@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 
 STRUCTURE_FACTORY = StructureFactory()
 
+
 class BeautifulHasGroups:
     """
     A helper class for giving classes that inherit from `pyiron_base.HasGroups` a more appealing representation in
@@ -165,10 +166,10 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                     "rocksalt",
                     "cesiumchloride",
                     "fluorite",
-                    "wurtzite"
+                    "wurtzite",
                 ],
             ),
-            label="crystal_structure"
+            label="crystal_structure",
         ),
         NodeInputBP(dtype=dtypes.Float(default=None), label="a"),
         NodeInputBP(dtype=dtypes.Float(default=None), label="c"),
@@ -180,7 +181,8 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 
     def update_event(self, inp=-1):
         self.set_output_val(
-            0, STRUCTURE_FACTORY.bulk(
+            0,
+            STRUCTURE_FACTORY.bulk(
                 self.input(0),
                 crystalstructure=self.input(1),
                 a=self.input(2),
@@ -188,8 +190,8 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                 covera=self.input(4),
                 u=self.input(5),
                 orthorhombic=self.input(6),
-                cubic=self.input(7)
-            )
+                cubic=self.input(7),
+            ),
         )
 
     def place_event(self):
