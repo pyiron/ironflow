@@ -12,7 +12,14 @@ from typing import TYPE_CHECKING, Optional, Type
 import ipywidgets as widgets
 from IPython.display import HTML
 
-from ironflow.gui.boxes import Toolbar, NodeController, NodePresenter, TextOut, UserInput, FlowBox
+from ironflow.gui.boxes import (
+    Toolbar,
+    NodeController,
+    NodePresenter,
+    TextOut,
+    UserInput,
+    FlowBox,
+)
 from ironflow.gui.canvas_widgets import FlowCanvas
 from ironflow.model.model import HasSession
 
@@ -33,10 +40,10 @@ class GUI(HasSession):
     """
 
     def __init__(
-            self,
-            session_title: str,
-            extra_nodes_packages: Optional[list] = None,
-            script_title: Optional[str] = None
+        self,
+        session_title: str,
+        extra_nodes_packages: Optional[list] = None,
+        script_title: Optional[str] = None,
     ):
         """
         Create a new gui instance.
@@ -48,10 +55,12 @@ class GUI(HasSession):
                 be either a list of `ironflow.model.node.Node` subclasses, a module containing such subclasses, or a .py
                 file of a module containing such subclasses. In all cases only those subclasses with the name pattern
                 `*_Node` will be registered. (Default is None, don't register any extra nodes.)
-            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a 
+            script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a
                 new script is needed on initialization, i.e. when existing session data cannot be read.)
         """
-        super().__init__(session_title=session_title, extra_nodes_packages=extra_nodes_packages)
+        super().__init__(
+            session_title=session_title, extra_nodes_packages=extra_nodes_packages
+        )
 
         self.flow_canvases = []
         self.toolbar = Toolbar()
@@ -65,17 +74,21 @@ class GUI(HasSession):
             self.load(f"{self.session_title}.json")
             print(f"Loaded session data for {self.session_title}")
         except FileNotFoundError:
-            print(f"No session data found for {self.session_title}, making a new script.")
+            print(
+                f"No session data found for {self.session_title}, making a new script."
+            )
             self.create_script(script_title)
         self.update_tabs()
 
     def create_script(
-            self,
-            title: Optional[str] = None,
-            create_default_logs: bool = True,
-            data: Optional[dict] = None
+        self,
+        title: Optional[str] = None,
+        create_default_logs: bool = True,
+        data: Optional[dict] = None,
     ) -> None:
-        super().create_script(title=title, create_default_logs=create_default_logs, data=data)
+        super().create_script(
+            title=title, create_default_logs=create_default_logs, data=data
+        )
         self.flow_canvases.append(FlowCanvas(gui=self))
 
     def delete_script(self) -> None:
@@ -111,7 +124,9 @@ class GUI(HasSession):
             flow_canvas = FlowCanvas(gui=self, flow=script.flow)
             all_data = data["scripts"][i_script]["flow"]["nodes"]
             for i_node, node in enumerate(script.flow.nodes):
-                flow_canvas.load_node(all_data[i_node]["pos x"], all_data[i_node]["pos y"], node)
+                flow_canvas.load_node(
+                    all_data[i_node]["pos x"], all_data[i_node]["pos y"], node
+                )
             flow_canvas._built_object_to_gui_dict()
             flow_canvas.redraw()
             self.flow_canvases.append(flow_canvas)
@@ -128,7 +143,7 @@ class GUI(HasSession):
         self.flow_box.update_tabs(
             outputs=[fc.output for fc in self.flow_canvases],
             titles=[fc.title for fc in self.flow_canvases],
-            active_index=self.active_script_index
+            active_index=self.active_script_index,
         )
         for fc in self.flow_canvases:
             fc.display()
@@ -176,7 +191,9 @@ class GUI(HasSession):
         """
 
         # Wire callbacks
-        self.toolbar.alg_mode_dropdown.observe(self._change_alg_mode_dropdown, names="value")
+        self.toolbar.alg_mode_dropdown.observe(
+            self._change_alg_mode_dropdown, names="value"
+        )
         self.toolbar.buttons.help_node.on_click(self._click_node_help)
         self.toolbar.buttons.load.on_click(self._click_load)
         self.toolbar.buttons.save.on_click(self._click_save)
@@ -197,7 +214,7 @@ class GUI(HasSession):
                 self.flow_box.box,
                 self.text_out.box,
                 widgets.HBox([self.node_controller.box, self.node_presenter.box]),
-                debug_view
+                debug_view,
             ]
         )
 
@@ -214,7 +231,7 @@ class GUI(HasSession):
             "Save file",
             self._click_confirm_save,
             self.session_title,
-            description_tooltip="Save to file name (omit the file extension, .json)"
+            description_tooltip="Save to file name (omit the file extension, .json)",
         )
         self.print("Choose a file name to save to (omit the file extension, .json)")
 
@@ -229,7 +246,7 @@ class GUI(HasSession):
             "Load file",
             self._click_confirm_load,
             self.session_title,
-            description_tooltip="Load from file name (omit the file extension, .json)."
+            description_tooltip="Load from file name (omit the file extension, .json).",
         )
         self.print("Choose a file name to load (omit the file extension, .json)")
 
@@ -248,8 +265,14 @@ class GUI(HasSession):
             If we pass a `print`ed string, `display` also shows the `None` value returned by `print`
             So we use this ugly hack.
             """
-            string = f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
-            return HTML(string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;"))
+            string = (
+                f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
+            )
+            return HTML(
+                string.replace("\n", "<br>")
+                .replace("\t", "&emsp;")
+                .replace(" ", "&nbsp;")
+            )
 
         self.print(_pretty_docstring(self.new_node_class))
 
@@ -268,7 +291,7 @@ class GUI(HasSession):
             "New name",
             self._click_confirm_rename,
             self.script.title,
-            description_tooltip="New script name"
+            description_tooltip="New script name",
         )
         self.print("Choose a new name for the current script")
 
@@ -280,12 +303,14 @@ class GUI(HasSession):
             self.flow_box.script_tabs.set_title(self.active_script_index, new_name)
             self.print(f"Script '{old_name}' renamed '{new_name}'")
         else:
-            self.print(f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'.")
+            self.print(
+                f"INVALID NAME: Failed to rename script '{self.script.title}' to '{new_name}'."
+            )
 
     def _click_delete_script(self, change: dict) -> None:
         self.input.open_bool(
             f"Delete the entire script {self.script.title}?",
-            self._click_confirm_delete_script
+            self._click_confirm_delete_script,
         )
 
     def _click_confirm_delete_script(self, change: dict) -> None:
@@ -310,7 +335,7 @@ class GUI(HasSession):
         self.text_out.clear()
 
     def _change_script_tabs(self, change: dict):
-        if change['name'] == 'selected_index' and change['new'] is not None:
+        if change["name"] == "selected_index" and change["new"] is not None:
             self.input.clear()
             self.flow_canvas.deselect_all()
             if self.flow_box.script_tabs.selected_index == self.n_scripts:

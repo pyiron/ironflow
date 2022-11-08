@@ -4,31 +4,31 @@ from ironflow.model.node import Node
 
 class OperatorNodeBase(Node):
 
-    version = 'v0.0'
+    version = "v0.0"
 
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size='s')),
-        NodeInputBP(dtype=dtypes.Data(size='s')),
+        NodeInputBP(dtype=dtypes.Data(size="s")),
+        NodeInputBP(dtype=dtypes.Data(size="s")),
     ]
 
     init_outputs = [
         NodeOutputBP(),
     ]
 
-    style = 'small'
+    style = "small"
 
     def __init__(self, params):
         super().__init__(params)
 
         self.num_inputs = 0
-        self.actions['add input'] = {'method': self.add_operand_input}
+        self.actions["add input"] = {"method": self.add_operand_input}
 
     def place_event(self):
         for i in range(len(self.inputs)):
             self.register_new_operand_input(i)
 
     def add_operand_input(self):
-        self.create_input_dt(dtype=dtypes.Data(size='s'))
+        self.create_input_dt(dtype=dtypes.Data(size="s"))
         self.register_new_operand_input(self.num_inputs)
         self.update()
 
@@ -40,9 +40,9 @@ class OperatorNodeBase(Node):
         self.update()
 
     def register_new_operand_input(self, index):
-        self.actions[f'remove input {index}'] = {
-            'method': self.remove_operand_input,
-            'data': index
+        self.actions[f"remove input {index}"] = {
+            "method": self.remove_operand_input,
+            "data": index,
         }
         self.num_inputs += 1
 
@@ -50,17 +50,22 @@ class OperatorNodeBase(Node):
 
         remove_keys = []
         for k, v in self.actions.items():
-            if k.startswith('remove input'):
+            if k.startswith("remove input"):
                 remove_keys.append(k)
 
         for k in remove_keys:
             del self.actions[k]
 
         for i in range(self.num_inputs):
-            self.actions[f'remove input {i}'] = {'method': self.remove_operand_input, 'data': i}
+            self.actions[f"remove input {i}"] = {
+                "method": self.remove_operand_input,
+                "data": i,
+            }
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, self.apply_op([self.input(i) for i in range(len(self.inputs))]))
+        self.set_output_val(
+            0, self.apply_op([self.input(i) for i in range(len(self.inputs))])
+        )
 
     def apply_op(self, elements: list):
         return None
@@ -68,47 +73,48 @@ class OperatorNodeBase(Node):
 
 # LOGIC -------------------------------------
 
+
 class LogicNodeBase(OperatorNodeBase):
-    color = '#f58142'
+    color = "#f58142"
 
 
 class NOT_Node(LogicNodeBase):
-    title = 'not'
+    title = "not"
 
     def apply_op(self, elements: list):
         return all([not bool(e) for e in elements])
 
 
 class AND_Node(LogicNodeBase):
-    title = 'and'
+    title = "and"
 
     def apply_op(self, elements: list):
         return all(elements)
 
 
 class NAND_Node(LogicNodeBase):
-    title = 'nand'
+    title = "nand"
 
     def apply_op(self, elements: list):
         return not all(elements)
 
 
 class OR_Node(LogicNodeBase):
-    title = 'or'
+    title = "or"
 
     def apply_op(self, elements: list):
         return any(elements)
 
 
 class NOR_Node(LogicNodeBase):
-    title = 'nor'
+    title = "nor"
 
     def apply_op(self, elements: list):
         return not any(elements)
 
 
 class XOR_Node(LogicNodeBase):
-    title = 'xor'
+    title = "xor"
 
     def apply_op(self, elements: list):
         # XOR definition for unbound number of operands:
@@ -117,7 +123,7 @@ class XOR_Node(LogicNodeBase):
 
 
 class XNOR_Node(LogicNodeBase):
-    title = 'xnor'
+    title = "xnor"
 
     def apply_op(self, elements: list):
         # XNOR definition for unbound number of operands:
@@ -140,12 +146,13 @@ logic_nodes = [
 
 # ARITHMETIC --------------------------------
 
+
 class ArithmeticNodeBase(OperatorNodeBase):
-    color = '#58db53'
+    color = "#58db53"
 
 
 class Plus_Node(ArithmeticNodeBase):
-    title = '+'
+    title = "+"
 
     def apply_op(self, elements: list):
         v = elements[0]
@@ -156,7 +163,7 @@ class Plus_Node(ArithmeticNodeBase):
 
 
 class Minus_Node(ArithmeticNodeBase):
-    title = '-'
+    title = "-"
 
     def apply_op(self, elements: list):
         v = elements[0]
@@ -167,7 +174,7 @@ class Minus_Node(ArithmeticNodeBase):
 
 
 class Multiply_Node(ArithmeticNodeBase):
-    title = '*'
+    title = "*"
 
     def apply_op(self, elements: list):
         v = elements[0]
@@ -178,7 +185,7 @@ class Multiply_Node(ArithmeticNodeBase):
 
 
 class Divide_Node(ArithmeticNodeBase):
-    title = '/'
+    title = "/"
 
     def apply_op(self, elements: list):
         v = elements[0]
@@ -195,12 +202,12 @@ class Divide_Node(ArithmeticNodeBase):
 
 
 class Power_Node(ArithmeticNodeBase):
-    title = '**'
+    title = "**"
 
     def apply_op(self, elements: list):
         v = elements[0]
         for e in elements[1:]:
-            v = v ** e
+            v = v**e
         return v
         # if len(elements) > 0:
         #     x = elements[0]
@@ -224,14 +231,15 @@ arithmetic_nodes = [
 
 # COMPARATORS -------------------------------
 
+
 class ComparatorNodeBase(OperatorNodeBase):
-    color = '#a1574c'
+    color = "#a1574c"
 
     def apply_op(self, elements: list):
         # if len(elements) > 0:
         b = True
         for i in range(1, len(elements)):
-            b = b and (self.comp(elements[i-1], elements[i]))
+            b = b and (self.comp(elements[i - 1], elements[i]))
         return b
         # return None
 
@@ -240,42 +248,42 @@ class ComparatorNodeBase(OperatorNodeBase):
 
 
 class Equal_Node(ComparatorNodeBase):
-    title = '=='
+    title = "=="
 
     def comp(self, a, b) -> bool:
         return a == b
 
 
 class NotEqual_Node(ComparatorNodeBase):
-    title = '!='
+    title = "!="
 
     def comp(self, a, b) -> bool:
         return a != b
 
 
 class Greater_Node(ComparatorNodeBase):
-    title = '>'
+    title = ">"
 
     def comp(self, a, b) -> bool:
         return a > b
 
 
 class GreaterEq_Node(ComparatorNodeBase):
-    title = '>='
+    title = ">="
 
     def comp(self, a, b) -> bool:
         return a >= b
 
 
 class Less_Node(ComparatorNodeBase):
-    title = '<'
+    title = "<"
 
     def comp(self, a, b) -> bool:
         return a < b
 
 
 class LessEq_Node(ComparatorNodeBase):
-    title = '<='
+    title = "<="
 
     def comp(self, a, b) -> bool:
         return a <= b

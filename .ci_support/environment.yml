@@ -1,9 +1,6 @@
 channels:
   - conda-forge
 dependencies:
-  - coveralls
-  - coverage
-  - codacy-coverage
   - ipycanvas
   - ipython
   - ipywidgets == 7.*

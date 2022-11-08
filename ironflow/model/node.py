@@ -49,7 +49,9 @@ class Node(NodeCore):
 
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)
-        self.actions = dict()  # Resolves Todo from ryven.NENV, moving it to our node class instead of ryvencore
+        self.actions = (
+            dict()
+        )  # Resolves Todo from ryven.NENV, moving it to our node class instead of ryvencore
 
         self.representation_updated = False
         self.after_update.connect(self._representation_update)
@@ -60,8 +62,8 @@ class Node(NodeCore):
         for inp in self.inputs:
             if inp.dtype is not None:
                 inp.update(inp.dtype.default)
-            elif 'val' in inp.add_data.keys():
-                inp.update(inp.add_data['val'])
+            elif "val" in inp.add_data.keys():
+                inp.update(inp.add_data["val"])
 
     def update(self, inp=-1):
         self.before_update.emit(self, inp)
@@ -79,7 +81,8 @@ class Node(NodeCore):
     def representations(self) -> dict:
         return {
             o.label_str if o.label_str != "" else f"output{i}": o.val
-            for i, o in enumerate(self.outputs) if o.type_ == "data"
+            for i, o in enumerate(self.outputs)
+            if o.type_ == "data"
         }
 
 
@@ -88,6 +91,6 @@ class PlaceholderWidgetsContainer:
     An object that just returns None for all accessed attributes so widgets.MyWidget in the non-ironflow nodes files
     just returns None.
     """
+
     def __getattr__(self, item):
         return None
-
