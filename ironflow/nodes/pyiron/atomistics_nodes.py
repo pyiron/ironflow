@@ -15,6 +15,7 @@ import matplotlib.pylab as plt
 import numpy as np
 
 from pyiron_atomistics import Project
+from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 
@@ -25,6 +26,8 @@ from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
+
+STRUCTURE_FACTORY = StructureFactory()
 
 
 class BeautifulHasGroups:
@@ -129,9 +132,16 @@ class BulkStructure_Node(OutputsOnlyAtoms):
     Generate a bulk atomic structure.
 
     Inputs:
-        project (pyiron_base.Project): Any atomistic project object.
         element (str): The atomic symbol for the desired atoms. (Default is "Fe".)
-        cubic (bool): Whether to make a cubic structure. Not possible for some elements. (Default is True.)
+        crystal_structure (str | None): Must be one of sc, fcc, bcc, hcp, diamond, zincblende,
+                                rocksalt, cesiumchloride, fluorite or wurtzite.
+        a (float | None): Lattice constant.
+        c (float | None): Lattice constant.
+        c_over_a (float | None): c/a ratio used for hcp.  Default is ideal ratio: sqrt(8/3).
+        u (float | None): Internal coordinate for Wurtzite structure.
+        orthorhombic (bool): Construct orthorhombic unit cell instead of primitive cell. (Takes precedence over cubic
+            flag when both are true.)
+        cubic (bool): Construct cubic unit cell if possible.
 
     Outputs:
         structure (pyiron_atomistics.Atoms): A mono-species bulk structure.
@@ -141,16 +151,52 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 
     title = "BulkStructure"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
         NodeInputBP(dtype=dtypes.Char(default="Fe"), label="element"),
-        NodeInputBP(dtype=dtypes.Boolean(default=True), label="cubic"),
+        NodeInputBP(
+            dtype=dtypes.Choice(
+                default=None,
+                items=[
+                    None,
+                    "sc",
+                    "fcc",
+                    "bcc",
+                    "hcp",
+                    "diamond",
+                    "zincblende",
+                    "rocksalt",
+                    "cesiumchloride",
+                    "fluorite",
+                    "wurtzite",
+                ],
+            ),
+            label="crystal_structure",
+        ),
+        NodeInputBP(dtype=dtypes.Float(default=None), label="a"),
+        NodeInputBP(dtype=dtypes.Float(default=None), label="c"),
+        NodeInputBP(dtype=dtypes.Float(default=None), label="c_over_a"),
+        NodeInputBP(dtype=dtypes.Float(default=None), label="u"),
+        NodeInputBP(dtype=dtypes.Boolean(default=False), label="orthorhombic"),
+        NodeInputBP(dtype=dtypes.Boolean(default=False), label="cubic"),
     ]
 
     def update_event(self, inp=-1):
-        pr = self.input(0)
         self.set_output_val(
-            0, pr.create.structure.bulk(self.input(1), cubic=self.input(2))
+            0,
+            STRUCTURE_FACTORY.bulk(
+                self.input(0),
+                crystalstructure=self.input(1),
+                a=self.input(2),
+                c=self.input(3),
+                covera=self.input(4),
+                u=self.input(5),
+                orthorhombic=self.input(6),
+                cubic=self.input(7),
+            ),
         )
+
+    def place_event(self):
+        super().place_event()
+        self.update()
 
 
 class Repeat_Node(OutputsOnlyAtoms):
