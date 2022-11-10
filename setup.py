@@ -16,7 +16,7 @@ setup(
     author_email='liamhuber@greyhavensolutions.com',
     license='BSD',
 
-    classifiers=['Development Status :: 5 - Production/Stable',
+    classifiers=['Development Status :: 3 - Alpha',
                  'Topic :: Scientific/Engineering :: Physics',
                  'License :: OSI Approved :: BSD License',
                  'Intended Audience :: Science/Research',
