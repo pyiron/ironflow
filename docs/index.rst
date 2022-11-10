@@ -25,6 +25,10 @@ ironflow
 
 Ironflow combines `ryven <https://ryven.org>`_, `ipycanvas <https://ipycanvas.readthedocs.io/>`_ and `ipywidgets <https://ipywidgets.readthedocs.io/en/stable/>`_ to provide a Jupyter-based visual scripting gui for running `pyiron <https://pyiron.org>`_ workflow graphs.
 
+.. image:: _static/screenshot.png
+   :align: center
+   :alt: Screenshot of ironflow running inside jupyterlab.
+
 .. toctree::
    :hidden:
 

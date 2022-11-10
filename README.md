@@ -10,7 +10,7 @@ Ironflow combines [ryven](https://ryven.org), [ipycanvas](https://ipycanvas.read
 This project is under active development, and in particular the set of nodes available for the workflow graphs is still limited. 
 If there is a particular use-case you'd like to see, or if one of our nodes is not working as expected, please raise an issue!
 
-![](screenshot.png)
+![](docs/_static/screenshot.png)
 
 ## Usage
 
