@@ -11,4 +11,4 @@ ironflow
 .. toctree::
    :hidden:
 
-    source/indices.rst
+   source/indices.rst
