@@ -7,8 +7,9 @@ import versioneer
 setup(
     name='ironflow',
     version=versioneer.get_version(),
-    description='ironflow - module extension to pyiron.',
-    long_description='http://pyiron.org',
+    description='ironflow - A visual scripting interface for pyiron.',
+    long_description='Ironflow combines ryven, ipycanvas and ipywidgets to provide a Jupyter-based visual scripting '
+                     'gui for running pyiron workflow graphs.',
 
     url='https://github.com/pyiron/ironflow',
     author='Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department',
