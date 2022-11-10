@@ -23,6 +23,8 @@ ironflow
     :target: https://coveralls.io/github/pyiron/ironflow?branch=main
     :alt: Coveralls test coverage
 
+Ironflow combines `ryven <https://ryven.org>`_, `ipycanvas <https://ipycanvas.readthedocs.io/>`_ and `ipywidgets <https://ipywidgets.readthedocs.io/en/stable/>`_ to provide a Jupyter-based visual scripting gui for running `pyiron <https://pyiron.org>`_ workflow graphs.
+
 .. toctree::
    :hidden:
 
