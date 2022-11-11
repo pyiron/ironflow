@@ -6,6 +6,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/pyiron/ironflow/badge.svg?branch=main)](https://coveralls.io/github/pyiron/ironflow?branch=main)
 [![Documentation Status](https://readthedocs.org/projects/ironflow/badge/?version=latest)](https://ironflow.readthedocs.io/en/latest/)
 
+[![Anaconda](https://anaconda.org/conda-forge/ironflow/badges/version.svg)](https://anaconda.org/conda-forge/ironflow)
+[![Last Updated](https://anaconda.org/conda-forge/ironflow/badges/latest_release_date.svg
+)](https://anaconda.org/conda-forge/ironflow)
+[![Platform](https://anaconda.org/conda-forge/ironflow/badges/platforms.svg)](https://anaconda.org/conda-forge/ironflow)
+[![Downloads](https://anaconda.org/conda-forge/ironflow/badges/downloads.svg)](https://anaconda.org/conda-forge/ironflow)
+
 Ironflow combines [ryven](https://ryven.org), [ipycanvas](https://ipycanvas.readthedocs.io/) and [ipywidgets](https://ipywidgets.readthedocs.io/en/stable/) to provide a Jupyter-based visual scripting gui for running [pyiron](https://pyiron.org) workflow graphs.
 This project is under active development, and in particular the set of nodes available for the workflow graphs is still limited. 
 If there is a particular use-case you'd like to see, or if one of our nodes is not working as expected, please raise an issue!
