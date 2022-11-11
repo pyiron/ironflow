@@ -11,7 +11,7 @@ if [ -d "${HOME}/ironflow" ]; then
             ${HOME}/.github \
             ${HOME}/docs \
             ${HOME}/notebooks ${HOME}/LICENSE \
-            ${HOME}/pyiron_module \
+            ${HOME}/ironflow \
             ${HOME}/tests \
             ${HOME}/.gitattributes \
             ${HOME}/.gitignore \
