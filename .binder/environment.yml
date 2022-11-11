@@ -10,4 +10,5 @@ dependencies:
 - pyiron_base
 - pyiron_atomistics >= 0.2.57
 - ryvencore
+- python >= 3.8
 - lammps
