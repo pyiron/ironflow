@@ -28,7 +28,7 @@ class Layout(ABC):
 
 @dataclass
 class NodeLayout(Layout):
-    width: int = 200
+    width: int = 240
     height: int = 100
     font_size: int = 22
     title_box_height: int = 30
