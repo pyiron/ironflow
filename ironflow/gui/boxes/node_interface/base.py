@@ -27,6 +27,7 @@ class NodeInterfaceBase(Box, ABC):
         return widgets.Layout(
             width="50%",
             border="1px solid black",
+            max_height="360px"
         )
 
     @abstractmethod
