@@ -1,5 +1,6 @@
 # pip install master
 pip install --no-deps .
+# Note: This produces build and ironflow.egg-info directories
 
 # clean up
 if [ -d "notebooks" ]; then
@@ -9,9 +10,11 @@ if [ -d "${HOME}/ironflow" ]; then
     rm -r   ${HOME}/.binder \
             ${HOME}/.ci_support \
             ${HOME}/.github \
+            ${HOME}/build \
             ${HOME}/docs \
             ${HOME}/notebooks \
             ${HOME}/ironflow \
+            ${HOME}/ironflow.egg-info \
             ${HOME}/tests \
             ${HOME}/.gitattributes \
             ${HOME}/.gitignore \
