@@ -10,7 +10,24 @@ from ryvencore.NodePort import NodePort
 from ironflow.gui.canvas_widgets import NodeWidget
 
 
-class LabelList(list):
+class PortFinder:
+    def __init__(self, port_list: PortList):
+        self._port_list = port_list
+
+    def __getattr__(self, key):
+        for node_port in [item for item in self._port_list if isinstance(item, NodePort)]:
+            if node_port.label_str == key:
+                return node_port
+
+
+class ValueFinder(PortFinder):
+    def __getattr__(self, key):
+        node_port = super().__getattr__(key)
+        if node_port is not None:
+            return node_port.val
+
+
+class PortList(list):
     """
     When used to hold a collection of `NodePort` objects, the values of these ports then become accessible by their
     labels, as long as those labels do not match an existing method of the builtin list class.
@@ -20,13 +37,30 @@ class LabelList(list):
         is returned.
 
     Warning:
-        this class does not prevent you from adding a `NodePort` whose label matches an existing attribute of the list
-        class.
+        Accessing port values in this way side-steps ryven functionality when in exec mode or using an executor
+        (i.e. when `running_with_executor`).
     """
-    def __getattr__(self, key):
-        for node_port in [item for item in self if isinstance(item, NodePort)]:
-            if node_port.label_str == key:
-                return node_port
+    def __init__(self, seq=()):
+        super().__init__(self, seq=seq)
+        self._port_finder = PortFinder(self)
+        self._value_finder = ValueFinder(self)
+        # This additional mis-direction is necessary so that ports can have the same labels as list class methods
+
+    @property
+    def ports(self):
+        """
+        Allows attribute-like access to ports by their `label_str`
+        """
+        return self._port_finder
+
+    @property
+    def values(self):
+        """
+        Allows attribute-like access to port values by their `label_str`
+
+        Calling `port_list.values.some_label` is equivalent to `port_list.ports.some_label.val`
+        """
+        return self._value_finder
 
 
 class Node(NodeCore):
@@ -66,8 +100,8 @@ class Node(NodeCore):
 
     def __init__(self, params):
         super().__init__(params)
-        self.inputs = LabelList()
-        self.outputs = LabelList()
+        self.inputs = PortList()
+        self.outputs = PortList()
 
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)
