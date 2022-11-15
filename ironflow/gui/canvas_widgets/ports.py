@@ -7,7 +7,7 @@ Canvas widgets for ryven IO ports.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Literal, Optional
 
 from ironflow.gui.canvas_widgets.base import HideableWidget, CanvasWidget
 from ironflow.gui.canvas_widgets.layouts import PortLayout
@@ -31,6 +31,7 @@ class PortWidget(HideableWidget):
         hidden_x: Optional[Number] = None,
         hidden_y: Optional[Number] = None,
         radius: Number = 10,
+        title_alignment: Literal["start", "end"] = "start",
     ):
         super().__init__(
             x=x,
@@ -45,6 +46,7 @@ class PortWidget(HideableWidget):
 
         self.radius = radius
         self.port = port
+        self.title_alignment = title_alignment
 
     def on_click(
         self, last_selected_object: Optional[CanvasWidget]
@@ -73,9 +75,18 @@ class PortWidget(HideableWidget):
     def draw_title(self) -> None:
         self.canvas.font = self.layout.font_string
         self.canvas.fill_style = self.layout.font_color
+        shift_magnitude = self.radius + 3
+        if self.title_alignment == "start":
+            shift = shift_magnitude
+        elif self.title_alignment == "end":
+            shift = -shift_magnitude
+        else:
+            raise ValueError(f"Title alignment {self.title_alignment} not recognized, please choose start or end")
+        self.canvas.text_align = self.title_alignment
         self.canvas.fill_text(
-            self.title, self.x + self.radius + 3, self.y + self.radius // 2
+            self.title, self.x + shift, self.y + self.radius // 2
         )
+        self.canvas.text_align = "start"  # Revert to default after writing
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         return (x_in - self.x) ** 2 + (y_in - self.y) ** 2 < self.radius**2

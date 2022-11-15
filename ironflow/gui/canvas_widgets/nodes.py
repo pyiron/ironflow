@@ -191,9 +191,11 @@ class NodeWidget(CanvasWidget):
         if inputs is not None:
             x = radius * border
             data = inputs
+            title_alignment = "start"
         elif outputs is not None:
             x = self.width - radius * border
             data = outputs
+            title_alignment = "end"
         else:
             return
 
@@ -211,6 +213,7 @@ class NodeWidget(CanvasWidget):
                     hidden_x=x,
                     hidden_y=self._subwidget_y_locs[0],
                     radius=radius,
+                    title_alignment=title_alignment
                 )
             )
             if data_or_exec == "exec" and inputs is not None:
