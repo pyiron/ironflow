@@ -81,12 +81,26 @@ class Node(NodeCore):
         self.representation_updated = True
 
     @property
-    def representations(self) -> dict:
+    def _standard_representations(self):
         return {
             o.label_str if o.label_str != "" else f"output{i}": o.val
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
+
+    @property
+    def extra_representations(self):
+        """
+        When developing nodes, override this with any desired additional representations.
+
+        Note that standard representations exist for all output ports using the port's label (where available), so if
+        you add a key here matching one of those labels, you will override the standard output.
+        """
+        return {}
+
+    @property
+    def representations(self) -> dict:
+        return {**self.extra_representations, **self._standard_representations}
 
 
 class PlaceholderWidgetsContainer:

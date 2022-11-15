@@ -95,7 +95,7 @@ class Project_Node(Node):
         return self.output(0)
 
     @property
-    def representations(self) -> dict:
+    def extra_representations(self) -> dict:
         return {
             "name": str(self.input(0)),
             # "job_table": self._project.job_table() if self._project is not None else None
@@ -123,8 +123,8 @@ class OutputsOnlyAtoms(Node, ABC):
         pass
 
     @property
-    def representations(self) -> dict:
-        return {"plot3d": self.output(0).plot3d(), "print": self.output(0)}
+    def extra_representations(self) -> dict:
+        return {"plot3d": self.output(0).plot3d()}
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -331,7 +331,7 @@ class Lammps_Node(Node):
             self._update_potential_choices()
 
     @property
-    def representations(self) -> dict:
+    def extra_representations(self) -> dict:
         return {"job": BeautifulHasGroups(self.output(1))}
 
 
