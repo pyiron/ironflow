@@ -5,8 +5,28 @@ from __future__ import annotations
 
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
+from ryvencore.NodePort import NodePort
 
 from ironflow.gui.canvas_widgets import NodeWidget
+
+
+class LabelList(list):
+    """
+    When used to hold a collection of `NodePort` objects, the values of these ports then become accessible by their
+    labels, as long as those labels do not match an existing method of the builtin list class.
+
+    Warning:
+        This class makes no check that these labels are unique; if multiple items have the same label, the first one
+        is returned.
+
+    Warning:
+        this class does not prevent you from adding a `NodePort` whose label matches an existing attribute of the list
+        class.
+    """
+    def __getattr__(self, key):
+        for node_port in [item for item in self if isinstance(item, NodePort)]:
+            if node_port.label_str == key:
+                return node_port
 
 
 class Node(NodeCore):
@@ -46,6 +66,8 @@ class Node(NodeCore):
 
     def __init__(self, params):
         super().__init__(params)
+        self.inputs = LabelList()
+        self.outputs = LabelList()
 
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)
