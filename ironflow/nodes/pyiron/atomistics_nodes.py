@@ -87,17 +87,13 @@ class Project_Node(Node):
         self.update()
 
     def update_event(self, inp=-1):
-        pr = Project(self.input(0))
+        pr = Project(self.inputs.name.val)
         self.set_output_val(0, pr)
-
-    @property
-    def _project(self):
-        return self.output(0)
 
     @property
     def representations(self) -> dict:
         return {
-            "name": str(self.input(0)),
+            "name": str(self.inputs.name.val),
             # "job_table": self._project.job_table() if self._project is not None else None
             # Todo: Figure out how to display this without breaking the gui size; right now it automatically grows
             # the gui because the table is so wide.
@@ -124,7 +120,7 @@ class OutputsOnlyAtoms(Node, ABC):
 
     @property
     def representations(self) -> dict:
-        return {"plot3d": self.output(0).plot3d(), "print": self.output(0)}
+        return {"plot3d": self.outputs.structure.val.plot3d(), "print": self.outputs.structure.val}
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -183,14 +179,14 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         self.set_output_val(
             0,
             STRUCTURE_FACTORY.bulk(
-                self.input(0),
-                crystalstructure=self.input(1),
-                a=self.input(2),
-                c=self.input(3),
-                covera=self.input(4),
-                u=self.input(5),
-                orthorhombic=self.input(6),
-                cubic=self.input(7),
+                self.inputs.element.val,
+                crystalstructure=self.inputs.crystal_structure.val,
+                a=self.inputs.a.val,
+                c=self.inputs.c.val,
+                covera=self.inputs.c_over_a.val,
+                u=self.inputs.u.val,
+                orthorhombic=self.inputs.orthorhombic.val,
+                cubic=self.inputs.cubic.val,
             ),
         )
 
@@ -220,7 +216,7 @@ class Repeat_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, self.input(0).repeat(self.input(1)))
+        self.set_output_val(0, self.inputs.structure.val.repeat(self.inputs.all.val))
 
 
 class ApplyStrain_Node(OutputsOnlyAtoms):
@@ -243,7 +239,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
     def update_event(self, inp=-1):
         self.set_output_val(
-            0, self.input(0).apply_strain(float(self.input(1)), return_box=True)
+            0, self.inputs.structure.val.apply_strain(float(self.inputs.strain.val), return_box=True)
         )
 
 
@@ -290,9 +286,9 @@ class Lammps_Node(Node):
         return self.input(5)
 
     def _run(self):
-        job = self._project.create.job.Lammps(self._name)
-        job.structure = self._structure
-        job.potential = self._potential
+        job = self.inputs.project.val.create.job.Lammps(self.inputs.name.val)
+        job.structure = self.inputs.structure.val
+        job.potential = self.inputs.potential.val
         self._job = job
         job.run()
         self.set_output_val(1, job)
@@ -303,24 +299,22 @@ class Lammps_Node(Node):
             name = (
                 self._job.name
             )  # Remove based on the run job, not the input name which might have changed...
-            self._project.remove_job(name)
+            self.inputs.project.val.remove_job(name)
             self.set_output_val(1, None)
         except AttributeError:
             pass
 
     def _update_potential_choices(self):
-        potl_input = self.inputs[5]
-        last_potential = potl_input.val
-        structure = self.inputs[4].val
-        available_potentials = list_potentials(structure)
+        last_potential = self.inputs.potential.val
+        available_potentials = list_potentials(self.inputs.structure.val)
 
         if len(available_potentials) == 0:
-            potl_input.val = "No valid potential"
-            potl_input.dtype.items = ["No valid potential"]
+            self.inputs.potential.val = "No valid potential"
+            self.inputs.potential.dtype.items = ["No valid potential"]
         else:
             if last_potential not in available_potentials:
-                potl_input.val = available_potentials[0]
-            potl_input.dtype.items = available_potentials
+                self.inputs.potential.val = available_potentials[0]
+            self.inputs.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
         if inp == 0:
@@ -332,7 +326,7 @@ class Lammps_Node(Node):
 
     @property
     def representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.output(1))}
+        return {"job": BeautifulHasGroups(self.outputs.job.val)}
 
 
 class GenericOutput_Node(Node):
@@ -367,23 +361,19 @@ class GenericOutput_Node(Node):
     def __init__(self, params):
         super().__init__(params)
 
-    @property
-    def _job(self):
-        return self.input(0)
-
     def _update_fields(self):
-        if isinstance(self._job, AtomisticGenericJob):
-            self.inputs[1].dtype.items = self._job["output/generic"].list_nodes()
-            self.inputs[1].val = self.inputs[1].dtype.items[0]
+        if isinstance(self.inputs.job.val, AtomisticGenericJob):
+            self.inputs.field.dtype.items = self.inputs.job.val["output/generic"].list_nodes()
+            self.inputs.field.val = self.inputs.field.dtype.items[0]
         else:
-            self.inputs[1].dtype.items = [self.init_inputs[1].dtype.default]
+            self.inputs.field.dtype.items = [self.init_inputs[1].dtype.default]
             # Note: It would be sensible to use `self.init_outputs[1].dtype.items` above, but this field gets updated
             # to `self.inputs[1].dtype.items`, probably because of the mutability of lists.
-            self.inputs[1].val = self.init_inputs[1].dtype.default
+            self.inputs.field.val = self.init_inputs[1].dtype.default
 
     def _update_value(self):
-        if isinstance(self._job, AtomisticGenericJob):
-            val = self._job[f"output/generic/{self.input(1)}"]
+        if isinstance(self.inputs.job.val, AtomisticGenericJob):
+            val = self.inputs.job.val[f"output/generic/{self.inputs.field.val}"]
         else:
             val = None
         self.set_output_val(0, val)
@@ -421,7 +411,7 @@ class IntRand_Node(Node):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        val = np.random.randint(0, high=self.input(0), size=self.input(1))
+        val = np.random.randint(0, high=self.inputs.high.val, size=self.inputs.length.val)
         self.set_output_val(0, val)
 
 
@@ -451,7 +441,7 @@ class JobName_Node(Node):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        val = self.input(0) + f"{float(self.input(1))}".replace("-", "m").replace(
+        val = self.inputs.base.val + f"{float(self.inputs.float.val)}".replace("-", "m").replace(
             ".", "p"
         )
         self.set_output_val(0, val)
@@ -488,7 +478,7 @@ class Linspace_Node(Node):
         self.update()
 
     def update_event(self, inp=-1):
-        val = np.linspace(self.input(0), self.input(1), self.input(2))
+        val = np.linspace(self.inputs.min.val, self.inputs.max.val, self.inputs.steps.val)
         self.set_output_val(0, val)
 
 
@@ -516,8 +506,8 @@ class Plot3d_Node(Node):
     color = "#5d95de"
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, self.input(0).plot3d())
-        self.set_output_val(1, self.input(0))
+        self.set_output_val(0, self.inputs.structure.val.plot3d())
+        self.set_output_val(1, self.inputs.structure.val)
 
 
 class Matplot_Node(Node):
@@ -548,7 +538,7 @@ class Matplot_Node(Node):
         plt.ioff()
         fig = plt.figure()
         plt.clf()
-        plt.plot(self.input(0), self.input(1))
+        plt.plot(self.inputs.x.val, self.inputs.y.val)
         self.set_output_val(0, fig)
         plt.ion()
 
@@ -575,7 +565,7 @@ class Sin_Node(Node):
     color = "#5d95de"
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, np.sin(self.input(0)))
+        self.set_output_val(0, np.sin(self.inputs.x.val))
 
 
 class Result_Node(Node):
@@ -601,7 +591,7 @@ class Result_Node(Node):
         self.main_widget().show_val(self.val)
 
     def update_event(self, inp=-1):
-        self.val = self.input(0)
+        self.val = self.inputs.data.val
         if self.session.gui:
             self.main_widget().show_val(self.val)
 
@@ -626,8 +616,8 @@ class ForEach_Node(Node):
     def update_event(self, inp=-1):
         if inp == 0:
             self._count += 1
-            if len(self.input(2)) > self._count:
-                e = self.input(2)[self._count]
+            if len(self.inputs.elements.val) > self._count:
+                e = self.inputs.elements.val[self._count]
                 self.set_output_val(1, e)
                 self.exec_output(0)
             else:
