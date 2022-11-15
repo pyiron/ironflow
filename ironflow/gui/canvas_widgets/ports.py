@@ -84,7 +84,7 @@ class PortWidget(HideableWidget):
             raise ValueError(f"Title alignment {self.title_alignment} not recognized, please choose start or end")
         self.canvas.text_align = self.title_alignment
         self.canvas.fill_text(
-            self.title, self.x + shift, self.y + self.radius // 2
+            self.title[:self.layout.max_title_chars], self.x + shift, self.y + self.radius // 2
         )
         self.canvas.text_align = "start"  # Revert to default after writing
 
