@@ -3,6 +3,8 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 from __future__ import annotations
 
+import inspect
+
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 
@@ -82,11 +84,13 @@ class Node(NodeCore):
 
     @property
     def _standard_representations(self):
-        return {
+        standard_reps = {
             o.label_str if o.label_str != "" else f"output{i}": o.val
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
+        standard_reps["source code"] = inspect.getsource(self.__class__)
+        return standard_reps
 
     @property
     def extra_representations(self):
