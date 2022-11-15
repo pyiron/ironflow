@@ -10,7 +10,7 @@ if [ -d "${HOME}/ironflow" ]; then
             ${HOME}/.ci_support \
             ${HOME}/.github \
             ${HOME}/docs \
-            ${HOME}/notebooks ${HOME}/LICENSE \
+            ${HOME}/notebooks \
             ${HOME}/ironflow \
             ${HOME}/tests \
             ${HOME}/.gitattributes \
