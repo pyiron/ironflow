@@ -10,7 +10,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
-from IPython.display import HTML
 
 from ironflow.gui.boxes import (
     Toolbar,
@@ -22,6 +21,7 @@ from ironflow.gui.boxes import (
 )
 from ironflow.gui.canvas_widgets import FlowCanvas
 from ironflow.model.model import HasSession
+from ironflow.utils import display_string
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
@@ -259,22 +259,8 @@ class GUI(HasSession):
         self.input.clear()
 
     def _click_node_help(self, change: dict) -> None:
-        def _pretty_docstring(node_class):
-            """
-            If we just pass a string, `display` doesn't resolve newlines.
-            If we pass a `print`ed string, `display` also shows the `None` value returned by `print`
-            So we use this ugly hack.
-            """
-            string = (
-                f"{node_class.__name__.replace('_Node', '')}:\n{node_class.__doc__}"
-            )
-            return HTML(
-                string.replace("\n", "<br>")
-                .replace("\t", "&emsp;")
-                .replace(" ", "&nbsp;")
-            )
-
-        self.print(_pretty_docstring(self.new_node_class))
+        self.print(
+            display_string(f"{self.new_node_class.__name__.replace('_Node', '')}:\n{self.new_node_class.__doc__}"))
 
     def _click_add_node(self, change: dict) -> None:
         self.flow_canvas.add_node(10, 10, self.new_node_class)

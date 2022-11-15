@@ -9,6 +9,7 @@ from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 
 from ironflow.gui.canvas_widgets import NodeWidget
+from ironflow.utils import display_string
 
 
 class Node(NodeCore):
@@ -89,7 +90,7 @@ class Node(NodeCore):
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
-        standard_reps["source code"] = inspect.getsource(self.__class__)
+        standard_reps["source code"] = display_string(inspect.getsource(self.__class__))
         return standard_reps
 
     @property
