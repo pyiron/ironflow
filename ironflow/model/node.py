@@ -62,6 +62,10 @@ class PortList(list):
         """
         return self._value_finder
 
+    @property
+    def labels(self):
+        return [item.label_str if isinstance(item, NodePort) else None for item in self]
+
 
 class Node(NodeCore):
     """
