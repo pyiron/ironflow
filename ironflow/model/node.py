@@ -127,14 +127,20 @@ class Node(NodeCore):
         self.representation_updated = False
         self.after_update.connect(self._representation_update)
 
-    def create_input(self, label: str = '', type_: str = 'data', add_data=None, insert: int = None):
+    def create_input(
+        self, label: str = "", type_: str = "data", add_data=None, insert: int = None
+    ):
         add_data = add_data if add_data is not None else {}
         super().create_input(label=label, type_=type_, add_data=add_data, insert=insert)
 
-    def create_input_dt(self, dtype: DType, label: str = '', add_data=None, insert: int = None):
+    def create_input_dt(
+        self, dtype: DType, label: str = "", add_data=None, insert: int = None
+    ):
         """Be more careful with mutables"""
         add_data = add_data if add_data is not None else {}
-        super().create_input_dt(dtype=deepcopy(dtype), label=label, add_data=add_data, insert=insert)
+        super().create_input_dt(
+            dtype=deepcopy(dtype), label=label, add_data=add_data, insert=insert
+        )
 
     def place_event(self):
         # place_event() is executed *before* the connections are built
