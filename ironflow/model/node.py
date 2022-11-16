@@ -3,11 +3,14 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 from __future__ import annotations
 
+import inspect
+
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 from ryvencore.NodePort import NodePort
 
 from ironflow.gui.canvas_widgets import NodeWidget
+from ironflow.utils import display_string
 
 
 class PortList(list):
@@ -144,12 +147,28 @@ class Node(NodeCore):
         self.representation_updated = True
 
     @property
-    def representations(self) -> dict:
-        return {
+    def _standard_representations(self):
+        standard_reps = {
             o.label_str if o.label_str != "" else f"output{i}": o.val
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
+        standard_reps["source code"] = display_string(inspect.getsource(self.__class__))
+        return standard_reps
+
+    @property
+    def extra_representations(self):
+        """
+        When developing nodes, override this with any desired additional representations.
+
+        Note that standard representations exist for all output ports using the port's label (where available), so if
+        you add a key here matching one of those labels, you will override the standard output.
+        """
+        return {}
+
+    @property
+    def representations(self) -> dict:
+        return {**self.extra_representations, **self._standard_representations}
 
 
 class PlaceholderWidgetsContainer:
