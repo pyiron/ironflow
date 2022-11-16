@@ -24,10 +24,7 @@ class NodeInterfaceBase(Box, ABC):
 
     @property
     def layout(self) -> widgets.Layout:
-        return widgets.Layout(
-            width="50%",
-            border="1px solid black",
-        )
+        return widgets.Layout(width="50%", border="1px solid black", max_height="360px")
 
     @abstractmethod
     def draw(self) -> None:
