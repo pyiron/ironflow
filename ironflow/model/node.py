@@ -56,7 +56,9 @@ class PortFinder:
         self._port_list = port_list
 
     def __getattr__(self, key):
-        for node_port in [item for item in self._port_list if isinstance(item, NodePort)]:
+        for node_port in [
+            item for item in self._port_list if isinstance(item, NodePort)
+        ]:
             if node_port.label_str == key:
                 return node_port
         raise AttributeError(f"No port found with the label {key}")
