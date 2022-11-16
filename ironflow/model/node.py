@@ -23,6 +23,7 @@ class PortList(list):
         Accessing port values in this way side-steps ryven functionality when in exec mode or using an executor
         (i.e. when `running_with_executor`).
     """
+
     def __init__(self, seq=()):
         super().__init__(self, seq=seq)
         self._port_finder = PortFinder(self)
