@@ -18,13 +18,13 @@ class PortFinder:
         for node_port in [item for item in self._port_list if isinstance(item, NodePort)]:
             if node_port.label_str == key:
                 return node_port
+        raise AttributeError(f"No port found with the label {key}")
 
 
 class ValueFinder(PortFinder):
     def __getattr__(self, key):
         node_port = super().__getattr__(key)
-        if node_port is not None:
-            return node_port.val
+        return node_port.val
 
 
 class PortList(list):
