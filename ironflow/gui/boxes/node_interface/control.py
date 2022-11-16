@@ -69,7 +69,9 @@ class NodeController(NodeInterfaceBase):
                         # `inp.data()` winds up calling `serialize` on `inp.get_val()`
                         # This serialization is a pickle dump, which fails with structures (`Atoms`)
                         # Just gloss over it for now
-                        dtype_state = {"val": "Serialization error -- please reconnect an input"}
+                        dtype_state = {
+                            "val": "Serialization error -- please reconnect an input"
+                        }
                     if inp.val is None:
                         inp.val = dtype_state["val"]
                     if dtype == "Integer":
