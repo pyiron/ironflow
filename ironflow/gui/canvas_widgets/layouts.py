@@ -28,17 +28,19 @@ class Layout(ABC):
 
 @dataclass
 class NodeLayout(Layout):
-    width: int = 200
+    width: int = 240
     height: int = 100
     font_size: int = 22
     title_box_height: int = 30
     updating_color: str = "red"
+    max_title_chars: int = 14
 
 
 @dataclass
 class PortLayout(Layout, ABC):
     width: int = 20
     height: int = 20
+    max_title_chars: int = 10
 
 
 @dataclass
