@@ -10,23 +10,6 @@ from ryvencore.NodePort import NodePort
 from ironflow.gui.canvas_widgets import NodeWidget
 
 
-class PortFinder:
-    def __init__(self, port_list: PortList):
-        self._port_list = port_list
-
-    def __getattr__(self, key):
-        for node_port in [item for item in self._port_list if isinstance(item, NodePort)]:
-            if node_port.label_str == key:
-                return node_port
-        raise AttributeError(f"No port found with the label {key}")
-
-
-class ValueFinder(PortFinder):
-    def __getattr__(self, key):
-        node_port = super().__getattr__(key)
-        return node_port.val
-
-
 class PortList(list):
     """
     When used to hold a collection of `NodePort` objects, the values of these ports then become accessible by their
@@ -65,6 +48,23 @@ class PortList(list):
     @property
     def labels(self):
         return [item.label_str if isinstance(item, NodePort) else None for item in self]
+
+
+class PortFinder:
+    def __init__(self, port_list: PortList):
+        self._port_list = port_list
+
+    def __getattr__(self, key):
+        for node_port in [item for item in self._port_list if isinstance(item, NodePort)]:
+            if node_port.label_str == key:
+                return node_port
+        raise AttributeError(f"No port found with the label {key}")
+
+
+class ValueFinder(PortFinder):
+    def __getattr__(self, key):
+        node_port = super().__getattr__(key)
+        return node_port.val
 
 
 class Node(NodeCore):
