@@ -4,7 +4,7 @@
 
 from unittest import TestCase
 
-from ironflow.model import dtypes, NodeInputBP, NodeOutputBP
+from ironflow.model import dtypes, NodeInputBP
 from ironflow.model.model import HasSession
 from ironflow.model.node import Node
 
