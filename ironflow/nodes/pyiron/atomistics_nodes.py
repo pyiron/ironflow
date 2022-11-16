@@ -120,7 +120,10 @@ class OutputsOnlyAtoms(Node, ABC):
 
     @property
     def representations(self) -> dict:
-        return {"plot3d": self.outputs.values.structure.plot3d(), "print": self.outputs.values.structure}
+        return {
+            "plot3d": self.outputs.values.structure.plot3d(),
+            "print": self.outputs.values.structure,
+        }
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -216,7 +219,9 @@ class Repeat_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        self.set_output_val(0, self.inputs.values.structure.repeat(self.inputs.values.all))
+        self.set_output_val(
+            0, self.inputs.values.structure.repeat(self.inputs.values.all)
+        )
 
 
 class ApplyStrain_Node(OutputsOnlyAtoms):
@@ -239,7 +244,10 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
     def update_event(self, inp=-1):
         self.set_output_val(
-            0, self.inputs.values.structure.apply_strain(float(self.inputs.values.strain), return_box=True)
+            0,
+            self.inputs.values.structure.apply_strain(
+                float(self.inputs.values.strain), return_box=True
+            ),
         )
 
 
@@ -347,7 +355,9 @@ class GenericOutput_Node(Node):
 
     def _update_fields(self):
         if isinstance(self.inputs.values.job, AtomisticGenericJob):
-            self.inputs.ports.field.dtype.items = self.inputs.values.job["output/generic"].list_nodes()
+            self.inputs.ports.field.dtype.items = self.inputs.values.job[
+                "output/generic"
+            ].list_nodes()
             self.inputs.ports.field.val = self.inputs.ports.field.dtype.items[0]
         else:
             self.inputs.ports.field.dtype.items = [self.init_inputs[1].dtype.default]
@@ -395,7 +405,9 @@ class IntRand_Node(Node):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        val = np.random.randint(0, high=self.inputs.values.high, size=self.inputs.values.length)
+        val = np.random.randint(
+            0, high=self.inputs.values.high, size=self.inputs.values.length
+        )
         self.set_output_val(0, val)
 
 
@@ -425,9 +437,9 @@ class JobName_Node(Node):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        val = self.inputs.values.base + f"{float(self.inputs.values.float)}".replace("-", "m").replace(
-            ".", "p"
-        )
+        val = self.inputs.values.base + f"{float(self.inputs.values.float)}".replace(
+            "-", "m"
+        ).replace(".", "p")
         self.set_output_val(0, val)
 
 
@@ -462,7 +474,9 @@ class Linspace_Node(Node):
         self.update()
 
     def update_event(self, inp=-1):
-        val = np.linspace(self.inputs.values.min, self.inputs.values.max, self.inputs.values.steps)
+        val = np.linspace(
+            self.inputs.values.min, self.inputs.values.max, self.inputs.values.steps
+        )
         self.set_output_val(0, val)
 
 

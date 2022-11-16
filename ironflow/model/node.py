@@ -15,7 +15,9 @@ class PortFinder:
         self._port_list = port_list
 
     def __getattr__(self, key):
-        for node_port in [item for item in self._port_list if isinstance(item, NodePort)]:
+        for node_port in [
+            item for item in self._port_list if isinstance(item, NodePort)
+        ]:
             if node_port.label_str == key:
                 return node_port
 
@@ -40,6 +42,7 @@ class PortList(list):
         Accessing port values in this way side-steps ryven functionality when in exec mode or using an executor
         (i.e. when `running_with_executor`).
     """
+
     def __init__(self, seq=()):
         super().__init__(self, seq=seq)
         self._port_finder = PortFinder(self)
