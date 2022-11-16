@@ -7,9 +7,70 @@ import inspect
 
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
+from ryvencore.NodePort import NodePort
 
 from ironflow.gui.canvas_widgets import NodeWidget
 from ironflow.utils import display_string
+
+
+class PortList(list):
+    """
+    When used to hold a collection of `NodePort` objects, the values of these ports then become accessible by their
+    labels, as long as those labels do not match an existing method of the builtin list class.
+
+    Warning:
+        This class makes no check that these labels are unique; if multiple items have the same label, the first one
+        is returned.
+
+    Warning:
+        Accessing port values in this way side-steps ryven functionality when in exec mode or using an executor
+        (i.e. when `running_with_executor`).
+    """
+
+    def __init__(self, seq=()):
+        super().__init__(self, seq=seq)
+        self._port_finder = PortFinder(self)
+        self._value_finder = ValueFinder(self)
+        # This additional mis-direction is necessary so that ports can have the same labels as list class methods
+
+    @property
+    def ports(self):
+        """
+        Allows attribute-like access to ports by their `label_str`
+        """
+        return self._port_finder
+
+    @property
+    def values(self):
+        """
+        Allows attribute-like access to port values by their `label_str`
+
+        Calling `port_list.values.some_label` is equivalent to `port_list.ports.some_label.val`
+        """
+        return self._value_finder
+
+    @property
+    def labels(self):
+        return [item.label_str if isinstance(item, NodePort) else None for item in self]
+
+
+class PortFinder:
+    def __init__(self, port_list: PortList):
+        self._port_list = port_list
+
+    def __getattr__(self, key):
+        for node_port in [
+            item for item in self._port_list if isinstance(item, NodePort)
+        ]:
+            if node_port.label_str == key:
+                return node_port
+        raise AttributeError(f"No port found with the label {key}")
+
+
+class ValueFinder(PortFinder):
+    def __getattr__(self, key):
+        node_port = super().__getattr__(key)
+        return node_port.val
 
 
 class Node(NodeCore):
@@ -49,6 +110,8 @@ class Node(NodeCore):
 
     def __init__(self, params):
         super().__init__(params)
+        self.inputs = PortList()
+        self.outputs = PortList()
 
         self.before_update = Event(self, int)
         self.after_update = Event(self, int)

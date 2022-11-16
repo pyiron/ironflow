@@ -179,7 +179,7 @@ class NodeWidget(CanvasWidget):
         self.canvas.fill_style = self.layout.font_color
         x = self.x + (self.width * 0.04)
         y = self.y + self._title_box_height - 8
-        self.canvas.fill_text(self.title, x, y)
+        self.canvas.fill_text(self.title[: self.layout.max_title_chars], x, y)
 
     def _add_ports(
         self,
@@ -191,9 +191,11 @@ class NodeWidget(CanvasWidget):
         if inputs is not None:
             x = radius * border
             data = inputs
+            title_alignment = "start"
         elif outputs is not None:
             x = self.width - radius * border
             data = outputs
+            title_alignment = "end"
         else:
             return
 
@@ -211,6 +213,7 @@ class NodeWidget(CanvasWidget):
                     hidden_x=x,
                     hidden_y=self._subwidget_y_locs[0],
                     radius=radius,
+                    title_alignment=title_alignment,
                 )
             )
             if data_or_exec == "exec" and inputs is not None:
