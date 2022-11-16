@@ -15,7 +15,5 @@ def display_string(string):
     So we use this ugly hack.
     """
     return HTML(
-        string.replace("\n", "<br>")
-        .replace("\t", "&emsp;")
-        .replace(" ", "&nbsp;")
+        string.replace("\n", "<br>").replace("\t", "&emsp;").replace(" ", "&nbsp;")
     )

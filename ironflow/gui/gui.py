@@ -260,7 +260,10 @@ class GUI(HasSession):
 
     def _click_node_help(self, change: dict) -> None:
         self.print(
-            display_string(f"{self.new_node_class.__name__.replace('_Node', '')}:\n{self.new_node_class.__doc__}"))
+            display_string(
+                f"{self.new_node_class.__name__.replace('_Node', '')}:\n{self.new_node_class.__doc__}"
+            )
+        )
 
     def _click_add_node(self, change: dict) -> None:
         self.flow_canvas.add_node(10, 10, self.new_node_class)
