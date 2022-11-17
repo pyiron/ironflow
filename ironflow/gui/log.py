@@ -61,7 +61,8 @@ class LogScreen:
                     self.ryven_log_button
                 ]),
                 self.output
-            ]
+            ],
+            layout=widgets.Layout(height="470px")
         )
 
     @property
