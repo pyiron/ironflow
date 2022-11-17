@@ -244,8 +244,9 @@ class GUI(HasSession):
             ]
         )
 
-        window = widgets.Tab([flow_screen])
+        window = widgets.Tab([flow_screen, self._stdoutput.output])
         window.set_title(0, "Workflow")
+        window.set_title(1, "Log")
         return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
