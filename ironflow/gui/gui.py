@@ -234,7 +234,7 @@ class GUI(HasSession):
         self.toolbar.buttons.zoom_out.on_click(self._click_zoom_out)
         self.flow_box.script_tabs.observe(self._change_script_tabs)
 
-        return widgets.VBox(
+        flow_screen = widgets.VBox(
             [
                 self.toolbar.box,
                 self.input.box,
@@ -243,6 +243,10 @@ class GUI(HasSession):
                 widgets.HBox([self.node_controller.box, self.node_presenter.box]),
             ]
         )
+
+        window = widgets.Tab([flow_screen])
+        window.set_title(0, "Workflow")
+        return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
