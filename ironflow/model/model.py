@@ -25,10 +25,10 @@ class HasSession(ABC):
     """Mixin for an object which has a Ryven session as the underlying model"""
 
     def __init__(
-            self,
-            session_title: str,
-            extra_nodes_packages: Optional[list] = None,
-            enable_ryven_log: bool = True,
+        self,
+        session_title: str,
+        extra_nodes_packages: Optional[list] = None,
+        enable_ryven_log: bool = True,
     ):
         self._session = Session()
         self.session_title = session_title

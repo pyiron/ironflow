@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 class StdOutPut(TextIOBase):
     """Helper class that can be assigned to stdout and/or stderr,  passing string to a widget"""
+
     def __init__(self):
         self.output = widgets.Output()
 
@@ -31,6 +32,7 @@ class LogScreen:
     A class that can redirect stdout and stderr to a widget, and gives controls for both this and toggling the
     Ryven logger.
     """
+
     def __init__(self, gui: GUI, enable_ryven_log: bool, log_to_display: bool):
         self._gui = gui
         self._stdoutput = StdOutPut()
@@ -41,12 +43,10 @@ class LogScreen:
             self.log_to_display()
 
         self.ryven_log_button = widgets.Checkbox(
-            value=enable_ryven_log,
-            description="Use Ryven's InfoMsgs system"
+            value=enable_ryven_log, description="Use Ryven's InfoMsgs system"
         )
         self.display_log_button = widgets.Checkbox(
-            value=log_to_display,
-            description="Route stdout to ironflow"
+            value=log_to_display, description="Route stdout to ironflow"
         )
 
         self.ryven_log_button.observe(self._toggle_ryven_log)
@@ -56,13 +56,10 @@ class LogScreen:
     def box(self):
         return widgets.VBox(
             [
-                widgets.HBox([
-                    self.display_log_button,
-                    self.ryven_log_button
-                ]),
-                self.output
+                widgets.HBox([self.display_log_button, self.ryven_log_button]),
+                self.output,
             ],
-            layout=widgets.Layout(height="470px")
+            layout=widgets.Layout(height="470px"),
         )
 
     @property
@@ -90,4 +87,3 @@ class LogScreen:
                 self.log_to_display()
             else:
                 self.log_to_stdout()
-

@@ -63,12 +63,16 @@ class GUI(HasSession):
             log_to_display (bool): Re-route stdout (and node error's captured by the Ryven logger, if activated) to a
                 separate output widget. (Default is True.)
         """
-        self.log_screen = LogScreen(gui=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display)
+        self.log_screen = LogScreen(
+            gui=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display
+        )
         # Log screen needs to be instantiated before the rest of the init so we know whether to look at the ryven log
         # as we boot
 
         super().__init__(
-            session_title=session_title, extra_nodes_packages=extra_nodes_packages, enable_ryven_log=enable_ryven_log
+            session_title=session_title,
+            extra_nodes_packages=extra_nodes_packages,
+            enable_ryven_log=enable_ryven_log,
         )
 
         self.flow_canvases = []
