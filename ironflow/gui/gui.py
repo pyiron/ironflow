@@ -82,6 +82,14 @@ class GUI(HasSession):
             session_title=session_title, extra_nodes_packages=extra_nodes_packages, enable_ryven_log=enable_ryven_log
         )
 
+        self.ryven_log_button = widgets.Checkbox(
+            value=enable_ryven_log,
+            description="Use Ryven's InfoMsgs system"
+        )
+        self.display_log_button = widgets.Checkbox(
+            value=log_to_display,
+            description="Route stdout to the ironflow log screen"
+        )
         self.flow_canvases = []
         self.toolbar = Toolbar()
         self.node_controller = NodeController(self)
@@ -244,13 +252,40 @@ class GUI(HasSession):
             ]
         )
 
-        window = widgets.Tab([flow_screen, self._stdoutput.output])
+        self.ryven_log_button.observe(self._toggle_ryven_log)
+        self.display_log_button.observe(self._toggle_display_log)
+
+        log_screen = widgets.VBox(
+            [
+                widgets.HBox([
+                    self.display_log_button,
+                    self.ryven_log_button
+                ]),
+                self._stdoutput.output
+            ]
+        )
+
+        window = widgets.Tab([flow_screen, log_screen])
         window.set_title(0, "Workflow")
         window.set_title(1, "Log")
         return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
+    def _toggle_ryven_log(self, change: dict):
+        if change["name"] == "value":
+            if change["new"] == True:
+                self.session.info_messenger().enable()
+            else:
+                self.session.info_messenger().disable()
+
+    def _toggle_display_log(self, change: dict):
+        if change["name"] == "value":
+            if change["new"] == True:
+                self.log_to_display()
+            else:
+                self.log_to_stdout()
+
     def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # Todo: Change only for the active script, and update the dropdown on tab (script) switching
