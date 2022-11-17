@@ -46,7 +46,7 @@ class LogScreen:
         )
         self.display_log_button = widgets.Checkbox(
             value=log_to_display,
-            description="Route stdout to the ironflow log screen"
+            description="Route stdout to ironflow"
         )
 
         self.ryven_log_button.observe(self._toggle_ryven_log)
