@@ -20,14 +20,13 @@ from ironflow.gui.boxes import (
     FlowBox,
 )
 from ironflow.gui.canvas_widgets import FlowCanvas
+from ironflow.gui.log import LogScreen
 from ironflow.model.model import HasSession
 from ironflow.utils import display_string
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
     from ironflow.gui.canvas_widgets.nodes import NodeWidget
-
-debug_view = widgets.Output(layout={"border": "1px solid black"})
 
 
 class GUI(HasSession):
@@ -44,6 +43,8 @@ class GUI(HasSession):
         session_title: str,
         extra_nodes_packages: Optional[list] = None,
         script_title: Optional[str] = None,
+        enable_ryven_log: bool = True,
+        log_to_display: bool = True,
     ):
         """
         Create a new gui instance.
@@ -57,9 +58,21 @@ class GUI(HasSession):
                 `*_Node` will be registered. (Default is None, don't register any extra nodes.)
             script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a
                 new script is needed on initialization, i.e. when existing session data cannot be read.)
+            enable_ryven_log (bool): Activate Ryven's logging system to catch Ryven actions and node errors. (Default
+                is True.)
+            log_to_display (bool): Re-route stdout (and node error's captured by the Ryven logger, if activated) to a
+                separate output widget. (Default is True.)
         """
+        self.log_screen = LogScreen(
+            gui=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display
+        )
+        # Log screen needs to be instantiated before the rest of the init so we know whether to look at the ryven log
+        # as we boot
+
         super().__init__(
-            session_title=session_title, extra_nodes_packages=extra_nodes_packages
+            session_title=session_title,
+            extra_nodes_packages=extra_nodes_packages,
+            enable_ryven_log=enable_ryven_log,
         )
 
         self.flow_canvases = []
@@ -181,7 +194,12 @@ class GUI(HasSession):
     def print(self, msg: str):
         self.text_out.print(msg)
 
-    @debug_view.capture(clear_output=True)
+    def log_to_display(self):
+        self.log_screen.log_to_display()
+
+    def log_to_stdout(self):
+        self.log_screen.log_to_stdout()
+
     def draw(self) -> widgets.VBox:
         """
         Build the gui.
@@ -207,16 +225,20 @@ class GUI(HasSession):
         self.toolbar.buttons.zoom_out.on_click(self._click_zoom_out)
         self.flow_box.script_tabs.observe(self._change_script_tabs)
 
-        return widgets.VBox(
+        flow_screen = widgets.VBox(
             [
                 self.toolbar.box,
                 self.input.box,
                 self.flow_box.box,
                 self.text_out.box,
                 widgets.HBox([self.node_controller.box, self.node_presenter.box]),
-                debug_view,
             ]
         )
+
+        window = widgets.Tab([flow_screen, self.log_screen.box])
+        window.set_title(0, "Workflow")
+        window.set_title(1, "Log")
+        return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
