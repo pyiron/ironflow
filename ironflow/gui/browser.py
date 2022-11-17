@@ -15,7 +15,7 @@ from pyiron_gui import ProjectBrowser
 
 class Browser:
     def __init__(self):
-        self.top_level_project = Project('.')
+        self.top_level_project = Project(".")
         self._box = widgets.VBox([], layout=widgets.Layout(height="470px"))
         self.project_browser = ProjectBrowser(self.top_level_project, Vbox=self._box)
         self.project_browser.refresh()
