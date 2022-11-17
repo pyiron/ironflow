@@ -24,10 +24,18 @@ from ironflow.model.node import Node
 class HasSession(ABC):
     """Mixin for an object which has a Ryven session as the underlying model"""
 
-    def __init__(self, session_title: str, extra_nodes_packages: Optional[list] = None):
+    def __init__(
+            self,
+            session_title: str,
+            extra_nodes_packages: Optional[list] = None,
+            enable_ryven_log: bool = True,
+    ):
         self._session = Session()
         self.session_title = session_title
         self._active_script_index = 0
+
+        if enable_ryven_log:
+            self.session.info_messenger().enable()
 
         self.nodes_dictionary = {}
         from ironflow.nodes import built_in

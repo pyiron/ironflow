@@ -44,6 +44,7 @@ class GUI(HasSession):
         session_title: str,
         extra_nodes_packages: Optional[list] = None,
         script_title: Optional[str] = None,
+        enable_ryven_log: bool = True,
     ):
         """
         Create a new gui instance.
