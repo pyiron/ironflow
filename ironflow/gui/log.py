@@ -78,14 +78,14 @@ class LogScreen:
 
     def _toggle_ryven_log(self, change: dict):
         if change["name"] == "value":
-            if change["new"] == True:
+            if change["new"]:
                 self._gui.session.info_messenger().enable()
             else:
                 self._gui.session.info_messenger().disable()
 
     def _toggle_display_log(self, change: dict):
         if change["name"] == "value":
-            if change["new"] == True:
+            if change["new"]:
                 self.log_to_display()
             else:
                 self.log_to_stdout()
