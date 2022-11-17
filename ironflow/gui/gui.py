@@ -241,6 +241,7 @@ class GUI(HasSession):
         window.set_title(0, "Workflow")
         window.set_title(1, "Browser")
         window.set_title(2, "Log")
+        window.observe(self._change_screen_tabs)
         return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
@@ -357,3 +358,7 @@ class GUI(HasSession):
                 self.update_tabs()
             else:
                 self.active_script_index = self.flow_box.script_tabs.selected_index
+
+    def _change_screen_tabs(self, change: dict):
+        if change["name"] == "selected_index" and change["new"] == 1:
+            self.browser.project_browser.refresh()
