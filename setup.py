@@ -36,6 +36,7 @@ setup(
         'numpy',
         'pyiron_base',
         'pyiron_atomistics',
+        'pyiron_gui',
         'ryvencore'
     ],
     cmdclass=versioneer.get_cmdclass(),
