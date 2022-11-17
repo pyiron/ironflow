@@ -7,8 +7,6 @@ Top-level objects for getting the front and back end (and various parts of the f
 
 from __future__ import annotations
 
-import sys
-from io import TextIOBase
 from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
@@ -22,20 +20,13 @@ from ironflow.gui.boxes import (
     FlowBox,
 )
 from ironflow.gui.canvas_widgets import FlowCanvas
+from ironflow.gui.log import LogScreen
 from ironflow.model.model import HasSession
 from ironflow.utils import display_string
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
     from ironflow.gui.canvas_widgets.nodes import NodeWidget
-
-
-class StdOutPut(TextIOBase):
-    def __init__(self):
-        self.output = widgets.Output()
-
-    def write(self, s):
-        self.output.append_stdout(s)
 
 
 class GUI(HasSession):
@@ -72,24 +63,12 @@ class GUI(HasSession):
             log_to_display (bool): Re-route stdout (and node error's captured by the Ryven logger, if activated) to a
                 separate output widget. (Default is True.)
         """
-        self._stdoutput = StdOutPut()
-        self._standard_stdout = sys.stdout
-        self._standard_stderr = sys.stderr
-        if log_to_display:
-            self.log_to_display()
+        self.log_screen = LogScreen(gui=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display)
 
         super().__init__(
             session_title=session_title, extra_nodes_packages=extra_nodes_packages, enable_ryven_log=enable_ryven_log
         )
 
-        self.ryven_log_button = widgets.Checkbox(
-            value=enable_ryven_log,
-            description="Use Ryven's InfoMsgs system"
-        )
-        self.display_log_button = widgets.Checkbox(
-            value=log_to_display,
-            description="Route stdout to the ironflow log screen"
-        )
         self.flow_canvases = []
         self.toolbar = Toolbar()
         self.node_controller = NodeController(self)
@@ -107,14 +86,6 @@ class GUI(HasSession):
             )
             self.create_script(script_title)
         self.update_tabs()
-
-    def log_to_display(self):
-        sys.stdout = self._stdoutput
-        sys.stderr = self._stdoutput
-
-    def log_to_stdout(self):
-        sys.stdout = self._standard_stdout
-        sys.stderr = self._standard_stderr
 
     def create_script(
         self,
@@ -217,6 +188,12 @@ class GUI(HasSession):
     def print(self, msg: str):
         self.text_out.print(msg)
 
+    def log_to_display(self):
+        self.log_screen.log_to_display()
+
+    def log_to_stdout(self):
+        self.log_screen.log_to_stdout()
+
     def draw(self) -> widgets.VBox:
         """
         Build the gui.
@@ -252,40 +229,13 @@ class GUI(HasSession):
             ]
         )
 
-        self.ryven_log_button.observe(self._toggle_ryven_log)
-        self.display_log_button.observe(self._toggle_display_log)
-
-        log_screen = widgets.VBox(
-            [
-                widgets.HBox([
-                    self.display_log_button,
-                    self.ryven_log_button
-                ]),
-                self._stdoutput.output
-            ]
-        )
-
-        window = widgets.Tab([flow_screen, log_screen])
+        window = widgets.Tab([flow_screen, self.log_screen.box])
         window.set_title(0, "Workflow")
         window.set_title(1, "Log")
         return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
-    def _toggle_ryven_log(self, change: dict):
-        if change["name"] == "value":
-            if change["new"] == True:
-                self.session.info_messenger().enable()
-            else:
-                self.session.info_messenger().disable()
-
-    def _toggle_display_log(self, change: dict):
-        if change["name"] == "value":
-            if change["new"] == True:
-                self.log_to_display()
-            else:
-                self.log_to_stdout()
-
     def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # Todo: Change only for the active script, and update the dropdown on tab (script) switching
