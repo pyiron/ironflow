@@ -19,6 +19,7 @@ from ironflow.gui.boxes import (
     UserInput,
     FlowBox,
 )
+from ironflow.gui.browser import Browser
 from ironflow.gui.canvas_widgets import FlowCanvas
 from ironflow.gui.log import LogScreen
 from ironflow.model.model import HasSession
@@ -82,6 +83,7 @@ class GUI(HasSession):
         self.text_out = TextOut()
         self.input = UserInput()
         self.flow_box = FlowBox(self.nodes_dictionary)
+        self.browser = Browser()
 
         try:
             self.load(f"{self.session_title}.json")
@@ -235,9 +237,10 @@ class GUI(HasSession):
             ]
         )
 
-        window = widgets.Tab([flow_screen, self.log_screen.box])
+        window = widgets.Tab([flow_screen, self.browser.box, self.log_screen.box])
         window.set_title(0, "Workflow")
-        window.set_title(1, "Log")
+        window.set_title(1, "Browser")
+        window.set_title(2, "Log")
         return window
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
