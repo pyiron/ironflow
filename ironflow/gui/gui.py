@@ -7,6 +7,8 @@ Top-level objects for getting the front and back end (and various parts of the f
 
 from __future__ import annotations
 
+import sys
+from io import TextIOBase
 from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
@@ -27,7 +29,13 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
     from ironflow.gui.canvas_widgets.nodes import NodeWidget
 
-debug_view = widgets.Output(layout={"border": "1px solid black"})
+
+class StdOutPut(TextIOBase):
+    def __init__(self):
+        self.output = widgets.Output()
+
+    def write(self, s):
+        self.output.append_stdout(s)
 
 
 class GUI(HasSession):
@@ -45,6 +53,7 @@ class GUI(HasSession):
         extra_nodes_packages: Optional[list] = None,
         script_title: Optional[str] = None,
         enable_ryven_log: bool = True,
+        log_to_display: bool = True,
     ):
         """
         Create a new gui instance.
@@ -58,9 +67,19 @@ class GUI(HasSession):
                 `*_Node` will be registered. (Default is None, don't register any extra nodes.)
             script_title (str|None): Title for an initial script. (Default is None, which generates "script_0" if a
                 new script is needed on initialization, i.e. when existing session data cannot be read.)
+            enable_ryven_log (bool): Activate Ryven's logging system to catch Ryven actions and node errors. (Default
+                is True.)
+            log_to_display (bool): Re-route stdout (and node error's captured by the Ryven logger, if activated) to a
+                separate output widget. (Default is True.)
         """
+        self._stdoutput = StdOutPut()
+        self._standard_stdout = sys.stdout
+        self._standard_stderr = sys.stderr
+        if log_to_display:
+            self.log_to_display()
+
         super().__init__(
-            session_title=session_title, extra_nodes_packages=extra_nodes_packages
+            session_title=session_title, extra_nodes_packages=extra_nodes_packages, enable_ryven_log=enable_ryven_log
         )
 
         self.flow_canvases = []
@@ -80,6 +99,14 @@ class GUI(HasSession):
             )
             self.create_script(script_title)
         self.update_tabs()
+
+    def log_to_display(self):
+        sys.stdout = self._stdoutput
+        sys.stderr = self._stdoutput
+
+    def log_to_stdout(self):
+        sys.stdout = self._standard_stdout
+        sys.stderr = self._standard_stderr
 
     def create_script(
         self,
@@ -182,7 +209,6 @@ class GUI(HasSession):
     def print(self, msg: str):
         self.text_out.print(msg)
 
-    @debug_view.capture(clear_output=True)
     def draw(self) -> widgets.VBox:
         """
         Build the gui.
@@ -215,7 +241,6 @@ class GUI(HasSession):
                 self.flow_box.box,
                 self.text_out.box,
                 widgets.HBox([self.node_controller.box, self.node_presenter.box]),
-                debug_view,
             ]
         )
 
