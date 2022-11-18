@@ -19,7 +19,7 @@ from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
 
 
 if TYPE_CHECKING:
-    from ironflow.gui.gui import GUI
+    from ironflow.gui.workflows.screen import WorkflowsScreen
     from ironflow.model.node import Node
 
 
@@ -32,9 +32,9 @@ class NodeController(NodeInterfaceBase):
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, gui: GUI):
+    def __init__(self, screen: WorkflowsScreen):
         super().__init__()
-        self.gui = gui
+        self.screen = screen
         self.node = None
         self._margin = 5  # px
         self._row_height = 30  # px
@@ -45,7 +45,7 @@ class NodeController(NodeInterfaceBase):
     @property
     def input_widget(self) -> widgets.Widget:
         try:
-            widget = self.node.input_widget(self.gui, self.node).widget
+            widget = self.node.input_widget(self.screen, self.node).widget
             widget.layout = widgets.Layout(
                 height="70px",
                 border="solid 1px blue",
@@ -116,7 +116,7 @@ class NodeController(NodeInterfaceBase):
             # Todo: Test this in exec mode
             self.node.inputs[i_c].val = change["new"]
             self.node.update(i_c)
-            self.gui.redraw_active_flow_canvas()
+            self.screen.redraw_active_flow_canvas()
 
         return input_change
 

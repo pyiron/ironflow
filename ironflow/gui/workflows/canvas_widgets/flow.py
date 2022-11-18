@@ -21,7 +21,7 @@ from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.base import Number
-    from ironflow.gui.gui import GUI
+    from ironflow.gui.workflows.screen import WorkflowsScreen
     from ironflow.model import Flow
     from ironflow.model.node import Node
 
@@ -46,9 +46,9 @@ class FlowCanvas:
             - If a port is selected, deletes all connections it is part of
     """
 
-    def __init__(self, gui: GUI, flow: Optional[Flow] = None):
-        self._gui = gui
-        self.flow = flow if flow is not None else gui.flow
+    def __init__(self, screen: WorkflowsScreen, flow: Flow):
+        self.screen = screen
+        self.flow = flow
 
         self._standard_size = (1800, 800)
         self._zoom_factors = [0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00]
@@ -92,10 +92,6 @@ class FlowCanvas:
     @property
     def canvas(self):
         return self._canvas
-
-    @property
-    def gui(self):
-        return self._gui
 
     @property
     def flow_canvas(self) -> FlowCanvas:
@@ -158,7 +154,7 @@ class FlowCanvas:
             if last_object is not None:
                 last_object.deselect()
             elif time_since_last_click < self._double_click_speed:
-                self.add_node(x, y, self.gui.new_node_class)
+                self.add_node(x, y, self.screen.new_node_class)
                 self._built_object_to_gui_dict()
         else:
             if (
@@ -205,7 +201,7 @@ class FlowCanvas:
             [o.draw() for o in self.objects_to_draw]
             for c in self.flow.connections:
                 self.draw_connection(c.inp, c.out)
-        self.gui.update_node_presenter()
+        self.screen.update_node_presenter()
 
     def load_node(self, x: Number, y: Number, node: Node) -> NodeWidget:
         layout = NodeLayout()
@@ -250,7 +246,7 @@ class FlowCanvas:
             self._canvas.height = self._height
             self.redraw()
         else:
-            self.gui.print("Zoom limit reached")
+            self.screen.print("Zoom limit reached")
 
     def zoom_in(self) -> None:
         self._zoom(max(self._zoom_index - 1, 0))
