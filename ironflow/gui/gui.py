@@ -11,16 +11,14 @@ from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
 
-from ironflow.gui.boxes import (
-    Toolbar,
-    NodeController,
-    NodePresenter,
-    TextOut,
-    UserInput,
-    FlowBox,
-)
+from ironflow.gui.boxes.flow import FlowBox
+from ironflow.gui.boxes.node_interface.control import NodeController
+from ironflow.gui.boxes.node_interface.representation import NodePresenter
+from ironflow.gui.boxes.text_output import TextOut
+from ironflow.gui.boxes.toolbar import Toolbar
+from ironflow.gui.boxes.user_input import UserInput
 from ironflow.gui.browser import Browser
-from ironflow.gui.canvas_widgets import FlowCanvas
+from ironflow.gui.canvas_widgets.flow import FlowCanvas
 from ironflow.gui.log import LogScreen
 from ironflow.model.model import HasSession
 from ironflow.utils import display_string

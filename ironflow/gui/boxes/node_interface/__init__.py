@@ -4,6 +4,3 @@
 """
 More detailed representations of data from the nodes.
 """
-
-from ironflow.gui.boxes.node_interface.control import NodeController
-from ironflow.gui.boxes.node_interface.representation import NodePresenter
