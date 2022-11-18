@@ -17,7 +17,7 @@ from ironflow.gui.workflows.canvas_widgets.layouts import Layout
 Number = Union[int, float]
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
-    from ironflow.gui.workflows.screen import WorkflowsScreen
+    from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model import Flow
 
 
@@ -77,7 +77,7 @@ class CanvasWidget(ABC):
         return self.parent.canvas
 
     @property
-    def screen(self) -> WorkflowsScreen:
+    def screen(self) -> WorkflowsGUI:
         return self.parent.screen
 
     @property

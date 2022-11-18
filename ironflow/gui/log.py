@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import sys
 from io import TextIOBase
+from typing import TYPE_CHECKING
 
 import ipywidgets as widgets
 from pyiron_base.interfaces.singleton import Singleton
-from typing import TYPE_CHECKING
+
+from ironflow.gui.base import Screen
 
 if TYPE_CHECKING:
     from ironflow.model.model import HasSession
@@ -52,7 +54,7 @@ class LogController(metaclass=Singleton):
         sys.stderr = self._standard_stderr
 
 
-class LogScreen:
+class LogGUI(Screen):
     """
     A class that can redirect stdout and stderr to a widget, and gives controls for both this and toggling the
     Ryven logger.
@@ -75,9 +77,7 @@ class LogScreen:
         self.ryven_log_button.observe(self._toggle_ryven_log)
         self.display_log_button.observe(self._toggle_display_log)
 
-    @property
-    def box(self):
-        return widgets.VBox(
+        self._screen = widgets.VBox(
             [
                 widgets.HBox(
                     [self.display_log_button, self.ryven_log_button],
@@ -86,6 +86,10 @@ class LogScreen:
                 widgets.HBox([self.output], layout=widgets.Layout(height="435px"))
             ],
         )
+
+    @property
+    def screen(self):
+        return self._screen
 
     @property
     def output(self):

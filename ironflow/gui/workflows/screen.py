@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 import ipywidgets as widgets
 
+from ironflow.gui.base import Screen
 from ironflow.gui.workflows.boxes.flow import FlowBox
 from ironflow.gui.workflows.boxes.node_interface.control import NodeController
 from ironflow.gui.workflows.boxes.node_interface.representation import NodePresenter
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class WorkflowsScreen:
+class WorkflowsGUI(Screen):
     def __init__(self, model: HasSession):
         self.model = model
         self.flow_canvases = []
@@ -54,6 +55,16 @@ class WorkflowsScreen:
         self.toolbar.buttons.zoom_in.on_click(self._click_zoom_in)
         self.toolbar.buttons.zoom_out.on_click(self._click_zoom_out)
         self.flow_box.script_tabs.observe(self._change_script_tabs)
+
+        self._screen = widgets.VBox(
+            [
+                self.toolbar.box,
+                self.input.box,
+                self.flow_box.box,
+                self.text_out.box,
+                widgets.HBox([self.node_controller.box, self.node_presenter.box]),
+            ]
+        )
 
     @property
     def new_node_class(self):
@@ -135,16 +146,8 @@ class WorkflowsScreen:
         self.node_presenter.close()
 
     @property
-    def box(self):
-        return widgets.VBox(
-            [
-                self.toolbar.box,
-                self.input.box,
-                self.flow_box.box,
-                self.text_out.box,
-                widgets.HBox([self.node_controller.box, self.node_presenter.box]),
-            ]
-        )
+    def screen(self):
+        return self._screen
 
     def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts

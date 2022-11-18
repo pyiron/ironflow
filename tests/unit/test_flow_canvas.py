@@ -11,7 +11,7 @@ class TestCanvasObect(TestCase):
 
     def setUp(self):
         self.gui = GUI('gui')
-        self.canvas = self.gui.workflows_screen.flow_canvas
+        self.canvas = self.gui.workflows.flow_canvas
 
     @classmethod
     def tearDownClass(cls):

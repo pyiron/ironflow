@@ -19,7 +19,7 @@ from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
 
 
 if TYPE_CHECKING:
-    from ironflow.gui.workflows.screen import WorkflowsScreen
+    from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.node import Node
 
 
@@ -32,7 +32,7 @@ class NodeController(NodeInterfaceBase):
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, screen: WorkflowsScreen):
+    def __init__(self, screen: WorkflowsGUI):
         super().__init__()
         self.screen = screen
         self.node = None

@@ -13,11 +13,11 @@ import ipywidgets as widgets
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
-    from ironflow.gui.workflows.screen import WorkflowsScreen
+    from ironflow.gui.workflows.screen import WorkflowsGUI
 
 
 class SliderControl:
-    def __init__(self, screen: WorkflowsScreen, node: Node):
+    def __init__(self, screen: WorkflowsGUI, node: Node):
         self.screen = screen
         self.node = node
         self.widget = widgets.FloatSlider(

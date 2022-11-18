@@ -21,7 +21,7 @@ from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.base import Number
-    from ironflow.gui.workflows.screen import WorkflowsScreen
+    from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model import Flow
     from ironflow.model.node import Node
 
@@ -46,7 +46,7 @@ class FlowCanvas:
             - If a port is selected, deletes all connections it is part of
     """
 
-    def __init__(self, screen: WorkflowsScreen, flow: Flow):
+    def __init__(self, screen: WorkflowsGUI, flow: Flow):
         self.screen = screen
         self.flow = flow
 

@@ -11,16 +11,17 @@ from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
 
-from ironflow.gui.browser import Browser
-from ironflow.gui.log import LogScreen
-from ironflow.gui.workflows.screen import WorkflowsScreen
+from ironflow.gui.base import Screen
+from ironflow.gui.browser import BrowserGUI
+from ironflow.gui.log import LogGUI
+from ironflow.gui.workflows.screen import WorkflowsGUI
 from ironflow.model.model import HasSession
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class GUI(HasSession):
+class GUI(HasSession, Screen):
     """
     The main ironflow object, connecting a ryven backend with a jupyter-friendly ipywidgets+ipycanvas frontend.
 
@@ -54,7 +55,7 @@ class GUI(HasSession):
             log_to_display (bool): Re-route stdout (and node error's captured by the Ryven logger, if activated) to a
                 separate output widget. (Default is True.)
         """
-        self.log_screen = LogScreen(
+        self.log = LogGUI(
             model=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display
         )
         # Log screen needs to be instantiated before the rest of the init so we know whether to look at the ryven log
@@ -66,8 +67,8 @@ class GUI(HasSession):
             enable_ryven_log=enable_ryven_log,
         )
 
-        self.workflows_screen = WorkflowsScreen(model=self)
-        self.browser = Browser()
+        self.workflows = WorkflowsGUI(model=self)
+        self.browser = BrowserGUI()
 
         try:
             self.load(f"{self.session_title}.json")
@@ -77,7 +78,14 @@ class GUI(HasSession):
                 f"No session data found for {self.session_title}, making a new script."
             )
             self.create_script(script_title)
-        self.workflows_screen.update_tabs()
+        self.workflows.update_tabs()
+
+        self._screen = widgets.Tab([self.workflows.screen, self.browser.screen, self.log.screen])
+        self._screen.set_title(0, "Workflows")
+        self._screen.set_title(1, "Browser")
+        self._screen.set_title(2, "Log")
+
+        self._screen.observe(self._change_screen_tabs)
 
     def create_script(
         self,
@@ -88,15 +96,15 @@ class GUI(HasSession):
         super().create_script(
             title=title, create_default_logs=create_default_logs, data=data
         )
-        self.workflows_screen.add_flow(self.flow)
+        self.workflows.add_flow(self.flow)
 
     @property
     def selected_node(self) -> Node | None:
-        return self.workflows_screen.selected_node
+        return self.workflows.selected_node
 
     @property
     def new_node_class(self):
-        return self.workflows_screen.new_node_class
+        return self.workflows.new_node_class
 
     def serialize(self) -> dict:
         data = super().serialize()
@@ -104,7 +112,7 @@ class GUI(HasSession):
         for i_script, script in enumerate(self.session.scripts):
             all_data = data["scripts"][i_script]["flow"]["nodes"]
             self.active_script_index = i_script
-            for i, node_widget in enumerate(self.workflows_screen.flow_canvas.objects_to_draw):
+            for i, node_widget in enumerate(self.workflows.flow_canvas.objects_to_draw):
                 all_data[i]["pos x"] = node_widget.x
                 all_data[i]["pos y"] = node_widget.y
         self.active_script_index = currently_active
@@ -112,36 +120,25 @@ class GUI(HasSession):
 
     def load_from_data(self, data: dict) -> None:
         super().load_from_data(data)
-        self.workflows_screen.load_from_data(data)
+        self.workflows.load_from_data(data)
 
     def register_node(self, node_class: Type[Node], node_group: Optional[str] = None):
         # Inherited __doc__ still applies just fine, all we do here is update a menu item afterwards.
         super().register_node(node_class=node_class, node_group=node_group)
         try:
-            self.workflows_screen.update_nodes_selector(self.nodes_dictionary)
+            self.workflows.update_nodes_selector(self.nodes_dictionary)
         except AttributeError:
             pass  # It's not defined yet in the super().__init__ call, which is fine
 
     def log_to_display(self):
-        self.log_screen.log_to_display()
+        self.log.log_to_display()
 
     def log_to_stdout(self):
-        self.log_screen.log_to_stdout()
+        self.log.log_to_stdout()
 
-    def draw(self) -> widgets.Tab:
-        """
-        Build the gui.
-
-        Returns:
-            ipywidgets.Tab: The gui.
-        """
-
-        window = widgets.Tab([self.workflows_screen.box, self.browser.box, self.log_screen.box])
-        window.set_title(0, "Workflow")
-        window.set_title(1, "Browser")
-        window.set_title(2, "Log")
-        window.observe(self._change_screen_tabs)
-        return window
+    @property
+    def screen(self) -> widgets.Tab:
+        return self._screen
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
