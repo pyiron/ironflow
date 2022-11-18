@@ -58,7 +58,7 @@ class LogScreen:
         return widgets.VBox(
             [
                 widgets.HBox([self.display_log_button, self.ryven_log_button]),
-                self.output,
+                widgets.HBox([self.output])
             ],
         )
 
