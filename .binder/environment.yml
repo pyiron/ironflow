@@ -9,7 +9,7 @@ dependencies:
 - numpy
 - pyiron_base
 - pyiron_atomistics >= 0.2.57
-- pyiron_gui >= 0.0.8
+- pyiron_gui =0.0.8
 - ryvencore
 - python >= 3.8
 - lammps
