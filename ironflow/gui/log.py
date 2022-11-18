@@ -57,7 +57,10 @@ class LogScreen:
     def box(self):
         return widgets.VBox(
             [
-                widgets.HBox([self.display_log_button, self.ryven_log_button]),
+                widgets.HBox(
+                    [self.display_log_button, self.ryven_log_button],
+                    layout=widgets.Layout(min_height="35px")
+                ),
                 widgets.HBox([self.output])
             ],
         )
