@@ -15,7 +15,7 @@ from pyiron_base.interfaces.singleton import Singleton
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ironflow.gui.gui import GUI
+    from ironflow.model.model import HasSession
 
 
 class StdOutPut(TextIOBase):
@@ -58,8 +58,8 @@ class LogScreen:
     Ryven logger.
     """
 
-    def __init__(self, gui: GUI, enable_ryven_log: bool, log_to_display: bool):
-        self._gui = gui
+    def __init__(self, model: HasSession, enable_ryven_log: bool, log_to_display: bool):
+        self.model = model
         self._log_controller = LogController()
 
         if log_to_display:
@@ -100,9 +100,9 @@ class LogScreen:
     def _toggle_ryven_log(self, change: dict):
         if change["name"] == "value":
             if change["new"]:
-                self._gui.session.info_messenger().enable()
+                self.model.session.info_messenger().enable()
             else:
-                self._gui.session.info_messenger().disable()
+                self.model.session.info_messenger().disable()
 
     def _toggle_display_log(self, change: dict):
         if change["name"] == "value":

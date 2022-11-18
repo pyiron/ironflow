@@ -55,7 +55,7 @@ class GUI(HasSession):
                 separate output widget. (Default is True.)
         """
         self.log_screen = LogScreen(
-            gui=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display
+            model=self, enable_ryven_log=enable_ryven_log, log_to_display=log_to_display
         )
         # Log screen needs to be instantiated before the rest of the init so we know whether to look at the ryven log
         # as we boot
@@ -66,7 +66,7 @@ class GUI(HasSession):
             enable_ryven_log=enable_ryven_log,
         )
 
-        self.workflows_screen = WorkflowsScreen(self)
+        self.workflows_screen = WorkflowsScreen(model=self)
         self.browser = Browser()
 
         try:
