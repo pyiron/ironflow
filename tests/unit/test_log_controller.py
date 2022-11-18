@@ -11,27 +11,25 @@ from ironflow.gui.log import LogController
 class TestLogController(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.og_stdout = sys.stdout
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        sys.stdout = cls.og_stdout
+        cls.lc = LogController()
 
     def setUp(self) -> None:
-        sys.stdout = self.og_stdout
+        self.lc.log_to_stdout()
+
+    def tearDown(self) -> None:
+        self.lc.log_to_stdout()
 
     def test_on_off(self):
-        lc = LogController()
-        self.assertNotEqual(sys.stdout, lc._stdoutput, msg="Expected to start 'off'")
-        lc.log_to_display()
-        self.assertEqual(sys.stdout, lc._stdoutput, msg="Failed to turn 'on'")
-        lc.log_to_stdout()
-        self.assertNotEqual(sys.stdout, lc._stdoutput, msg="Failed to turn  'off'")
+        self.assertNotEqual(sys.stdout, self.lc._stdoutput, msg="Expected to start 'off'")
+        self.lc.log_to_display()
+        self.assertEqual(sys.stdout, self.lc._stdoutput, msg="Failed to turn 'on'")
+        self.lc.log_to_stdout()
+        self.assertNotEqual(sys.stdout, self.lc._stdoutput, msg="Failed to turn  'off'")
 
     def test_preservation_of_original_stream(self):
-        lc = LogController()
-        self.assertEqual(self.og_stdout, lc._standard_stdout)
-        lc.log_to_display()
+        self.assertEqual(sys.stdout, self.lc._standard_stdout)
+        self.assertNotEqual(self.lc._stdoutput, self.lc._standard_stdout)
+        self.lc.log_to_display()
         lc2 = LogController()
-        self.assertEqual(self.og_stdout, lc._standard_stdout)
-        lc2.log_to_stdout()  # Clean up
+        self.assertEqual(sys.stdout, lc2._stdoutput)
+        self.assertNotEqual(lc2._stdoutput, lc2._standard_stdout)
