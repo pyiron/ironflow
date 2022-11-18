@@ -10,13 +10,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
-from ironflow.gui.canvas_widgets.base import CanvasWidget, HideableWidget
-from ironflow.gui.canvas_widgets.layouts import ButtonLayout
+from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget, HideableWidget
+from ironflow.gui.workflows.canvas_widgets.layouts import ButtonLayout
 from ironflow.model import NodeInput, NodeOutput
 
 if TYPE_CHECKING:
-    from ironflow.gui.canvas_widgets.base import Number
-    from ironflow.gui.canvas_widgets.nodes import NodeWidget
+    from ironflow.gui.workflows.canvas_widgets.base import Number
+    from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
     from ironflow.model import NodePort
 
 

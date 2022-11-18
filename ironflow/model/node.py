@@ -11,7 +11,7 @@ from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 from ryvencore.NodePort import NodePort
 
-from ironflow.gui.canvas_widgets.nodes import NodeWidget
+from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.utils import display_string
 
 if TYPE_CHECKING:

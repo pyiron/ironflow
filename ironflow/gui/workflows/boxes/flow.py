@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 
-from ironflow.gui.boxes.base import Box
+from ironflow.gui.workflows.boxes.base import Box
 
 
 class NodeSelector(Box):

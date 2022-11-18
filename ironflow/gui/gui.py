@@ -11,21 +11,21 @@ from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
 
-from ironflow.gui.boxes.flow import FlowBox
-from ironflow.gui.boxes.node_interface.control import NodeController
-from ironflow.gui.boxes.node_interface.representation import NodePresenter
-from ironflow.gui.boxes.text_output import TextOut
-from ironflow.gui.boxes.toolbar import Toolbar
-from ironflow.gui.boxes.user_input import UserInput
+from ironflow.gui.workflows.boxes.flow import FlowBox
+from ironflow.gui.workflows.boxes.node_interface.control import NodeController
+from ironflow.gui.workflows.boxes.node_interface.representation import NodePresenter
+from ironflow.gui.workflows.boxes.text_output import TextOut
+from ironflow.gui.workflows.boxes.toolbar import Toolbar
+from ironflow.gui.workflows.boxes.user_input import UserInput
 from ironflow.gui.browser import Browser
-from ironflow.gui.canvas_widgets.flow import FlowCanvas
+from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
 from ironflow.gui.log import LogScreen
 from ironflow.model.model import HasSession
 from ironflow.utils import display_string
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
-    from ironflow.gui.canvas_widgets.nodes import NodeWidget
+    from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 
 
 class GUI(HasSession):

@@ -14,14 +14,13 @@ import ipywidgets as widgets
 from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 
-from ironflow.gui.canvas_widgets.base import CanvasWidget
-from ironflow.gui.canvas_widgets.buttons import RepresentButtonWidget
-from ironflow.gui.canvas_widgets.layouts import NodeLayout
-from ironflow.gui.canvas_widgets.nodes import NodeWidget, ButtonNodeWidget
-from ironflow.gui.canvas_widgets.ports import PortWidget
+from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget
+from ironflow.gui.workflows.canvas_widgets.layouts import NodeLayout
+from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
+from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
-    from ironflow.gui.canvas_widgets.base import Number
+    from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.gui.gui import GUI
     from ironflow.model import Flow
     from ironflow.model.node import Node

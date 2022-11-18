@@ -9,12 +9,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, Optional
 
-from ironflow.gui.canvas_widgets.base import HideableWidget, CanvasWidget
-from ironflow.gui.canvas_widgets.layouts import PortLayout
+from ironflow.gui.workflows.canvas_widgets.base import HideableWidget, CanvasWidget
+from ironflow.gui.workflows.canvas_widgets.layouts import PortLayout
 
 if TYPE_CHECKING:
-    from ironflow.gui.canvas_widgets.flow import FlowCanvas
-    from ironflow.gui.canvas_widgets.base import Number
+    from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
+    from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.model import NodePort
 
 

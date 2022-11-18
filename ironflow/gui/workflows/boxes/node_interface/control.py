@@ -15,7 +15,7 @@ import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
 
-from ironflow.gui.boxes.node_interface.base import NodeInterfaceBase
+from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
 
 
 if TYPE_CHECKING:

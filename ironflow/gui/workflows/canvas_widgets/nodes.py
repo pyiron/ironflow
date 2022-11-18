@@ -12,24 +12,24 @@ from typing import TYPE_CHECKING, Optional
 import numpy as np
 from ipycanvas import hold_canvas
 
-from ironflow.gui.canvas_widgets.base import CanvasWidget
-from ironflow.gui.canvas_widgets.buttons import (
+from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget
+from ironflow.gui.workflows.canvas_widgets.buttons import (
     RepresentButtonWidget,
     ExpandButtonWidget,
     CollapseButtonWidget,
     ExecButtonWidget,
 )
-from ironflow.gui.canvas_widgets.layouts import (
+from ironflow.gui.workflows.canvas_widgets.layouts import (
     NodeLayout,
     DataPortLayout,
     ExecPortLayout,
     ButtonLayout,
 )
-from ironflow.gui.canvas_widgets.ports import PortWidget
+from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
-    from ironflow.gui.canvas_widgets.flow import FlowCanvas
-    from ironflow.gui.canvas_widgets.base import Number
+    from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
+    from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.model import NodeInputBP, NodeOutputBP
     from ironflow.model.node import Node
 

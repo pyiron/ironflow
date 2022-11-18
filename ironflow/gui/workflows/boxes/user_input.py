@@ -11,7 +11,7 @@ from typing import Any, Optional
 
 import ipywidgets as widgets
 
-from ironflow.gui.boxes.base import Box
+from ironflow.gui.workflows.boxes.base import Box
 
 
 class UserInput(Box):
