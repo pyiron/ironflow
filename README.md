@@ -31,7 +31,8 @@ gui = GUI('example')
 gui.draw()
 ```
 
-In addition to manipulating the gui with buttons in the toolbar, you can:
+The main screen for ironflow is used to build/run/save/load graphical pyiron workflows. 
+In addition to manipulating the gui with buttons in the toolbar (hover the cursor over buttons for more info), you can:
 - Look at a node's IO values by clicking on it (which selects it)
 - Deselect things by clicking on empty space
 - See a richer representation of the node by clicking its `SHOW` button
@@ -46,6 +47,8 @@ In the default `data` execution mode (we don't currently do anything with the `e
 You'll see the node body change color when it's performing this update.
 Some nodes have input (or output) ports that are of the execution rather than data type.
 These can be triggered by a signal from another node's exec-type output port, or by manually clicking the button associated with that port right there in the node widget.
+
+In addition to the workflows screen, ironflow also incorporates the browser from [`pyiron_gui`](https://github.com/pyiron/pyiron_gui), as well as a log tab that allows you to turn the underlying ryven logger on/off and choose whether stdout gets routed to ironflow or its original context.
 
 ### Adding custom nodes
 
@@ -76,9 +79,10 @@ class My_Node(Node):
 gui.register_node(My_Node)
 ```
 
-Ironflow nodes differ from standard ryven nodes in three ways:
+Ironflow nodes differ from standard ryven (version 0.3.1.1) nodes in four ways:
 - There is a new helper method `output` analogous to the existing `input` method that lets you more easily access output values, i.e. just a quality-of-life difference.
-- They have a `representation` dictionary, which is used by the IPython gui front-end to give a richer look at nodes -- but this just defaults to all the outputs, so you don't need to touch it if you don't want to.
+- Input/output ports and the port values are directly accessible as attributes *if* those ports were labeled, e.g. `node.inputs.ports.foo` or `node.outputs.values.bar`.
+- They have a `representation` dictionary, which is used by the IPython gui front-end to give a richer look at nodes. By default, this includes all the outputs and the source code for the node, but you can append to or overwrite these values by specifying an `extra_representations` dictionary on your custom nodes.
 - They have two new events: `before_update` and `after_update`, to which you can connect (e.g. `node.after_update.connect`) or disconnect (`...disconnect`) methods to fire before and/or after updates occur -- such methods must take the node instance itself as the first argument, and the canonical input integer (specifying which input value it is that's updating) as the second argument. (You can see an example of this in our base `Node` class, where we use it to force an update of the `representation` attribute after each node update.)
 
 Otherwise, they are just standard ryven nodes, and all the ryven documentation applies.
@@ -95,7 +99,7 @@ There is also a `custom_nodes` submodule, but this just exposes other parts of t
 The model itself, `HasSession`, is just a driver for a single ryven `Session`, with some helpful tools like the ability to easily register new nodes.
 The only ryven element we currently extend is the `Node` class, as discussed above; other components are just imported directly from `ryvencore` in `ironflow.model.__init__`.
 
-The gui inherits from a drives the model.
-The visual elements of the gui are broken down into subcomponents like the toolbar, a panel with a visual representaiton of the graph, a place to show the node representations, etc.
+The gui inherits from and drives the model, and is broken down into three screens: workflows (which allow you to manipulate the model), browser (which wraps the project browser from `pyiron_gui`), and a log.
+Inside the workflows screen, visual elements of the gui are broken down into subcomponents like the toolbar, a panel with a visual representation of the graph, a place to show the node representations, etc.
 We avoid listing them all here because what's included and how it's laid out is still in flux.
-The key conceptual bit is that these various sub-components do not rely directly on eachother's internal implementation, they go through the gui as an intermediary.
+The key conceptual bit is that these various sub-components do not rely directly on each other's internal implementation, they go through the workflow screen as an intermediary where necessary.
