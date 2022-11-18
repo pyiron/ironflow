@@ -36,6 +36,7 @@ class LogScreen:
     def __init__(self, gui: GUI, enable_ryven_log: bool, log_to_display: bool):
         self._gui = gui
         self._stdoutput = StdOutPut()
+        self._stdoutput.output.layout.height = "430px"
         self._standard_stdout = sys.stdout
         self._standard_stderr = sys.stderr
 
@@ -59,7 +60,6 @@ class LogScreen:
                 widgets.HBox([self.display_log_button, self.ryven_log_button]),
                 self.output,
             ],
-            layout=widgets.Layout(height="470px"),
         )
 
     @property
