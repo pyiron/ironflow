@@ -11,6 +11,7 @@ import sys
 from io import TextIOBase
 
 import ipywidgets as widgets
+from pyiron_base.interfaces.singleton import Singleton
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -18,13 +19,38 @@ if TYPE_CHECKING:
 
 
 class StdOutPut(TextIOBase):
-    """Helper class that can be assigned to stdout and/or stderr,  passing string to a widget"""
+    """
+    Helper class that can be assigned to stdout and/or stderr,  passing string to a widget
+    """
 
     def __init__(self):
         self.output = widgets.Output()
 
     def write(self, s):
         self.output.append_stdout(s)
+
+
+class LogController(metaclass=Singleton):
+    """
+    Singleton pattern ensures that whatever `sys.stdout/err` was at the beginning of the session gets preserved.
+    """
+
+    def __init__(self):
+        self._stdoutput = StdOutPut()
+        self._standard_stdout = sys.stdout
+        self._standard_stderr = sys.stderr
+
+    @property
+    def output(self):
+        return self._stdoutput.output
+
+    def log_to_display(self):
+        sys.stdout = self._stdoutput
+        sys.stderr = self._stdoutput
+
+    def log_to_stdout(self):
+        sys.stdout = self._standard_stdout
+        sys.stderr = self._standard_stderr
 
 
 class LogScreen:
@@ -35,9 +61,7 @@ class LogScreen:
 
     def __init__(self, gui: GUI, enable_ryven_log: bool, log_to_display: bool):
         self._gui = gui
-        self._stdoutput = StdOutPut()
-        self._standard_stdout = sys.stdout
-        self._standard_stderr = sys.stderr
+        self._log_controller = LogController()
 
         if log_to_display:
             self.log_to_display()
@@ -56,23 +80,23 @@ class LogScreen:
     def box(self):
         return widgets.VBox(
             [
-                widgets.HBox([self.display_log_button, self.ryven_log_button]),
-                self.output,
+                widgets.HBox(
+                    [self.display_log_button, self.ryven_log_button],
+                    layout=widgets.Layout(min_height="35px"),
+                ),
+                widgets.HBox([self.output], layout=widgets.Layout(height="435px")),
             ],
-            layout=widgets.Layout(height="470px"),
         )
 
     @property
     def output(self):
-        return self._stdoutput.output
+        return self._log_controller.output
 
     def log_to_display(self):
-        sys.stdout = self._stdoutput
-        sys.stderr = self._stdoutput
+        self._log_controller.log_to_display()
 
     def log_to_stdout(self):
-        sys.stdout = self._standard_stdout
-        sys.stderr = self._standard_stderr
+        self._log_controller.log_to_stdout()
 
     def _toggle_ryven_log(self, change: dict):
         if change["name"] == "value":
