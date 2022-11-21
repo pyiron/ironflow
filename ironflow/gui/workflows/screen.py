@@ -218,7 +218,9 @@ class WorkflowsGUI(Screen):
         old_name = self.model.script.title
         rename_success = self.model.rename_script(new_name)
         if rename_success:
-            self.flow_box.script_tabs.set_title(self.model.active_script_index, new_name)
+            self.flow_box.script_tabs.set_title(
+                self.model.active_script_index, new_name
+            )
             self.print(f"Script '{old_name}' renamed '{new_name}'")
         else:
             self.print(
@@ -261,4 +263,6 @@ class WorkflowsGUI(Screen):
                 self.model.create_script()
                 self.update_tabs()
             else:
-                self.model.active_script_index = self.flow_box.script_tabs.selected_index
+                self.model.active_script_index = (
+                    self.flow_box.script_tabs.selected_index
+                )

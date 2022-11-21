@@ -80,7 +80,9 @@ class GUI(HasSession, Screen):
             self.create_script(script_title)
         self.workflows.update_tabs()
 
-        self._screen = widgets.Tab([self.workflows.screen, self.browser.screen, self.log.screen])
+        self._screen = widgets.Tab(
+            [self.workflows.screen, self.browser.screen, self.log.screen]
+        )
         self._screen.set_title(0, "Workflows")
         self._screen.set_title(1, "Browser")
         self._screen.set_title(2, "Log")
