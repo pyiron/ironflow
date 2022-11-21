@@ -34,6 +34,7 @@ class LogController(metaclass=Singleton):
     """
     Singleton pattern ensures that whatever `sys.stdout/err` was at the beginning of the session gets preserved.
     """
+
     def __init__(self):
         self._stdoutput = StdOutPut()
         self._standard_stdout = sys.stdout
@@ -81,9 +82,9 @@ class LogScreen:
             [
                 widgets.HBox(
                     [self.display_log_button, self.ryven_log_button],
-                    layout=widgets.Layout(min_height="35px")
+                    layout=widgets.Layout(min_height="35px"),
                 ),
-                widgets.HBox([self.output], layout=widgets.Layout(height="435px"))
+                widgets.HBox([self.output], layout=widgets.Layout(height="435px")),
             ],
         )
 
