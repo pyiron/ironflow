@@ -10,13 +10,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
-from ironflow.gui.canvas_widgets.base import CanvasWidget, HideableWidget
-from ironflow.gui.canvas_widgets.layouts import ButtonLayout
+from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget, HideableWidget
+from ironflow.gui.workflows.canvas_widgets.layouts import ButtonLayout
 from ironflow.model import NodeInput, NodeOutput
 
 if TYPE_CHECKING:
-    from ironflow.gui.canvas_widgets.base import Number
-    from ironflow.gui.canvas_widgets.nodes import NodeWidget
+    from ironflow.gui.workflows.canvas_widgets.base import Number
+    from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
     from ironflow.model import NodePort
 
 
@@ -49,7 +49,7 @@ class ButtonWidget(CanvasWidget, ABC):
         self.pressed = True
         self.on_pressed()
         # Ok, now here is a weird hack:
-        self.gui.update_node_control()
+        self.screen.update_node_control()
         # This way, if a button causes some change in node-state, it gets reflected in the node_controller,
         # e.g. if we `run` or `remove` some job, but a nodestream node is taking that job as input.
         # Performance and usability hits are minimal, but from a maintenance perspective it is super bad, confusing,
@@ -100,10 +100,10 @@ class RepresentButtonWidget(ButtonWidget):
         super().__init__(x, y, parent, layout, selected, title=title)
 
     def on_pressed(self):
-        self.gui.open_node_presenter(self.parent)
+        self.screen.open_node_presenter(self.parent)
 
     def on_unpressed(self):
-        self.gui.close_node_presenter()
+        self.screen.close_node_presenter()
 
 
 class ExpandCollapseButtonWidget(ButtonWidget, HideableWidget, ABC):

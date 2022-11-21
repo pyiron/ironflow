@@ -12,24 +12,24 @@ from typing import TYPE_CHECKING, Optional
 import numpy as np
 from ipycanvas import hold_canvas
 
-from ironflow.gui.canvas_widgets.base import CanvasWidget
-from ironflow.gui.canvas_widgets.buttons import (
+from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget
+from ironflow.gui.workflows.canvas_widgets.buttons import (
     RepresentButtonWidget,
     ExpandButtonWidget,
     CollapseButtonWidget,
     ExecButtonWidget,
 )
-from ironflow.gui.canvas_widgets.layouts import (
+from ironflow.gui.workflows.canvas_widgets.layouts import (
     NodeLayout,
     DataPortLayout,
     ExecPortLayout,
     ButtonLayout,
 )
-from ironflow.gui.canvas_widgets.ports import PortWidget
+from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
-    from ironflow.gui.canvas_widgets.flow import FlowCanvas
-    from ironflow.gui.canvas_widgets.base import Number
+    from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
+    from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.model import NodeInputBP, NodeOutputBP
     from ironflow.model.node import Node
 
@@ -137,13 +137,13 @@ class NodeWidget(CanvasWidget):
                 last_selected_object.deselect()
             self.select()
             try:
-                self.gui.open_node_control(self.node)
+                self.screen.open_node_control(self.node)
                 return self
             except Exception as e:
-                self.gui.print(
+                self.screen.print(
                     f"Failed to handle selection of {self} with exception {e}"
                 )
-                self.gui.close_node_control()
+                self.screen.close_node_control()
                 self.deselect()
                 return None
 
@@ -235,8 +235,8 @@ class NodeWidget(CanvasWidget):
         self._add_ports(radius=self.port_radius, outputs=self.outputs)
 
     def delete(self) -> None:
-        self.gui.ensure_node_not_presented(self)
-        self.gui.ensure_node_not_controlled(self.node)
+        self.screen.ensure_node_not_presented(self)
+        self.screen.ensure_node_not_controlled(self.node)
         for c in self.flow.connections[
             ::-1
         ]:  # Reverse to make sure we traverse whole thing even if we delete
@@ -248,7 +248,7 @@ class NodeWidget(CanvasWidget):
 
     def deselect(self) -> None:
         super().deselect()
-        self.gui.ensure_node_not_controlled(self.node)
+        self.screen.ensure_node_not_controlled(self.node)
 
     @property
     def port_widgets(self) -> list[PortWidget]:

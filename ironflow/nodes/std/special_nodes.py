@@ -3,7 +3,7 @@ from contextlib import redirect_stdout, redirect_stderr
 
 from ironflow.model import dtypes, NodeInputBP, NodeOutputBP
 from ironflow.model.node import Node, PlaceholderWidgetsContainer
-from ironflow.gui.boxes.node_interface.input_widgets import SliderControl
+from ironflow.gui.workflows.boxes.node_interface.input_widgets import SliderControl
 
 widgets = PlaceholderWidgetsContainer()
 

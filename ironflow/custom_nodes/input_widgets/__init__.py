@@ -4,5 +4,3 @@
 """
 Widgets with which to populate the `input_widget` field of a new `ironflow.model.node.Node`.
 """
-
-from ironflow.gui.boxes.node_interface.input_widgets import SliderControl

@@ -12,12 +12,12 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from ipycanvas import Canvas
 
-from ironflow.gui.canvas_widgets.layouts import Layout
+from ironflow.gui.workflows.canvas_widgets.layouts import Layout
 
 Number = Union[int, float]
 if TYPE_CHECKING:
-    from ironflow.gui.gui import GUI
-    from ironflow.gui.canvas_widgets.flow import FlowCanvas
+    from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
+    from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model import Flow
 
 
@@ -77,8 +77,8 @@ class CanvasWidget(ABC):
         return self.parent.canvas
 
     @property
-    def gui(self) -> GUI:
-        return self.parent.gui
+    def screen(self) -> WorkflowsGUI:
+        return self.parent.screen
 
     @property
     def flow(self) -> Flow:

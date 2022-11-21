@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 
 import ipywidgets as widgets
 
-from ironflow.gui.boxes.base import Box
+from ironflow.gui.workflows.boxes.base import Box
 
 
 class NodeInterfaceBase(Box, ABC):

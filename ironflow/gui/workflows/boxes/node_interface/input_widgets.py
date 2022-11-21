@@ -13,12 +13,12 @@ import ipywidgets as widgets
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
-    from ironflow.gui.gui import GUI
+    from ironflow.gui.workflows.screen import WorkflowsGUI
 
 
 class SliderControl:
-    def __init__(self, gui: GUI, node: Node):
-        self.gui = gui
+    def __init__(self, screen: WorkflowsGUI, node: Node):
+        self.screen = screen
         self.node = node
         self.widget = widgets.FloatSlider(
             value=self.node.val, min=0, max=10, continuous_update=False
@@ -29,4 +29,4 @@ class SliderControl:
     def widget_change(self, change: dict) -> None:
         self.node.set_state({"val": change["new"]}, 0)
         self.node.update_event()
-        self.gui.redraw_active_flow_canvas()
+        self.screen.redraw_active_flow_canvas()
