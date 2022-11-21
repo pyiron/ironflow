@@ -117,6 +117,11 @@ class GUI(HasSession):
         return self.flow_canvases[self.active_script_index]
 
     @property
+    def selected_node(self) -> Node | None:
+        selected = self.flow_canvas.get_selected_objects()
+        return selected[0].node if len(selected) > 0 else None
+
+    @property
     def new_node_class(self):
         return self.flow_box.node_selector.new_node_class
 
