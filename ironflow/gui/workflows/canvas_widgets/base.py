@@ -18,7 +18,7 @@ Number = Union[int, float]
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
     from ironflow.gui.workflows.screen import WorkflowsGUI
-    from ironflow.model import Flow
+    from ironflow.model.wrappers import Flow
 
 
 class CanvasWidget(ABC):

@@ -6,7 +6,6 @@ Wrappers and extensions of the underlying ryven model.
 """
 
 from ryvencore import (
-    Flow,
     NodeInputBP,
     NodeOutputBP,
 )
