@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import matplotlib.pylab as plt
 import numpy as np
 
-from pyiron_atomistics import Project
+from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
@@ -75,7 +75,7 @@ class Project_Node(Node):
 
     title = "Project"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Char(default="."), label="name"),
+        NodeInputBP(dtype=dtypes.String(default="."), label="name"),
     ]
     init_outputs = [
         NodeOutputBP(label="project"),
@@ -150,7 +150,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 
     title = "BulkStructure"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Char(default="Fe"), label="element"),
+        NodeInputBP(dtype=dtypes.String(default="Fe"), label="element"),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default=None,
@@ -167,13 +167,16 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                     "fluorite",
                     "wurtzite",
                 ],
+                allow_none=True,
             ),
             label="crystal_structure",
         ),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="a"),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="c"),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="c_over_a"),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="u"),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="a"),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="c"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=None, allow_none=True), label="c_over_a"
+        ),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="u"),
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="orthorhombic"),
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="cubic"),
     ]
@@ -214,7 +217,9 @@ class Repeat_Node(OutputsOnlyAtoms):
 
     title = "Repeat"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
 
@@ -238,7 +243,9 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
     title = "ApplyStrain"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
 
@@ -261,12 +268,18 @@ class Lammps_Node(Node):
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
         NodeInputBP(type_="exec", label="remove"),
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
-        NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Project), label="project"
+        ),
+        NodeInputBP(dtype=dtypes.String(default="job"), label="name"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="Set structure first", items=["Set structure first"]
+                default="Set structure first",
+                items=["Set structure first"],
+                valid_classes=str
             ),
             label="potential",
         ),
@@ -337,10 +350,14 @@ class GenericOutput_Node(Node):
     version = "v0.1"
     title = "GenericOutput"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="job"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=AtomisticGenericJob), label="job"
+        ),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="Input an atomistic job", items=["Input an atomistic job"]
+                default="Input an atomistic job",
+                items=["Input an atomistic job"],
+                valid_classes=str
             ),
             label="field",
         ),
@@ -428,8 +445,8 @@ class JobName_Node(Node):
 
     title = "JobName"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Char(default="job_"), label="base"),
-        NodeInputBP(dtype=dtypes.Float(default=0), label="float"),
+        NodeInputBP(dtype=dtypes.String(default="job_"), label="base"),
+        NodeInputBP(dtype=dtypes.Float(default=0.), label="float"),
     ]
     init_outputs = [
         NodeOutputBP(label="job_name"),
@@ -495,7 +512,9 @@ class Plot3d_Node(Node):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
     ]
     init_outputs = [
         NodeOutputBP(type_="data", label="plot3d"),
@@ -523,8 +542,12 @@ class Matplot_Node(Node):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="y"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=[list, np.ndarray]), label="x"
+        ),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=[list, np.ndarray]), label="y"
+        ),
     ]
     init_outputs = [
         NodeOutputBP(type_="data", label="fig"),
@@ -555,7 +578,10 @@ class Sin_Node(Node):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=[int, float, list, np.ndarray]),
+            label="x"
+        ),
     ]
     init_outputs = [
         NodeOutputBP(label="sin"),
