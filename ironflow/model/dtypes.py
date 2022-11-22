@@ -205,6 +205,11 @@ class Choice(DType):
         )
         self.add_data("items")
 
+    def _dtype_matches(self, val: DType):
+        values_are_more_specific = set(val.valid_classes).issubset(self.valid_classes)
+        might_get_surprising_none = val.allow_none and not self.allow_none
+        return values_are_more_specific and not might_get_surprising_none
+
     def _instance_matches(self, val: Any):
         return val in self.items
 
