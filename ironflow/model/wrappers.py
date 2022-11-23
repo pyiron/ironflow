@@ -91,17 +91,11 @@ class Flow(FlowCore):
 
         # ironflow content
         inp, out = (p1, p2) if p1.io_pos == 1 else (p2, p1)
-        try:
-            inp_dtype = inp.dtype
-            # Always type check when the dtype is specified on input
-            try:
-                out_dtype = out.dtype
-                valid = inp_dtype.matches(out_dtype)
-            except AttributeError:
-                valid = inp_dtype.matches(out.val)
-        except AttributeError:
-            # Never type check without a dtype specification
-            pass
+        if inp.dtype is not None:
+            if out.dtype is not None:
+                valid = inp.dtype.matches(out.dtype)
+            else:
+                valid = inp.dtype.matches(out.val)
 
         # ryvencore.Flow.Flow content
         self.connection_request_valid.emit(valid)
