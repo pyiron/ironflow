@@ -36,7 +36,9 @@ class DType(DTypeCore):
             self.valid_classes = [valid_classes]
         else:
             self.valid_classes = []
+        self.add_data('valid_classes')
         self.allow_none = allow_none
+        self.add_data('allow_none')
 
     @staticmethod
     def from_str(s):
