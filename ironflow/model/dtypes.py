@@ -86,7 +86,14 @@ class Data(DType):
 
 
 def _other_dtype_classes_are_a_subset(reference: DType, other: DType):
-    other_is_more_specific = set(other.valid_classes).issubset(reference.valid_classes)
+    other_is_more_specific = all(
+        [
+            any(
+                [issubclass(o, ref) for ref in reference.valid_classes]
+            )
+            for o in other.valid_classes
+        ]
+    )
     might_get_surprising_none = other.allow_none and not reference.allow_none
     return other_is_more_specific and not might_get_surprising_none
 
