@@ -38,6 +38,24 @@ class DType(DTypeCore):
             self.valid_classes = None
         self.allow_none = allow_none
 
+    @staticmethod
+    def from_str(s):
+        # Load local dtypes, not ryven dtypes
+        for DTypeClass in [
+            Boolean,
+            Char,
+            Choice,
+            Data,
+            Float,
+            Integer,
+            List,
+            String
+        ]:
+            if s == 'DType.'+DTypeClass.__name__:
+                return DTypeClass
+
+        return None
+
     def _dtype_matches(self, val: DType):
         # val can be *more* specific, but not *less*
         return isinstance(val, self.__class__)
