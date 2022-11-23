@@ -30,14 +30,15 @@ class DType(DTypeCore):
             doc=doc,
             _load_state=_load_state,
         )
-        if isinstance(valid_classes, list):
-            self.valid_classes = list(valid_classes)
-        elif valid_classes is not None:
-            self.valid_classes = [valid_classes]
-        else:
-            self.valid_classes = []
+        if _load_state is None:
+            if isinstance(valid_classes, list):
+                self.valid_classes = list(valid_classes)
+            elif valid_classes is not None:
+                self.valid_classes = [valid_classes]
+            else:
+                self.valid_classes = []
+            self.allow_none = allow_none
         self.add_data('valid_classes')
-        self.allow_none = allow_none
         self.add_data('allow_none')
 
     @staticmethod
