@@ -35,7 +35,7 @@ class DType(DTypeCore):
         elif valid_classes is not None:
             self.valid_classes = [valid_classes]
         else:
-            self.valid_classes = None
+            self.valid_classes = []
         self.allow_none = allow_none
 
     @staticmethod
