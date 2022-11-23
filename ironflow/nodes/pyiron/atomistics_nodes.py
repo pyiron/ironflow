@@ -18,6 +18,7 @@ from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
+from pyiron_atomistics.lammps.lammps import Lammps
 
 from ironflow.gui.workflows.canvas_widgets.nodes import ButtonNodeWidget
 from ironflow.model import dtypes, NodeInputBP
@@ -287,7 +288,7 @@ class Lammps_Node(Node):
     ]
     init_outputs = [
         NodeOutputBP(type_="exec"),
-        NodeOutputBP(label="job", dtype=dtypes.Data(valid_classes=AtomisticGenericJob)),
+        NodeOutputBP(label="job", dtype=dtypes.Data(valid_classes=Lammps)),
     ]
     color = "#5d95de"
 
