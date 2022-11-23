@@ -10,7 +10,7 @@ import os
 class TestCanvasObect(TestCase):
 
     def setUp(self):
-        self.gui = GUI('gui')
+        self.gui = GUI('gui', log_to_display=False)
         self.canvas = self.gui.workflows.flow_canvas
 
     @classmethod
@@ -28,10 +28,19 @@ class TestCanvasObect(TestCase):
 
         self.canvas.add_node(0, 0, val_node)
         self.canvas.add_node(0, 0, results_node)
-        c12 = flow.connect_nodes(self.canvas.objects_to_draw[0].outputs[0], self.canvas.objects_to_draw[1].inputs[0])
+        c12 = flow.connect_nodes(
+            self.canvas.objects_to_draw[0].outputs[0],
+            self.canvas.objects_to_draw[1].inputs[0]
+        )
         self.assertEqual(2, len(flow.nodes))
         self.assertEqual(1, len(flow.connections))
         self.canvas.objects_to_draw[0].select()
         self.canvas.delete_selected()
-        self.assertEqual(1, len(flow.nodes), msg="Expected exactly one node to get deleted.")
-        self.assertEqual(0, len(flow.connections), msg="Expected the connection to get automatically deleted")
+        self.assertEqual(
+            1, len(flow.nodes), msg="Expected exactly one node to get deleted."
+        )
+        self.assertEqual(
+            0,
+            len(flow.connections),
+            msg="Expected the connection to get automatically deleted"
+        )

@@ -5,17 +5,17 @@ from __future__ import annotations
 
 import inspect
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import Optional
 
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 from ryvencore.NodePort import NodePort
+from ryvencore.utils import deserialize
 
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
+from ironflow.model.dtypes import DType
+from ironflow.model.port import NodeOutputDT
 from ironflow.utils import display_string
-
-if TYPE_CHECKING:
-    from ironflow.model.dtypes import DType
 
 
 class PortList(list):
@@ -141,6 +141,75 @@ class Node(NodeCore):
         super().create_input_dt(
             dtype=deepcopy(dtype), label=label, add_data=add_data, insert=insert
         )
+
+    def create_output_dt(
+            self, dtype: DType, label: str, insert: Optional[int] = None
+    ):
+        out = NodeOutputDT(
+            node=self,
+            type_='data',
+            label_str=label,
+            dtype=dtype,
+        )
+
+        if insert is not None:
+            self.outputs.insert(insert, out)
+        else:
+            self.outputs.append(out)
+
+    def setup_ports(self, inputs_data=None, outputs_data=None):
+        # ryvencore content
+        if not inputs_data and not outputs_data:
+            # generate initial ports
+
+            for i in range(len(self.init_inputs)):
+                inp = self.init_inputs[i]
+
+                if inp.dtype:
+                    self.create_input_dt(
+                        dtype=inp.dtype, label=inp.label, add_data=inp.add_data
+                    )
+                else:
+                    self.create_input(
+                        inp.label, inp.type_, add_data=self.init_inputs[i].add_data
+                    )
+
+            # ironflow modification
+            for o in range(len(self.init_outputs)):
+                out = self.init_outputs[o]
+
+                if out.dtype is not None:
+                    self.create_output_dt(dtype=out.dtype, label=out.label)
+                else:
+                    self.create_output(label=out.label, type_=out.type_)
+
+        # ryvenflow content
+        else:
+            # load from data
+            # initial ports specifications are irrelevant then
+
+            for inp in inputs_data:
+                if 'dtype' in inp:
+                    self.create_input_dt(dtype=DType.from_str(inp['dtype'])(
+                        _load_state=deserialize(inp['dtype state'])), label=inp['label'], add_data=inp)
+                else:
+                    self.create_input(label=inp['label'], type_=inp['type'], add_data=inp)
+
+                if 'val' in inp:
+                    # this means the input is 'data' and did not have any connections,
+                    # so we saved its value which was probably represented by some widget
+                    # in the front end which has probably overridden the Node.input() method
+                    self.inputs[-1].val = deserialize(inp['val'])
+
+            # ironflow modification
+            for out in outputs_data:
+                if 'dtype' in out:
+                    dtype = DType.from_str(out['dtype'])(
+                        _load_state=deserialize(out['dtype state'])
+                    )
+                    self.create_output_dt(dtype=dtype, label=out['label'])
+                else:
+                    self.create_output(out['label'], out['type'])
 
     def place_event(self):
         # place_event() is executed *before* the connections are built

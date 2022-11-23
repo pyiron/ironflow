@@ -1,5 +1,6 @@
-from ironflow.model import dtypes, NodeInputBP, NodeOutputBP
+from ironflow.model import dtypes, NodeInputBP
 from ironflow.model.node import Node, PlaceholderWidgetsContainer
+from ironflow.model.port import NodeOutputBP
 
 widgets = PlaceholderWidgetsContainer()
 

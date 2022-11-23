@@ -5,8 +5,5 @@
 Wrappers and extensions of the underlying ryven model.
 """
 
-from ryvencore import (
-    NodeInputBP,
-    NodeOutputBP,
-)
+from ryvencore import NodeInputBP
 from ryvencore.NodePort import NodePort, NodeInput, NodeOutput
