@@ -9,7 +9,7 @@ from copy import deepcopy
 from typing import Optional
 
 from ryvencore.NodePort import NodeOutput
-from ryvencore.NodePortBP import NodeInputBP, NodeOutputBP as NodeOutputBPCore
+from ryvencore.NodePortBP import NodeOutputBP as NodeOutputBPCore
 from ryvencore.utils import serialize
 
 from ironflow.model.dtypes import DType
