@@ -88,7 +88,7 @@ class Val_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Data(size="s")),
     ]
     init_outputs = [
-        NodeInputBP(type_="data"),
+        NodeOutputBP(type_="data"),
     ]
     style = "small"
     color = "#c69a15"
