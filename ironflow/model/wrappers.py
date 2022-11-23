@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 
 from ryvencore.Flow import Flow as FlowCore
+from ryvencore.InfoMsgs import InfoMsgs
 from ryvencore.Script import Script as ScriptCore
 from ryvencore.Session import Session as SessionCore
 
@@ -94,8 +95,16 @@ class Flow(FlowCore):
         if inp.dtype is not None:
             if hasattr(out, 'dtype') and out.dtype is not None:
                 valid = inp.dtype.matches(out.dtype)
+                InfoMsgs.write(
+                    f"dtype-dtype check for {inp.node.title}.{inp.label_str} and "
+                    f"{out.node.label}.{out.label_str} returned {valid}"
+                )
             else:
                 valid = inp.dtype.matches(out.val)
+                InfoMsgs.write(
+                    f"dtype-value check for {inp.node.title}.{inp.label_str} and "
+                    f"{out.node.label}.{out.label_str} returned {valid}"
+                )
 
         # ryvencore.Flow.Flow content
         self.connection_request_valid.emit(valid)
