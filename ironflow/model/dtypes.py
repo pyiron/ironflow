@@ -61,10 +61,7 @@ class DType(DTypeCore):
         return isinstance(val, self.__class__)
 
     def _instance_matches(self, val: Any):
-        if self.valid_classes is not None:
-            return any([isinstance(val, c) for c in self.valid_classes])
-        else:
-            return False
+        return any([isinstance(val, c) for c in self.valid_classes])
 
     def matches(self, val: DType | Any | None):
         if isinstance(val, DType):
