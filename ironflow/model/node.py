@@ -14,7 +14,7 @@ from ryvencore.utils import deserialize
 
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.model.dtypes import DType
-from ironflow.model.port import NodeOutputDT
+from ironflow.model.port import NodeInput, NodeOutput
 from ironflow.utils import display_string
 
 
@@ -130,22 +130,55 @@ class Node(NodeCore):
     def create_input(
         self, label: str = "", type_: str = "data", add_data=None, insert: int = None
     ):
-        add_data = add_data if add_data is not None else {}
-        super().create_input(label=label, type_=type_, add_data=add_data, insert=insert)
+        """Creates and adds a new input at index pos"""
+        # Exact copy of ryvencore, except uses our NodeInput class
+        inp = NodeInput(
+            node=self,
+            type_=type_,
+            label_str=label,
+            add_data=add_data,
+        )
+
+        if insert is not None:
+            self.inputs.insert(insert, inp)
+        else:
+            self.inputs.append(inp)
 
     def create_input_dt(
         self, dtype: DType, label: str = "", add_data=None, insert: int = None
     ):
-        """Be more careful with mutables"""
-        add_data = add_data if add_data is not None else {}
-        super().create_input_dt(
-            dtype=deepcopy(dtype), label=label, add_data=add_data, insert=insert
+        """Creates and adds a new data input with a DType"""
+        inp = NodeInput(
+            node=self,
+            type_='data',
+            label_str=label,
+            dtype=dtype,
+            add_data=add_data,
         )
+
+        if insert is not None:
+            self.inputs.insert(insert, inp)
+        else:
+            self.inputs.append(inp)
+
+    def create_output(self, label: str = '', type_: str = 'data', insert: int = None):
+        """Creates and adds a new output"""
+        out = NodeOutput(
+              node=self,
+              type_=type_,
+              label_str=label
+        )
+
+        if insert is not None:
+            self.outputs.insert(insert, out)
+        else:
+            self.outputs.append(out)
 
     def create_output_dt(
             self, dtype: DType, label: str, insert: Optional[int] = None
     ):
-        out = NodeOutputDT(
+        """Creates and adds a new data output with a DType"""
+        out = NodeOutput(
             node=self,
             type_='data',
             label_str=label,
