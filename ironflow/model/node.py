@@ -127,106 +127,77 @@ class Node(NodeCore):
         self.representation_updated = False
         self.after_update.connect(self._representation_update)
 
-    def create_input(
-        self, label: str = "", type_: str = "data", add_data=None, insert: int = None
-    ):
-        """Creates and adds a new input at index pos"""
-        # Exact copy of ryvencore, except uses our NodeInput class
-        inp = NodeInput(
-            node=self,
-            type_=type_,
-            label_str=label,
-            add_data=add_data,
-        )
-
+    def _add_io(self, io_group, new_io, insert: int = None):
         if insert is not None:
-            self.inputs.insert(insert, inp)
+            io_group.insert(insert, new_io)
         else:
-            self.inputs.append(inp)
+            io_group.append(new_io)
+
+    def create_input(
+            self,
+            type_: str = "data",
+            label: str = "",
+            add_data: Optional[dict] = None,
+            dtype: Optional[DType] = None,
+            insert: Optional[int] = None
+    ):
+        """Creates and add a new input port"""
+        inp = NodeInput(
+            node=self, type_=type_, label_str=label, add_data=add_data, dtype=dtype
+        )
+        self._add_io(self.inputs, inp, insert=insert)
 
     def create_input_dt(
-        self, dtype: DType, label: str = "", add_data=None, insert: int = None
+            self, dtype: DType, label: str = '', add_data={}, insert: int = None
     ):
-        """Creates and adds a new data input with a DType"""
-        inp = NodeInput(
-            node=self,
-            type_='data',
-            label_str=label,
-            dtype=dtype,
-            add_data=add_data,
+        raise RuntimeError(
+            "Ironflow uses custom NodePort classes and this method is not supported. "
+            "Please use create_input instead."
         )
 
-        if insert is not None:
-            self.inputs.insert(insert, inp)
-        else:
-            self.inputs.append(inp)
-
-    def create_output(self, label: str = '', type_: str = 'data', insert: int = None):
-        """Creates and adds a new output"""
-        out = NodeOutput(
-              node=self,
-              type_=type_,
-              label_str=label
-        )
-
-        if insert is not None:
-            self.outputs.insert(insert, out)
-        else:
-            self.outputs.append(out)
-
-    def create_output_dt(
-            self, dtype: DType, label: str, insert: Optional[int] = None
+    def create_output(
+            self,
+            type_: str = "data",
+            label: str = "",
+            dtype: Optional[DType] = None,
+            insert: Optional[int] = None
     ):
-        """Creates and adds a new data output with a DType"""
-        out = NodeOutput(
-            node=self,
-            type_='data',
-            label_str=label,
-            dtype=dtype,
-        )
-
-        if insert is not None:
-            self.outputs.insert(insert, out)
-        else:
-            self.outputs.append(out)
+        """Create and add a new output port"""
+        out = NodeOutput(node=self, type_=type_, label_str=label, dtype=dtype)
+        self._add_io(self.outputs, out, insert=insert)
 
     def setup_ports(self, inputs_data=None, outputs_data=None):
-        # ryvencore content
+        # A streamlined version of the ryvencore method which exploits our NodeInput
+        # and NodeOutput classes instead.
         if not inputs_data and not outputs_data:
-            # generate initial ports
 
             for i in range(len(self.init_inputs)):
                 inp = self.init_inputs[i]
+                self.create_input(
+                    type_=inp.type_,
+                    label=inp.label,
+                    add_data=inp.add_data,
+                    dtype=inp.dtype
+                )
 
-                if inp.dtype:
-                    self.create_input_dt(
-                        dtype=inp.dtype, label=inp.label, add_data=inp.add_data
-                    )
-                else:
-                    self.create_input(
-                        inp.label, inp.type_, add_data=self.init_inputs[i].add_data
-                    )
-
-            # ironflow modification
             for o in range(len(self.init_outputs)):
                 out = self.init_outputs[o]
+                self.create_output(type_=out.type_, label=out.label, dtype=out.dtype)
 
-                if out.dtype is not None:
-                    self.create_output_dt(dtype=out.dtype, label=out.label)
-                else:
-                    self.create_output(label=out.label, type_=out.type_)
-
-        # ryvenflow content
         else:
             # load from data
             # initial ports specifications are irrelevant then
 
             for inp in inputs_data:
                 if 'dtype' in inp:
-                    self.create_input_dt(dtype=DType.from_str(inp['dtype'])(
-                        _load_state=deserialize(inp['dtype state'])), label=inp['label'], add_data=inp)
+                    dtype = DType.from_str(inp['dtype'])(
+                        _load_state=deserialize(inp['dtype state'])
+                    )
+                    self.create_input(label=inp['label'], add_data=inp, dtype=dtype)
                 else:
-                    self.create_input(label=inp['label'], type_=inp['type'], add_data=inp)
+                    self.create_input(
+                        type_=inp['type'], label=inp['label'], add_data=inp
+                    )
 
                 if 'val' in inp:
                     # this means the input is 'data' and did not have any connections,
@@ -240,9 +211,9 @@ class Node(NodeCore):
                     dtype = DType.from_str(out['dtype'])(
                         _load_state=deserialize(out['dtype state'])
                     )
-                    self.create_output_dt(dtype=dtype, label=out['label'])
+                    self.create_output(label=out['label'], dtype=dtype)
                 else:
-                    self.create_output(out['label'], out['type'])
+                    self.create_output(type_=out['type'], label=out['label'])
 
     def place_event(self):
         # place_event() is executed *before* the connections are built
