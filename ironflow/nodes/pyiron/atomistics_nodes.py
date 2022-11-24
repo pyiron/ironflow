@@ -2,7 +2,8 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-Ryven nodes specifc to pyiron (or with ironflow improvements like an ipywidgets representation).
+Ryven nodes specific to pyiron (or with ironflow improvements like an ipywidgets
+representation).
 """
 
 from __future__ import annotations
