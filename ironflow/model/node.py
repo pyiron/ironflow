@@ -63,19 +63,28 @@ class PortFinder:
     def __init__(self, port_list: PortList):
         self._port_list = port_list
 
+    @property
+    def _filtered_port_list(self):
+        return [item for item in self._port_list if isinstance(item, NodePort)]
+
     def __getattr__(self, key):
-        for node_port in [
-            item for item in self._port_list if isinstance(item, NodePort)
-        ]:
+        for node_port in self._filtered_port_list:
             if node_port.label_str == key:
                 return node_port
         raise AttributeError(f"No port found with the label {key}")
+
+    def __iter__(self):
+        return self._filtered_port_list.__iter__()
 
 
 class ValueFinder(PortFinder):
     def __getattr__(self, key):
         node_port = super().__getattr__(key)
         return node_port.val
+
+    def __iter__(self):
+        val_list = [p.val for p in self._filtered_port_list]
+        return val_list.__iter__()
 
 
 class Node(NodeCore):
