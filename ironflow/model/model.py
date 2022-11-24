@@ -17,7 +17,9 @@ from types import ModuleType
 from typing import Optional, Type
 
 from ironflow.model.node import Node
-from ironflow.model.wrappers import Flow, Script, Session
+from ironflow.model.session import Session
+from ironflow.model.flow import Flow
+from ironflow.model.script import Script
 
 
 class HasSession(ABC):

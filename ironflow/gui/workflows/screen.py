@@ -24,7 +24,7 @@ from ironflow.utils import display_string
 if TYPE_CHECKING:
     from ironflow.model.model import HasSession
     from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
-    from ironflow.model.wrappers import Flow
+    from ironflow.model.flow import Flow
     from ironflow.model.node import Node
 
 
