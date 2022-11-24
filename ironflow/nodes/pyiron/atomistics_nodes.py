@@ -21,6 +21,7 @@ from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
+from ryvencore.InfoMsgs import InfoMsgs
 
 from ironflow.gui.workflows.canvas_widgets.nodes import ButtonNodeWidget
 from ironflow.model import dtypes, NodeInputBP
@@ -185,19 +186,23 @@ class BulkStructure_Node(OutputsOnlyAtoms):
     ]
 
     def update_event(self, inp=-1):
-        self.set_output_val(
-            0,
-            STRUCTURE_FACTORY.bulk(
-                self.inputs.values.element,
-                crystalstructure=self.inputs.values.crystal_structure,
-                a=self.inputs.values.a,
-                c=self.inputs.values.c,
-                covera=self.inputs.values.c_over_a,
-                u=self.inputs.values.u,
-                orthorhombic=self.inputs.values.orthorhombic,
-                cubic=self.inputs.values.cubic,
-            ),
-        )
+        try:
+            self.set_output_val(
+                0,
+                STRUCTURE_FACTORY.bulk(
+                    self.inputs.values.element,
+                    crystalstructure=self.inputs.values.crystal_structure,
+                    a=self.inputs.values.a,
+                    c=self.inputs.values.c,
+                    covera=self.inputs.values.c_over_a,
+                    u=self.inputs.values.u,
+                    orthorhombic=self.inputs.values.orthorhombic,
+                    cubic=self.inputs.values.cubic,
+                )
+            )
+        except RuntimeError as e:
+            self.set_output_val(0, None)
+            raise e
 
     def place_event(self):
         super().place_event()
