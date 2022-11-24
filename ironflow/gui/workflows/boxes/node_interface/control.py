@@ -100,7 +100,11 @@ class NodeController(NodeInterfaceBase):
                             description="",
                             ensure_option=True,
                         )
-
+                    elif dtype == "String" or dtype == "Char":
+                        inp_widget = widgets.Text(
+                            value=str(inp.val),
+                            continuous_update=False,
+                        )
                     else:
                         inp_widget = widgets.Text(
                             value=str(inp.val),
