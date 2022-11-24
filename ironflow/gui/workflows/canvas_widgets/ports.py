@@ -15,7 +15,7 @@ from ironflow.gui.workflows.canvas_widgets.layouts import PortLayout
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
     from ironflow.gui.workflows.canvas_widgets.base import Number
-    from ironflow.model import NodePort
+    from ironflow.model.port import NodeInput, NodeOutput
 
 
 class PortWidget(HideableWidget):
@@ -25,7 +25,7 @@ class PortWidget(HideableWidget):
         y: Number,
         parent: FlowCanvas | CanvasWidget,
         layout: PortLayout,
-        port: NodePort,
+        port: NodeInput | NodeOutput,
         selected: bool = False,
         title: Optional[str] = None,
         hidden_x: Optional[Number] = None,
@@ -64,12 +64,22 @@ class PortWidget(HideableWidget):
             self.select()
             return self
 
+    @property
+    def _current_color(self):
+        if self.port.valid_val:
+            if self.selected:
+                color = self.layout.valid_selected_color
+            else:
+                color = self.layout.valid_color
+        else:
+            if self.selected:
+                color = self.layout.invalid_selected_color
+            else:
+                color = self.layout.invalid_color
+        return color
+
     def draw_shape(self) -> None:
-        self.canvas.fill_style = (
-            self.layout.selected_color
-            if self.selected
-            else self.layout.background_color
-        )
+        self.canvas.fill_style = (self._current_color)
         self.canvas.fill_circle(self.x, self.y, self.radius)
 
     def draw_title(self) -> None:
