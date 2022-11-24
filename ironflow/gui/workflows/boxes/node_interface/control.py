@@ -81,6 +81,12 @@ class NodeController(NodeInterfaceBase):
                             description="",
                             continuous_update=False,
                         )
+                    elif dtype == "Float":
+                        inp_widget = widgets.FloatText(
+                            value=inp.val,
+                            description="",
+                            continuous_update=False
+                        )
                     elif dtype == "Boolean":
                         inp_widget = widgets.Checkbox(
                             value=inp.val,
