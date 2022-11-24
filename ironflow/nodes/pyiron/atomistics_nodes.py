@@ -293,7 +293,10 @@ class Lammps_Node(Node):
     color = "#5d95de"
 
     def _run(self):
-        job = self.inputs.values.project.create.job.Lammps(self.inputs.values.name)
+        job = self.inputs.values.project.create.job.Lammps(
+            self.inputs.values.name,
+            delete_existing_job=True
+        )
         job.structure = self.inputs.values.structure
         job.potential = self.inputs.values.potential
         self._job = job
@@ -324,11 +327,11 @@ class Lammps_Node(Node):
             self.inputs.ports.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
-        if inp == 0:
+        if inp == 0 and self.all_input_is_valid:
             self._run()
         elif inp == 1:
             self._remove()
-        elif inp == 4:
+        elif inp == 4 and self.inputs.ports.structure.valid_val:
             self._update_potential_choices()
 
     @property

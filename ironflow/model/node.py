@@ -224,6 +224,10 @@ class Node(NodeCore):
                 else:
                     self.create_output(type_=out['type'], label=out['label'])
 
+    @property
+    def all_input_is_valid(self):
+        return all([p.valid_val for p in self.inputs.ports])
+
     def place_event(self):
         # place_event() is executed *before* the connections are built
         super().place_event()
