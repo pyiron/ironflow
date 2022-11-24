@@ -124,7 +124,6 @@ class OutputsOnlyAtoms(Node, ABC):
     def extra_representations(self) -> dict:
         return {
             "plot3d": self.outputs.values.structure.plot3d(),
-            "print": self.outputs.values.structure,
         }
 
 
