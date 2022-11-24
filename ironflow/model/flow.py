@@ -25,7 +25,7 @@ class Flow(FlowCore):
         # ironflow content
         inp, out = (p1, p2) if p1.io_pos == 1 else (p2, p1)
         if inp.dtype is not None:
-            if hasattr(out, 'dtype') and out.dtype is not None:
+            if out.dtype is not None:
                 valid = inp.dtype.matches(out.dtype)
                 InfoMsgs.write(
                     f"dtype-dtype check for {inp.node.title}.{inp.label_str} and "

@@ -62,8 +62,9 @@ class NodeOutput(NodeOutputCore, HasDType):
     def data(self) -> dict:
         data = super().data()
 
-        data['dtype'] = str(self.dtype)
-        data['dtype state'] = serialize(self.dtype.get_state())
+        if self.dtype is not None:
+            data['dtype'] = str(self.dtype)
+            data['dtype state'] = serialize(self.dtype.get_state())
 
         return data
 
