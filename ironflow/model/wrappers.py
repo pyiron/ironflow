@@ -97,13 +97,13 @@ class Flow(FlowCore):
                 valid = inp.dtype.matches(out.dtype)
                 InfoMsgs.write(
                     f"dtype-dtype check for {inp.node.title}.{inp.label_str} and "
-                    f"{out.node.label}.{out.label_str} returned {valid}"
+                    f"{out.node.title}.{out.label_str} returned {valid}"
                 )
             else:
                 valid = inp.dtype.matches(out.val)
                 InfoMsgs.write(
                     f"dtype-value check for {inp.node.title}.{inp.label_str} and "
-                    f"{out.node.label}.{out.label_str} returned {valid}"
+                    f"{out.node.title}.{out.label_str} returned {valid}"
                 )
 
         # ryvencore.Flow.Flow content
