@@ -13,7 +13,8 @@ from typing import TYPE_CHECKING
 
 import matplotlib.pylab as plt
 import numpy as np
-
+from matplotlib.figure import Figure
+from nglview import NGLWidget
 from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
@@ -80,7 +81,7 @@ class Project_Node(Node):
         NodeInputBP(dtype=dtypes.String(default="."), label="name"),
     ]
     init_outputs = [
-        NodeOutputBP(label="project"),
+        NodeOutputBP(label="project", dtype=dtypes.Data(valid_classes=Project)),
     ]
     color = "#aabb44"
 
@@ -111,7 +112,7 @@ class OutputsOnlyAtoms(Node, ABC):
     """
 
     init_outputs = [
-        NodeOutputBP(label="structure"),
+        NodeOutputBP(label="structure", dtype=dtypes.Data(valid_classes=Atoms)),
     ]
     color = "#aabb44"
 
@@ -286,7 +287,7 @@ class Lammps_Node(Node):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec"),
+        NodeOutputBP(type_="exec", label="ran"),
         NodeOutputBP(label="job", dtype=dtypes.Data(valid_classes=Lammps)),
     ]
     color = "#5d95de"
@@ -453,7 +454,7 @@ class JobName_Node(Node):
         NodeInputBP(dtype=dtypes.Float(default=0.), label="float"),
     ]
     init_outputs = [
-        NodeOutputBP(label="job_name"),
+        NodeOutputBP(label="job_name", dtype=dtypes.String()),
     ]
     color = "#aabb44"
 
@@ -521,8 +522,12 @@ class Plot3d_Node(Node):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data", label="plot3d"),
-        NodeOutputBP(type_="data", label="structure"),
+        NodeOutputBP(
+            type_="data", label="plot3d", dtype=dtypes.Data(valid_classes=NGLWidget)
+        ),
+        NodeOutputBP(
+            type_="data", label="structure", dtype=dtypes.Data(valid_classes=Atoms)
+        ),
     ]
     color = "#5d95de"
 
@@ -546,15 +551,11 @@ class Matplot_Node(Node):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=[list, np.ndarray]), label="x"
-        ),
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=[list, np.ndarray]), label="y"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="x"),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="y"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data", label="fig"),
+        NodeOutputBP(type_="data", label="fig", dtype=dtypes.Data(valid_classes=Figure))
     ]
     color = "#5d95de"
 
