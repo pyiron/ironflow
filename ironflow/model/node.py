@@ -253,13 +253,22 @@ class Node(NodeCore):
         self.representation_updated = True
 
     @property
+    def _source_code(self):
+        try:
+            return inspect.getsource(self.__class__)
+        except TypeError:
+            # Classes defined in the notebook can't access their source this way
+            return ""
+
+
+    @property
     def _standard_representations(self):
         standard_reps = {
             o.label_str if o.label_str != "" else f"output{i}": o.val
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
-        standard_reps["source code"] = display_string(inspect.getsource(self.__class__))
+        standard_reps["source code"] = display_string(self._source_code)
         return standard_reps
 
     @property
