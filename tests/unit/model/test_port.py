@@ -15,6 +15,3 @@ class TestPorts(TestCase):
         self.assertTrue(hasattr(NodeInput(node=None), 'dtype'))
         self.assertTrue(hasattr(NodeOutput(node=None), 'dtype'))
         self.assertTrue(hasattr(NodeOutputBP(), 'dtype'))
-
-    def test_spoof(self):
-        raise RuntimeError
