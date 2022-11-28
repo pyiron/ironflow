@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Callable
 import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
+from traitlets import TraitError
 
 from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
 
@@ -120,13 +121,15 @@ class NodeController(NodeInterfaceBase):
                 else:
                     inp_widget = widgets.Label(value=inp.type_)
                     description = inp.type_
+                inp_widget.layout.width = "100px"
                 inp_widget.observe(self.input_change_i(i_c), names="value")
                 reset_button = widgets.Button(
                     tooltip="Reset to default",
                     icon="refresh",
-                    layout=widgets.Layout(width="50px"),
+                    layout=widgets.Layout(max_width="50px", min_width="50px"),
+                    disabled=inp.dtype is None or inp_widget.disabled
                 )
-                reset_button.observe(self.input_reset_i(i_c))
+                reset_button.on_click(self.input_reset_i(i_c, inp_widget))
                 input.append([widgets.Label(description), inp_widget, reset_button])
         return input
 
@@ -139,9 +142,16 @@ class NodeController(NodeInterfaceBase):
 
         return input_change
 
-    def input_reset_i(self, i_c) -> Callable:
-        def input_reset(change: dict) -> None:
-            self.node.inputs[i_c].val = self.node.inputs[i_c].default
+    def input_reset_i(self, i_c, associated_input_field) -> Callable:
+        def input_reset(button: widgets.Button) -> None:
+            default = self.node.inputs[i_c].dtype.default
+            self.node.inputs[i_c].val = default
+            try:
+                associated_input_field.value = default
+            except TraitError:
+                associated_input_field.value = associated_input_field.traits()['value'].default()
+            finally:
+                pass
             self.node.update(i_c)
             self.screen.redraw_active_flow_canvas()
 
@@ -155,7 +165,7 @@ class NodeController(NodeInterfaceBase):
             return widgets.GridBox(
                 list(np.array(input_fields).flatten()),
                 layout=widgets.Layout(
-                    grid_template_columns="110px auto",
+                    grid_template_columns="45% 45% 10%",
                     grid_auto_rows=f"{self._row_height}px",
                     border="solid 1px blue",
                     margin=f"{self._margin}px",
