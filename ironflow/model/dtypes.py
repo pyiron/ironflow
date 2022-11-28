@@ -60,8 +60,19 @@ class DType(DTypeCore):
         return None
 
     def _dtype_matches(self, val: DType):
-        # val can be *more* specific, but not *less*
-        return isinstance(val, self.__class__)
+        if isinstance(val, self.__class__):  # DType must be subclass
+            other_is_more_specific = all(
+                [
+                    any(
+                        [issubclass(o, ref) for ref in self.valid_classes]
+                    )
+                    for o in val.valid_classes
+                ]
+            )
+            might_get_surprising_none = val.allow_none and not self.allow_none
+            return other_is_more_specific and not might_get_surprising_none
+        else:
+            return False
 
     def _instance_matches(self, val: Any):
         return any([isinstance(val, c) for c in self.valid_classes])
@@ -98,25 +109,6 @@ class Data(DType):
             allow_none=allow_none
         )
         self.add_data('size')
-
-    def _dtype_matches(self, val: DType):
-        return _other_is_more_specific(self, val)
-
-
-def _other_is_more_specific(reference: DType, other: DType):
-    if reference.__class__ == other.__class__:
-        other_is_more_specific = all(
-            [
-                any(
-                    [issubclass(o, ref) for ref in reference.valid_classes]
-                )
-                for o in other.valid_classes
-            ]
-        )
-        might_get_surprising_none = other.allow_none and not reference.allow_none
-        return other_is_more_specific and not might_get_surprising_none
-    else:
-        return False
 
 
 class Integer(DType):
@@ -241,9 +233,6 @@ class Choice(DType):
             allow_none=allow_none
         )
         self.add_data("items")
-
-    def _dtype_matches(self, val: DType):
-        return _other_is_more_specific(self, val)
 
     def _instance_matches(self, val: Any):
         return val in self.items
