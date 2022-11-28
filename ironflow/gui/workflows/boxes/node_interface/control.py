@@ -121,7 +121,13 @@ class NodeController(NodeInterfaceBase):
                     inp_widget = widgets.Label(value=inp.type_)
                     description = inp.type_
                 inp_widget.observe(self.input_change_i(i_c), names="value")
-                input.append([widgets.Label(description), inp_widget])
+                reset_button = widgets.Button(
+                    tooltip="Reset to default",
+                    icon="refresh",
+                    layout=widgets.Layout(width="50px"),
+                )
+                reset_button.observe(self.input_reset_i(i_c))
+                input.append([widgets.Label(description), inp_widget, reset_button])
         return input
 
     def input_change_i(self, i_c) -> Callable:
@@ -132,6 +138,14 @@ class NodeController(NodeInterfaceBase):
             self.screen.redraw_active_flow_canvas()
 
         return input_change
+
+    def input_reset_i(self, i_c) -> Callable:
+        def input_reset(change: dict) -> None:
+            self.node.inputs[i_c].val = self.node.inputs[i_c].default
+            self.node.update(i_c)
+            self.screen.redraw_active_flow_canvas()
+
+        return input_reset
 
     @property
     def input_box(self) -> widgets.GridBox | widgets.Output:
