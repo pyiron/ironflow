@@ -13,3 +13,4 @@ dependencies:
 - pyiron_atomistics >= 0.2.57
 - pyiron_gui >= 0.0.8
 - ryvencore
+- traitlets
