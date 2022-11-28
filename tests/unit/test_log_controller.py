@@ -20,16 +20,16 @@ class TestLogController(TestCase):
         self.lc.log_to_stdout()
 
     def test_on_off(self):
-        self.assertNotEqual(sys.stdout, self.lc._stdoutput, msg="Expected to start 'off'")
+        self.assertNotEqual(sys.stdout, self.lc.stdoutput, msg="Expected to start 'off'")
         self.lc.log_to_display()
-        self.assertEqual(sys.stdout, self.lc._stdoutput, msg="Failed to turn 'on'")
+        self.assertEqual(sys.stdout, self.lc.stdoutput, msg="Failed to turn 'on'")
         self.lc.log_to_stdout()
-        self.assertNotEqual(sys.stdout, self.lc._stdoutput, msg="Failed to turn  'off'")
+        self.assertNotEqual(sys.stdout, self.lc.stdoutput, msg="Failed to turn  'off'")
 
     def test_preservation_of_original_stream(self):
         self.assertEqual(sys.stdout, self.lc._standard_stdout)
-        self.assertNotEqual(self.lc._stdoutput, self.lc._standard_stdout)
+        self.assertNotEqual(self.lc.stdoutput, self.lc._standard_stdout)
         self.lc.log_to_display()
         lc2 = LogController()
-        self.assertEqual(sys.stdout, lc2._stdoutput)
-        self.assertNotEqual(lc2._stdoutput, lc2._standard_stdout)
+        self.assertEqual(sys.stdout, lc2.stdoutput)
+        self.assertNotEqual(lc2.stdoutput, lc2._standard_stdout)

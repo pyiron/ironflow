@@ -38,17 +38,17 @@ class LogController(metaclass=Singleton):
     """
 
     def __init__(self):
-        self._stdoutput = StdOutPut()
+        self.stdoutput = StdOutPut()
         self._standard_stdout = sys.stdout
         self._standard_stderr = sys.stderr
 
     @property
     def output(self):
-        return self._stdoutput.output
+        return self.stdoutput.output
 
     def log_to_display(self):
-        sys.stdout = self._stdoutput
-        sys.stderr = self._stdoutput
+        sys.stdout = self.stdoutput
+        sys.stderr = self.stdoutput
 
     def log_to_stdout(self):
         sys.stdout = self._standard_stdout
@@ -74,14 +74,18 @@ class LogGUI(Screen):
         self.display_log_button = widgets.Checkbox(
             value=log_to_display, description="Route stdout to ironflow"
         )
+        self.clear_button = widgets.Button(
+            description="Clear", tooltip="Clear the log output and flush the stdout."
+        )
 
         self.ryven_log_button.observe(self._toggle_ryven_log)
         self.display_log_button.observe(self._toggle_display_log)
+        self.clear_button.on_click(self._click_clear)
 
         self._screen = widgets.VBox(
             [
                 widgets.HBox(
-                    [self.display_log_button, self.ryven_log_button],
+                    [self.display_log_button, self.ryven_log_button, self.clear_button],
                     layout=widgets.Layout(min_height="35px"),
                 ),
                 widgets.HBox([self.output], layout=widgets.Layout(height="435px")),
@@ -115,3 +119,7 @@ class LogGUI(Screen):
                 self.log_to_display()
             else:
                 self.log_to_stdout()
+
+    def _click_clear(self, button: widgets.Button):
+        self.output.clear_output()
+        self._log_controller.stdoutput.flush()
