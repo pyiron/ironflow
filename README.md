@@ -61,7 +61,8 @@ If you want your node to actually *do* something, you'll also need to define an 
 E.g.:
 
 ```python
-from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
+from ironflow.node_tools import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
+
 
 class My_Node(Node):
     title = "MyUserNode"
@@ -69,12 +70,13 @@ class My_Node(Node):
         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
     ]
     init_outputs = [
-       NodeOutputBP(label="bar")
+        NodeOutputBP(label="bar")
     ]
     color = 'cyan'
 
     def update_event(self, inp=-1):
         self.set_output_val(0, self.input(0) + 42)
+
 
 gui.register_node(My_Node)
 ```

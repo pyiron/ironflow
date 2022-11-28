@@ -2,11 +2,11 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-The necessary classes for creating custom nodes.
+The necessary classes for creating new nodes.
 
 Example:
     >>> from ironflow import GUI
-    >>> from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
+    >>> from ironflow.node_tools import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
     >>> gui = GUI(script_title='foo')
     >>>
     >>> class MyNode(Node):
@@ -25,7 +25,8 @@ Example:
     >>> gui.register_node(MyNode)
 """
 
-import ironflow.custom_nodes.input_widgets
+import ironflow.node_tools.input_widgets
+import ironflow.node_tools.main_widgets
 from ironflow.model import dtypes, NodeInputBP
-from ironflow.model.node import Node
+from ironflow.model.node import Node, PlaceholderWidgetsContainer
 from ironflow.model.port import NodeOutputBP

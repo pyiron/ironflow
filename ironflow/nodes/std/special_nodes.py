@@ -1,10 +1,14 @@
 import code
 from contextlib import redirect_stdout, redirect_stderr
 
-from ironflow.model import dtypes, NodeInputBP
-from ironflow.model.node import Node, PlaceholderWidgetsContainer
-from ironflow.model.port import NodeOutputBP
-from ironflow.gui.workflows.boxes.node_interface.input_widgets import SliderControl
+from ironflow.node_tools import (
+    dtypes,
+    input_widgets,
+    Node,
+    NodeInputBP,
+    NodeOutputBP,
+    PlaceholderWidgetsContainer,
+)
 
 widgets = PlaceholderWidgetsContainer()
 
@@ -334,7 +338,7 @@ class Slider_Node(NodeBase):
     ]
     main_widget_class = widgets.SliderNode_MainWidget
     main_widget_pos = "below ports"
-    input_widget = SliderControl
+    input_widget = input_widgets.SliderControl
 
     def __init__(self, params):
         super().__init__(params)

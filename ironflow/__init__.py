@@ -5,7 +5,7 @@
 Combines ryven, ipywidgets/ipycanvas, and pyiron to facilitate visual scripting of pyiron workflows.
 """
 
-import ironflow.custom_nodes
+import ironflow.node_tools
 from ironflow.gui.gui import GUI
 
 from ._version import get_versions

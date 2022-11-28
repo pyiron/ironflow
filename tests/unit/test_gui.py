@@ -4,7 +4,7 @@
 
 from unittest import TestCase
 from ironflow.gui.gui import GUI
-from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes
+from ironflow.node_tools import Node, NodeInputBP, NodeOutputBP, dtypes
 import os
 
 
