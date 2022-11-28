@@ -16,9 +16,10 @@ from pathlib import Path
 from types import ModuleType
 from typing import Optional, Type
 
-from ryvencore import Session, Script, Flow
-
 from ironflow.model.node import Node
+from ironflow.model.session import Session
+from ironflow.model.flow import Flow
+from ironflow.model.script import Script
 
 
 class HasSession(ABC):

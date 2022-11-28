@@ -7,116 +7,6 @@
                 "algorithm mode": "data",
                 "nodes": [
                     {
-                        "identifier": "My_Node",
-                        "version": null,
-                        "state data": "gAR9lC4=",
-                        "additional data": {},
-                        "inputs": [
-                            {
-                                "type": "data",
-                                "label": "foo",
-                                "GID": 795,
-                                "val": "gARLAS4=",
-                                "dtype": "DType.Integer",
-                                "dtype state": "gASVLAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE51Lg=="
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "type": "data",
-                                "label": "bar",
-                                "GID": 796
-                            }
-                        ],
-                        "GID": 794,
-                        "pos x": 285.33018171074013,
-                        "pos y": 266.6666666666667
-                    },
-                    {
-                        "identifier": "IntRand_Node",
-                        "version": null,
-                        "state data": "gAR9lC4=",
-                        "additional data": {},
-                        "inputs": [
-                            {
-                                "type": "data",
-                                "label": "high",
-                                "GID": 798,
-                                "dtype": "DType.Integer",
-                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsKS2SGlHUu"
-                            },
-                            {
-                                "type": "data",
-                                "label": "length",
-                                "GID": 799,
-                                "dtype": "DType.Integer",
-                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsBS2SGlHUu"
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "type": "data",
-                                "label": "randint",
-                                "GID": 800
-                            }
-                        ],
-                        "GID": 797,
-                        "pos x": 648.3971044467424,
-                        "pos y": 292.1985815602837
-                    }
-                ],
-                "connections": [
-                    {
-                        "GID": 801,
-                        "parent node index": 0,
-                        "output port index": 0,
-                        "connected node": 1,
-                        "connected input port index": 0
-                    },
-                    {
-                        "GID": 802,
-                        "parent node index": 0,
-                        "output port index": 0,
-                        "connected node": 1,
-                        "connected input port index": 1
-                    }
-                ],
-                "GID": 793
-            },
-            "GID": 788
-        },
-        {
-            "title": "Table",
-            "variables": {},
-            "flow": {
-                "algorithm mode": "data",
-                "nodes": [
-                    {
-                        "identifier": "JobTable_Node",
-                        "version": null,
-                        "state data": "gAR9lC4=",
-                        "additional data": {},
-                        "inputs": [
-                            {
-                                "type": "data",
-                                "label": "Project",
-                                "GID": 810,
-                                "dtype": "DType.Data",
-                                "dtype state": "gASVNwAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MBHNpemWUjAFtlHUu"
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "type": "data",
-                                "label": "Table",
-                                "GID": 811
-                            }
-                        ],
-                        "GID": 809,
-                        "pos x": 929.044357469015,
-                        "pos y": 229.9296707776985
-                    },
-                    {
                         "identifier": "Project_Node",
                         "version": null,
                         "state data": "gAR9lC4=",
@@ -125,22 +15,49 @@
                             {
                                 "type": "data",
                                 "label": "name",
-                                "GID": 813,
-                                "val": "gASVVQAAAAAAAACMUS4uLy4uLy4uL215anVweXRlcm5vdGVib29rcy9weWlyb24vRGV2ZWxvcG1lbnRzL09udG9sb2d5L2VsYXN0aWMvbGFtbXBzL211cm5faGRmNZQu",
-                                "dtype": "DType.Char",
-                                "dtype state": "gASVLgAAAAAAAAB9lCiMB2RlZmF1bHSUjAEulIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTnUu"
+                                "GID": 80,
+                                "val": "gASVBQAAAAAAAACMAS6ULg==",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVbQAAAAAAAAB9lCiMB2RlZmF1bHSUjAEulIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANzdHKUk5RhjAphbGxvd19ub25llImMBHNpemWUjAFtlHUu"
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "project",
-                                "GID": 814
+                                "GID": 81,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVfgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
                             }
                         ],
-                        "GID": 812,
-                        "pos x": 327.87018917155905,
-                        "pos y": 387.1844528250603
+                        "GID": 79,
+                        "pos x": 110.44399885419651,
+                        "pos y": 292.3076923076923
+                    },
+                    {
+                        "identifier": "JobTable_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 83,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVfgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "Table",
+                                "GID": 84
+                            }
+                        ],
+                        "GID": 82,
+                        "pos x": 528.4331137209969,
+                        "pos y": 145.05494505494505
                     },
                     {
                         "identifier": "PyironTable_Node",
@@ -151,70 +68,70 @@
                             {
                                 "type": "exec",
                                 "label": "run",
-                                "GID": 816,
+                                "GID": 87,
                                 "val": "gAROLg=="
                             },
                             {
                                 "type": "exec",
                                 "label": "remove",
-                                "GID": 817,
+                                "GID": 88,
                                 "val": "gAROLg=="
                             },
                             {
                                 "type": "data",
                                 "label": "project",
-                                "GID": 818,
+                                "GID": 89,
                                 "dtype": "DType.Data",
-                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                                "dtype state": "gASVfgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
                             },
                             {
                                 "type": "data",
                                 "label": "name",
-                                "GID": 819,
+                                "GID": 90,
                                 "val": "gASVCQAAAAAAAACMBXRhYmxllC4=",
-                                "dtype": "DType.Char",
-                                "dtype state": "gASVMgAAAAAAAAB9lCiMB2RlZmF1bHSUjAV0YWJsZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE51Lg=="
+                                "dtype": "DType.String",
+                                "dtype state": "gASVcQAAAAAAAAB9lCiMB2RlZmF1bHSUjAV0YWJsZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZSMCGJ1aWx0aW5zlIwDc3RylJOUYYwKYWxsb3dfbm9uZZSJjARzaXpllIwBbZR1Lg=="
                             },
                             {
                                 "type": "data",
                                 "label": "Col_1",
-                                "GID": 820,
-                                "val": "gASVEAAAAAAAAACMDGdldF9qb2JfbmFtZZQu",
+                                "GID": 91,
+                                "val": "gASVEgAAAAAAAACMDmdldF9lbmVyZ3lfdG90lC4=",
                                 "dtype": "DType.Choice",
-                                "dtype state": "gASVEAMAAAAAAAB9lCiMB2RlZmF1bHSUjAxnZXRfam9iX25hbWWUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjAVpdGVtc5RdlCiMEWdldF9hdmVyYWdlX3dhdmVzlIwVZ2V0X2NvbnZlcmdlbmNlX2NoZWNrlIwKZ2V0X2VfYmFuZJSMEGdldF9lX2NvbnZfbGV2ZWyUjA5nZXRfZWtpbl9lcnJvcpSMDGdldF9lbGVtZW50c5SMCWdldF9lbmN1dJSMD2dldF9lbmVyZ3lfZnJlZZSMGGdldF9lbmVyZ3lfZnJlZV9wZXJfYXRvbZSMDmdldF9lbmVyZ3lfaW50lIwXZ2V0X2VuZXJneV9pbnRfcGVyX2F0b22UjA5nZXRfZW5lcmd5X3BvdJSMF2dldF9lbmVyZ3lfcG90X3Blcl9hdG9tlIwOZ2V0X2VuZXJneV90b3SUjBdnZXRfZW5lcmd5X3RvdF9wZXJfYXRvbZSMGmdldF9lcXVpbGlicml1bV9wYXJhbWV0ZXJzlIwMZ2V0X2Zfc3RhdGVzlIwKZ2V0X2ZvcmNlc5SMCWdldF9pbmNhcpSMCmdldF9pc21lYXKUjApnZXRfam9iX2lklIwMZ2V0X2pvYl9uYW1llIwWZ2V0X21hZ25ldGljX3N0cnVjdHVyZZSMHmdldF9tYWpvcml0eV9jcnlzdGFsX3N0cnVjdHVyZZSMFGdldF9tYWpvcml0eV9zcGVjaWVzlIwOZ2V0X25fZXF1X2twdHOUjApnZXRfbl9rcHRzlIwkZ2V0X251bWJlcl9vZl9maW5hbF9lbGVjdHJvbmljX3N0ZXBzlIwZZ2V0X251bWJlcl9vZl9pb25pY19zdGVwc5SMFWdldF9udW1iZXJfb2Zfc3BlY2llc5SMD2dldF9wbGFuZV93YXZlc5SMCWdldF9zaWdtYZSMDWdldF9zdHJ1Y3R1cmWUjBlnZXRfdG90YWxfbnVtYmVyX29mX2F0b21zlIwKZ2V0X3ZvbHVtZZSME2dldF92b2x1bWVfcGVyX2F0b22UZXUu"
+                                "dtype state": "gASVIwMAAAAAAAB9lCiMB2RlZmF1bHSUjAxnZXRfam9iX25hbWWUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llImMBWl0ZW1zlF2UKIwRZ2V0X2F2ZXJhZ2Vfd2F2ZXOUjBVnZXRfY29udmVyZ2VuY2VfY2hlY2uUjApnZXRfZV9iYW5klIwQZ2V0X2VfY29udl9sZXZlbJSMDmdldF9la2luX2Vycm9ylIwMZ2V0X2VsZW1lbnRzlIwJZ2V0X2VuY3V0lIwPZ2V0X2VuZXJneV9mcmVllIwYZ2V0X2VuZXJneV9mcmVlX3Blcl9hdG9tlIwOZ2V0X2VuZXJneV9pbnSUjBdnZXRfZW5lcmd5X2ludF9wZXJfYXRvbZSMDmdldF9lbmVyZ3lfcG90lIwXZ2V0X2VuZXJneV9wb3RfcGVyX2F0b22UjA5nZXRfZW5lcmd5X3RvdJSMF2dldF9lbmVyZ3lfdG90X3Blcl9hdG9tlIwaZ2V0X2VxdWlsaWJyaXVtX3BhcmFtZXRlcnOUjAxnZXRfZl9zdGF0ZXOUjApnZXRfZm9yY2VzlIwJZ2V0X2luY2FylIwKZ2V0X2lzbWVhcpSMCmdldF9qb2JfaWSUaAKMFmdldF9tYWduZXRpY19zdHJ1Y3R1cmWUjB5nZXRfbWFqb3JpdHlfY3J5c3RhbF9zdHJ1Y3R1cmWUjBRnZXRfbWFqb3JpdHlfc3BlY2llc5SMDmdldF9uX2VxdV9rcHRzlIwKZ2V0X25fa3B0c5SMJGdldF9udW1iZXJfb2ZfZmluYWxfZWxlY3Ryb25pY19zdGVwc5SMGWdldF9udW1iZXJfb2ZfaW9uaWNfc3RlcHOUjBVnZXRfbnVtYmVyX29mX3NwZWNpZXOUjA9nZXRfcGxhbmVfd2F2ZXOUjAlnZXRfc2lnbWGUjA1nZXRfc3RydWN0dXJllIwZZ2V0X3RvdGFsX251bWJlcl9vZl9hdG9tc5SMCmdldF92b2x1bWWUjBNnZXRfdm9sdW1lX3Blcl9hdG9tlGV1Lg=="
                             },
                             {
                                 "type": "data",
                                 "label": "Col_2",
-                                "GID": 821,
-                                "val": "gASVEAAAAAAAAACMDGdldF9qb2JfbmFtZZQu",
+                                "GID": 92,
+                                "val": "gASVEgAAAAAAAACMDmdldF9lbmVyZ3lfcG90lC4=",
                                 "dtype": "DType.Choice",
-                                "dtype state": "gASVEAMAAAAAAAB9lCiMB2RlZmF1bHSUjAxnZXRfam9iX25hbWWUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjAVpdGVtc5RdlCiMEWdldF9hdmVyYWdlX3dhdmVzlIwVZ2V0X2NvbnZlcmdlbmNlX2NoZWNrlIwKZ2V0X2VfYmFuZJSMEGdldF9lX2NvbnZfbGV2ZWyUjA5nZXRfZWtpbl9lcnJvcpSMDGdldF9lbGVtZW50c5SMCWdldF9lbmN1dJSMD2dldF9lbmVyZ3lfZnJlZZSMGGdldF9lbmVyZ3lfZnJlZV9wZXJfYXRvbZSMDmdldF9lbmVyZ3lfaW50lIwXZ2V0X2VuZXJneV9pbnRfcGVyX2F0b22UjA5nZXRfZW5lcmd5X3BvdJSMF2dldF9lbmVyZ3lfcG90X3Blcl9hdG9tlIwOZ2V0X2VuZXJneV90b3SUjBdnZXRfZW5lcmd5X3RvdF9wZXJfYXRvbZSMGmdldF9lcXVpbGlicml1bV9wYXJhbWV0ZXJzlIwMZ2V0X2Zfc3RhdGVzlIwKZ2V0X2ZvcmNlc5SMCWdldF9pbmNhcpSMCmdldF9pc21lYXKUjApnZXRfam9iX2lklIwMZ2V0X2pvYl9uYW1llIwWZ2V0X21hZ25ldGljX3N0cnVjdHVyZZSMHmdldF9tYWpvcml0eV9jcnlzdGFsX3N0cnVjdHVyZZSMFGdldF9tYWpvcml0eV9zcGVjaWVzlIwOZ2V0X25fZXF1X2twdHOUjApnZXRfbl9rcHRzlIwkZ2V0X251bWJlcl9vZl9maW5hbF9lbGVjdHJvbmljX3N0ZXBzlIwZZ2V0X251bWJlcl9vZl9pb25pY19zdGVwc5SMFWdldF9udW1iZXJfb2Zfc3BlY2llc5SMD2dldF9wbGFuZV93YXZlc5SMCWdldF9zaWdtYZSMDWdldF9zdHJ1Y3R1cmWUjBlnZXRfdG90YWxfbnVtYmVyX29mX2F0b21zlIwKZ2V0X3ZvbHVtZZSME2dldF92b2x1bWVfcGVyX2F0b22UZXUu"
+                                "dtype state": "gASVIwMAAAAAAAB9lCiMB2RlZmF1bHSUjAxnZXRfam9iX25hbWWUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llImMBWl0ZW1zlF2UKIwRZ2V0X2F2ZXJhZ2Vfd2F2ZXOUjBVnZXRfY29udmVyZ2VuY2VfY2hlY2uUjApnZXRfZV9iYW5klIwQZ2V0X2VfY29udl9sZXZlbJSMDmdldF9la2luX2Vycm9ylIwMZ2V0X2VsZW1lbnRzlIwJZ2V0X2VuY3V0lIwPZ2V0X2VuZXJneV9mcmVllIwYZ2V0X2VuZXJneV9mcmVlX3Blcl9hdG9tlIwOZ2V0X2VuZXJneV9pbnSUjBdnZXRfZW5lcmd5X2ludF9wZXJfYXRvbZSMDmdldF9lbmVyZ3lfcG90lIwXZ2V0X2VuZXJneV9wb3RfcGVyX2F0b22UjA5nZXRfZW5lcmd5X3RvdJSMF2dldF9lbmVyZ3lfdG90X3Blcl9hdG9tlIwaZ2V0X2VxdWlsaWJyaXVtX3BhcmFtZXRlcnOUjAxnZXRfZl9zdGF0ZXOUjApnZXRfZm9yY2VzlIwJZ2V0X2luY2FylIwKZ2V0X2lzbWVhcpSMCmdldF9qb2JfaWSUaAKMFmdldF9tYWduZXRpY19zdHJ1Y3R1cmWUjB5nZXRfbWFqb3JpdHlfY3J5c3RhbF9zdHJ1Y3R1cmWUjBRnZXRfbWFqb3JpdHlfc3BlY2llc5SMDmdldF9uX2VxdV9rcHRzlIwKZ2V0X25fa3B0c5SMJGdldF9udW1iZXJfb2ZfZmluYWxfZWxlY3Ryb25pY19zdGVwc5SMGWdldF9udW1iZXJfb2ZfaW9uaWNfc3RlcHOUjBVnZXRfbnVtYmVyX29mX3NwZWNpZXOUjA9nZXRfcGxhbmVfd2F2ZXOUjAlnZXRfc2lnbWGUjA1nZXRfc3RydWN0dXJllIwZZ2V0X3RvdGFsX251bWJlcl9vZl9hdG9tc5SMCmdldF92b2x1bWWUjBNnZXRfdm9sdW1lX3Blcl9hdG9tlGV1Lg=="
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "Table",
-                                "GID": 822
+                                "GID": 93
                             },
                             {
                                 "type": "data",
                                 "label": "Col_1",
-                                "GID": 823
+                                "GID": 94
                             },
                             {
                                 "type": "data",
                                 "label": "Col_2",
-                                "GID": 824
+                                "GID": 95
                             }
                         ],
-                        "GID": 815,
-                        "pos x": 930.4707033373193,
-                        "pos y": 461.3327897812203
+                        "GID": 86,
+                        "pos x": 565.8321397880263,
+                        "pos y": 386.8131868131868
                     },
                     {
-                        "identifier": "Plot2d_Node",
+                        "identifier": "Matplot_Node",
                         "version": "v0.1",
                         "state data": "gAR9lC4=",
                         "additional data": {},
@@ -222,63 +139,53 @@
                             {
                                 "type": "data",
                                 "label": "x",
-                                "GID": 834,
+                                "GID": 98,
+                                "val": "gAROLg==",
                                 "dtype": "DType.Data",
-                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                                "dtype state": "gASVfwAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARsaXN0lJOUjAVudW1weZSMB25kYXJyYXmUk5RljAphbGxvd19ub25llImMBHNpemWUjAFtlHUu"
                             },
                             {
                                 "type": "data",
                                 "label": "y",
-                                "GID": 835,
+                                "GID": 99,
+                                "val": "gAROLg==",
                                 "dtype": "DType.Data",
-                                "dtype state": "gASVNQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjARzaXpllIwBbZR1Lg=="
+                                "dtype state": "gASVfwAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARsaXN0lJOUjAVudW1weZSMB25kYXJyYXmUk5RljAphbGxvd19ub25llImMBHNpemWUjAFtlHUu"
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "fig",
-                                "GID": 836
+                                "GID": 100,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVdQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBFtYXRwbG90bGliLmZpZ3VyZZSMBkZpZ3VyZZSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
                             }
                         ],
-                        "GID": 833,
-                        "pos x": 1371.771037181996,
-                        "pos y": 475.93035028709266
+                        "GID": 97,
+                        "pos x": 1058.6193067888858,
+                        "pos y": 334.0659340659341
                     }
                 ],
                 "connections": [
                     {
-                        "GID": 829,
-                        "parent node index": 1,
+                        "GID": 85,
+                        "parent node index": 0,
                         "output port index": 0,
-                        "connected node": 0,
+                        "connected node": 1,
                         "connected input port index": 0
                     },
                     {
-                        "GID": 830,
-                        "parent node index": 1,
+                        "GID": 96,
+                        "parent node index": 0,
                         "output port index": 0,
                         "connected node": 2,
                         "connected input port index": 2
-                    },
-                    {
-                        "GID": 837,
-                        "parent node index": 2,
-                        "output port index": 1,
-                        "connected node": 3,
-                        "connected input port index": 1
-                    },
-                    {
-                        "GID": 838,
-                        "parent node index": 2,
-                        "output port index": 2,
-                        "connected node": 3,
-                        "connected input port index": 0
                     }
                 ],
-                "GID": 808
+                "GID": 71
             },
-            "GID": 803
+            "GID": 65
         }
     ]
 }

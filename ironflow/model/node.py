@@ -4,18 +4,17 @@
 from __future__ import annotations
 
 import inspect
-from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import Optional
 
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 from ryvencore.NodePort import NodePort
+from ryvencore.utils import deserialize
 
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
+from ironflow.model.dtypes import DType
+from ironflow.model.port import NodeInput, NodeOutput
 from ironflow.utils import display_string
-
-if TYPE_CHECKING:
-    from ironflow.model.dtypes import DType
 
 
 class PortList(list):
@@ -63,19 +62,28 @@ class PortFinder:
     def __init__(self, port_list: PortList):
         self._port_list = port_list
 
+    @property
+    def _filtered_port_list(self):
+        return [item for item in self._port_list if isinstance(item, NodePort)]
+
     def __getattr__(self, key):
-        for node_port in [
-            item for item in self._port_list if isinstance(item, NodePort)
-        ]:
+        for node_port in self._filtered_port_list:
             if node_port.label_str == key:
                 return node_port
         raise AttributeError(f"No port found with the label {key}")
+
+    def __iter__(self):
+        return self._filtered_port_list.__iter__()
 
 
 class ValueFinder(PortFinder):
     def __getattr__(self, key):
         node_port = super().__getattr__(key)
         return node_port.val
+
+    def __iter__(self):
+        val_list = [p.val for p in self._filtered_port_list]
+        return val_list.__iter__()
 
 
 class Node(NodeCore):
@@ -127,20 +135,97 @@ class Node(NodeCore):
         self.representation_updated = False
         self.after_update.connect(self._representation_update)
 
+    def _add_io(self, io_group, new_io, insert: int = None):
+        if insert is not None:
+            io_group.insert(insert, new_io)
+        else:
+            io_group.append(new_io)
+
     def create_input(
-        self, label: str = "", type_: str = "data", add_data=None, insert: int = None
+        self,
+        type_: str = "data",
+        label: str = "",
+        add_data: Optional[dict] = None,
+        dtype: Optional[DType] = None,
+        insert: Optional[int] = None,
     ):
-        add_data = add_data if add_data is not None else {}
-        super().create_input(label=label, type_=type_, add_data=add_data, insert=insert)
+        """Creates and add a new input port"""
+        inp = NodeInput(
+            node=self, type_=type_, label_str=label, add_data=add_data, dtype=dtype
+        )
+        self._add_io(self.inputs, inp, insert=insert)
 
     def create_input_dt(
-        self, dtype: DType, label: str = "", add_data=None, insert: int = None
+        self, dtype: DType, label: str = "", add_data={}, insert: int = None
     ):
-        """Be more careful with mutables"""
-        add_data = add_data if add_data is not None else {}
-        super().create_input_dt(
-            dtype=deepcopy(dtype), label=label, add_data=add_data, insert=insert
+        raise RuntimeError(
+            "Ironflow uses custom NodePort classes and this method is not supported. "
+            "Please use create_input instead."
         )
+
+    def create_output(
+        self,
+        type_: str = "data",
+        label: str = "",
+        dtype: Optional[DType] = None,
+        insert: Optional[int] = None,
+    ):
+        """Create and add a new output port"""
+        out = NodeOutput(node=self, type_=type_, label_str=label, dtype=dtype)
+        self._add_io(self.outputs, out, insert=insert)
+
+    def setup_ports(self, inputs_data=None, outputs_data=None):
+        # A streamlined version of the ryvencore method which exploits our NodeInput
+        # and NodeOutput classes instead.
+        if not inputs_data and not outputs_data:
+
+            for i in range(len(self.init_inputs)):
+                inp = self.init_inputs[i]
+                self.create_input(
+                    type_=inp.type_,
+                    label=inp.label,
+                    add_data=inp.add_data,
+                    dtype=inp.dtype,
+                )
+
+            for o in range(len(self.init_outputs)):
+                out = self.init_outputs[o]
+                self.create_output(type_=out.type_, label=out.label, dtype=out.dtype)
+
+        else:
+            # load from data
+            # initial ports specifications are irrelevant then
+
+            for inp in inputs_data:
+                if "dtype" in inp:
+                    dtype = DType.from_str(inp["dtype"])(
+                        _load_state=deserialize(inp["dtype state"])
+                    )
+                    self.create_input(label=inp["label"], add_data=inp, dtype=dtype)
+                else:
+                    self.create_input(
+                        type_=inp["type"], label=inp["label"], add_data=inp
+                    )
+
+                if "val" in inp:
+                    # this means the input is 'data' and did not have any connections,
+                    # so we saved its value which was probably represented by some widget
+                    # in the front end which has probably overridden the Node.input() method
+                    self.inputs[-1].val = deserialize(inp["val"])
+
+            # ironflow modification
+            for out in outputs_data:
+                if "dtype" in out:
+                    dtype = DType.from_str(out["dtype"])(
+                        _load_state=deserialize(out["dtype state"])
+                    )
+                    self.create_output(label=out["label"], dtype=dtype)
+                else:
+                    self.create_output(type_=out["type"], label=out["label"])
+
+    @property
+    def all_input_is_valid(self):
+        return all([p.valid_val for p in self.inputs.ports])
 
     def place_event(self):
         # place_event() is executed *before* the connections are built
@@ -167,13 +252,21 @@ class Node(NodeCore):
         self.representation_updated = True
 
     @property
+    def _source_code(self):
+        try:
+            return inspect.getsource(self.__class__)
+        except TypeError:
+            # Classes defined in the notebook can't access their source this way
+            return ""
+
+    @property
     def _standard_representations(self):
         standard_reps = {
             o.label_str if o.label_str != "" else f"output{i}": o.val
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
-        standard_reps["source code"] = display_string(inspect.getsource(self.__class__))
+        standard_reps["source code"] = display_string(self._source_code)
         return standard_reps
 
     @property

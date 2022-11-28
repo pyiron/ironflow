@@ -45,14 +45,17 @@ class PortLayout(Layout, ABC):
 
 @dataclass
 class DataPortLayout(PortLayout):
-    background_color: str = "lightgreen"
-    selected_color: str = "darkgreen"
+    valid_color: str = "lightgreen"
+    valid_selected_color: str = "darkgreen"
+    invalid_color: str = "red"
+    invalid_selected_color: str = "darkred"
 
 
 @dataclass
 class ExecPortLayout(PortLayout):
-    background_color: str = "lightblue"
-    selected_color: str = "darkblue"
+    # Exec ports have no data, so are always valid
+    valid_color: str = "lightblue"
+    valid_selected_color: str = "darkblue"
 
 
 @dataclass

@@ -2,7 +2,8 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-Ryven nodes specifc to pyiron (or with ironflow improvements like an ipywidgets representation).
+Ryven nodes specific to pyiron (or with ironflow improvements like an ipywidgets
+representation).
 """
 
 from __future__ import annotations
@@ -13,15 +14,19 @@ from typing import TYPE_CHECKING
 
 import matplotlib.pylab as plt
 import numpy as np
-
-from pyiron_atomistics import Project
+from matplotlib.figure import Figure
+from nglview import NGLWidget
+from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
+from pyiron_atomistics.lammps.lammps import Lammps
+from ryvencore.InfoMsgs import InfoMsgs
 
 from ironflow.gui.workflows.canvas_widgets.nodes import ButtonNodeWidget
-from ironflow.model import dtypes, NodeInputBP, NodeOutputBP
+from ironflow.model import dtypes, NodeInputBP
 from ironflow.model.node import Node
+from ironflow.model.port import NodeOutputBP
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
@@ -75,10 +80,10 @@ class Project_Node(Node):
 
     title = "Project"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Char(default="."), label="name"),
+        NodeInputBP(dtype=dtypes.String(default="."), label="name"),
     ]
     init_outputs = [
-        NodeOutputBP(label="project"),
+        NodeOutputBP(label="project", dtype=dtypes.Data(valid_classes=Project)),
     ]
     color = "#aabb44"
 
@@ -109,7 +114,7 @@ class OutputsOnlyAtoms(Node, ABC):
     """
 
     init_outputs = [
-        NodeOutputBP(label="structure"),
+        NodeOutputBP(label="structure", dtype=dtypes.Data(valid_classes=Atoms)),
     ]
     color = "#aabb44"
 
@@ -122,7 +127,6 @@ class OutputsOnlyAtoms(Node, ABC):
     def extra_representations(self) -> dict:
         return {
             "plot3d": self.outputs.values.structure.plot3d(),
-            "print": self.outputs.values.structure,
         }
 
 
@@ -150,7 +154,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 
     title = "BulkStructure"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Char(default="Fe"), label="element"),
+        NodeInputBP(dtype=dtypes.String(default="Fe"), label="element"),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default=None,
@@ -167,31 +171,38 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                     "fluorite",
                     "wurtzite",
                 ],
+                allow_none=True,
             ),
             label="crystal_structure",
         ),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="a"),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="c"),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="c_over_a"),
-        NodeInputBP(dtype=dtypes.Float(default=None), label="u"),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="a"),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="c"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=None, allow_none=True), label="c_over_a"
+        ),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="u"),
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="orthorhombic"),
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="cubic"),
     ]
 
     def update_event(self, inp=-1):
-        self.set_output_val(
-            0,
-            STRUCTURE_FACTORY.bulk(
-                self.inputs.values.element,
-                crystalstructure=self.inputs.values.crystal_structure,
-                a=self.inputs.values.a,
-                c=self.inputs.values.c,
-                covera=self.inputs.values.c_over_a,
-                u=self.inputs.values.u,
-                orthorhombic=self.inputs.values.orthorhombic,
-                cubic=self.inputs.values.cubic,
-            ),
-        )
+        try:
+            self.set_output_val(
+                0,
+                STRUCTURE_FACTORY.bulk(
+                    self.inputs.values.element,
+                    crystalstructure=self.inputs.values.crystal_structure,
+                    a=self.inputs.values.a,
+                    c=self.inputs.values.c,
+                    covera=self.inputs.values.c_over_a,
+                    u=self.inputs.values.u,
+                    orthorhombic=self.inputs.values.orthorhombic,
+                    cubic=self.inputs.values.cubic,
+                ),
+            )
+        except RuntimeError as e:
+            self.set_output_val(0, None)
+            raise e
 
     def place_event(self):
         super().place_event()
@@ -214,7 +225,9 @@ class Repeat_Node(OutputsOnlyAtoms):
 
     title = "Repeat"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
 
@@ -238,7 +251,9 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
     title = "ApplyStrain"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
 
@@ -261,24 +276,32 @@ class Lammps_Node(Node):
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
         NodeInputBP(type_="exec", label="remove"),
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="project"),
-        NodeInputBP(dtype=dtypes.Char(default="job"), label="name"),
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Project), label="project"
+        ),
+        NodeInputBP(dtype=dtypes.String(default="job"), label="name"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="Set structure first", items=["Set structure first"]
+                default="Set structure first",
+                items=["Set structure first"],
+                valid_classes=str,
             ),
             label="potential",
         ),
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec"),
-        NodeOutputBP(label="job"),
+        NodeOutputBP(type_="exec", label="ran"),
+        NodeOutputBP(label="job", dtype=dtypes.Data(valid_classes=Lammps)),
     ]
     color = "#5d95de"
 
     def _run(self):
-        job = self.inputs.values.project.create.job.Lammps(self.inputs.values.name)
+        job = self.inputs.values.project.create.job.Lammps(
+            self.inputs.values.name, delete_existing_job=True
+        )
         job.structure = self.inputs.values.structure
         job.potential = self.inputs.values.potential
         self._job = job
@@ -309,11 +332,11 @@ class Lammps_Node(Node):
             self.inputs.ports.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
-        if inp == 0:
+        if inp == 0 and self.all_input_is_valid:
             self._run()
         elif inp == 1:
             self._remove()
-        elif inp == 4:
+        elif inp == 4 and self.inputs.ports.structure.valid_val:
             self._update_potential_choices()
 
     @property
@@ -337,10 +360,14 @@ class GenericOutput_Node(Node):
     version = "v0.1"
     title = "GenericOutput"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="job"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=AtomisticGenericJob), label="job"
+        ),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="Input an atomistic job", items=["Input an atomistic job"]
+                default="Input an atomistic job",
+                items=["Input an atomistic job"],
+                valid_classes=str,
             ),
             label="field",
         ),
@@ -428,11 +455,11 @@ class JobName_Node(Node):
 
     title = "JobName"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Char(default="job_"), label="base"),
-        NodeInputBP(dtype=dtypes.Float(default=0), label="float"),
+        NodeInputBP(dtype=dtypes.String(default="job_"), label="base"),
+        NodeInputBP(dtype=dtypes.Float(default=0.0), label="float"),
     ]
     init_outputs = [
-        NodeOutputBP(label="job_name"),
+        NodeOutputBP(label="job_name", dtype=dtypes.String()),
     ]
     color = "#aabb44"
 
@@ -495,11 +522,17 @@ class Plot3d_Node(Node):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="structure"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+        ),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data", label="plot3d"),
-        NodeOutputBP(type_="data", label="structure"),
+        NodeOutputBP(
+            type_="data", label="plot3d", dtype=dtypes.Data(valid_classes=NGLWidget)
+        ),
+        NodeOutputBP(
+            type_="data", label="structure", dtype=dtypes.Data(valid_classes=Atoms)
+        ),
     ]
     color = "#5d95de"
 
@@ -523,11 +556,11 @@ class Matplot_Node(Node):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="y"),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="x"),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="y"),
     ]
     init_outputs = [
-        NodeOutputBP(type_="data", label="fig"),
+        NodeOutputBP(type_="data", label="fig", dtype=dtypes.Data(valid_classes=Figure))
     ]
     color = "#5d95de"
 
@@ -555,7 +588,10 @@ class Sin_Node(Node):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(size="m"), label="x"),
+        NodeInputBP(
+            dtype=dtypes.Data(size="m", valid_classes=[int, float, list, np.ndarray]),
+            label="x",
+        ),
     ]
     init_outputs = [
         NodeOutputBP(label="sin"),

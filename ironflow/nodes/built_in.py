@@ -1,5 +1,6 @@
-from ironflow.model import dtypes, NodeInputBP, NodeOutputBP
+from ironflow.model import dtypes, NodeInputBP
 from ironflow.model.node import Node, PlaceholderWidgetsContainer
+from ironflow.model.port import NodeOutputBP
 
 widgets = PlaceholderWidgetsContainer()
 
@@ -88,7 +89,7 @@ class Val_Node(NodeBase):
         NodeInputBP(dtype=dtypes.Data(size="s")),
     ]
     init_outputs = [
-        NodeInputBP(type_="data"),
+        NodeOutputBP(type_="data"),
     ]
     style = "small"
     color = "#c69a15"

@@ -15,22 +15,22 @@
                             {
                                 "type": "data",
                                 "label": "foo",
-                                "GID": 66,
-                                "val": "gARLAi4=",
+                                "GID": 73,
+                                "val": "gARLAS4=",
                                 "dtype": "DType.Integer",
-                                "dtype state": "gASVLAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE51Lg=="
+                                "dtype state": "gASVYAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZSMCGJ1aWx0aW5zlIwDaW50lJOUYYwKYWxsb3dfbm9uZZSJdS4="
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "bar",
-                                "GID": 67
+                                "GID": 74
                             }
                         ],
-                        "GID": 65,
-                        "pos x": 285.33018171074013,
-                        "pos y": 266.6666666666667
+                        "GID": 72,
+                        "pos x": 175.82781456953643,
+                        "pos y": 229.8507462686567
                     },
                     {
                         "identifier": "IntRand_Node",
@@ -41,49 +41,49 @@
                             {
                                 "type": "data",
                                 "label": "high",
-                                "GID": 69,
+                                "GID": 76,
                                 "dtype": "DType.Integer",
-                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsKS2SGlHUu"
+                                "dtype state": "gASVZQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsKS2SGlIwNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANpbnSUk5RhjAphbGxvd19ub25llIl1Lg=="
                             },
                             {
                                 "type": "data",
                                 "label": "length",
-                                "GID": 70,
+                                "GID": 77,
                                 "dtype": "DType.Integer",
-                                "dtype state": "gASVMQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsBS2SGlHUu"
+                                "dtype state": "gASVZQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsBS2SGlIwNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANpbnSUk5RhjAphbGxvd19ub25llIl1Lg=="
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "randint",
-                                "GID": 71
+                                "GID": 78
                             }
                         ],
-                        "GID": 68,
-                        "pos x": 648.3971044467424,
-                        "pos y": 292.1985815602837
+                        "GID": 75,
+                        "pos x": 665.9654940158541,
+                        "pos y": 274.6268656716418
                     }
                 ],
                 "connections": [
                     {
-                        "GID": 72,
+                        "GID": 79,
                         "parent node index": 0,
                         "output port index": 0,
                         "connected node": 1,
                         "connected input port index": 0
                     },
                     {
-                        "GID": 73,
+                        "GID": 80,
                         "parent node index": 0,
                         "output port index": 0,
                         "connected node": 1,
                         "connected input port index": 1
                     }
                 ],
-                "GID": 64
+                "GID": 71
             },
-            "GID": 59
+            "GID": 65
         }
     ]
 }
