@@ -100,20 +100,23 @@ class Data(DType):
         self.add_data('size')
 
     def _dtype_matches(self, val: DType):
-        return _other_dtype_classes_are_a_subset(self, val)
+        return _other_is_more_specific(self, val)
 
 
-def _other_dtype_classes_are_a_subset(reference: DType, other: DType):
-    other_is_more_specific = all(
-        [
-            any(
-                [issubclass(o, ref) for ref in reference.valid_classes]
-            )
-            for o in other.valid_classes
-        ]
-    )
-    might_get_surprising_none = other.allow_none and not reference.allow_none
-    return other_is_more_specific and not might_get_surprising_none
+def _other_is_more_specific(reference: DType, other: DType):
+    if reference.__class__ == other.__class__:
+        other_is_more_specific = all(
+            [
+                any(
+                    [issubclass(o, ref) for ref in reference.valid_classes]
+                )
+                for o in other.valid_classes
+            ]
+        )
+        might_get_surprising_none = other.allow_none and not reference.allow_none
+        return other_is_more_specific and not might_get_surprising_none
+    else:
+        return False
 
 
 class Integer(DType):
@@ -240,7 +243,7 @@ class Choice(DType):
         self.add_data("items")
 
     def _dtype_matches(self, val: DType):
-        return _other_dtype_classes_are_a_subset(self, val)
+        return _other_is_more_specific(self, val)
 
     def _instance_matches(self, val: Any):
         return val in self.items
