@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import inspect
-from copy import deepcopy
 from typing import Optional
 
 from ryvencore import Node as NodeCore
