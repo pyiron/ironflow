@@ -127,7 +127,7 @@ class NodeController(NodeInterfaceBase):
                     tooltip="Reset to default",
                     icon="refresh",
                     layout=widgets.Layout(max_width="50px", min_width="50px"),
-                    disabled=inp.dtype is None or inp_widget.disabled
+                    disabled=inp.dtype is None or inp_widget.disabled,
                 )
                 reset_button.on_click(self.input_reset_i(i_c, inp_widget))
                 input.append([widgets.Label(description), inp_widget, reset_button])
@@ -149,7 +149,9 @@ class NodeController(NodeInterfaceBase):
             try:
                 associated_input_field.value = default
             except TraitError:
-                associated_input_field.value = associated_input_field.traits()['value'].default()
+                associated_input_field.value = associated_input_field.traits()[
+                    "value"
+                ].default()
             finally:
                 pass
             self.node.update(i_c)

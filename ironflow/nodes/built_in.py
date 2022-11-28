@@ -1,5 +1,9 @@
 from ironflow.node_tools import (
-    dtypes, Node, NodeInputBP, NodeOutputBP, PlaceholderWidgetsContainer
+    dtypes,
+    Node,
+    NodeInputBP,
+    NodeOutputBP,
+    PlaceholderWidgetsContainer,
 )
 
 widgets = PlaceholderWidgetsContainer()
