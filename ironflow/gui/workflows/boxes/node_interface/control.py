@@ -79,21 +79,21 @@ class NodeController(NodeInterfaceBase):
                             value=inp.val,
                             description="",
                             continuous_update=False,
-                            disabled=len(inp.connections) > 0
+                            disabled=len(inp.connections) > 0,
                         )
                     elif dtype == "Float":
                         inp_widget = widgets.FloatText(
                             value=inp.val,
                             description="",
                             continuous_update=False,
-                            disabled=len(inp.connections) > 0
+                            disabled=len(inp.connections) > 0,
                         )
                     elif dtype == "Boolean":
                         inp_widget = widgets.Checkbox(
                             value=inp.val,
                             indent=False,
                             description="",
-                            disabled=len(inp.connections) > 0
+                            disabled=len(inp.connections) > 0,
                         )
                     elif dtype == "Choice":
                         inp_widget = widgets.Dropdown(
@@ -101,19 +101,17 @@ class NodeController(NodeInterfaceBase):
                             options=inp.dtype.items,
                             description="",
                             ensure_option=True,
-                            disabled=len(inp.connections) > 0
+                            disabled=len(inp.connections) > 0,
                         )
                     elif dtype == "String" or dtype == "Char":
                         inp_widget = widgets.Text(
                             value=str(inp.val),
                             continuous_update=False,
-                            disabled=len(inp.connections) > 0
+                            disabled=len(inp.connections) > 0,
                         )
                     else:
                         inp_widget = widgets.Text(
-                            value=str(inp.val),
-                            continuous_update=False,
-                            disabled=True
+                            value=str(inp.val), continuous_update=False, disabled=True
                         )
                     description = inp.label_str
                 elif inp.label_str != "":

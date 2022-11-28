@@ -16,13 +16,13 @@ from ryvencore.dtypes import DType as DTypeCore
 
 class DType(DTypeCore):
     def __init__(
-            self,
-            default,
-            bounds: tuple = None,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default,
+        bounds: tuple = None,
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         super().__init__(
             default=default,
@@ -38,23 +38,14 @@ class DType(DTypeCore):
             else:
                 self.valid_classes = []
             self.allow_none = allow_none
-        self.add_data('valid_classes')
-        self.add_data('allow_none')
+        self.add_data("valid_classes")
+        self.add_data("allow_none")
 
     @staticmethod
     def from_str(s):
         # Load local dtypes, not ryven dtypes
-        for DTypeClass in [
-            Boolean,
-            Char,
-            Choice,
-            Data,
-            Float,
-            Integer,
-            List,
-            String
-        ]:
-            if s == 'DType.'+DTypeClass.__name__:
+        for DTypeClass in [Boolean, Char, Choice, Data, Float, Integer, List, String]:
+            if s == "DType." + DTypeClass.__name__:
                 return DTypeClass
 
         return None
@@ -63,9 +54,7 @@ class DType(DTypeCore):
         if isinstance(val, self.__class__):  # DType must be subclass
             other_is_more_specific = all(
                 [
-                    any(
-                        [issubclass(o, ref) for ref in self.valid_classes]
-                    )
+                    any([issubclass(o, ref) for ref in self.valid_classes])
                     for o in val.valid_classes
                 ]
             )
@@ -88,14 +77,15 @@ class DType(DTypeCore):
 
 class Data(DType):
     """Any kind of data represented by some evaluated text input"""
+
     def __init__(
-            self,
-            default=None,
-            size: str = 'm',
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default=None,
+        size: str = "m",
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         """
         size: 's' / 'm' / 'l'
@@ -106,20 +96,20 @@ class Data(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
-        self.add_data('size')
+        self.add_data("size")
 
 
 class Integer(DType):
     def __init__(
-            self,
-            default: int = 0,
-            bounds: tuple = None,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default: int = 0,
+        bounds: tuple = None,
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         super().__init__(
             default=default,
@@ -127,20 +117,20 @@ class Integer(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=int if valid_classes is None else valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
 
 
 class Float(DType):
     def __init__(
-            self,
-            default: float = 0.0,
-            bounds: tuple = None,
-            decimals: int = 10,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default: float = 0.0,
+        bounds: tuple = None,
+        decimals: int = 10,
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         self.decimals = decimals
         super().__init__(
@@ -149,56 +139,56 @@ class Float(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=float if valid_classes is None else valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
-        self.add_data('decimals')
+        self.add_data("decimals")
 
 
 class Boolean(DType):
     def __init__(
-            self,
-            default: bool = False,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default: bool = False,
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         super().__init__(
             default=default,
             doc=doc,
             _load_state=_load_state,
             valid_classes=bool if valid_classes is None else valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
 
 
 class Char(DType):
     def __init__(
-            self,
-            default: chr = '',
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default: chr = "",
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         super().__init__(
             default=default,
             doc=doc,
             _load_state=_load_state,
             valid_classes=chr if valid_classes is None else valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
 
 
 class String(DType):
     def __init__(
-            self,
-            default: str = "",
-            size: str = 'm',
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default: str = "",
+        size: str = "m",
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         """
         size: 's' / 'm' / 'l'
@@ -209,20 +199,20 @@ class String(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=str if valid_classes is None else valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
-        self.add_data('size')
+        self.add_data("size")
 
 
 class Choice(DType):
     def __init__(
-            self,
-            default=None,
-            items: Optional[list] = None,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default=None,
+        items: Optional[list] = None,
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         self.items = items if items is not None else []
         super().__init__(
@@ -230,7 +220,7 @@ class Choice(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )
         self.add_data("items")
 
@@ -240,12 +230,12 @@ class Choice(DType):
 
 class List(DType):
     def __init__(
-            self,
-            default: Optional[list] = None,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False
+        self,
+        default: Optional[list] = None,
+        doc: str = "",
+        _load_state=None,
+        valid_classes=None,
+        allow_none=False,
     ):
         default = default if default is not None else []
         super().__init__(
@@ -253,5 +243,5 @@ class List(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=list if valid_classes is None else valid_classes,
-            allow_none=allow_none
+            allow_none=allow_none,
         )

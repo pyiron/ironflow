@@ -21,10 +21,10 @@ class Session(SessionCore):
     """
 
     def create_script(
-            self,
-            title: Optional[str] = None,
-            create_default_logs: bool =True,
-            data: Optional[dict] = None
+        self,
+        title: Optional[str] = None,
+        create_default_logs: bool = True,
+        data: Optional[dict] = None,
     ) -> Script:
         """
         Creates and returns a new script.
@@ -34,8 +34,10 @@ class Session(SessionCore):
         # but the `Script` class here is different!
 
         script = Script(
-            session=self, title=title, create_default_logs=create_default_logs,
-            load_data=data
+            session=self,
+            title=title,
+            create_default_logs=create_default_logs,
+            load_data=data,
         )
 
         self.scripts.append(script)

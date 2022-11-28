@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 class HasDType:
     """A mixin to add the valid value check property"""
+
     @property
     def valid_val(self):
         if self.dtype is not None:
@@ -35,43 +36,42 @@ class HasDType:
 
 class NodeInput(NodeInputCore, HasDType):
     def __init__(
-            self,
-            node: Node,
-            type_: str = 'data',
-            label_str: str = '',
-            add_data: Optional[dict] = None,
-            dtype: Optional[DType] = None
+        self,
+        node: Node,
+        type_: str = "data",
+        label_str: str = "",
+        add_data: Optional[dict] = None,
+        dtype: Optional[DType] = None,
     ):
         super().__init__(
             node=node,
-            type_=type_ if dtype is None else 'data',
+            type_=type_ if dtype is None else "data",
             label_str=label_str,
             add_data=add_data if add_data is not None else {},
-            dtype=deepcopy(dtype)  # Because some dtypes have mutable fields
+            dtype=deepcopy(dtype),  # Because some dtypes have mutable fields
         )
 
 
 class NodeOutput(NodeOutputCore, HasDType):
-    def __init__(self, node, type_='data', label_str='', dtype: DType = None):
+    def __init__(self, node, type_="data", label_str="", dtype: DType = None):
         super().__init__(
-            node=node,
-            type_=type_ if dtype is None else 'data',
-            label_str=label_str)
+            node=node, type_=type_ if dtype is None else "data", label_str=label_str
+        )
         self.dtype = deepcopy(dtype)  # Some dtypes have mutable fields
 
     def data(self) -> dict:
         data = super().data()
 
         if self.dtype is not None:
-            data['dtype'] = str(self.dtype)
-            data['dtype state'] = serialize(self.dtype.get_state())
+            data["dtype"] = str(self.dtype)
+            data["dtype state"] = serialize(self.dtype.get_state())
 
         return data
 
 
 class NodeOutputBP(NodeOutputBPCore):
     def __init__(
-            self, label: str = '', type_: str = 'data', dtype: Optional[DType] = None
+        self, label: str = "", type_: str = "data", dtype: Optional[DType] = None
     ):
         super().__init__(label=label, type_=type_)
         self.dtype = dtype

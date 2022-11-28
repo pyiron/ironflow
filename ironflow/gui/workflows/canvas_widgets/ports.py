@@ -79,7 +79,7 @@ class PortWidget(HideableWidget):
         return color
 
     def draw_shape(self) -> None:
-        self.canvas.fill_style = (self._current_color)
+        self.canvas.fill_style = self._current_color
         self.canvas.fill_circle(self.x, self.y, self.radius)
 
     def draw_title(self) -> None:

@@ -142,12 +142,12 @@ class Node(NodeCore):
             io_group.append(new_io)
 
     def create_input(
-            self,
-            type_: str = "data",
-            label: str = "",
-            add_data: Optional[dict] = None,
-            dtype: Optional[DType] = None,
-            insert: Optional[int] = None
+        self,
+        type_: str = "data",
+        label: str = "",
+        add_data: Optional[dict] = None,
+        dtype: Optional[DType] = None,
+        insert: Optional[int] = None,
     ):
         """Creates and add a new input port"""
         inp = NodeInput(
@@ -156,7 +156,7 @@ class Node(NodeCore):
         self._add_io(self.inputs, inp, insert=insert)
 
     def create_input_dt(
-            self, dtype: DType, label: str = '', add_data={}, insert: int = None
+        self, dtype: DType, label: str = "", add_data={}, insert: int = None
     ):
         raise RuntimeError(
             "Ironflow uses custom NodePort classes and this method is not supported. "
@@ -164,11 +164,11 @@ class Node(NodeCore):
         )
 
     def create_output(
-            self,
-            type_: str = "data",
-            label: str = "",
-            dtype: Optional[DType] = None,
-            insert: Optional[int] = None
+        self,
+        type_: str = "data",
+        label: str = "",
+        dtype: Optional[DType] = None,
+        insert: Optional[int] = None,
     ):
         """Create and add a new output port"""
         out = NodeOutput(node=self, type_=type_, label_str=label, dtype=dtype)
@@ -185,7 +185,7 @@ class Node(NodeCore):
                     type_=inp.type_,
                     label=inp.label,
                     add_data=inp.add_data,
-                    dtype=inp.dtype
+                    dtype=inp.dtype,
                 )
 
             for o in range(len(self.init_outputs)):
@@ -197,31 +197,31 @@ class Node(NodeCore):
             # initial ports specifications are irrelevant then
 
             for inp in inputs_data:
-                if 'dtype' in inp:
-                    dtype = DType.from_str(inp['dtype'])(
-                        _load_state=deserialize(inp['dtype state'])
+                if "dtype" in inp:
+                    dtype = DType.from_str(inp["dtype"])(
+                        _load_state=deserialize(inp["dtype state"])
                     )
-                    self.create_input(label=inp['label'], add_data=inp, dtype=dtype)
+                    self.create_input(label=inp["label"], add_data=inp, dtype=dtype)
                 else:
                     self.create_input(
-                        type_=inp['type'], label=inp['label'], add_data=inp
+                        type_=inp["type"], label=inp["label"], add_data=inp
                     )
 
-                if 'val' in inp:
+                if "val" in inp:
                     # this means the input is 'data' and did not have any connections,
                     # so we saved its value which was probably represented by some widget
                     # in the front end which has probably overridden the Node.input() method
-                    self.inputs[-1].val = deserialize(inp['val'])
+                    self.inputs[-1].val = deserialize(inp["val"])
 
             # ironflow modification
             for out in outputs_data:
-                if 'dtype' in out:
-                    dtype = DType.from_str(out['dtype'])(
-                        _load_state=deserialize(out['dtype state'])
+                if "dtype" in out:
+                    dtype = DType.from_str(out["dtype"])(
+                        _load_state=deserialize(out["dtype state"])
                     )
-                    self.create_output(label=out['label'], dtype=dtype)
+                    self.create_output(label=out["label"], dtype=dtype)
                 else:
-                    self.create_output(type_=out['type'], label=out['label'])
+                    self.create_output(type_=out["type"], label=out["label"])
 
     @property
     def all_input_is_valid(self):
@@ -258,7 +258,6 @@ class Node(NodeCore):
         except TypeError:
             # Classes defined in the notebook can't access their source this way
             return ""
-
 
     @property
     def _standard_representations(self):

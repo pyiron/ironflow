@@ -198,7 +198,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                     u=self.inputs.values.u,
                     orthorhombic=self.inputs.values.orthorhombic,
                     cubic=self.inputs.values.cubic,
-                )
+                ),
             )
         except RuntimeError as e:
             self.set_output_val(0, None)
@@ -287,7 +287,7 @@ class Lammps_Node(Node):
             dtype=dtypes.Choice(
                 default="Set structure first",
                 items=["Set structure first"],
-                valid_classes=str
+                valid_classes=str,
             ),
             label="potential",
         ),
@@ -300,8 +300,7 @@ class Lammps_Node(Node):
 
     def _run(self):
         job = self.inputs.values.project.create.job.Lammps(
-            self.inputs.values.name,
-            delete_existing_job=True
+            self.inputs.values.name, delete_existing_job=True
         )
         job.structure = self.inputs.values.structure
         job.potential = self.inputs.values.potential
@@ -368,7 +367,7 @@ class GenericOutput_Node(Node):
             dtype=dtypes.Choice(
                 default="Input an atomistic job",
                 items=["Input an atomistic job"],
-                valid_classes=str
+                valid_classes=str,
             ),
             label="field",
         ),
@@ -457,7 +456,7 @@ class JobName_Node(Node):
     title = "JobName"
     init_inputs = [
         NodeInputBP(dtype=dtypes.String(default="job_"), label="base"),
-        NodeInputBP(dtype=dtypes.Float(default=0.), label="float"),
+        NodeInputBP(dtype=dtypes.Float(default=0.0), label="float"),
     ]
     init_outputs = [
         NodeOutputBP(label="job_name", dtype=dtypes.String()),
@@ -591,7 +590,7 @@ class Sin_Node(Node):
     init_inputs = [
         NodeInputBP(
             dtype=dtypes.Data(size="m", valid_classes=[int, float, list, np.ndarray]),
-            label="x"
+            label="x",
         ),
     ]
     init_outputs = [
