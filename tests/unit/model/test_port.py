@@ -4,8 +4,7 @@
 
 from unittest import TestCase
 
-from ryvencore.utils import deserialize, serialize
-
+from ironflow.model.dtypes import String
 from ironflow.model.port import NodeInput, NodeOutput, NodeOutputBP
 
 
@@ -15,3 +14,31 @@ class TestPorts(TestCase):
         self.assertTrue(hasattr(NodeInput(node=None), 'dtype'))
         self.assertTrue(hasattr(NodeOutput(node=None), 'dtype'))
         self.assertTrue(hasattr(NodeOutputBP(), 'dtype'))
+
+    def test_validity(self):
+        with self.subTest("Without dtype set"):
+            p0 = NodeInput(node=None, dtype=None)
+            p0.val = None
+            self.assertTrue(p0.valid_val)
+            p0.val = "foo"
+            self.assertTrue(p0.valid_val)
+            p0.val = 42
+            self.assertTrue(p0.valid_val)
+
+        with self.subTest("With allow none"):
+            p0 = NodeInput(node=None, dtype=String(allow_none=True))
+            p0.val = None
+            self.assertTrue(p0.valid_val)
+            p0.val = "foo"
+            self.assertTrue(p0.valid_val)
+            p0.val = 42
+            self.assertFalse(p0.valid_val, msg="Should be wrong type")
+
+        with self.subTest("With allow none"):
+            p0 = NodeInput(node=None, dtype=String(allow_none=False))
+            p0.val = None
+            self.assertFalse(p0.valid_val, msg="None should be disallowed")
+            p0.val = "foo"
+            self.assertTrue(p0.valid_val)
+            p0.val = 42
+            self.assertFalse(p0.valid_val, msg="Should be wrong type")
