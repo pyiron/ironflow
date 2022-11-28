@@ -2,7 +2,12 @@ import code
 from contextlib import redirect_stdout, redirect_stderr
 
 from ironflow.node_tools import (
-    dtypes, input_widgets, Node, NodeInputBP, NodeOutputBP, PlaceholderWidgetsContainer
+    dtypes,
+    input_widgets,
+    Node,
+    NodeInputBP,
+    NodeOutputBP,
+    PlaceholderWidgetsContainer,
 )
 
 widgets = PlaceholderWidgetsContainer()
