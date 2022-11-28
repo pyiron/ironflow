@@ -21,12 +21,8 @@ from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
-from ryvencore.InfoMsgs import InfoMsgs
 
-from ironflow.gui.workflows.canvas_widgets.nodes import ButtonNodeWidget
-from ironflow.model import dtypes, NodeInputBP
-from ironflow.model.node import Node
-from ironflow.model.port import NodeOutputBP
+from ironflow.node_tools import dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
@@ -687,7 +683,7 @@ class ExecCounter_Node(DualNodeBase):
 class Click_Node(Node):
     title = "Click"
     version = "v0.1"
-    main_widget_class = ButtonNodeWidget
+    main_widget_class = main_widgets.ButtonNodeWidget
     init_inputs = []
     init_outputs = [NodeOutputBP(type_="exec")]
     color = "#99dd55"

@@ -2,7 +2,7 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-Widgets with which to populate the `input_widget` field of a new `ironflow.model.node.Node`.
+Widgets with which to populate the `main_widget_class` field of a new `ironflow.model.node.Node`.
 """
 
-from ironflow.gui.workflows.boxes.node_interface.input_widgets import SliderControl
+from ironflow.gui.workflows.canvas_widgets.nodes import ButtonNodeWidget
