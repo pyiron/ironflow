@@ -344,6 +344,15 @@ class CalcStatic_Node(Calculator):
         return {"job": BeautifulHasGroups(self.outputs.values.job)}
 
 
+def pressure_input():
+    return NodeInputBP(
+            dtype=dtypes.Data(
+                default=None, allow_none=True, valid_classes=[float, list, np.ndarray]
+            ),
+            label="pressure"
+        )
+
+
 class CalcMinimize_Node(Calculator):
     """
     Execute a static atomistic engine evaluation.
@@ -355,12 +364,7 @@ class CalcMinimize_Node(Calculator):
         NodeInputBP(dtype=dtypes.Float(default=0.), label="ionic_energy_tolerance"),
         NodeInputBP(dtype=dtypes.Float(default=1e-4), label="ionic_force_tolerance"),
         NodeInputBP(dtype=dtypes.Integer(default=100000), label="max_iter"),
-        NodeInputBP(
-            dtype=dtypes.Data(
-                default=None, allow_none=True, valid_classes=[float, list, np.ndarray]
-            ),
-            label="pressure"
-        ),
+        pressure_input(),
         NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
         NodeInputBP(dtype=dtypes.Choice(default="cg", items=["cg"]), label="style"),
     ]
