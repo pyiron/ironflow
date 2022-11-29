@@ -388,6 +388,61 @@ class CalcMinimize_Node(Calculator):
         return {"job": BeautifulHasGroups(self.outputs.values.job)}
 
 
+class CalcMD_Node(Calculator):
+    """
+    Execute a static atomistic engine evaluation.
+    """
+
+    title = "CalcMD"
+    init_inputs = Calculator.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=None, allow_none=True), label="temperature"
+        ),
+        pressure_input(),
+        NodeInputBP(dtype=dtypes.Integer(default=1000), label="n_ionic_steps"),
+        NodeInputBP(dtype=dtypes.Float(default=1.), label="time_step"),
+        NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=100.), label="temperature_damping_timescale"
+        ),
+        NodeInputBP(
+            dtype=dtypes.Float(default=1000.), label="pressure_damping_timescale"
+        ),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="seed"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=None, allow_none=True),
+            label="initial_temperature"
+        ),
+        NodeInputBP(
+            dtype=dtypes.Choice(default="langevin", items=["langevin", "nose-hoover"]),
+            label="dynamics"
+        ),
+    ]
+    init_outputs = Calculator.init_outputs + [
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
+    ]
+
+    def _run(self):
+        self.job.calc_md(
+            temperature=self.inputs.values.temperature,
+            pressure=self.inputs.values.pressure,
+            n_ionic_steps=self.inputs.values.n_ionic_steps,
+            time_step=self.inputs.values.time_step,
+            n_print=self.inputs.values.n_print,
+            temperature_damping_timescale=self.inputs.values.temperature_damping_timescale,
+            pressure_damping_timescale=self.inputs.values.pressure_damping_timescale,
+            seed=self.inputs.values.seed,
+            initial_temperature=self.inputs.values.initial_temperature,
+            langevin=self.inputs.values.dynamics == "langevin",
+        )
+        self.job.run()
+
+    @property
+    def extra_representations(self) -> dict:
+        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+
+
 class Engine(Node):
     """
     A parent class for engines (jobs).
