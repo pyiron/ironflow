@@ -333,7 +333,7 @@ class CalcStatic_Node(Calculator):
         NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine")
     ]
     init_outputs = Calculator.init_outputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
     ]
 
     def _run(self):
