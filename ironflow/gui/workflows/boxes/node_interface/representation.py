@@ -85,7 +85,7 @@ class NodePresenter(NodeInterfaceBase):
                 widgets.VBox(
                     [
                         widgets.HBox(self._toggles, layout={"flex_flow": "row wrap"}),
-                        *representations,
+                        widgets.VBox(representations, layout={"max_height": "325px"}),
                     ]
                 )
             )
