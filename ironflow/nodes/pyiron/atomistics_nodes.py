@@ -344,6 +344,46 @@ class CalcStatic_Node(Calculator):
         return {"job": BeautifulHasGroups(self.outputs.values.job)}
 
 
+class CalcMinimize_Node(Calculator):
+    """
+    Execute a static atomistic engine evaluation.
+    """
+
+    title = "CalcMinimize"
+    init_inputs = Calculator.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine"),
+        NodeInputBP(dtype=dtypes.Float(default=0.), label="ionic_energy_tolerance"),
+        NodeInputBP(dtype=dtypes.Float(default=1e-4), label="ionic_force_tolerance"),
+        NodeInputBP(dtype=dtypes.Integer(default=100000), label="max_iter"),
+        NodeInputBP(
+            dtype=dtypes.Data(
+                default=None, allow_none=True, valid_classes=[float, list, np.ndarray]
+            ),
+            label="pressure"
+        ),
+        NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
+        NodeInputBP(dtype=dtypes.Choice(default="cg", items=["cg"]), label="style"),
+    ]
+    init_outputs = Calculator.init_outputs + [
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
+    ]
+
+    def _run(self):
+        self.job.calc_minimize(
+            ionic_energy_tolerance=self.inputs.values.ionic_energy_tolerance,
+            ionic_force_tolerance=self.inputs.values.ionic_force_tolerance,
+            max_iter=self.inputs.values.max_iter,
+            pressure=self.inputs.values.pressure,
+            n_print=self.inputs.values.n_print,
+            style=self.inputs.values.style,
+        )
+        self.job.run()
+
+    @property
+    def extra_representations(self) -> dict:
+        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+
+
 class Engine(Node):
     """
     A parent class for engines (jobs).
