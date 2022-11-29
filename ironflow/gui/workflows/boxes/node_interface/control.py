@@ -64,6 +64,7 @@ class NodeController(NodeInterfaceBase):
             for i_c, inp in enumerate(self.node.inputs[:]):
                 if inp.dtype is not None:
                     dtype = str(inp.dtype).split(".")[-1]
+                    disabled = self.node.block_updates or len(inp.connections) > 0
                     try:
                         dtype_state = deserialize(inp.data()["dtype state"])
                     except TypeError:
@@ -80,21 +81,21 @@ class NodeController(NodeInterfaceBase):
                             value=inp.val,
                             description="",
                             continuous_update=False,
-                            disabled=len(inp.connections) > 0,
+                            disabled=disabled,
                         )
                     elif dtype == "Float":
                         inp_widget = widgets.FloatText(
                             value=inp.val,
                             description="",
                             continuous_update=False,
-                            disabled=len(inp.connections) > 0,
+                            disabled=disabled,
                         )
                     elif dtype == "Boolean":
                         inp_widget = widgets.Checkbox(
                             value=inp.val,
                             indent=False,
                             description="",
-                            disabled=len(inp.connections) > 0,
+                            disabled=disabled,
                         )
                     elif dtype == "Choice":
                         inp_widget = widgets.Dropdown(
@@ -102,13 +103,13 @@ class NodeController(NodeInterfaceBase):
                             options=inp.dtype.items,
                             description="",
                             ensure_option=True,
-                            disabled=len(inp.connections) > 0,
+                            disabled=disabled,
                         )
                     elif dtype == "String" or dtype == "Char":
                         inp_widget = widgets.Text(
                             value=str(inp.val),
                             continuous_update=False,
-                            disabled=len(inp.connections) > 0,
+                            disabled=disabled,
                         )
                     else:
                         inp_widget = widgets.Text(
