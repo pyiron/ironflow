@@ -266,7 +266,7 @@ class Calculator(Node, ABC):
     """
     A parent class for calculator nodes (i.e. those that actually run something).
     """
-    color = "#a13c35"
+    color = "#c4473f"
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
         NodeInputBP(type_="exec", label="reset"),
