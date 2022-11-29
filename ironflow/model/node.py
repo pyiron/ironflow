@@ -281,7 +281,7 @@ class Node(NodeCore):
 
     @property
     def representations(self) -> dict:
-        return {**self.extra_representations, **self._standard_representations}
+        return {**self._standard_representations, **self.extra_representations}
 
 
 class PlaceholderWidgetsContainer:
