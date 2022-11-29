@@ -262,26 +262,108 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         )
 
 
-class Lammps_Node(Node):
+class Calculator(Node, ABC):
     """
-    WIP.
+    A parent class for calculator nodes (i.e. those that actually run something).
+    """
+    color = "#a13c35"
+    init_inputs = [
+        NodeInputBP(type_="exec", label="run"),
+        NodeInputBP(type_="exec", label="reset"),
+        NodeInputBP(dtype=dtypes.String(default="calc"), label="name")
+        # In children, add input for an engine (job)
+    ]
+    init_outputs = [
+        NodeOutputBP(type_="exec", label="ran"),
+        # In children, add output for a job (engine)
+    ]
+
+    @property
+    def job(self):
+        try:
+            return self._job
+        except AttributeError:
+            return None
+
+    def update_event(self, inp=-1):
+        if inp == 0 and (not self.block_updates) and self.all_input_is_valid:
+            self._execute_calculation()
+
+    def update(self, inp=-1):
+        if inp == 1 and self.job is not None:
+            # Bypass the `lock_updates` to delete the executed job and unlock updates
+            self._reset()
+        else:
+            super().update(inp=inp)
+
+    def _execute_calculation(self):
+        self.block_updates = True
+        self._job = self.inputs.values.engine.copy_to(
+            new_job_name=self.inputs.values.name,
+            delete_existing_job=True  # TODO: Make this input?
+        )
+        self._run()  # Defined in child classes
+        self.set_output_val(1, self.job)
+        self.exec_output(0)
+
+    def _reset(self):
+        self.job.remove()
+        for i in range(1, len(self.outputs)):
+            self.set_output_val(i, None)
+        self.block_updates = False
+        self.update(-1)
+
+    @abstractmethod
+    def _run(self):
+        """
+        Manipulates self.job and adds anything necessary to the output beyond the job
+        itself
+        """
+
+        pass
+
+
+class CalcStatic_Node(Calculator):
+    """
+    Execute a static atomistic engine evaluation.
+    """
+
+    title = "CalcStatic"
+    init_inputs = Calculator.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine")
+    ]
+    init_outputs = Calculator.init_outputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
+    ]
+
+    def _run(self):
+        self.job.run()
+
+    @property
+    def extra_representations(self) -> dict:
+        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+
+
+class Engine(Node):
+    """
+    A parent class for engines (jobs).
+    """
+    color = "#5d95de"
+
+
+class Lammps_Node(Engine):
+    """
+    Creates a Lammps engine (job) object for use by a calculator
     """
 
     title = "Lammps"
-    version = "v0.1"
+    version = "v0.2"
     init_inputs = [
-        NodeInputBP(type_="exec", label="run"),
-        NodeInputBP(type_="exec", label="remove"),
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Project), label="project"
-        ),
-        NodeInputBP(dtype=dtypes.String(default="job"), label="name"),
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="Set structure first",
+                default=None,
                 items=["Set structure first"],
                 valid_classes=str,
             ),
@@ -289,38 +371,15 @@ class Lammps_Node(Node):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(type_="exec", label="ran"),
-        NodeOutputBP(label="job", dtype=dtypes.Data(valid_classes=Lammps)),
+        NodeOutputBP(label="engine", dtype=dtypes.Data(valid_classes=Lammps)),
     ]
-    color = "#5d95de"
-
-    def _run(self):
-        job = self.inputs.values.project.create.job.Lammps(
-            self.inputs.values.name, delete_existing_job=True
-        )
-        job.structure = self.inputs.values.structure
-        job.potential = self.inputs.values.potential
-        self._job = job
-        job.run()
-        self.set_output_val(1, job)
-        self.exec_output(0)
-
-    def _remove(self):
-        try:
-            name = (
-                self._job.name
-            )  # Remove based on the run job, not the input name which might have changed...
-            self.inputs.values.project.remove_job(name)
-            self.set_output_val(1, None)
-        except AttributeError:
-            pass
 
     def _update_potential_choices(self):
         last_potential = self.inputs.values.potential
         available_potentials = list_potentials(self.inputs.values.structure)
 
         if len(available_potentials) == 0:
-            self.inputs.ports.potential.val = "No valid potential"
+            self.inputs.ports.potential.val = None
             self.inputs.ports.potential.dtype.items = ["No valid potential"]
         else:
             if last_potential not in available_potentials:
@@ -328,12 +387,15 @@ class Lammps_Node(Node):
             self.inputs.ports.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
-        if inp == 0 and self.all_input_is_valid:
-            self._run()
-        elif inp == 1:
-            self._remove()
-        elif inp == 4 and self.inputs.ports.structure.valid_val:
+        if inp == 1 and self.inputs.ports.structure.valid_val:
             self._update_potential_choices()
+        if self.all_input_is_valid:
+            job = self.inputs.values.project.create.job.Lammps(
+                "_Lammps_Engine", delete_existing_job=True
+            )
+            job.structure = self.inputs.values.structure
+            job.potential = self.inputs.values.potential
+            self.set_output_val(0, job)
 
     @property
     def extra_representations(self) -> dict:
