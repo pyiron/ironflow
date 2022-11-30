@@ -157,8 +157,8 @@
                             }
                         ],
                         "GID": 21,
-                        "pos x": 388.63362933256946,
-                        "pos y": 129.80219780219778
+                        "pos x": 439.65956125827813,
+                        "pos y": 236.47761194029852
                     },
                     {
                         "identifier": "GenericOutput_Node",
@@ -257,8 +257,8 @@
                             }
                         ],
                         "GID": 34,
-                        "pos x": 388.63362933256946,
-                        "pos y": 295.4505494505495
+                        "pos x": 445.61982615894044,
+                        "pos y": 441.5223880597015
                     },
                     {
                         "identifier": "GenericOutput_Node",
@@ -377,8 +377,8 @@
                             }
                         ],
                         "GID": 46,
-                        "pos x": 751.6241764537382,
-                        "pos y": 28.890109890109883
+                        "pos x": 746.6132036423841,
+                        "pos y": 8.552238805970148
                     },
                     {
                         "identifier": "CalcMinimize_Node",
@@ -620,13 +620,13 @@
                             {
                                 "type": "exec",
                                 "label": "refresh",
-                                "GID": 98,
+                                "GID": 84,
                                 "val": "gAROLg=="
                             },
                             {
                                 "type": "data",
                                 "label": "project",
-                                "GID": 99,
+                                "GID": 85,
                                 "dtype": "DType.Data",
                                 "dtype state": "gASVfgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
                             }
@@ -635,87 +635,179 @@
                             {
                                 "type": "data",
                                 "label": "Table",
-                                "GID": 100
+                                "GID": 86
                             }
                         ],
-                        "GID": 97,
+                        "GID": 83,
                         "pos x": 386.4336866227442,
                         "pos y": 7.53846153846154
+                    },
+                    {
+                        "identifier": "PyironTable_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "run",
+                                "GID": 99,
+                                "val": "gAROLg=="
+                            },
+                            {
+                                "type": "exec",
+                                "label": "remove",
+                                "GID": 100,
+                                "val": "gAROLg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 101,
+                                "val": "gASVCQAAAAAAAACMBXRhYmxllC4=",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVcAAAAAAAAAB9lCiMB2RlZmF1bHSUjARjYWxjlIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANzdHKUk5RhjAphbGxvd19ub25llImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 102,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVfgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "Col_1",
+                                "GID": 103,
+                                "val": "gASVEAAAAAAAAACMDGdldF9qb2JfbmFtZZQu",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVIwMAAAAAAAB9lCiMB2RlZmF1bHSUjAxnZXRfam9iX25hbWWUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llImMBWl0ZW1zlF2UKIwKZ2V0X2pvYl9pZJSMCWdldF9pbmNhcpSMCWdldF9zaWdtYZSMGWdldF90b3RhbF9udW1iZXJfb2ZfYXRvbXOUjAxnZXRfZWxlbWVudHOUjBVnZXRfY29udmVyZ2VuY2VfY2hlY2uUjBVnZXRfbnVtYmVyX29mX3NwZWNpZXOUjBlnZXRfbnVtYmVyX29mX2lvbmljX3N0ZXBzlIwKZ2V0X2lzbWVhcpSMCWdldF9lbmN1dJSMCmdldF9uX2twdHOUjA5nZXRfbl9lcXVfa3B0c5SMJGdldF9udW1iZXJfb2ZfZmluYWxfZWxlY3Ryb25pY19zdGVwc5SMFGdldF9tYWpvcml0eV9zcGVjaWVzlGgCjA5nZXRfZW5lcmd5X3RvdJSMDmdldF9lbmVyZ3lfcG90lIwPZ2V0X2VuZXJneV9mcmVllIwOZ2V0X2VuZXJneV9pbnSUjBdnZXRfZW5lcmd5X3RvdF9wZXJfYXRvbZSMF2dldF9lbmVyZ3lfcG90X3Blcl9hdG9tlIwYZ2V0X2VuZXJneV9mcmVlX3Blcl9hdG9tlIwXZ2V0X2VuZXJneV9pbnRfcGVyX2F0b22UjBBnZXRfZV9jb252X2xldmVslIwMZ2V0X2Zfc3RhdGVzlIwKZ2V0X2VfYmFuZJSMHmdldF9tYWpvcml0eV9jcnlzdGFsX3N0cnVjdHVyZZSMGmdldF9lcXVpbGlicml1bV9wYXJhbWV0ZXJzlIwNZ2V0X3N0cnVjdHVyZZSMCmdldF9mb3JjZXOUjBZnZXRfbWFnbmV0aWNfc3RydWN0dXJllIwRZ2V0X2F2ZXJhZ2Vfd2F2ZXOUjA9nZXRfcGxhbmVfd2F2ZXOUjA5nZXRfZWtpbl9lcnJvcpSMCmdldF92b2x1bWWUjBNnZXRfdm9sdW1lX3Blcl9hdG9tlGV1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "Col_2",
+                                "GID": 104,
+                                "val": "gASVEgAAAAAAAACMDmdldF9lbmVyZ3lfdG90lC4=",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVIwMAAAAAAAB9lCiMB2RlZmF1bHSUjAxnZXRfam9iX25hbWWUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llImMBWl0ZW1zlF2UKIwKZ2V0X2pvYl9pZJSMCWdldF9pbmNhcpSMCWdldF9zaWdtYZSMGWdldF90b3RhbF9udW1iZXJfb2ZfYXRvbXOUjAxnZXRfZWxlbWVudHOUjBVnZXRfY29udmVyZ2VuY2VfY2hlY2uUjBVnZXRfbnVtYmVyX29mX3NwZWNpZXOUjBlnZXRfbnVtYmVyX29mX2lvbmljX3N0ZXBzlIwKZ2V0X2lzbWVhcpSMCWdldF9lbmN1dJSMCmdldF9uX2twdHOUjA5nZXRfbl9lcXVfa3B0c5SMJGdldF9udW1iZXJfb2ZfZmluYWxfZWxlY3Ryb25pY19zdGVwc5SMFGdldF9tYWpvcml0eV9zcGVjaWVzlGgCjA5nZXRfZW5lcmd5X3RvdJSMDmdldF9lbmVyZ3lfcG90lIwPZ2V0X2VuZXJneV9mcmVllIwOZ2V0X2VuZXJneV9pbnSUjBdnZXRfZW5lcmd5X3RvdF9wZXJfYXRvbZSMF2dldF9lbmVyZ3lfcG90X3Blcl9hdG9tlIwYZ2V0X2VuZXJneV9mcmVlX3Blcl9hdG9tlIwXZ2V0X2VuZXJneV9pbnRfcGVyX2F0b22UjBBnZXRfZV9jb252X2xldmVslIwMZ2V0X2Zfc3RhdGVzlIwKZ2V0X2VfYmFuZJSMHmdldF9tYWpvcml0eV9jcnlzdGFsX3N0cnVjdHVyZZSMGmdldF9lcXVpbGlicml1bV9wYXJhbWV0ZXJzlIwNZ2V0X3N0cnVjdHVyZZSMCmdldF9mb3JjZXOUjBZnZXRfbWFnbmV0aWNfc3RydWN0dXJllIwRZ2V0X2F2ZXJhZ2Vfd2F2ZXOUjA9nZXRfcGxhbmVfd2F2ZXOUjA5nZXRfZWtpbl9lcnJvcpSMCmdldF92b2x1bWWUjBNnZXRfdm9sdW1lX3Blcl9hdG9tlGV1Lg=="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "ran",
+                                "GID": 105
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 106,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVgQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBtweWlyb25fYmFzZS5qb2JzLmRhdGFtaW5pbmeUjAhUYWJsZUpvYpSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "dataframe",
+                                "GID": 107,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVeAAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBFwYW5kYXMuY29yZS5mcmFtZZSMCURhdGFGcmFtZZSTlGGMCmFsbG93X25vbmWUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "Col_1",
+                                "GID": 108
+                            },
+                            {
+                                "type": "data",
+                                "label": "Col_2",
+                                "GID": 109
+                            }
+                        ],
+                        "GID": 98,
+                        "pos x": 1369.4608857615895,
+                        "pos y": 97.97014925373134
                     }
                 ],
                 "connections": [
                     {
-                        "GID": 86,
+                        "GID": 87,
                         "parent node index": 0,
                         "output port index": 0,
                         "connected node": 7,
                         "connected input port index": 0
                     },
                     {
-                        "GID": 87,
+                        "GID": 88,
                         "parent node index": 1,
                         "output port index": 0,
                         "connected node": 2,
                         "connected input port index": 0
                     },
                     {
-                        "GID": 101,
+                        "GID": 89,
                         "parent node index": 1,
                         "output port index": 0,
                         "connected node": 11,
                         "connected input port index": 1
                     },
                     {
-                        "GID": 89,
-                        "parent node index": 2,
+                        "GID": 110,
+                        "parent node index": 1,
                         "output port index": 0,
-                        "connected node": 8,
+                        "connected node": 12,
                         "connected input port index": 3
                     },
                     {
                         "GID": 90,
                         "parent node index": 2,
                         "output port index": 0,
-                        "connected node": 9,
+                        "connected node": 8,
                         "connected input port index": 3
                     },
                     {
                         "GID": 91,
                         "parent node index": 2,
                         "output port index": 0,
-                        "connected node": 10,
+                        "connected node": 9,
                         "connected input port index": 3
                     },
                     {
                         "GID": 92,
+                        "parent node index": 2,
+                        "output port index": 0,
+                        "connected node": 10,
+                        "connected input port index": 3
+                    },
+                    {
+                        "GID": 93,
                         "parent node index": 5,
                         "output port index": 0,
                         "connected node": 9,
                         "connected input port index": 7
                     },
                     {
-                        "GID": 93,
+                        "GID": 94,
                         "parent node index": 7,
                         "output port index": 0,
                         "connected node": 2,
                         "connected input port index": 1
                     },
                     {
-                        "GID": 94,
+                        "GID": 95,
                         "parent node index": 8,
                         "output port index": 1,
                         "connected node": 3,
                         "connected input port index": 0
                     },
                     {
-                        "GID": 95,
+                        "GID": 96,
                         "parent node index": 9,
                         "output port index": 1,
                         "connected node": 4,
                         "connected input port index": 0
                     },
                     {
-                        "GID": 96,
+                        "GID": 97,
                         "parent node index": 10,
                         "output port index": 1,
                         "connected node": 6,
