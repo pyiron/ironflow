@@ -379,10 +379,18 @@ class TakesJob(JobRunner):
     """
 
     def _generate_job(self):
-        return self.inputs.values.job.copy_to(
+        job = self.inputs.values.job.copy_to(
             new_job_name=self.inputs.values.name,
-            delete_existing_job=True  # TODO: Make this input?
+            delete_existing_job=False  # TODO: Make this input?
         )
+        if job.status == "initialized":
+            return job
+        else:
+            self.block_updates = False
+            raise RuntimeError(
+                f"The job {self.inputs.values.name} already exists. Delete it first or"
+                f"choose a different name."
+            )
 
 
 class MakesJob(JobRunner):
