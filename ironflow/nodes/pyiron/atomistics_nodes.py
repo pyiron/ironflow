@@ -103,6 +103,24 @@ class Project_Node(Node):
         }
 
 
+class JobTable_Node(Node):
+    title = "JobTable"
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project")
+    ]
+    init_outputs = [
+       NodeOutputBP(label="Table")
+    ]
+    color = "#aabb44"
+
+    def update_event(self, inp=-1):
+        if self.inputs.ports.project.valid_val:
+            self.set_output_val(
+                0,
+                self.inputs.values.project.job_table(all_columns=False)
+            )
+
+
 class OutputsOnlyAtoms(Node, ABC):
     """
     A helper class that manages representations for nodes whose only output is a `pyiron_atomistics.Atoms` object.
