@@ -16,6 +16,8 @@ import matplotlib.pylab as plt
 import numpy as np
 from matplotlib.figure import Figure
 from nglview import NGLWidget
+
+import pyiron_base
 from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
@@ -262,20 +264,34 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         )
 
 
-class Calculator(Node, ABC):
+class JobRunner(Node, ABC):
     """
-    A parent class for calculator nodes (i.e. those that actually run something).
+    A parent class for nodes that run a pyiron job.
+
+    Child classes are required to specify a `_generate_job` method, which produces
+    a `pyiron_base.GenericJob` object, and a `_run` method which can access this job
+    at the `.job` attribute, in addition to whatever input is necessary to accomplish
+    this. They can optionally override the `_set_output` method, which by default
+    assumes there is an output field labeled `"job"` and sends the executed job there.
+
+    The node has `run` and `remove` input exec ports and a `ran` output exec port.
+    Once the node has been run, all inputs get locked and remain locked until the
+    removal process is triggered. Remove clears all the outputs and sets them to `None`.
+
+    The tricky thing is that we can't easily pre-define the available inputs *and* have
+    them be sufficiently detailed in their dtype without running into awkwardness, so
+    assumptions get made about what IO fields are available, and these assumptions
+    must be satisfied by child classes.
     """
+
     color = "#c4473f"
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
-        NodeInputBP(type_="exec", label="reset"),
+        NodeInputBP(type_="exec", label="remove"),
         NodeInputBP(dtype=dtypes.String(default="calc"), label="name")
-        # In children, add input for an engine (job)
     ]
     init_outputs = [
         NodeOutputBP(type_="exec", label="ran"),
-        # In children, add output for a job (engine)
     ]
 
     @property
@@ -287,26 +303,23 @@ class Calculator(Node, ABC):
 
     def update_event(self, inp=-1):
         if inp == 0 and (not self.block_updates) and self.all_input_is_valid:
-            self._execute_calculation()
+            self._on_run_signal()
 
     def update(self, inp=-1):
         if inp == 1 and self.job is not None:
             # Bypass the `lock_updates` to delete the executed job and unlock updates
-            self._reset()
+            self._on_remove_signal()
         else:
             super().update(inp=inp)
 
-    def _execute_calculation(self):
+    def _on_run_signal(self):
         self.block_updates = True
-        self._job = self.inputs.values.engine.copy_to(
-            new_job_name=self.inputs.values.name,
-            delete_existing_job=True  # TODO: Make this input?
-        )
-        self._run()  # Defined in child classes
-        self.set_output_val(1, self.job)
+        self._job = self._generate_job()
+        self._run()
+        self._set_output()
         self.exec_output(0)
 
-    def _reset(self):
+    def _on_remove_signal(self):
         self.job.remove()
         for i in range(1, len(self.outputs)):
             self.set_output_val(i, None)
@@ -314,25 +327,71 @@ class Calculator(Node, ABC):
         self.update(-1)
 
     @abstractmethod
+    def _generate_job(self) -> pyiron_base.GenericJob:
+        """
+        Return the job to be executed.
+
+        Should use the `self.inputs.values.name` job name and whatever other input is
+        necessary and specified in child classes.
+        """
+
+        pass
+
+    @abstractmethod
     def _run(self):
         """
-        Manipulates self.job and adds anything necessary to the output beyond the job
+        Manipulates `self.job` and adds anything necessary to the output beyond the job
         itself
         """
 
         pass
 
+    def _set_output(self):
+        """
+        With the executed `self.job` available, set output fields.
+        """
 
-class CalcStatic_Node(Calculator):
+        self.set_output_val(1, self.job)
+
+
+class TakesJob(JobRunner):
+    """
+    Parent class for job running nodes that take the job as input and copy it.
+
+    Assumes that this job is input with the label `"job"` and the appropriate dtype.
+    """
+
+    def _generate_job(self):
+        return self.inputs.values.job.copy_to(
+            new_job_name=self.inputs.values.name,
+            delete_existing_job=True  # TODO: Make this input?
+        )
+
+
+class MakesJob(JobRunner):
+    """
+    Parent class for job running nodes that take the project as input and generate a
+    new job from scratch.
+
+    Project input should be used in `_generate_job` to produce a job of the correct
+    type.
+    """
+
+    init_inputs = JobRunner.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project")
+    ]
+
+
+class CalcStatic_Node(TakesJob):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcStatic"
-    init_inputs = Calculator.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine")
+    init_inputs = TakesJob.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
     ]
-    init_outputs = Calculator.init_outputs + [
+    init_outputs = TakesJob.init_outputs + [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
     ]
 
@@ -353,14 +412,14 @@ def pressure_input():
         )
 
 
-class CalcMinimize_Node(Calculator):
+class CalcMinimize_Node(TakesJob):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcMinimize"
-    init_inputs = Calculator.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine"),
+    init_inputs = TakesJob.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
         NodeInputBP(dtype=dtypes.Float(default=0.), label="ionic_energy_tolerance"),
         NodeInputBP(dtype=dtypes.Float(default=1e-4), label="ionic_force_tolerance"),
         NodeInputBP(dtype=dtypes.Integer(default=100000), label="max_iter"),
@@ -368,7 +427,7 @@ class CalcMinimize_Node(Calculator):
         NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
         NodeInputBP(dtype=dtypes.Choice(default="cg", items=["cg"]), label="style"),
     ]
-    init_outputs = Calculator.init_outputs + [
+    init_outputs = TakesJob.init_outputs + [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
     ]
 
@@ -388,14 +447,14 @@ class CalcMinimize_Node(Calculator):
         return {"job": BeautifulHasGroups(self.outputs.values.job)}
 
 
-class CalcMD_Node(Calculator):
+class CalcMD_Node(TakesJob):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcMD"
-    init_inputs = Calculator.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="engine"),
+    init_inputs = TakesJob.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
         NodeInputBP(
             dtype=dtypes.Float(default=None, allow_none=True), label="temperature"
         ),
@@ -419,7 +478,7 @@ class CalcMD_Node(Calculator):
             label="dynamics"
         ),
     ]
-    init_outputs = Calculator.init_outputs + [
+    init_outputs = TakesJob.init_outputs + [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
     ]
 
