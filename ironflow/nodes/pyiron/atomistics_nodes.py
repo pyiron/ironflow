@@ -106,6 +106,7 @@ class Project_Node(Node):
 class JobTable_Node(Node):
     title = "JobTable"
     init_inputs = [
+        NodeInputBP(type_="exec", label="refresh"),
         NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project")
     ]
     init_outputs = [
