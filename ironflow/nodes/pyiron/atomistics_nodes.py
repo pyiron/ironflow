@@ -97,9 +97,7 @@ class Project_Node(Node):
     def extra_representations(self) -> dict:
         return {
             "name": str(self.inputs.values.name),
-            # "job_table": self._project.job_table() if self._project is not None else None
-            # Todo: Figure out how to display this without breaking the gui size; right now it automatically grows
-            # the gui because the table is so wide.
+            "job_table": self.outputs.values.project.job_table(all_columns=False)
         }
 
 
