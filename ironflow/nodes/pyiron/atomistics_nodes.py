@@ -332,7 +332,7 @@ class JobRunner(Node, ABC):
 
     def _on_run_signal(self):
         self.block_updates = True
-        self._job = self._generate_job()
+        self._job = self._raise_error_if_not_initialized(self._generate_job())
         self._run()
         self._set_output()
         self.exec_output(0)
@@ -346,6 +346,18 @@ class JobRunner(Node, ABC):
             self.set_output_val(i, None)
         self.block_updates = False
         self.update(-1)
+
+    def _raise_error_if_not_initialized(
+            self, job: pyiron_base.GenericJob
+    ) -> pyiron_base.GenericJob:
+        if job.status == "initialized":
+            return job
+        else:
+            self.block_updates = False
+            raise RuntimeError(
+                f"The job {self.inputs.values.name} already exists. Delete it first or"
+                f"choose a different name."
+            )
 
     @abstractmethod
     def _generate_job(self) -> pyiron_base.GenericJob:
@@ -383,18 +395,10 @@ class TakesJob(JobRunner):
     """
 
     def _generate_job(self):
-        job = self.inputs.values.job.copy_to(
+        return self.inputs.values.job.copy_to(
             new_job_name=self.inputs.values.name,
             delete_existing_job=False  # TODO: Make this input?
         )
-        if job.status == "initialized":
-            return job
-        else:
-            self.block_updates = False
-            raise RuntimeError(
-                f"The job {self.inputs.values.name} already exists. Delete it first or"
-                f"choose a different name."
-            )
 
 
 class MakesJob(JobRunner):
