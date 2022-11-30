@@ -16,6 +16,7 @@ import matplotlib.pylab as plt
 import numpy as np
 from matplotlib.figure import Figure
 from nglview import NGLWidget
+from ryvencore.InfoMsgs import InfoMsgs
 
 import pyiron_base
 from pyiron_atomistics import Project, Atoms
@@ -323,7 +324,7 @@ class JobRunner(Node, ABC):
             self._on_run_signal()
 
     def update(self, inp=-1):
-        if inp == 1 and self.job is not None:
+        if inp == 1:
             # Bypass the `lock_updates` to delete the executed job and unlock updates
             self._on_remove_signal()
         else:
@@ -337,7 +338,10 @@ class JobRunner(Node, ABC):
         self.exec_output(0)
 
     def _on_remove_signal(self):
-        self.job.remove()
+        try:
+            self.job.remove()
+        except AttributeError:
+            InfoMsgs.write("No attribute job, no job removed")
         for i in range(1, len(self.outputs)):
             self.set_output_val(i, None)
         self.block_updates = False
