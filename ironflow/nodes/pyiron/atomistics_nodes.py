@@ -16,6 +16,7 @@ import matplotlib.pylab as plt
 import numpy as np
 from matplotlib.figure import Figure
 from nglview import NGLWidget
+from pandas import DataFrame
 from ryvencore.InfoMsgs import InfoMsgs
 
 import pyiron_base
@@ -24,6 +25,7 @@ from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
+from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
 
 from ironflow.node_tools import dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP
 from ironflow.nodes.std.special_nodes import DualNodeBase
@@ -533,6 +535,51 @@ class CalcMD_Node(TakesJob):
     @property
     def extra_representations(self) -> dict:
         return {"job": BeautifulHasGroups(self.outputs.values.job)}
+
+
+class PyironTable_Node(MakesJob):
+    title = "PyironTable"
+
+    init_inputs = list(MakesJob.init_inputs)
+    n_fixed_input_cols = len(init_inputs)
+    n_table_cols = 2  # TODO: allow user to change number of cols
+    for n in np.arange(n_table_cols):
+        init_inputs.append(
+            NodeInputBP(
+                dtype=dtypes.Choice(
+                    default="get_job_name",
+                    items=[
+                        f.__name__ for f in pyiron_base.TableJob._system_function_lst
+                    ]
+                ),
+                label=f"Col_{n + 1}"
+            )
+        )
+    init_outputs = MakesJob.init_outputs + [
+        NodeOutputBP(
+            dtype=dtypes.Data(valid_classes=pyiron_base.TableJob), label="job"
+        ),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=DataFrame), label="dataframe")
+    ]
+    n_fixed_output_cols = len(init_outputs)
+    for n in np.arange(n_table_cols):
+        init_outputs.append(NodeOutputBP(label=f"Col_{n + 1}"))
+
+    def _generate_job(self) -> pyiron_base.TableJob:
+        return self.inputs.values.project.base.job.TableJob(self.inputs.values.name)
+
+    def _run(self):
+        for n in np.arange(self.n_table_cols):
+            getattr(self.job.add, self.inputs[n + self.n_fixed_input_cols].val)
+        self.job.run()
+
+    def _set_output(self):
+        super()._set_output()
+        df = self.job.get_dataframe()
+        self.set_output_val(2, df)
+        for n in range(self.n_table_cols):
+            self.set_output_val(n + self.n_fixed_output_cols, df.iloc[:, n + 1])
+            # n + 1 because somehow job_id is always a column, and we don't care
 
 
 class Engine(Node):
