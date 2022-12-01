@@ -783,8 +783,8 @@ class Linspace_Node(Node):
 
     title = "Linspace"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(0, 100)), label="min"),
-        NodeInputBP(dtype=dtypes.Integer(default=2, bounds=(0, 100)), label="max"),
+        NodeInputBP(dtype=dtypes.Float(default=1.), label="min"),
+        NodeInputBP(dtype=dtypes.Float(default=2.), label="max"),
         NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
     ]
     init_outputs = [
@@ -863,7 +863,6 @@ class Matplot_Node(Node):
     def update_event(self, inp=-1):
         super().update_event()
         plt.ioff()
-        fig = plt.figure()
         plt.clf()
         plt.plot(self.inputs.values.x, self.inputs.values.y)
         self.set_output_val(0, fig)
