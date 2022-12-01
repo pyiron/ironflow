@@ -578,7 +578,7 @@ class PyironTable_Node(MakesJob):
         df = self.job.get_dataframe()
         self.set_output_val(2, df)
         for n in range(self.n_table_cols):
-            self.set_output_val(n + self.n_fixed_output_cols, df.iloc[:, n + 1])
+            self.set_output_val(n + self.n_fixed_output_cols, df.iloc[:, n + 1].values)
             # n + 1 because somehow job_id is always a column, and we don't care
 
 
