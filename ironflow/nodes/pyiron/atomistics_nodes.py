@@ -25,7 +25,9 @@ from ryvencore.InfoMsgs import InfoMsgs
 import pyiron_base
 from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
-from pyiron_atomistics.atomistics.job.atomistic import AtomisticGenericJob
+from pyiron_atomistics.atomistics.job.atomistic import (
+    AtomisticGenericJob, GenericOutput
+)
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
@@ -643,7 +645,7 @@ class Lammps_Node(Engine):
         return {"job": BeautifulHasGroups(self.outputs.values.job)}
 
 
-class GenericOutput_Node(Node):
+class AtomisticOutput_Node(Node):
     """
     Select Generic Output item.
 
@@ -657,39 +659,29 @@ class GenericOutput_Node(Node):
     """
 
     version = "v0.1"
-    title = "GenericOutput"
+    title = "AtomisticOutput"
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=AtomisticGenericJob), label="job"
+            dtype=dtypes.Data(valid_classes=AtomisticGenericJob), label="job"
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
-                default="Input an atomistic job",
-                items=["Input an atomistic job"],
+                default="steps",
+                items={
+                    k for k in GenericOutput.__dict__.keys() if not k.startswith("__")
+                },
                 valid_classes=str,
             ),
             label="field",
         ),
     ]
     init_outputs = [
-        NodeOutputBP(label="output"),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="output"),
     ]
     color = "#c69a15"
 
     def __init__(self, params):
         super().__init__(params)
-
-    def _update_fields(self):
-        if isinstance(self.inputs.values.job, AtomisticGenericJob):
-            self.inputs.ports.field.dtype.items = self.inputs.values.job[
-                "output/generic"
-            ].list_nodes()
-            self.inputs.ports.field.val = self.inputs.ports.field.dtype.items[0]
-        else:
-            self.inputs.ports.field.dtype.items = [self.init_inputs[1].dtype.default]
-            # Note: It would be sensible to use `self.init_outputs[1].dtype.items` above, but this field gets updated
-            # to `self.inputs[1].dtype.items`, probably because of the mutability of lists.
-            self.inputs.ports.field.val = self.init_inputs[1].dtype.default
 
     def _update_value(self):
         if isinstance(self.inputs.values.job, AtomisticGenericJob):
@@ -699,11 +691,7 @@ class GenericOutput_Node(Node):
         self.set_output_val(0, val)
 
     def update_event(self, inp=-1):
-        if inp == 0:
-            self._update_fields()
-            self._update_value()
-        elif inp == 1:
-            self._update_value()
+        self._update_value()
 
 
 class IntRand_Node(Node):
@@ -1079,7 +1067,7 @@ nodes = [
     ApplyStrain_Node,
     Lammps_Node,
     JobName_Node,
-    GenericOutput_Node,
+    AtomisticOutput_Node,
     Plot3d_Node,
     IntRand_Node,
     Linspace_Node,
