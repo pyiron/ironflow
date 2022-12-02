@@ -928,7 +928,8 @@ class Matplot_Node(Node):
                 plt.ion()
                 raise e
 
-    def deepcopy_matplot(self, fig: Figure) -> tuple[Figure, Axes]:
+    @staticmethod
+    def deepcopy_matplot(fig: Figure) -> tuple[Figure, Axes]:
         # Courtesty of StackOverflow @ImportanceOfBeingErnest
         # https://stackoverflow.com/questions/45810557/pyplot-copy-an-axes-content-and-show-it-in-a-new-figure
         buf = BytesIO()
