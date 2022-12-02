@@ -165,7 +165,7 @@ class Integer(DType):
             bounds=bounds,
             doc=doc,
             _load_state=_load_state,
-            valid_classes=int if valid_classes is None else valid_classes,
+            valid_classes=[int, np.integer] if valid_classes is None else valid_classes,
             allow_none=allow_none,
         )
 
@@ -187,7 +187,7 @@ class Float(DType):
             bounds=bounds,
             doc=doc,
             _load_state=_load_state,
-            valid_classes=float if valid_classes is None else valid_classes,
+            valid_classes=[float, np.floating] if valid_classes is None else valid_classes,
             allow_none=allow_none,
         )
         self.add_data("decimals")
@@ -206,7 +206,7 @@ class Boolean(DType):
             default=default,
             doc=doc,
             _load_state=_load_state,
-            valid_classes=bool if valid_classes is None else valid_classes,
+            valid_classes=[bool, np.bool_] if valid_classes is None else valid_classes,
             allow_none=allow_none,
         )
 
@@ -247,7 +247,7 @@ class String(DType):
             default=default,
             doc=doc,
             _load_state=_load_state,
-            valid_classes=str if valid_classes is None else valid_classes,
+            valid_classes=[str, np.str_] if valid_classes is None else valid_classes,
             allow_none=allow_none,
         )
         self.add_data("size")
