@@ -9,6 +9,7 @@ dependencies:
 - matplotlib
 - nglview
 - numpy
+- pandas
 - pyiron_base
 - pyiron_atomistics >= 0.2.57
 - pyiron_gui >= 0.0.8

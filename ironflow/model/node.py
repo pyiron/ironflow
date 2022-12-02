@@ -281,7 +281,11 @@ class Node(NodeCore):
 
     @property
     def representations(self) -> dict:
-        return {**self.extra_representations, **self._standard_representations}
+        return {**self._standard_representations, **self.extra_representations}
+
+    def set_all_outputs_to_none(self):
+        for i in range(len(self.outputs)):
+            self.set_output_val(i, None)
 
 
 class PlaceholderWidgetsContainer:
