@@ -26,7 +26,8 @@ import pyiron_base
 from pyiron_atomistics import Project, Atoms
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import (
-    AtomisticGenericJob, GenericOutput
+    AtomisticGenericJob,
+    GenericOutput,
 )
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
@@ -105,7 +106,7 @@ class Project_Node(Node):
     def extra_representations(self) -> dict:
         return {
             "name": str(self.inputs.values.name),
-            "job_table": self.outputs.values.project.job_table(all_columns=False)
+            "job_table": self.outputs.values.project.job_table(all_columns=False),
         }
 
 
@@ -113,18 +114,15 @@ class JobTable_Node(Node):
     title = "JobTable"
     init_inputs = [
         NodeInputBP(type_="exec", label="refresh"),
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project")
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
     ]
-    init_outputs = [
-       NodeOutputBP(label="Table")
-    ]
+    init_outputs = [NodeOutputBP(label="Table")]
     color = "#aabb44"
 
     def update_event(self, inp=-1):
         if self.inputs.ports.project.valid_val:
             self.set_output_val(
-                0,
-                self.inputs.values.project.job_table(all_columns=False)
+                0, self.inputs.values.project.job_table(all_columns=False)
             )
 
 
@@ -313,7 +311,7 @@ class JobRunner(Node, ABC):
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
         NodeInputBP(type_="exec", label="remove"),
-        NodeInputBP(dtype=dtypes.String(default="calc"), label="name")
+        NodeInputBP(dtype=dtypes.String(default="calc"), label="name"),
     ]
     init_outputs = [
         NodeOutputBP(type_="exec", label="ran"),
@@ -355,7 +353,7 @@ class JobRunner(Node, ABC):
         self.update(-1)
 
     def _raise_error_if_not_initialized(
-            self, job: pyiron_base.GenericJob
+        self, job: pyiron_base.GenericJob
     ) -> pyiron_base.GenericJob:
         if job.status == "initialized":
             return job
@@ -404,7 +402,7 @@ class TakesJob(JobRunner):
     def _generate_job(self):
         return self.inputs.values.job.copy_to(
             new_job_name=self.inputs.values.name,
-            delete_existing_job=False  # TODO: Make this input?
+            delete_existing_job=False,  # TODO: Make this input?
         )
 
 
@@ -445,11 +443,11 @@ class CalcStatic_Node(TakesJob):
 
 def pressure_input():
     return NodeInputBP(
-            dtype=dtypes.Data(
-                default=None, allow_none=True, valid_classes=[float, list, np.ndarray]
-            ),
-            label="pressure"
-        )
+        dtype=dtypes.Data(
+            default=None, allow_none=True, valid_classes=[float, list, np.ndarray]
+        ),
+        label="pressure",
+    )
 
 
 class CalcMinimize_Node(TakesJob):
@@ -460,7 +458,7 @@ class CalcMinimize_Node(TakesJob):
     title = "CalcMinimize"
     init_inputs = TakesJob.init_inputs + [
         NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
-        NodeInputBP(dtype=dtypes.Float(default=0.), label="ionic_energy_tolerance"),
+        NodeInputBP(dtype=dtypes.Float(default=0.0), label="ionic_energy_tolerance"),
         NodeInputBP(dtype=dtypes.Float(default=1e-4), label="ionic_force_tolerance"),
         NodeInputBP(dtype=dtypes.Integer(default=100000), label="max_iter"),
         pressure_input(),
@@ -500,22 +498,22 @@ class CalcMD_Node(TakesJob):
         ),
         pressure_input(),
         NodeInputBP(dtype=dtypes.Integer(default=1000), label="n_ionic_steps"),
-        NodeInputBP(dtype=dtypes.Float(default=1.), label="time_step"),
+        NodeInputBP(dtype=dtypes.Float(default=1.0), label="time_step"),
         NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
         NodeInputBP(
-            dtype=dtypes.Float(default=100.), label="temperature_damping_timescale"
+            dtype=dtypes.Float(default=100.0), label="temperature_damping_timescale"
         ),
         NodeInputBP(
-            dtype=dtypes.Float(default=1000.), label="pressure_damping_timescale"
+            dtype=dtypes.Float(default=1000.0), label="pressure_damping_timescale"
         ),
         NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="seed"),
         NodeInputBP(
             dtype=dtypes.Float(default=None, allow_none=True),
-            label="initial_temperature"
+            label="initial_temperature",
         ),
         NodeInputBP(
             dtype=dtypes.Choice(default="langevin", items=["langevin", "nose-hoover"]),
-            label="dynamics"
+            label="dynamics",
         ),
     ]
     init_outputs = TakesJob.init_outputs + [
@@ -555,16 +553,16 @@ class PyironTable_Node(MakesJob):
                     default="get_job_name",
                     items=[
                         f.__name__ for f in pyiron_base.TableJob._system_function_lst
-                    ]
+                    ],
                 ),
-                label=f"Col_{n + 1}"
+                label=f"Col_{n + 1}",
             )
         )
     init_outputs = MakesJob.init_outputs + [
         NodeOutputBP(
             dtype=dtypes.Data(valid_classes=pyiron_base.TableJob), label="job"
         ),
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=DataFrame), label="dataframe")
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=DataFrame), label="dataframe"),
     ]
     n_fixed_output_cols = len(init_outputs)
     for n in np.arange(n_table_cols):
@@ -591,6 +589,7 @@ class Engine(Node):
     """
     A parent class for engines (jobs).
     """
+
     color = "#5d95de"
 
 
@@ -661,9 +660,7 @@ class AtomisticOutput_Node(Node):
     version = "v0.1"
     title = "AtomisticOutput"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(valid_classes=AtomisticGenericJob), label="job"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=AtomisticGenericJob), label="job"),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default="steps",
@@ -774,8 +771,8 @@ class Linspace_Node(Node):
 
     title = "Linspace"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Float(default=1.), label="min"),
-        NodeInputBP(dtype=dtypes.Float(default=2.), label="max"),
+        NodeInputBP(dtype=dtypes.Float(default=1.0), label="min"),
+        NodeInputBP(dtype=dtypes.Float(default=2.0), label="max"),
         NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
     ]
     init_outputs = [
@@ -864,21 +861,45 @@ class Matplot_Node(Node):
             dtype=dtypes.Choice(
                 default="o",
                 items=[
-                    "none", ".", ",", "o", "v", "^", "<", ">", "1", "2", "3", "4", "8",
-                    "s", "p", "P", "*", "h", "H", "+", "x", "X", "d", "D", "|", "_"
+                    "none",
+                    ".",
+                    ",",
+                    "o",
+                    "v",
+                    "^",
+                    "<",
+                    ">",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "8",
+                    "s",
+                    "p",
+                    "P",
+                    "*",
+                    "h",
+                    "H",
+                    "+",
+                    "x",
+                    "X",
+                    "d",
+                    "D",
+                    "|",
+                    "_",
                 ],
             ),
-            label="marker"
+            label="marker",
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default="none",
                 items=["none", "solid", "dotted", "dashed", "dashdot"],
             ),
-            label="linestyle"
+            label="linestyle",
         ),
         NodeInputBP(dtype=dtypes.String(default=None, allow_none=True), label="color"),
-        NodeInputBP(dtype=dtypes.Float(default=1.0, bounds=(0., 1.)), label="alpha"),
+        NodeInputBP(dtype=dtypes.Float(default=1.0, bounds=(0.0, 1.0)), label="alpha"),
         NodeInputBP(dtype=dtypes.String(default=None, allow_none=True), label="label"),
         NodeInputBP(dtype=dtypes.String(default=None, allow_none=True), label="xlabel"),
         NodeInputBP(dtype=dtypes.String(default=None, allow_none=True), label="ylabel"),
