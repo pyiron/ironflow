@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
+import numpy as np
 from ryvencore.dtypes import DType as DTypeCore
 
 
@@ -50,13 +51,19 @@ class DType(DTypeCore):
 
         return None
 
+    @staticmethod
+    def _other_types_are_subset(other, reference):
+        return all(
+            [
+                any([issubclass(o, ref) for ref in reference])
+                for o in other
+            ]
+        )
+
     def _dtype_matches(self, val: DType):
         if isinstance(val, self.__class__):  # DType must be subclass
-            other_is_more_specific = all(
-                [
-                    any([issubclass(o, ref) for ref in self.valid_classes])
-                    for o in val.valid_classes
-                ]
+            other_is_more_specific = self._other_types_are_subset(
+                val.valid_classes, self.valid_classes
             )
             might_get_surprising_none = val.allow_none and not self.allow_none
             return other_is_more_specific and not might_get_surprising_none
@@ -99,6 +106,48 @@ class Data(DType):
             allow_none=allow_none,
         )
         self.add_data("size")
+
+
+class BatchedData(DType):
+    """
+    Instead of directly comparing instance matching against the list of valid classes,
+    assume that the value is iterable and make sure all of its items are subclasses of
+    the valid classes.
+    """
+    def __init__(
+            self,
+            default=None,
+            batched_dtype=None,
+            doc: str = "",
+            _load_state=None,
+            valid_classes=None,
+            allow_none=False,
+    ):
+
+        if batched_dtype is not None:
+            if valid_classes is not None:
+                raise ValueError(
+                    "Only one of batched_dtype and valid_classes may be provided"
+                )
+            else:
+                valid_classes = batched_dtype.valid_classes
+
+        super().__init__(
+            default=default,
+            doc=doc,
+            _load_state=_load_state,
+            valid_classes=valid_classes,
+            allow_none=allow_none,
+        )
+
+    def _instance_matches(self, val: Any):
+        if isinstance(val, (list, np.ndarray)):
+            return self._other_types_are_subset(
+                set([type(v) for v in val]),
+                self.valid_classes
+            )
+        else:
+            return False
 
 
 class Integer(DType):

@@ -74,6 +74,7 @@ class TestDTypes(TestCase):
             self.assertFalse(d.matches("not an item"))
 
         for D in [
+            dtypes.BatchedData,
             dtypes.Boolean,
             dtypes.Char,
             dtypes.Choice,
@@ -86,3 +87,38 @@ class TestDTypes(TestCase):
         ]:
             with self.subTest(f"Test None for {d.__class__.__name__}"):
                 self.assertTrue(D(allow_none=True).matches(None))
+
+    def test_batched_data(self):
+        valid_classes = [TestCase, str]
+        data = dtypes.Data(valid_classes=valid_classes)
+        batch_from_dtype = dtypes.BatchedData(batched_dtype=data)
+        batch_from_valid_classes = dtypes.BatchedData(valid_classes=valid_classes)
+
+        with self.subTest("Initialization equivalence"):
+            self.assertEqual(
+                set(batch_from_dtype.valid_classes),
+                set(batch_from_valid_classes.valid_classes)
+            )
+
+        with self.subTest("Mutual exclusivity"):
+            with self.assertRaises(ValueError):
+                batch_from_both = dtypes.BatchedData(
+                    batched_dtype=data, valid_classes=valid_classes
+                )
+
+        with self.subTest("Value matching tests elements"):
+            self.assertFalse(batch_from_dtype.matches("Defintely a string"))
+            self.assertTrue(batch_from_dtype.matches(["don't panic", TestCase()]))
+
+        with self.subTest("Only match other batches"):
+            self.assertFalse(batch_from_dtype.matches(data))
+
+        with self.subTest("Match subsets but not supersets"):
+            class MyString(str):
+                pass
+
+            subset = dtypes.BatchedData(valid_classes=MyString)
+            superset = dtypes.BatchedData(valid_classes=[TestCase, str, int])
+
+            self.assertTrue(batch_from_dtype.matches(subset))
+            self.assertFalse(batch_from_dtype.matches(superset))
