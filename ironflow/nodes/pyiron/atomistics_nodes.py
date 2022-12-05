@@ -12,7 +12,7 @@ import json
 import pickle
 from abc import ABC, abstractmethod
 from io import BytesIO
-from typing import TYPE_CHECKING
+from typing import Type, TYPE_CHECKING
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -33,7 +33,9 @@ from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
 
-from ironflow.node_tools import dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP
+from ironflow.node_tools import (
+    dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP, PortList
+)
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
@@ -70,6 +72,70 @@ class BeautifulHasGroups:
         name = self._has_groups.__class__.__name__
         plain = f"{name}({json.dumps(self.to_builtin(), indent=2, default=str)})"
         return "<pre>" + plain + "</pre>"
+
+
+class Batch_Node(Node):
+    """
+    
+    """
+    
+    title = "Batch"
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.Choice(), label="node_class")
+    ]
+
+    def update_event(self, inp=-1):
+        if inp == 0:
+            self._update_choices()
+            self._set_io()
+
+        if self._node_class is not None and self.all_input_is_valid:
+            node = self._node_class(self.flow, self.session, None)
+            for i, inp in enumerate(self.inputs):
+                node.inputs[i].val = inp.val
+            node.update()
+
+            for i, out in enumerate(node.outputs):
+                self.set_output_val(i, [out.val])
+
+    def initialize(self):
+        super().initialize()
+        self._update_choices()
+
+    def _update_choices(self):
+        self._choices = {self._nice_name(n): n for n in self.session.nodes}
+        self.inputs.ports.node_class.dtype.items = list(self._choices.keys())
+
+    @staticmethod
+    def _nice_name(node_class: Type[Node]) -> str:
+        return node_class.__module__.rsplit(".")[-1] + "." + node_class.title
+
+    @staticmethod
+    def has_exec(node_class: Type[Node]) -> bool:
+        all_ports = node_class.init_inputs + node_class.init_outputs
+        return any([p.type_ == "exec" for p in all_ports])
+
+    @property
+    def _node_class(self):
+        try:
+            return self._choices[self.inputs.values.node_class]
+        except AttributeError:
+            return None
+
+    def _set_io(self):
+        if self._node_class is not None:
+            self.inputs = PortList()
+            for inp in self.__class__.init_inputs + self._node_class.init_inputs:
+                self.create_input(
+                    dtype=inp.dtype, label=inp.label, add_data=inp.add_data
+                )
+
+            self.outputs = PortList()
+            for out in self._node_class.init_outputs:
+                self.create_output(
+                    dtype=dtypes.BatchedData(batched_dtype=out.dtype.__class__),
+                    label=out.label
+                )
 
 
 class Project_Node(Node):
