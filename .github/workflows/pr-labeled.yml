@@ -8,5 +8,5 @@ on:
 
 jobs:
   pyiron:
-    uses: pyiron/actions/.github/workflows/pr-labeled.yml@46de403
+    uses: pyiron/actions/.github/workflows/pr-labeled.yml@46de4039b7c6ea32083e84c5c96b2f38e4ce21b3
     secrets: inherit
