@@ -1,0 +1,5 @@
+# .coveragerc to control coverage.py
+[run]
+source = ironflow
+omit = ironflow/_version.py
+concurrency = multiprocessing
