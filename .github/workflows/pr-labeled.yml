@@ -8,5 +8,5 @@ on:
 
 jobs:
   pyiron:
-    uses: pyiron/actions/.github/workflows/pr-labeled.yml@fix_coveragerc
+    uses: pyiron/actions/.github/workflows/pr-labeled.yml@main
     secrets: inherit
