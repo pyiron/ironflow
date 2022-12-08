@@ -24,6 +24,7 @@ class DType(DTypeCore):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         super().__init__(
             default=default,
@@ -39,8 +40,10 @@ class DType(DTypeCore):
             else:
                 self.valid_classes = []
             self.allow_none = allow_none
+            self.batched = batched
         self.add_data("valid_classes")
         self.add_data("allow_none")
+        self.add_data("batched")
 
     @staticmethod
     def from_str(s):
@@ -61,7 +64,7 @@ class DType(DTypeCore):
         )
 
     def _dtype_matches(self, val: DType):
-        if isinstance(val, self.__class__):  # DType must be subclass
+        if isinstance(val, self.__class__) and val.batched == self.batched:
             other_is_more_specific = self._other_types_are_subset(
                 val.valid_classes, self.valid_classes
             )
@@ -71,7 +74,21 @@ class DType(DTypeCore):
             return False
 
     def _instance_matches(self, val: Any):
+        if self.batched:
+            return self._instance_matches_batch(val)
+        else:
+            return self._instance_matches_classes(val)
+
+    def _instance_matches_classes(self, val: Any):
         return any([isinstance(val, c) for c in self.valid_classes])
+
+    def _instance_matches_batch(self, val: Any):
+        if isinstance(val, (list, np.ndarray)):
+            return self._other_types_are_subset(
+                set([type(v) for v in val]), self.valid_classes
+            )
+        else:
+            return False
 
     def matches(self, val: DType | Any | None):
         if isinstance(val, DType):
@@ -93,6 +110,7 @@ class Data(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         """
         size: 's' / 'm' / 'l'
@@ -104,50 +122,9 @@ class Data(DType):
             _load_state=_load_state,
             valid_classes=valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
         self.add_data("size")
-
-
-class BatchedData(DType):
-    """
-    Instead of directly comparing instance matching against the list of valid classes,
-    assume that the value is iterable and make sure all of its items are subclasses of
-    the valid classes.
-    """
-    def __init__(
-            self,
-            default=None,
-            batched_dtype=None,
-            doc: str = "",
-            _load_state=None,
-            valid_classes=None,
-            allow_none=False,
-    ):
-
-        if batched_dtype is not None:
-            if valid_classes is not None:
-                raise ValueError(
-                    "Only one of batched_dtype and valid_classes may be provided"
-                )
-            else:
-                valid_classes = batched_dtype.valid_classes
-
-        super().__init__(
-            default=default,
-            doc=doc,
-            _load_state=_load_state,
-            valid_classes=valid_classes,
-            allow_none=allow_none,
-        )
-
-    def _instance_matches(self, val: Any):
-        if isinstance(val, (list, np.ndarray)):
-            return self._other_types_are_subset(
-                set([type(v) for v in val]),
-                self.valid_classes
-            )
-        else:
-            return False
 
 
 class Integer(DType):
@@ -159,6 +136,7 @@ class Integer(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         super().__init__(
             default=default,
@@ -167,6 +145,7 @@ class Integer(DType):
             _load_state=_load_state,
             valid_classes=[int, np.integer] if valid_classes is None else valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
 
 
@@ -180,6 +159,7 @@ class Float(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         self.decimals = decimals
         super().__init__(
@@ -189,6 +169,7 @@ class Float(DType):
             _load_state=_load_state,
             valid_classes=[float, np.floating] if valid_classes is None else valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
         self.add_data("decimals")
 
@@ -201,6 +182,7 @@ class Boolean(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         super().__init__(
             default=default,
@@ -208,6 +190,7 @@ class Boolean(DType):
             _load_state=_load_state,
             valid_classes=[bool, np.bool_] if valid_classes is None else valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
 
 
@@ -219,6 +202,7 @@ class Char(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         super().__init__(
             default=default,
@@ -226,6 +210,7 @@ class Char(DType):
             _load_state=_load_state,
             valid_classes=chr if valid_classes is None else valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
 
 
@@ -238,6 +223,7 @@ class String(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         """
         size: 's' / 'm' / 'l'
@@ -249,6 +235,7 @@ class String(DType):
             _load_state=_load_state,
             valid_classes=[str, np.str_] if valid_classes is None else valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
         self.add_data("size")
 
@@ -262,6 +249,7 @@ class Choice(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         self.items = items if items is not None else []
         super().__init__(
@@ -270,11 +258,15 @@ class Choice(DType):
             _load_state=_load_state,
             valid_classes=valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )
         self.add_data("items")
 
-    def _instance_matches(self, val: Any):
+    def _instance_matches_classes(self, val: Any):
         return val in self.items
+
+    def _instance_matches_batch(self, val: Any):
+        return all([v in self.items for v in val])
 
 
 class List(DType):
@@ -285,6 +277,7 @@ class List(DType):
         _load_state=None,
         valid_classes=None,
         allow_none=False,
+        batched=False,
     ):
         default = default if default is not None else []
         super().__init__(
@@ -293,4 +286,5 @@ class List(DType):
             _load_state=_load_state,
             valid_classes=list if valid_classes is None else valid_classes,
             allow_none=allow_none,
+            batched=batched,
         )

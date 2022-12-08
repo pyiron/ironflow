@@ -18,17 +18,20 @@ class TestDTypes(TestCase):
         items = ["bar", default]
         allow_none = True
         valid_classes = str
+        batched = True
         choice = dtypes.Choice(
             default=default,
             items=items,
+            valid_classes=valid_classes,
             allow_none=allow_none,
-            valid_classes=valid_classes
+            batched=batched,
         )
         reloaded = dtypes.Choice(_load_state=deserialize(serialize(choice.get_state())))
         self.assertEqual(choice.default, reloaded.default)
         self.assertEqual(choice.items, reloaded.items)
         self.assertEqual(choice.allow_none, reloaded.allow_none)
         self.assertEqual(choice.valid_classes, reloaded.valid_classes)
+        self.assertEqual(choice.batched, reloaded.batched)
 
     def test_matching(self):
         with self.subTest("Simple types"):
@@ -74,7 +77,6 @@ class TestDTypes(TestCase):
             self.assertFalse(d.matches("not an item"))
 
         for D in [
-            dtypes.BatchedData,
             dtypes.Boolean,
             dtypes.Char,
             dtypes.Choice,
@@ -91,34 +93,21 @@ class TestDTypes(TestCase):
     def test_batched_data(self):
         valid_classes = [TestCase, str]
         data = dtypes.Data(valid_classes=valid_classes)
-        batch_from_dtype = dtypes.BatchedData(batched_dtype=data)
-        batch_from_valid_classes = dtypes.BatchedData(valid_classes=valid_classes)
-
-        with self.subTest("Initialization equivalence"):
-            self.assertEqual(
-                set(batch_from_dtype.valid_classes),
-                set(batch_from_valid_classes.valid_classes)
-            )
-
-        with self.subTest("Mutual exclusivity"):
-            with self.assertRaises(ValueError):
-                batch_from_both = dtypes.BatchedData(
-                    batched_dtype=data, valid_classes=valid_classes
-                )
+        batch_data = dtypes.Data(valid_classes=valid_classes, batched=True)
 
         with self.subTest("Value matching tests elements"):
-            self.assertFalse(batch_from_dtype.matches("Defintely a string"))
-            self.assertTrue(batch_from_dtype.matches(["don't panic", TestCase()]))
+            self.assertFalse(batch_data.matches("But we want an iterable"))
+            self.assertTrue(batch_data.matches(["don't panic", TestCase()]))
 
         with self.subTest("Only match other batches"):
-            self.assertFalse(batch_from_dtype.matches(data))
+            self.assertFalse(batch_data.matches(data))
 
         with self.subTest("Match subsets but not supersets"):
             class MyString(str):
                 pass
 
-            subset = dtypes.BatchedData(valid_classes=MyString)
-            superset = dtypes.BatchedData(valid_classes=[TestCase, str, int])
+            subset = dtypes.Data(valid_classes=MyString, batched=True)
+            superset = dtypes.Data(valid_classes=[TestCase, str, int], batched=True)
 
-            self.assertTrue(batch_from_dtype.matches(subset))
-            self.assertFalse(batch_from_dtype.matches(superset))
+            self.assertTrue(batch_data.matches(subset))
+            self.assertFalse(batch_data.matches(superset))
