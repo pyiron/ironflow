@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Callable
 import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
+from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
 from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
@@ -124,6 +125,15 @@ class NodeController(NodeInterfaceBase):
                     description = inp.type_
                 inp_widget.layout.width = "100px"
                 inp_widget.observe(self.input_change_i(i_c), names="value")
+                batch_button = widgets.ToggleButton(
+                    description="Batched",
+                    tooltip="Use batches batches of correctly typed data instead of "
+                            "instances",
+                    layout=widgets.Layout(max_width="70px", min_width="70px"),
+                    disabled=inp.dtype is None or inp_widget.disabled,
+                    value=inp.dtype.batched if hasattr(inp, "dtype") else False
+                )
+                batch_button.observe(self.toggle_batching_i(i_c), names="value")
                 reset_button = widgets.Button(
                     tooltip="Reset to default",
                     icon="refresh",
@@ -131,7 +141,9 @@ class NodeController(NodeInterfaceBase):
                     disabled=inp.dtype is None or inp_widget.disabled,
                 )
                 reset_button.on_click(self.input_reset_i(i_c, inp_widget))
-                input.append([widgets.Label(description), inp_widget, reset_button])
+                input.append(
+                    [widgets.Label(description), inp_widget, batch_button, reset_button]
+                )
         return input
 
     def input_change_i(self, i_c) -> Callable:
@@ -142,6 +154,21 @@ class NodeController(NodeInterfaceBase):
             self.screen.redraw_active_flow_canvas()
 
         return input_change
+
+    def toggle_batching_i(self, i_c) -> Callable:
+        def toggle_batching(change: dict) -> None:
+            try:
+                InfoMsgs.write(
+                    f"Batching for {self.node.title}.{self.node.inputs[i_c].label_str} "
+                    f"set to {change['new']}"
+                )
+                self.node.inputs[i_c].dtype.batched = change["new"]
+                self.node.update(i_c)
+                self.screen.redraw_active_flow_canvas()
+            except AttributeError:
+                pass
+
+        return toggle_batching
 
     def input_reset_i(self, i_c, associated_input_field) -> Callable:
         def input_reset(button: widgets.Button) -> None:
