@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ryvencore import Flow as FlowCore, InfoMsgs
 from ryvencore.NodePort import NodePort
+
+if TYPE_CHECKING:
+    from ironflow.model.dtypes import DType
 
 
 class Flow(FlowCore):
@@ -9,6 +14,10 @@ class Flow(FlowCore):
     Wraps `ryvencore.Flow.Flow` to override the connection validity check, so we can
     add type checking.
     """
+
+    @staticmethod
+    def batched_or_nothing(dtype: DType) -> str:
+        return "batched " if dtype.batched else ""
 
     def check_connection_validity(self, p1: NodePort, p2: NodePort) -> bool:
         """Checks whether a considered connect action is legal"""
@@ -28,13 +37,16 @@ class Flow(FlowCore):
             if out.dtype is not None:
                 valid = inp.dtype.matches(out.dtype)
                 InfoMsgs.write(
-                    f"dtype-dtype check for {inp.node.title}.{inp.label_str} and "
+                    f"{self.batched_or_nothing(inp.dtype)}dtype-"
+                    f"{self.batched_or_nothing(out.dtype)}dtype check for "
+                    f"{inp.node.title}.{inp.label_str} and "
                     f"{out.node.title}.{out.label_str} returned {valid}"
                 )
             else:
                 valid = inp.dtype.matches(out.val)
                 InfoMsgs.write(
-                    f"dtype-value check for {inp.node.title}.{inp.label_str} and "
+                    f"{self.batched_or_nothing(inp.dtype)}dtype-value check for "
+                    f"{inp.node.title}.{inp.label_str} and "
                     f"{out.node.title}.{out.label_str} returned {valid}"
                 )
 

@@ -174,6 +174,10 @@ class NodeController(NodeInterfaceBase):
         def input_reset(button: widgets.Button) -> None:
             default = self.node.inputs[i_c].dtype.default
             self.node.inputs[i_c].val = default
+            InfoMsgs.write(
+                f"Value for {self.node.title}.{self.node.inputs[i_c].label_str} "
+                f"reset to {default}"
+            )
             try:
                 associated_input_field.value = default
             except TraitError:
