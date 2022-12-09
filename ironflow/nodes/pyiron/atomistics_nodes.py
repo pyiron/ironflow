@@ -778,7 +778,7 @@ class Linspace_Node(Node):
         NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
     ]
     init_outputs = [
-        NodeOutputBP(label="linspace"),
+        NodeOutputBP(label="linspace") #, dtype=dtypes.Data(valid_classes=np.array)),
     ]
     color = "#aabb44"
 
@@ -786,11 +786,68 @@ class Linspace_Node(Node):
         super().place_event()
         self.update()
 
+    @property
+    def batched_inputs(self):
+        return {
+            inp.label_str: inp for inp in self.inputs
+            if inp.type_ == "data" and inp.dtype.batched
+        }
+
+    @property
+    def unbatched_inputs(self):
+        return {
+            inp.label_str: inp for inp in self.inputs
+            if inp.type_ == "data" and not inp.dtype.batched
+        }
+
+    @property
+    def batched(self):
+        return len(self.batched_inputs) > 0
+
+    @property
+    def batch_lengths(self):
+        return {k: len(v.val) for k, v in self.batched_inputs.items()}
+
+    def generate_output(self) -> dict:
+        if self.batched:
+            batch_length_vals = list(self.batch_lengths.values())
+            if len(batch_length_vals) > 0 and \
+                    not np.all(np.array(batch_length_vals) == batch_length_vals[0]):
+                raise ValueError(
+                    f"Not all batch lengths are the same: {self.batch_lengths}"
+                )
+            return self.generate_batched_output()
+        else:
+            return self.generate_unbatched_output()
+
+    @staticmethod
+    def _linspace(min, max, steps):
+        return np.linspace(min, max, steps)
+
+    @property
+    def _unbatched_kwargs(self):
+        return {k: v.val for k, v in self.unbatched_inputs.items()}
+
+    def generate_unbatched_output(self):
+        return {'linspace': self._linspace(**self._unbatched_kwargs)}
+
+    def generate_batched_output(self):
+        vals = []
+        for i in range(list(self.batch_lengths.values())[0]):
+            kwargs = {
+                k: v.val[i] for k, v in zip(
+                    self.batched_inputs.keys(), self.batched_inputs.values()
+                )
+            }
+            kwargs.update(self._unbatched_kwargs)
+            vals.append(self._linspace(**kwargs))
+        return {'linspace': vals}
+
     def update_event(self, inp=-1):
-        val = np.linspace(
-            self.inputs.values.min, self.inputs.values.max, self.inputs.values.steps
-        )
-        self.set_output_val(0, val)
+        if self.all_input_is_valid:
+            output = self.generate_output()
+            for k, v in output.items():
+                self.outputs.ports[k].val = v
 
 
 class Plot3d_Node(Node):
