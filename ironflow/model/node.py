@@ -72,6 +72,9 @@ class PortFinder:
                 return node_port
         raise AttributeError(f"No port found with the label {key}")
 
+    def __getitem__(self, item):
+        return self.__getattr__(item)
+
     def __iter__(self):
         return self._filtered_port_list.__iter__()
 
