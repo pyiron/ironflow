@@ -77,7 +77,14 @@ class NodeController(NodeInterfaceBase):
                         }
                     if inp.val is None:
                         inp.val = dtype_state["val"]
-                    if dtype == "Integer":
+
+                    if dtype_state["batched"]:
+                        inp_widget = widgets.Text(
+                            f"Batched {dtype}",
+                            continuous_update=False,
+                            disabled=True,
+                        )
+                    elif dtype == "Integer":
                         inp_widget = widgets.IntText(
                             value=inp.val,
                             description="",
@@ -130,7 +137,7 @@ class NodeController(NodeInterfaceBase):
                     tooltip="Use batches batches of correctly typed data instead of "
                             "instances",
                     layout=widgets.Layout(max_width="70px", min_width="70px"),
-                    disabled=inp.dtype is None or inp_widget.disabled,
+                    disabled=inp.dtype is None,
                     value=inp.dtype.batched if hasattr(inp, "dtype") else False
                 )
                 batch_button.observe(self.toggle_batching_i(i_c), names="value")
@@ -165,6 +172,7 @@ class NodeController(NodeInterfaceBase):
                 self.node.inputs[i_c].dtype.batched = change["new"]
                 self.node.update(i_c)
                 self.screen.redraw_active_flow_canvas()
+                self.draw()
             except AttributeError:
                 pass
 
