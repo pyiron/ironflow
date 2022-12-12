@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import inspect
+from abc import ABC, abstractmethod
 from typing import Optional
 
+import numpy as np
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 from ryvencore.NodePort import NodePort
@@ -299,3 +301,83 @@ class PlaceholderWidgetsContainer:
 
     def __getattr__(self, item):
         return None
+
+
+class BatchingNode(Node, ABC):
+    """
+    A node whose update behaviour supports batched inputs.
+    """
+
+    @property
+    def batched_inputs(self):
+        return {
+            inp.label_str: inp for inp in self.inputs
+            if inp.type_ == "data" and inp.dtype.batched
+        }
+
+    @property
+    def unbatched_inputs(self):
+        return {
+            inp.label_str: inp for inp in self.inputs
+            if inp.type_ == "data" and not inp.dtype.batched
+        }
+
+    @property
+    def batched(self):
+        return len(self.batched_inputs) > 0
+
+    @property
+    def batch_lengths(self):
+        return {k: len(v.val) for k, v in self.batched_inputs.items()}
+
+    @property
+    def _unbatched_kwargs(self):
+        return {k: v.val for k, v in self.unbatched_inputs.items()}
+
+    @property
+    def _batched_kwargs(self):
+        return [
+            {
+                k: v.val[i] for k, v in
+                zip(self.batched_inputs.keys(), self.batched_inputs.values())
+            }
+            for i in range(list(self.batch_lengths.values())[0])
+        ]
+
+    def generate_output(self) -> dict:
+        if self.batched:
+            batch_length_vals = list(self.batch_lengths.values())
+            if len(batch_length_vals) > 0 and \
+                    not np.all(np.array(batch_length_vals) == batch_length_vals[0]):
+                raise ValueError(
+                    f"Not all batch lengths are the same: {self.batch_lengths}"
+                )
+            return self.generate_batched_output()
+        else:
+            return self.generate_unbatched_output()
+
+    def generate_unbatched_output(self):
+        return self.node_function(**self._unbatched_kwargs)
+
+    def generate_batched_output(self):
+        outputs = []
+        for kwargs in self._batched_kwargs:
+            kwargs.update(self._unbatched_kwargs)
+            outputs.append(self.node_function(**kwargs))
+        return {
+            key: [d[key] for d in outputs] for key in outputs[0].keys()
+        }
+
+    @abstractmethod
+    def node_function(self, *args, **kwargs) -> dict:
+        """
+        Takes all data input as kwargs, must return a dict with one entry for each data
+        output
+        """
+        pass
+
+    def update_event(self, inp=-1):
+        if self.all_input_is_valid:
+            output = self.generate_output()
+            for k, v in output.items():
+                self.outputs.ports[k].val = v
