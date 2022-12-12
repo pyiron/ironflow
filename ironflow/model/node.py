@@ -383,6 +383,10 @@ class DataNode(BatchingNode, ABC):
     """
     def update_event(self, inp=-1):
         if self.all_input_is_valid:
-            output = self.generate_output()
+            try:
+                output = self.generate_output()
+            except RuntimeError as e:
+                self.set_output_val(0, None)
+                raise e
             for k, v in output.items():
                 self.outputs.ports[k].val = v
