@@ -394,4 +394,11 @@ class DataNode(BatchingNode, ABC):
                     self.outputs.ports[k].dtype.batched = self.batched
                 except AttributeError:
                     pass
+        else:
+            for p in self.outputs.ports:
+                p.val = None
+                try:
+                    p.dtype.batched = False
+                except AttributeError:
+                    pass
 
