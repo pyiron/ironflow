@@ -390,3 +390,5 @@ class DataNode(BatchingNode, ABC):
                 raise e
             for k, v in output.items():
                 self.outputs.ports[k].val = v
+                self.outputs.ports[k].dtype.batched = self.batched
+

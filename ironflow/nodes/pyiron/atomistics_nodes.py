@@ -128,7 +128,7 @@ class JobTable_Node(Node):
             )
 
 
-class OutputsOnlyAtoms(Node, ABC):
+class OutputsOnlyAtoms(DataNode, ABC):
     """
     A helper class that manages representations for nodes whose only output is a `pyiron_atomistics.Atoms` object.
 
@@ -141,16 +141,11 @@ class OutputsOnlyAtoms(Node, ABC):
     ]
     color = "#aabb44"
 
-    @abstractmethod
-    def update_event(self, inp=-1):
-        """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
-        pass
-
-    @property
-    def extra_representations(self) -> dict:
-        return {
-            "plot3d": self.outputs.values.structure.plot3d(),
-        }
+    # @property
+    # def extra_representations(self) -> dict:
+    #     return {
+    #         "plot3d": self.outputs.values.structure.plot3d(),
+    #     }
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -208,24 +203,30 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="cubic"),
     ]
 
-    def update_event(self, inp=-1):
-        try:
-            self.set_output_val(
-                0,
-                STRUCTURE_FACTORY.bulk(
-                    self.inputs.values.element,
-                    crystalstructure=self.inputs.values.crystal_structure,
-                    a=self.inputs.values.a,
-                    c=self.inputs.values.c,
-                    covera=self.inputs.values.c_over_a,
-                    u=self.inputs.values.u,
-                    orthorhombic=self.inputs.values.orthorhombic,
-                    cubic=self.inputs.values.cubic,
-                ),
+    def node_function(
+            self,
+            element,
+            crystal_structure,
+            a,
+            c,
+            c_over_a,
+            u,
+            orthorhombic,
+            cubic,
+            **kwargs
+    ) -> dict:
+        return {
+            "structure": STRUCTURE_FACTORY.bulk(
+                element,
+                crystalstructure=crystal_structure,
+                a=a,
+                c=c,
+                covera=c_over_a,
+                u=u,
+                orthorhombic=orthorhombic,
+                cubic=cubic
             )
-        except RuntimeError as e:
-            self.set_output_val(0, None)
-            raise e
+        }
 
     def place_event(self):
         super().place_event()
@@ -254,10 +255,8 @@ class Repeat_Node(OutputsOnlyAtoms):
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
 
-    def update_event(self, inp=-1):
-        self.set_output_val(
-            0, self.inputs.values.structure.repeat(self.inputs.values.all)
-        )
+    def node_function(self, structure, all, **kwargs) -> dict:
+        return {"structure": structure.repeat(all)}
 
 
 class ApplyStrain_Node(OutputsOnlyAtoms):
@@ -280,13 +279,8 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
 
-    def update_event(self, inp=-1):
-        self.set_output_val(
-            0,
-            self.inputs.values.structure.apply_strain(
-                float(self.inputs.values.strain), return_box=True
-            ),
-        )
+    def node_function(self, structure, strain, **kwargs) -> dict:
+        return {"structure": structure.apply_strain(float(strain), return_box=True)}
 
 
 class JobRunner(Node, ABC):
