@@ -18,6 +18,7 @@ from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
 from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
+from ironflow.model.node import BatchingNode
 
 
 if TYPE_CHECKING:
@@ -133,7 +134,8 @@ class NodeController(NodeInterfaceBase):
                     tooltip="Use batches batches of correctly typed data instead of "
                             "instances",
                     layout=widgets.Layout(width="75px"),
-                    disabled=inp.dtype is None,
+                    disabled=inp.dtype is None or
+                                not isinstance(inp.node, BatchingNode),
                     value=inp.dtype.batched if hasattr(inp, "dtype") else False
                 )
                 batch_button.observe(self.toggle_batching_i(i_c), names="value")
