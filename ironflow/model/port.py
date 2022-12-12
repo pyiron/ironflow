@@ -51,6 +51,21 @@ class NodeInput(NodeInputCore, HasDType):
             dtype=deepcopy(dtype),  # Because some dtypes have mutable fields
         )
 
+    def _update_node(self):
+        self.node.update(self.node.inputs.index(self))
+
+    def batch(self):
+        if self.dtype is not None and not self.dtype.batched:
+            self.dtype.batched = True
+            self.val = [self.val]
+            self._update_node()
+
+    def unbatch(self):
+        if self.dtype is not None and self.dtype.batched:
+            self.dtype.batched = False
+            self.val = self.val[-1]
+            self._update_node()
+
 
 class NodeOutput(NodeOutputCore, HasDType):
     def __init__(self, node, type_="data", label_str="", dtype: DType = None):

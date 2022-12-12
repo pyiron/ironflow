@@ -172,8 +172,10 @@ class NodeController(NodeInterfaceBase):
                     f"Batching for {self.node.title}.{self.node.inputs[i_c].label_str} "
                     f"set to {change['new']}"
                 )
-                self.node.inputs[i_c].dtype.batched = change["new"]
-                self.node.update(i_c)
+                if change["new"]:
+                    self.node.inputs[i_c].batch()
+                else:
+                    self.node.inputs[i_c].unbatch()
                 self.screen.redraw_active_flow_canvas()
                 self.draw()
             except AttributeError:
