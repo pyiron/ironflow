@@ -78,7 +78,6 @@ class TestDTypes(TestCase):
 
         for D in [
             dtypes.Boolean,
-            dtypes.Char,
             dtypes.Choice,
             dtypes.Data,
             dtypes.Data,
@@ -94,10 +93,17 @@ class TestDTypes(TestCase):
         valid_classes = [TestCase, str]
         data = dtypes.Data(valid_classes=valid_classes)
         batch_data = dtypes.Data(valid_classes=valid_classes, batched=True)
+        batch_none = dtypes.Data(
+            valid_classes=valid_classes, batched=True, allow_none=True
+        )
 
         with self.subTest("Value matching tests elements"):
             self.assertFalse(batch_data.matches("But we want an iterable"))
             self.assertTrue(batch_data.matches(["don't panic", TestCase()]))
+            self.assertFalse(batch_data.matches(["don't allow None", None]))
+
+            self.assertFalse(batch_none.matches(None))
+            self.assertTrue(batch_none.matches([None, "None in iterable is ok"]))
 
         with self.subTest("Only match other batches"):
             self.assertFalse(batch_data.matches(data))

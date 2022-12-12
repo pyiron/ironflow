@@ -80,23 +80,28 @@ class DType(DTypeCore):
             return self._instance_matches_classes(val)
 
     def _instance_matches_classes(self, val: Any):
-        return any([isinstance(val, c) for c in self.valid_classes])
+        return any([isinstance(val, c) for c in self.valid_classes]) or \
+               self._matches_none(val)
+
+    def _matches_none(self, val: Any):
+        return val is None and self.allow_none
 
     def _instance_matches_batch(self, val: Any):
         if isinstance(val, (list, np.ndarray)):
-            return self._other_types_are_subset(
-                set([type(v) for v in val]), self.valid_classes
-            )
+            if any([v is None for v in val]) and not self.allow_none:
+                return False
+            else:
+                return self._other_types_are_subset(
+                    set([type(v) for v in val if v is not None]), self.valid_classes
+                )
         else:
             return False
 
     def matches(self, val: DType | Any | None):
         if isinstance(val, DType):
             return self._dtype_matches(val)
-        elif val is not None:
-            return self._instance_matches(val)
         else:
-            return self.allow_none
+            return self._instance_matches(val)
 
 
 class Data(DType):
@@ -243,10 +248,10 @@ class Choice(DType):
         self.add_data("items")
 
     def _instance_matches_classes(self, val: Any):
-        return val in self.items
+        return val in self.items or self._matches_none(val)
 
     def _instance_matches_batch(self, val: Any):
-        return all([v in self.items for v in val])
+        return all([self._instance_matches_classes(v) for v in val])
 
 
 class List(DType):
