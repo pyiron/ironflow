@@ -48,7 +48,7 @@ class DType(DTypeCore):
     @staticmethod
     def from_str(s):
         # Load local dtypes, not ryven dtypes
-        for DTypeClass in [Boolean, Char, Choice, Data, Float, Integer, List, String]:
+        for DTypeClass in [Boolean, Choice, Data, Float, Integer, List, String]:
             if s == "DType." + DTypeClass.__name__:
                 return DTypeClass
 
@@ -189,26 +189,6 @@ class Boolean(DType):
             doc=doc,
             _load_state=_load_state,
             valid_classes=[bool, np.bool_] if valid_classes is None else valid_classes,
-            allow_none=allow_none,
-            batched=batched,
-        )
-
-
-class Char(DType):
-    def __init__(
-        self,
-        default: chr = "",
-        doc: str = "",
-        _load_state=None,
-        valid_classes=None,
-        allow_none=False,
-        batched=False,
-    ):
-        super().__init__(
-            default=default,
-            doc=doc,
-            _load_state=_load_state,
-            valid_classes=chr if valid_classes is None else valid_classes,
             allow_none=allow_none,
             batched=batched,
         )
