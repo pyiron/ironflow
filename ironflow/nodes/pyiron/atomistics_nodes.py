@@ -34,7 +34,7 @@ from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
 
 from ironflow.node_tools import (
-    dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP, PortList, BatchingNode
+    dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP, PortList, DataNode
 )
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
@@ -756,7 +756,7 @@ class JobName_Node(Node):
         self.set_output_val(0, val)
 
 
-class Linspace_Node(BatchingNode):
+class Linspace_Node(DataNode):
     """
     Generate a linear mesh in a given range using `np.linspace`.
 

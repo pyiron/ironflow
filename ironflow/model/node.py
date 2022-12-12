@@ -376,6 +376,11 @@ class BatchingNode(Node, ABC):
         """
         pass
 
+
+class DataNode(BatchingNode, ABC):
+    """
+    A node that can update as soon as all input is valid and produces output data.
+    """
     def update_event(self, inp=-1):
         if self.all_input_is_valid:
             output = self.generate_output()
