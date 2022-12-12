@@ -38,11 +38,10 @@ class NodeController(NodeInterfaceBase):
         super().__init__()
         self.screen = screen
         self.node = None
-        self._margin = 5  # px
         self._row_height = 30  # px
 
     def _box_height(self, n_rows: int) -> int:
-        return n_rows * self._row_height + 2 * self._margin
+        return n_rows * self._row_height + 8
 
     @property
     def input_widget(self) -> widgets.Widget:
@@ -51,9 +50,6 @@ class NodeController(NodeInterfaceBase):
             widget.layout = widgets.Layout(
                 height="70px",
                 border="solid 1px blue",
-                margin=f"{self._margin}px",
-                padding="10px",
-                width="auto",
             )
             return widget
         except AttributeError:
@@ -136,7 +132,7 @@ class NodeController(NodeInterfaceBase):
                     description="Batched",
                     tooltip="Use batches batches of correctly typed data instead of "
                             "instances",
-                    layout=widgets.Layout(max_width="70px", min_width="70px"),
+                    layout=widgets.Layout(width="75px"),
                     disabled=inp.dtype is None,
                     value=inp.dtype.batched if hasattr(inp, "dtype") else False
                 )
@@ -144,12 +140,17 @@ class NodeController(NodeInterfaceBase):
                 reset_button = widgets.Button(
                     tooltip="Reset to default",
                     icon="refresh",
-                    layout=widgets.Layout(max_width="50px", min_width="50px"),
+                    layout=widgets.Layout(width="30px"),
                     disabled=inp.dtype is None or inp_widget.disabled,
                 )
                 reset_button.on_click(self.input_reset_i(i_c, inp_widget))
                 input.append(
-                    [widgets.Label(description), inp_widget, batch_button, reset_button]
+                    [
+                        widgets.Label(description),
+                        inp_widget,
+                        batch_button,
+                        reset_button
+                    ]
                 )
         return input
 
@@ -207,10 +208,9 @@ class NodeController(NodeInterfaceBase):
             return widgets.GridBox(
                 list(np.array(input_fields).flatten()),
                 layout=widgets.Layout(
-                    grid_template_columns="45% 45% 10%",
+                    grid_template_columns="auto auto auto auto",
                     grid_auto_rows=f"{self._row_height}px",
                     border="solid 1px blue",
-                    margin=f"{self._margin}px",
                     height=f"{self._box_height(n_fields)}px",
                     # Automatic height like this really should be doable just with the CSS,
                     # but for the life of me I can't get a CSS solution working right -Liam
@@ -225,19 +225,23 @@ class NodeController(NodeInterfaceBase):
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
         global_id = widgets.Text(
-            value=str(glob_id_val), description="GLOBAL_ID:", disabled=True
+            value=str(glob_id_val),
+            description="GLOBAL_ID:",
+            disabled=True,
+            layout=widgets.Layout(height=f"{self._row_height}px"),
         )
 
         title = widgets.Text(
-            value=str(self.node.title), description="Title:", disabled=True
+            value=str(self.node.title),
+            description="Title:",
+            disabled=True,
+            layout=widgets.Layout(height=f"{self._row_height}px"),
         )
 
         info_box = widgets.VBox([title, global_id])
         info_box.layout = widgets.Layout(
             height=f"{self._box_height(2)}px",
             border="solid 1px red",
-            margin=f"{self._margin}px",
-            padding="0px",
         )
         return info_box
 
