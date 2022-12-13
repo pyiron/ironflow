@@ -48,7 +48,7 @@ class NodeInput(NodeInputCore, HasDType):
             type_=type_ if dtype is None else "data",
             label_str=label_str,
             add_data=add_data if add_data is not None else {},
-            dtype=Untyped(default=None, allow_none=True) if dtype is None else deepcopy(dtype),  # Because some dtypes have mutable fields
+            dtype=Untyped() if dtype is None else deepcopy(dtype),
         )
 
     def _update_node(self):
@@ -72,7 +72,7 @@ class NodeOutput(NodeOutputCore, HasDType):
         super().__init__(
             node=node, type_=type_ if dtype is None else "data", label_str=label_str
         )
-        self.dtype = Untyped(default=None, allow_none=True) if dtype is None else deepcopy(dtype)
+        self.dtype = Untyped() if dtype is None else deepcopy(dtype)
 
     def data(self) -> dict:
         data = super().data()
