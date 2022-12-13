@@ -790,7 +790,6 @@ class Linspace_Node(DataNode):
         return {'linspace': np.linspace(min, max, steps)}
 
 
-
 class Plot3d_Node(Node):
     """
     Plot a structure with NGLView.
