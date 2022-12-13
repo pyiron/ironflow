@@ -14,7 +14,7 @@ from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOut
 from ryvencore.NodePortBP import NodeOutputBP as NodeOutputBPCore
 from ryvencore.utils import serialize
 
-from ironflow.model.dtypes import DType
+from ironflow.model.dtypes import DType, Untyped
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
@@ -48,7 +48,7 @@ class NodeInput(NodeInputCore, HasDType):
             type_=type_ if dtype is None else "data",
             label_str=label_str,
             add_data=add_data if add_data is not None else {},
-            dtype=deepcopy(dtype),  # Because some dtypes have mutable fields
+            dtype=Untyped(default=None, allow_none=True) if dtype is None else deepcopy(dtype),  # Because some dtypes have mutable fields
         )
 
     def _update_node(self):
@@ -68,11 +68,11 @@ class NodeInput(NodeInputCore, HasDType):
 
 
 class NodeOutput(NodeOutputCore, HasDType):
-    def __init__(self, node, type_="data", label_str="", dtype: DType = None):
+    def __init__(self, node, type_="data", label_str="", dtype: Optional[DType] = None):
         super().__init__(
             node=node, type_=type_ if dtype is None else "data", label_str=label_str
         )
-        self.dtype = deepcopy(dtype)  # Some dtypes have mutable fields
+        self.dtype = Untyped(default=None, allow_none=True) if dtype is None else deepcopy(dtype)
 
     def data(self) -> dict:
         data = super().data()

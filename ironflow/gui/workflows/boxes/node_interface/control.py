@@ -60,75 +60,70 @@ class NodeController(NodeInterfaceBase):
         input = []
         if hasattr(self.node, "inputs"):
             for i_c, inp in enumerate(self.node.inputs[:]):
-                if inp.dtype is not None:
-                    dtype = str(inp.dtype).split(".")[-1]
-                    disabled = self.node.block_updates or len(inp.connections) > 0
-                    try:
-                        dtype_state = deserialize(inp.data()["dtype state"])
-                    except TypeError:
-                        # `inp.data()` winds up calling `serialize` on `inp.get_val()`
-                        # This serialization is a pickle dump, which fails with structures (`Atoms`)
-                        # Just gloss over it for now
-                        dtype_state = {
-                            "val": "Serialization error -- please reconnect an input"
-                        }
-                    if inp.val is None:
-                        inp.val = dtype_state["val"]
+                dtype = str(inp.dtype).split(".")[-1]
+                disabled = self.node.block_updates or len(inp.connections) > 0
+                try:
+                    dtype_state = deserialize(inp.data()["dtype state"])
+                except TypeError:
+                    # `inp.data()` winds up calling `serialize` on `inp.get_val()`
+                    # This serialization is a pickle dump, which fails with structures (`Atoms`)
+                    # Just gloss over it for now
+                    dtype_state = {
+                        "val": "Serialization error -- please reconnect an input"
+                    }
+                if inp.val is None:
+                    inp.val = dtype_state["val"]
 
-                    if dtype_state["batched"]:
-                        inp_widget = widgets.Text(
-                            f"Batched {dtype}",
-                            continuous_update=False,
-                            disabled=True,
-                        )
-                    elif dtype == "Integer":
-                        inp_widget = widgets.IntText(
-                            value=inp.val,
-                            description="",
-                            continuous_update=False,
-                            disabled=disabled,
-                        )
-                    elif dtype == "Float":
-                        inp_widget = widgets.FloatText(
-                            value=inp.val,
-                            description="",
-                            continuous_update=False,
-                            disabled=disabled,
-                        )
-                    elif dtype == "Boolean":
-                        inp_widget = widgets.Checkbox(
-                            value=inp.val,
-                            indent=False,
-                            description="",
-                            disabled=disabled,
-                        )
-                    elif dtype == "Choice":
-                        inp_widget = widgets.Dropdown(
-                            value=inp.val,
-                            options=inp.dtype.items,
-                            description="",
-                            ensure_option=True,
-                            disabled=disabled,
-                        )
-                    elif dtype == "String" or dtype == "Char":
-                        inp_widget = widgets.Text(
-                            value=str(inp.val),
-                            continuous_update=False,
-                            disabled=disabled,
-                        )
-                    else:
-                        inp_widget = widgets.Text(
-                            value=str(inp.val), continuous_update=False, disabled=True
-                        )
-                    description = inp.label_str
-                elif inp.label_str != "":
-                    inp_widget = widgets.Label(value=inp.type_)
-                    description = inp.label_str
+                if dtype_state["batched"]:
+                    inp_widget = widgets.Text(
+                        f"Batched {dtype}",
+                        continuous_update=False,
+                        disabled=True,
+                    )
+                elif dtype == "Integer":
+                    inp_widget = widgets.IntText(
+                        value=inp.val,
+                        description="",
+                        continuous_update=False,
+                        disabled=disabled,
+                    )
+                elif dtype == "Float":
+                    inp_widget = widgets.FloatText(
+                        value=inp.val,
+                        description="",
+                        continuous_update=False,
+                        disabled=disabled,
+                    )
+                elif dtype == "Boolean":
+                    inp_widget = widgets.Checkbox(
+                        value=inp.val,
+                        indent=False,
+                        description="",
+                        disabled=disabled,
+                    )
+                elif dtype == "Choice":
+                    inp_widget = widgets.Dropdown(
+                        value=inp.val,
+                        options=inp.dtype.items,
+                        description="",
+                        ensure_option=True,
+                        disabled=disabled,
+                    )
+                elif dtype == "String" or dtype == "Char":
+                    inp_widget = widgets.Text(
+                        value=str(inp.val),
+                        continuous_update=False,
+                        disabled=disabled,
+                    )
                 else:
-                    inp_widget = widgets.Label(value=inp.type_)
-                    description = inp.type_
+                    inp_widget = widgets.Text(
+                        value=str(inp.val), continuous_update=False, disabled=True
+                    )
+
+                description = inp.label_str if inp.label_str != "" else inp.type_
                 inp_widget.layout.width = "100px"
                 inp_widget.observe(self.input_change_i(i_c), names="value")
+
                 batch_button = widgets.ToggleButton(
                     description="Batched",
                     tooltip="Use batches batches of correctly typed data instead of "
@@ -139,6 +134,7 @@ class NodeController(NodeInterfaceBase):
                     value=inp.dtype.batched if hasattr(inp, "dtype") else False
                 )
                 batch_button.observe(self.toggle_batching_i(i_c), names="value")
+
                 reset_button = widgets.Button(
                     tooltip="Reset to default",
                     icon="refresh",
@@ -146,6 +142,7 @@ class NodeController(NodeInterfaceBase):
                     disabled=inp.dtype is None or inp_widget.disabled,
                 )
                 reset_button.on_click(self.input_reset_i(i_c, inp_widget))
+
                 input.append(
                     [
                         widgets.Label(description),

@@ -390,11 +390,9 @@ class DataNode(BatchingNode, ABC):
                 raise e
             for k, v in output.items():
                 self.outputs.ports[k].val = v
-                if self.outputs.ports[k].dtype is not None:
-                    self.outputs.ports[k].dtype.batched = self.batched
+                self.outputs.ports[k].dtype.batched = self.batched
         else:
             for p in self.outputs.ports:
                 p.val = None
-                if p.dtype is not None:
-                    p.dtype.batched = False
+                p.dtype.batched = self.batched
 

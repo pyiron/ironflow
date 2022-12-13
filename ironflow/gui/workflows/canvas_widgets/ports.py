@@ -95,8 +95,7 @@ class PortWidget(HideableWidget):
                 f"Title alignment {self.title_alignment} not recognized, please choose start or end"
             )
         self.canvas.text_align = self.title_alignment
-        batched = self.port.dtype is not None and self.port.dtype.batched
-        title = self.title.upper() if batched else self.title
+        title = self.title.upper() if self.port.dtype.batched else self.title
         self.canvas.fill_text(
             title[: self.layout.max_title_chars],
             self.x + shift,
