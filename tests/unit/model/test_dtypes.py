@@ -117,3 +117,20 @@ class TestDTypes(TestCase):
 
             self.assertTrue(batch_data.matches(subset))
             self.assertFalse(batch_data.matches(superset))
+
+    def test_untyped(self):
+        untyped = dtypes.Untyped(default=42)
+        self.assertTrue(untyped.matches(7))
+        self.assertTrue(untyped.matches(dtypes.Data(valid_classes=object)))
+        self.assertFalse(untyped.matches(None))
+        self.assertFalse(untyped.matches(dtypes.Integer(allow_none=True)))
+        self.assertFalse(untyped.matches(dtypes.Integer(batched=True)))
+
+        untyped.batched = True
+        self.assertTrue(untyped.matches([1, 2, 3]))
+        self.assertTrue(untyped.matches(dtypes.Integer(batched=True)))
+        self.assertFalse(untyped.matches(dtypes.Integer()))
+        self.assertFalse(untyped.matches([1, None, 3]))
+
+        untyped.allow_none = True
+        self.assertTrue(untyped.matches([1, None, 3]))

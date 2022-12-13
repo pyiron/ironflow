@@ -104,6 +104,24 @@ class DType(DTypeCore):
             return self._instance_matches(val)
 
 
+class Untyped(DType):
+    def _dtype_matches(self, val: DType):
+        might_get_surprising_none = val.allow_none and not self.allow_none
+        return val.batched == self.batched and not might_get_surprising_none
+
+    def _instance_matches_classes(self, val: Any):
+        return val is not None or self._matches_none(val)
+
+    def _instance_matches_batch(self, val: Any):
+        if isinstance(val, (list, np.ndarray)):
+            if any([v is None for v in val]) and not self.allow_none:
+                return False
+            else:
+                return True
+        else:
+            return False
+
+
 class Data(DType):
     """Any kind of data represented by some evaluated text input"""
 
