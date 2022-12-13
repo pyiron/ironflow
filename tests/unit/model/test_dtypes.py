@@ -119,18 +119,49 @@ class TestDTypes(TestCase):
             self.assertFalse(batch_data.matches(superset))
 
     def test_untyped(self):
-        untyped = dtypes.Untyped(default=42)
-        self.assertTrue(untyped.matches(7))
-        self.assertTrue(untyped.matches(dtypes.Data(valid_classes=object)))
-        self.assertFalse(untyped.matches(None))
-        self.assertFalse(untyped.matches(dtypes.Integer(allow_none=True)))
-        self.assertFalse(untyped.matches(dtypes.Integer(batched=True)))
+        untyped = dtypes.Untyped()
+        with self.subTest("Test untyped input"):
+            self.assertTrue(untyped.matches(7))
+            self.assertTrue(untyped.matches(dtypes.Data(valid_classes=object)))
+            self.assertTrue(untyped.matches(None))
+            self.assertTrue(
+                untyped.matches(dtypes.Integer(batched=True)),
+                msg="Batch status doesn't matter, un-batched Untyped always checks true"
+            )
 
-        untyped.batched = True
-        self.assertTrue(untyped.matches([1, 2, 3]))
-        self.assertTrue(untyped.matches(dtypes.Integer(batched=True)))
-        self.assertFalse(untyped.matches(dtypes.Integer()))
-        self.assertFalse(untyped.matches([1, None, 3]))
+            untyped.batched = True
+            self.assertTrue(untyped.matches([1, 2, 3]))
+            self.assertTrue(untyped.matches([1, None, 3]))
+            batched_int = dtypes.Integer(batched=True)
+            batched_int.val = [0]  # Just setting batched=True doesn't make it so
+            self.assertTrue(
+                untyped.matches(batched_int),
+                msg="Just tests against the value anyway"
+            )
+            self.assertFalse(untyped.matches("Not list-like"))
+            self.assertFalse(untyped.matches(dtypes.Integer()))
 
-        untyped.allow_none = True
-        self.assertTrue(untyped.matches([1, None, 3]))
+        untyped.batched = False
+        with self.subTest("Test untyped output"):
+            data = dtypes.Data(valid_classes=[int, str])
+
+            self.assertFalse(
+                data.matches(untyped),
+                msg="Value check against None should fail"
+            )
+            untyped.val = 42
+            self.assertTrue(data.matches(untyped))
+
+            data.batched = True
+            self.assertFalse(
+                data.matches(untyped),
+                msg="Value check against non-list-like should fail"
+            )
+            untyped.batched = True
+            self.assertFalse(
+                data.matches(untyped),
+                msg="Batch status doesn't actually matter, with untyped checks we go "
+                    "straight to testing the value"
+            )
+            untyped.val = [42]
+            self.assertTrue(data.matches(untyped))

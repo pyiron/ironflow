@@ -64,7 +64,9 @@ class DType(DTypeCore):
         )
 
     def _dtype_matches(self, val: DType):
-        if isinstance(val, self.__class__) and val.batched == self.batched:
+        if isinstance(val, Untyped):
+            return self._instance_matches(val.val)
+        elif isinstance(val, self.__class__) and val.batched == self.batched:
             other_is_more_specific = self._other_types_are_subset(
                 val.valid_classes, self.valid_classes
             )
@@ -105,21 +107,36 @@ class DType(DTypeCore):
 
 
 class Untyped(DType):
+    """
+    Untyped data always performs an instance-check when used as input and when it's
+    used as output, other input nodes always perform an instance-check against it.
+    That means it can't be used to pre-wire a graph that has missing data.
+    """
+
+    def __init__(
+        self,
+        doc: str = "",
+        _load_state=None,
+        batched=False,
+    ):
+        super().__init__(
+            default=None,
+            bounds=None,
+            doc=doc,
+            _load_state=_load_state,
+            valid_classes=None,
+            allow_none=True,
+            batched=batched,
+        )
+
     def _dtype_matches(self, val: DType):
-        might_get_surprising_none = val.allow_none and not self.allow_none
-        return val.batched == self.batched and not might_get_surprising_none
+        return self._instance_matches(val.val)
 
     def _instance_matches_classes(self, val: Any):
-        return val is not None or self._matches_none(val)
+        return True
 
     def _instance_matches_batch(self, val: Any):
-        if isinstance(val, (list, np.ndarray)):
-            if any([v is None for v in val]) and not self.allow_none:
-                return False
-            else:
-                return True
-        else:
-            return False
+        return isinstance(val, (list, np.ndarray))
 
 
 class Data(DType):
