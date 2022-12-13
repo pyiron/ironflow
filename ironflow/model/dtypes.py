@@ -290,6 +290,12 @@ class Choice(DType):
 
 
 class List(DType):
+    """
+    TODO: List can probably be more like `Choice`, with special matching rules. For
+          instance, I would expect a `List` input to accept other output, as long as
+          that output was batched and the other `valid_classes` were a subset of the
+          `List.valid_classes`.
+    """
     def __init__(
         self,
         default: Optional[list] = None,
