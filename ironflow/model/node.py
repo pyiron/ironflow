@@ -396,3 +396,7 @@ class DataNode(BatchingNode, ABC):
                 p.val = None
                 p.dtype.batched = self.batched
 
+    def place_event(self):
+        super().place_event()
+        self.update()
+
