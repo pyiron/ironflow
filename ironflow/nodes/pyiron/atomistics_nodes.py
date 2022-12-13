@@ -141,11 +141,17 @@ class OutputsOnlyAtoms(DataNode, ABC):
     ]
     color = "#aabb44"
 
-    # @property
-    # def extra_representations(self) -> dict:
-    #     return {
-    #         "plot3d": self.outputs.values.structure.plot3d(),
-    #     }
+    @property
+    def extra_representations(self) -> dict:
+        return {
+            "plot3d": self._plot3d(),
+        }
+
+    def _plot3d(self):
+        if self.batched:
+            return [s.plot3d() for s in self.outputs.values.structure]
+        else:
+            return self.outputs.values.structure.plot3d()
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
