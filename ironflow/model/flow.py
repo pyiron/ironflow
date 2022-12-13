@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from ryvencore import Flow as FlowCore, InfoMsgs
 from ryvencore.NodePort import NodePort
 
+from ironflow.model.dtypes import Untyped
+
 if TYPE_CHECKING:
     from ironflow.model.dtypes import DType
 
@@ -33,22 +35,21 @@ class Flow(FlowCore):
 
         # ironflow content
         inp, out = (p1, p2) if p1.io_pos == 1 else (p2, p1)
-        if inp.dtype is not None:
-            if out.dtype is not None:
-                valid = inp.dtype.matches(out.dtype)
-                InfoMsgs.write(
-                    f"{self.batched_or_nothing(inp.dtype)}dtype-"
-                    f"{self.batched_or_nothing(out.dtype)}dtype check for "
-                    f"{inp.node.title}.{inp.label_str} and "
-                    f"{out.node.title}.{out.label_str} returned {valid}"
-                )
-            else:
-                valid = inp.dtype.matches(out.val)
-                InfoMsgs.write(
-                    f"{self.batched_or_nothing(inp.dtype)}dtype-value check for "
-                    f"{inp.node.title}.{inp.label_str} and "
-                    f"{out.node.title}.{out.label_str} returned {valid}"
-                )
+        if isinstance(inp.dtype, Untyped) or isinstance(out.dtype, Untyped):
+            type_valid = inp.dtype.matches(out.val)
+            check_type = "value"
+        else:
+            type_valid = inp.dtype.matches(out.dtype)
+            check_type = "dtype"
+        InfoMsgs.write(
+            f"{inp.node.title}.{inp.label_str} input "
+            f"{self.batched_or_nothing(inp.dtype)}{inp.dtype.__class__.__name__} made "
+            f"a {check_type} check to receive {out.node.title}.{out.label_str} output "
+            f"{self.batched_or_nothing(out.dtype)}{out.dtype.__class__.__name__} and "
+            f"returned {type_valid}"
+        )
+        valid = valid and type_valid
+
 
         # ryvencore.Flow.Flow content
         self.connection_request_valid.emit(valid)

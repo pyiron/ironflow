@@ -122,46 +122,22 @@ class TestDTypes(TestCase):
         untyped = dtypes.Untyped()
         with self.subTest("Test untyped input"):
             self.assertTrue(untyped.matches(7))
-            self.assertTrue(untyped.matches(dtypes.Data(valid_classes=object)))
             self.assertTrue(untyped.matches(None))
-            self.assertTrue(
-                untyped.matches(dtypes.Integer(batched=True)),
-                msg="Batch status doesn't matter, un-batched Untyped always checks true"
-            )
 
             untyped.batched = True
             self.assertTrue(untyped.matches([1, 2, 3]))
             self.assertTrue(untyped.matches([1, None, 3]))
-            batched_int = dtypes.Integer(batched=True)
-            batched_int.val = [0]  # Just setting batched=True doesn't make it so
-            self.assertTrue(
-                untyped.matches(batched_int),
-                msg="Just tests against the value anyway"
-            )
             self.assertFalse(untyped.matches("Not list-like"))
-            self.assertFalse(untyped.matches(dtypes.Integer()))
 
-        untyped.batched = False
-        with self.subTest("Test untyped output"):
-            data = dtypes.Data(valid_classes=[int, str])
+        with self.assertRaises(
+                ValueError,
+                msg="Checks against untyped should always be by value instead"
+        ):
+            dtypes.Data(valid_classes=[int, str]).matches(untyped)
 
-            self.assertFalse(
-                data.matches(untyped),
-                msg="Value check against None should fail"
-            )
-            untyped.val = 42
-            self.assertTrue(data.matches(untyped))
-
-            data.batched = True
-            self.assertFalse(
-                data.matches(untyped),
-                msg="Value check against non-list-like should fail"
-            )
-            untyped.batched = True
-            self.assertFalse(
-                data.matches(untyped),
-                msg="Batch status doesn't actually matter, with untyped checks we go "
-                    "straight to testing the value"
-            )
-            untyped.val = [42]
-            self.assertTrue(data.matches(untyped))
+        with self.assertRaises(
+                ValueError,
+                msg="Untyped should never check against dtypes, but should always be "
+                    "checked by value instead"
+        ):
+            untyped.matches(dtypes.Data(valid_classes=[int, str]))
