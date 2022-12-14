@@ -370,7 +370,7 @@ class BatchingNode(Node, ABC):
 
     def batched_representation(
             self, label: str, representation_function: Callable, *args
-    ) -> dict:
+    ) -> dict | None:
         """
         Batched output requires multiple representations instead of a single one. Use
         this function to wrap a function that produces your desired representation.
@@ -397,14 +397,16 @@ class BatchingNode(Node, ABC):
             > def _add5(n: int):
             >     return n + 5
         """
-
-        if self.batched:
-            return {
-                f"{label}_{i}": representation_function(*batch_args)
-                for i, batch_args in enumerate(zip(*args))
-            }
-        else:
-            return {label: representation_function(*args)}
+        try:
+            if self.batched:
+                return {
+                    f"{label}_{i}": representation_function(*batch_args)
+                    for i, batch_args in enumerate(zip(*args))
+                }
+            else:
+                return {label: representation_function(*args)}
+        except Exception as e:
+            return {label: f"Failed with: {e}"}
 
     @abstractmethod
     def node_function(self, *args, **kwargs) -> dict:
