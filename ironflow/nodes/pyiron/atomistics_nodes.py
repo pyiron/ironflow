@@ -142,14 +142,14 @@ class OutputsOnlyAtoms(DataNode, ABC):
     @property
     def extra_representations(self) -> dict:
         return {
-            "plot3d": self._plot3d(),
+            **self.batched_representation(
+                "plot3d", self._plot3d, self.outputs.values.structure
+            ),
         }
 
-    def _plot3d(self):
-        if self.batched:
-            return [s.plot3d() for s in self.outputs.values.structure]
-        else:
-            return self.outputs.values.structure.plot3d()
+    @staticmethod
+    def _plot3d(structure):
+        return structure.plot3d()
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
