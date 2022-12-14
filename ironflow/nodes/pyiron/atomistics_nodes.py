@@ -103,14 +103,14 @@ class Project_Node(DataNode):
     def extra_representations(self) -> dict:
         return {
             "name": str(self.inputs.values.name),
-            "job_table": self._job_table(),
+            **self.batched_representation(
+                "job_table", self._job_table, self.outputs.values.project
+            )
         }
 
-    def _job_table(self):
-        if self.batched:
-            return [s.job_table(all_columns=False) for s in self.outputs.values.project]
-        else:
-            return self.outputs.values.project.job_table(all_columns=False)
+    @staticmethod
+    def _job_table(project: Project):
+        return project.job_table(all_columns=False)
 
 
 class JobTable_Node(DataNode):

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import inspect
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 from ryvencore import Node as NodeCore
@@ -367,6 +367,44 @@ class BatchingNode(Node, ABC):
         return {
             key: [d[key] for d in outputs] for key in outputs[0].keys()
         }
+
+    def batched_representation(
+            self, label: str, representation_function: Callable, *args
+    ) -> dict:
+        """
+        Batched output requires multiple representations instead of a single one. Use
+        this function to wrap a function that produces your desired representation.
+        Resulting batched representations simply get an index added to their label.
+
+        Args:
+            label (str): The name of the representation.
+            representation_function (Callable): A function producing the representation.
+            *args: Members of `self.inputs.values` or `self.outputs.values` needed for
+                the representation.
+
+        Returns:
+            (dict): The representation(s).
+
+        Examples:
+            > def extra_representations(self):
+            >     return {
+            >         **self.batched_representation(
+            >             "bigger", self._add5, self.outputs.values.n
+            >        )
+            >     }
+            >
+            > @staticmethod
+            > def _add5(n: int):
+            >     return n + 5
+        """
+
+        if self.batched:
+            return {
+                f"{label}_{i}": representation_function(*batch_args)
+                for i, batch_args in enumerate(zip(*args))
+            }
+        else:
+            return {label: representation_function(*args)}
 
     @abstractmethod
     def node_function(self, *args, **kwargs) -> dict:
