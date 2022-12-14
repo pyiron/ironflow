@@ -361,9 +361,9 @@ class BatchingNode(Node, ABC):
 
     def generate_batched_output(self):
         outputs = []
-        for kwargs in self._batched_kwargs:
+        for i, kwargs in enumerate(self._batched_kwargs):
             kwargs.update(self._unbatched_kwargs)
-            outputs.append(self.node_function(**kwargs))
+            outputs.append(self.node_function(batch_index=i, **kwargs))
         return {
             key: [d[key] for d in outputs] for key in outputs[0].keys()
         }
