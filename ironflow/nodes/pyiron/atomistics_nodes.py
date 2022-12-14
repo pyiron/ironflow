@@ -581,7 +581,7 @@ class PyironTable_Node(MakesJob):
             # n + 1 because somehow job_id is always a column, and we don't care
 
 
-class Engine(Node):
+class Engine(DataNode):
     """
     A parent class for engines (jobs).
     """
@@ -612,9 +612,18 @@ class Lammps_Node(Engine):
         NodeOutputBP(label="engine", dtype=dtypes.Data(valid_classes=Lammps)),
     ]
 
+    def _get_potentials(self):
+        if self.inputs.ports.structure.dtype.batched:
+            structure = self.inputs.values.structure[0]
+            for other in self.inputs.values.structure[1:]:
+                structure += other
+        else:
+            structure = self.inputs.values.structure
+        return list_potentials(structure)
+
     def _update_potential_choices(self):
         last_potential = self.inputs.values.potential
-        available_potentials = list_potentials(self.inputs.values.structure)
+        available_potentials = self._get_potentials()
 
         if len(available_potentials) == 0:
             self.inputs.ports.potential.val = None
@@ -627,17 +636,21 @@ class Lammps_Node(Engine):
     def update_event(self, inp=-1):
         if inp == 1 and self.inputs.ports.structure.valid_val:
             self._update_potential_choices()
-        if self.all_input_is_valid:
-            job = self.inputs.values.project.create.job.Lammps(
-                "_Lammps_Engine", delete_existing_job=True
-            )
-            job.structure = self.inputs.values.structure
-            job.potential = self.inputs.values.potential
-            self.set_output_val(0, job)
+        super().update_event(inp=inp)
+
+    def node_function(self, project, structure, potential, **kwargs) -> dict:
+        job = project.create.job.Lammps("_Lammps_Engine", delete_existing_job=True)
+        job.structure = structure
+        job.potential = potential
+        return {"engine": job}
 
     @property
     def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return {
+            **self.batched_representation(
+                "job", BeautifulHasGroups, self.outputs.values.engine
+            ),
+        }
 
 
 class AtomisticOutput_Node(Node):
