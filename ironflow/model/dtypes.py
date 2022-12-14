@@ -48,7 +48,9 @@ class DType(DTypeCore):
     @staticmethod
     def from_str(s):
         # Load local dtypes, not ryven dtypes
-        for DTypeClass in [Boolean, Choice, Data, Float, Integer, List, String]:
+        for DTypeClass in [
+            Boolean, Choice, Data, Float, Integer, List, String, Untyped
+        ]:
             if s == "DType." + DTypeClass.__name__:
                 return DTypeClass
 
