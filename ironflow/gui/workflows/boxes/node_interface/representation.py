@@ -72,6 +72,8 @@ class NodePresenter(NodeInterfaceBase):
         self.clear_output()
 
         representations = []
+        self._widgets = self._build_widgets(self.node_widget.node.representations)
+        self._toggles = self._build_toggles(self.node_widget.node.representations)
         for (toggle, widget, representation) in zip(
             self._toggles, self._widgets, self.node_widget.node.representations.values()
         ):
