@@ -71,11 +71,14 @@ class NodePresenter(NodeInterfaceBase):
     def _draw(self):
         self.clear_output()
 
+        representations_dict = self.node_widget.node.representations
+        if len(representations_dict) != len(self._widgets):
+            self._widgets = self._build_widgets(representations_dict)
+            self._toggles = self._build_toggles(representations_dict)
+
         representations = []
-        self._widgets = self._build_widgets(self.node_widget.node.representations)
-        self._toggles = self._build_toggles(self.node_widget.node.representations)
         for (toggle, widget, representation) in zip(
-            self._toggles, self._widgets, self.node_widget.node.representations.values()
+            self._toggles, self._widgets, representations_dict.values()
         ):
             if toggle.value:
                 with widget:
