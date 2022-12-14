@@ -74,7 +74,7 @@ class BeautifulHasGroups:
         return "<pre>" + plain + "</pre>"
 
 
-class Project_Node(Node):
+class Project_Node(DataNode):
     """
     Create a pyiron project.
 
@@ -96,23 +96,24 @@ class Project_Node(Node):
     ]
     color = "#aabb44"
 
-    def place_event(self):
-        super().place_event()
-        self.update()
-
-    def update_event(self, inp=-1):
-        pr = Project(self.inputs.values.name)
-        self.set_output_val(0, pr)
+    def node_function(self, name, **kwargs) -> dict:
+        return {"project": Project(name)}
 
     @property
     def extra_representations(self) -> dict:
         return {
             "name": str(self.inputs.values.name),
-            "job_table": self.outputs.values.project.job_table(all_columns=False),
+            "job_table": self._job_table(),
         }
 
+    def _job_table(self):
+        if self.batched:
+            return [s.job_table(all_columns=False) for s in self.outputs.values.project]
+        else:
+            return self.outputs.values.project.job_table(all_columns=False)
 
-class JobTable_Node(Node):
+
+class JobTable_Node(DataNode):
     title = "JobTable"
     init_inputs = [
         NodeInputBP(type_="exec", label="refresh"),
@@ -121,11 +122,14 @@ class JobTable_Node(Node):
     init_outputs = [NodeOutputBP(label="Table")]
     color = "#aabb44"
 
-    def update_event(self, inp=-1):
-        if self.inputs.ports.project.valid_val:
-            self.set_output_val(
-                0, self.inputs.values.project.job_table(all_columns=False)
-            )
+    def node_function(self, project, **kwargs) -> dict:
+        return {"Table": self._job_table()}
+
+    def _job_table(self):
+        if self.batched:
+            return [s.job_table(all_columns=False) for s in self.outputs.values.project]
+        else:
+            return self.outputs.values.project.job_table(all_columns=False)
 
 
 class OutputsOnlyAtoms(DataNode, ABC):
