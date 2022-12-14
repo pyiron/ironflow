@@ -113,7 +113,7 @@ class Project_Node(DataNode):
         return project.job_table(all_columns=False)
 
 
-class JobTable_Node(DataNode):
+class JobTable_Node(Node):
     title = "JobTable"
     init_inputs = [
         NodeInputBP(type_="exec", label="refresh"),
@@ -123,13 +123,7 @@ class JobTable_Node(DataNode):
     color = "#aabb44"
 
     def node_function(self, project, **kwargs) -> dict:
-        return {"Table": self._job_table()}
-
-    def _job_table(self):
-        if self.batched:
-            return [s.job_table(all_columns=False) for s in self.outputs.values.project]
-        else:
-            return self.outputs.values.project.job_table(all_columns=False)
+        return {"Table": self.outputs.values.project.job_table(all_columns=False)}
 
 
 class OutputsOnlyAtoms(DataNode, ABC):
