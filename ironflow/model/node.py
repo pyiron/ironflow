@@ -372,7 +372,7 @@ class BatchingNode(Node, ABC):
         try:
             output = self.generate_output()
         except Exception as e:
-            self.set_output_val(0, None)
+            self.clear_output()
             raise e
         for k, v in output.items():
             self.outputs.ports[k].val = v
