@@ -547,7 +547,7 @@ class Lammps_Node(Engine):
         }
 
 
-class AtomisticOutput_Node(Node):
+class AtomisticOutput_Node(DataNode):
     """
     Select Generic Output item.
 
@@ -580,18 +580,10 @@ class AtomisticOutput_Node(Node):
     ]
     color = "#c69a15"
 
-    def __init__(self, params):
-        super().__init__(params)
-
-    def _update_value(self):
-        if isinstance(self.inputs.values.job, AtomisticGenericJob):
-            val = self.inputs.values.job[f"output/generic/{self.inputs.values.field}"]
-        else:
-            val = None
-        self.set_output_val(0, val)
-
-    def update_event(self, inp=-1):
-        self._update_value()
+    def node_function(self, job, field, **kwargs) -> dict:
+        return {
+            "output": job[f"output/generic/{field}"]
+        }
 
 
 class IntRand_Node(DataNode):
