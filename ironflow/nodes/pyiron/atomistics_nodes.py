@@ -975,7 +975,7 @@ class Matplot_Node(Node):
         return fig_copy, fig_copy.axes[0]
 
 
-class Sin_Node(Node):
+class Sin_Node(DataNode):
     """
     Call `numpy.sin` on a value.
 
@@ -990,7 +990,7 @@ class Sin_Node(Node):
     version = "v0.1"
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=[int, float, list, np.ndarray]),
+            dtype=dtypes.Data(valid_classes=[int, float, np.number, list, np.ndarray]),
             label="x",
         ),
     ]
@@ -999,8 +999,8 @@ class Sin_Node(Node):
     ]
     color = "#5d95de"
 
-    def update_event(self, inp=-1):
-        self.set_output_val(0, np.sin(self.inputs.values.x))
+    def node_function(self, x, **kwargs) -> dict:
+        return {"sin": np.sun(x)}
 
 
 class Result_Node(Node):
