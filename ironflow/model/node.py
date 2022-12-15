@@ -8,14 +8,18 @@ from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
 import numpy as np
+from pyiron_atomistics import Project
+from pyiron_base import GenericJob
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
+from ryvencore.InfoMsgs import InfoMsgs
 from ryvencore.NodePort import NodePort
+from ryvencore.NodePortBP import NodeInputBP
 from ryvencore.utils import deserialize
 
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
-from ironflow.model.dtypes import DType
-from ironflow.model.port import NodeInput, NodeOutput
+from ironflow.model import dtypes
+from ironflow.model.port import NodeInput, NodeOutput, NodeOutputBP
 from ironflow.utils import display_string
 
 
@@ -151,7 +155,7 @@ class Node(NodeCore):
         type_: str = "data",
         label: str = "",
         add_data: Optional[dict] = None,
-        dtype: Optional[DType] = None,
+        dtype: Optional[dtypes.DType] = None,
         insert: Optional[int] = None,
     ):
         """Creates and add a new input port"""
@@ -161,7 +165,7 @@ class Node(NodeCore):
         self._add_io(self.inputs, inp, insert=insert)
 
     def create_input_dt(
-        self, dtype: DType, label: str = "", add_data={}, insert: int = None
+        self, dtype: dtypes.DType, label: str = "", add_data={}, insert: int = None
     ):
         raise RuntimeError(
             "Ironflow uses custom NodePort classes and this method is not supported. "
@@ -172,7 +176,7 @@ class Node(NodeCore):
         self,
         type_: str = "data",
         label: str = "",
-        dtype: Optional[DType] = None,
+        dtype: Optional[dtypes.DType] = None,
         insert: Optional[int] = None,
     ):
         """Create and add a new output port"""
@@ -203,7 +207,7 @@ class Node(NodeCore):
 
             for inp in inputs_data:
                 if "dtype" in inp:
-                    dtype = DType.from_str(inp["dtype"])(
+                    dtype = dtypes.DType.from_str(inp["dtype"])(
                         _load_state=deserialize(inp["dtype state"])
                     )
                     self.create_input(label=inp["label"], add_data=inp, dtype=dtype)
@@ -221,7 +225,7 @@ class Node(NodeCore):
             # ironflow modification
             for out in outputs_data:
                 if "dtype" in out:
-                    dtype = DType.from_str(out["dtype"])(
+                    dtype = dtypes.DType.from_str(out["dtype"])(
                         _load_state=deserialize(out["dtype state"])
                     )
                     self.create_output(label=out["label"], dtype=dtype)
@@ -447,3 +451,186 @@ class DataNode(BatchingNode, ABC):
         super().place_event()
         self.update()
 
+
+class JobNode(BatchingNode, ABC):
+    """
+    A parent class for nodes that run a pyiron job.
+
+    Child classes are required to specify a `_generate_job` method, which takes the
+    node input data and returns a `pyiron_base.GenericJob` object, and (optionally) a
+    `_get_output_from_job` method which takes the executed job and the node input data
+    and returns a dictionary of output with keys corresponding to node output port
+    labels. The `job` output type can be made more specific with the `valid_job_classes`
+    class attribute.
+
+    In the event that some of the input is batched but the `name` input is *not*
+    batched, then the `name` argument passed to `_generate_job` is automatically
+    appended with batch index information to prevent jobs from having the same name.
+
+    The node has `run` and `remove` input exec ports and a `ran` output exec port.
+    Once the node has been run, all inputs get locked and remain locked until the
+    removal process is triggered. Remove clears all the outputs and sets them to `None`.
+
+    If a failure is encountered during the `run` process, the exception is raised, all
+    pyiron jobs are deleted (this might need to change if we want to do more expensive
+    jobs in the future!), the node output is cleared, and the offending exception is
+    raised to the log.
+
+    All descendant classes from this node class expect to have `run`, `remove`, and
+    `name` input, and `ran` output. Therefore, when defining additional ports, use this
+    format:
+
+    > init_inputs = JobNode.init_inputs + [WHATEVER_ELSE_YOU_WANT]
+    > init_outputs = JobNode.init_outputs + [OTHER_STUFF]
+    """
+
+    color = "#c4473f"
+    valid_job_classes = None
+    init_inputs = [
+        NodeInputBP(type_="exec", label="run"),
+        NodeInputBP(type_="exec", label="remove"),
+        NodeInputBP(dtype=dtypes.String(default="calc"), label="name"),
+    ]
+    init_outputs = [
+        NodeOutputBP(type_="exec", label="ran"),
+        NodeOutputBP(
+            dtype=dtypes.Data(valid_classes=GenericJob), label="job"
+        )
+    ]
+
+    def place_event(self):
+        super().place_event()
+        if self.valid_job_classes is not None:
+            self.outputs.ports.job.dtype.valid_classes = self.valid_job_classes
+
+    def update_event(self, inp=-1):
+        if inp == 0 and (not self.block_updates) and self.all_input_is_valid:
+            self.block_updates = True
+            try:
+                self._jobs = []
+                self.set_output()
+                self.exec_output(0)
+            except Exception as e:
+                self._on_remove_signal()
+                raise e
+        else:
+            self.clear_output()
+
+    def update(self, inp=-1):
+        if inp == 1:
+            # Bypass the `lock_updates` to delete the executed job and unlock updates
+            self._on_remove_signal()
+            # self.update(-1)
+        else:
+            super().update(inp=inp)
+
+    def node_function(self, name, *args, **kwargs):
+        if self.batched and not self.inputs.ports.name.dtype.batched:
+            name = f"{name}_batch{kwargs['batch_index']}"
+        job = self._raise_error_if_not_initialized(
+            self._generate_job(name, *args, **kwargs)
+        )
+        self._jobs.append(job)
+        job.run()
+        data = self._get_output_from_job(job, *args, name=name, **kwargs)
+        return {
+            "job": job,
+            **data,
+        }
+
+    def _on_remove_signal(self):
+        if hasattr(self, "_jobs"):
+            for job in self._jobs:
+                job.remove()
+        self.clear_output()
+        self.block_updates = False
+
+    def _raise_error_if_not_initialized(
+        self, job: GenericJob
+    ) -> GenericJob:
+        if job.status == "initialized":
+            return job
+        else:
+            self.block_updates = False
+            raise RuntimeError(
+                f"The job {self.inputs.values.name} already exists. Delete it first or"
+                f"choose a different name."
+            )
+
+    @abstractmethod
+    def _generate_job(self, name: str, *args, **kwargs) -> GenericJob:
+        """
+        Takes a (potentially modified[^1]) name and the rest of the input data and
+        returns a job to `.run()`
+
+        [^1]: If some of the input is batched, but the `name` field is not batched, the
+              batch index information will get automatically appended to the name.
+        """
+
+        pass
+
+    def _get_output_from_job(self, finished_job: GenericJob, *args, **kwargs) -> dict:
+        """
+        Takes the executed job and all the node input data, and should return relevant
+        output data as a dictionary with keys matching the output port labels.
+        """
+
+        return {}
+
+
+class JobMaker(JobNode, ABC):
+    """
+    A job-running node that takes creates a new job instance from scratch, ready to
+    `.run()`.
+
+    All descendant classes from this node class expect to have `run`, `remove`, `name`,
+    and `project` input, and `ran` output. Therefore, when defining additional ports,
+    use this format:
+
+    > init_inputs = JobMaker.init_inputs + [WHATEVER_ELSE_YOU_WANT]
+    > init_outputs = JobMaker.init_outputs + [OTHER_STUFF]
+    """
+
+    init_inputs = JobNode.init_inputs + [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project")
+    ]
+
+
+class JobTaker(JobNode, ABC):
+    """
+    A job-running node that takes a template job instance as input, and copies and
+    modifies it prior to use.
+
+    Valid classes for the `job` input can be overriden with the `valid_job_classes`
+    attribute.
+
+    All descendant classes from this node class expect to have `run`, `remove`, `name`,
+    and `job` input, and `ran` output. Therefore, when defining additional ports, use
+    this format:
+
+    > init_inputs = JobTaker.init_inputs + [WHATEVER_ELSE_YOU_WANT]
+    > init_outputs = JobTaker.init_outputs + [OTHER_STUFF]
+    """
+
+    init_inputs = JobNode.init_inputs + [
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=GenericJob), label="job"
+        )
+    ]
+
+    def place_event(self):
+        super().place_event()
+        if self.valid_job_classes is not None:
+            self.inputs.ports.job.dtype.valid_classes = self.valid_job_classes
+
+    def _generate_job(self, name: str, job: GenericJob, **kwargs) -> GenericJob:
+        copied_job = job.copy_to(new_job_name=name)
+        return self._modify_job(copied_job, **kwargs)
+
+    @abstractmethod
+    def _modify_job(self, copied_job: GenericJob, *args, **kwargs) -> GenericJob:
+        """
+        Takes the generated job, modifies it in place using the input data (except for
+        the `job` and `name` input values) and returns it ready to be `.run()`
+        """
+        pass
