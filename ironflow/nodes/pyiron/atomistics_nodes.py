@@ -425,22 +425,13 @@ class MakesJob(JobRunner):
     ]
 
 
-class CalcStatic_Node(JobTaker):
-    """
-    Execute a static atomistic engine evaluation.
-    """
+class AtomisticTaker(JobTaker, ABC):
 
-    title = "CalcStatic"
     valid_job_classes = [Lammps]
-
     init_outputs = JobTaker.init_outputs + [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="energy_pot"),
         NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="forces"),
     ]
-
-    def _modify_job(self, copied_job: Lammps, **kwargs) -> Lammps:
-        copied_job.calc_static()
-        return copied_job
 
     def _get_output_from_job(self, finished_job: Lammps, **kwargs):
         return {
@@ -457,6 +448,18 @@ class CalcStatic_Node(JobTaker):
         }
 
 
+class CalcStatic_Node(AtomisticTaker):
+    """
+    Execute a static atomistic engine evaluation.
+    """
+
+    title = "CalcStatic"
+
+    def _modify_job(self, copied_job: Lammps, **kwargs) -> Lammps:
+        copied_job.calc_static()
+        return copied_job
+
+
 def pressure_input():
     return NodeInputBP(
         dtype=dtypes.Data(
@@ -466,14 +469,13 @@ def pressure_input():
     )
 
 
-class CalcMinimize_Node(TakesJob):
+class CalcMinimize_Node(AtomisticTaker):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcMinimize"
-    init_inputs = TakesJob.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
+    init_inputs = AtomisticTaker.init_inputs + [
         NodeInputBP(dtype=dtypes.Float(default=0.0), label="ionic_energy_tolerance"),
         NodeInputBP(dtype=dtypes.Float(default=1e-4), label="ionic_force_tolerance"),
         NodeInputBP(dtype=dtypes.Integer(default=100000), label="max_iter"),
@@ -481,34 +483,36 @@ class CalcMinimize_Node(TakesJob):
         NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
         NodeInputBP(dtype=dtypes.Choice(default="cg", items=["cg"]), label="style"),
     ]
-    init_outputs = TakesJob.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
-    ]
 
-    def _run(self):
-        self.job.calc_minimize(
-            ionic_energy_tolerance=self.inputs.values.ionic_energy_tolerance,
-            ionic_force_tolerance=self.inputs.values.ionic_force_tolerance,
-            max_iter=self.inputs.values.max_iter,
-            pressure=self.inputs.values.pressure,
-            n_print=self.inputs.values.n_print,
-            style=self.inputs.values.style,
+    def _modify_job(
+            self,
+            copied_job: Lammps,
+            ionic_energy_tolerance,
+            ionic_force_tolerance,
+            max_iter,
+            pressure,
+            n_print,
+            style,
+            **kwargs
+    ) -> Lammps:
+        copied_job.calc_minimize(
+            ionic_energy_tolerance=ionic_energy_tolerance,
+            ionic_force_tolerance=ionic_force_tolerance,
+            max_iter=max_iter,
+            pressure=pressure,
+            n_print=n_print,
+            style=style,
         )
-        self.job.run()
-
-    @property
-    def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return copied_job
 
 
-class CalcMD_Node(TakesJob):
+class CalcMD_Node(AtomisticTaker):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcMD"
-    init_inputs = TakesJob.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
+    init_inputs = AtomisticTaker.init_inputs + [
         NodeInputBP(
             dtype=dtypes.Float(default=None, allow_none=True), label="temperature"
         ),
@@ -532,28 +536,35 @@ class CalcMD_Node(TakesJob):
             label="dynamics",
         ),
     ]
-    init_outputs = TakesJob.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
-    ]
 
-    def _run(self):
-        self.job.calc_md(
-            temperature=self.inputs.values.temperature,
-            pressure=self.inputs.values.pressure,
-            n_ionic_steps=self.inputs.values.n_ionic_steps,
-            time_step=self.inputs.values.time_step,
-            n_print=self.inputs.values.n_print,
-            temperature_damping_timescale=self.inputs.values.temperature_damping_timescale,
-            pressure_damping_timescale=self.inputs.values.pressure_damping_timescale,
-            seed=self.inputs.values.seed,
-            initial_temperature=self.inputs.values.initial_temperature,
-            langevin=self.inputs.values.dynamics == "langevin",
+    def _modify_job(
+            self,
+            copied_job: Lammps,
+            temperature,
+            pressure,
+            n_ionic_steps,
+            time_step,
+            n_print,
+            temperature_damping_timescale,
+            pressure_damping_timescale,
+            seed,
+            initial_temperature,
+            dynamics,
+            **kwargs
+    ) -> Lammps:
+        copied_job.calc_md(
+            temperature=temperature,
+            pressure=pressure,
+            n_ionic_steps=n_ionic_steps,
+            time_step=time_step,
+            n_print=n_print,
+            temperature_damping_timescale=temperature_damping_timescale,
+            pressure_damping_timescale=pressure_damping_timescale,
+            seed=seed,
+            initial_temperature=initial_temperature,
+            langevin=dynamics == "langevin",
         )
-        self.job.run()
-
-    @property
-    def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return copied_job
 
 
 class PyironTable_Node(MakesJob):
