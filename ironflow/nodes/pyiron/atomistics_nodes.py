@@ -32,6 +32,7 @@ from pyiron_atomistics.atomistics.job.atomistic import (
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
+from pyiron_base.jobs.job.util import _get_safe_job_name
 
 from ironflow.node_tools import (
     dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP, PortList, DataNode
@@ -729,36 +730,50 @@ class IntRand_Node(DataNode):
         return {"randint": np.random.randint(low, high=high, size=length)}
 
 
-class JobName_Node(Node):
+class JobName_Node(DataNode):
     """
-    Create job name for parameters.
+    Create a sanitized job name, optionally with a floating point parameter.
 
     Inputs:
-        base (str): The stem for the final name. (Default is "job_".)
-        float (float): The parameter value to add to the name.
+        name_base (str): The stem for the final name. (Default is "job".)
+        parameter (float|None): The parameter value to add to the name.
+        ndigits (int|None): How many digits to keep from floating point values.
+            (Default 8. Use None to not round at all.)
+        special_symbols (dict|None): Not documented, sorry. (Default is None.)
 
     Outputs:
         job_name (str): The base plus float sanitized into a valid job name.
-
-    Todo:
-        There has been some work in pyiron_base on getting a cleaner job name sanitizer, so lean on that.
     """
 
     title = "JobName"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.String(default="job_"), label="base"),
-        NodeInputBP(dtype=dtypes.Float(default=0.0), label="float"),
+        NodeInputBP(dtype=dtypes.String(default="job"), label="name_base"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=None, allow_none=True), label="parameter"
+        ),
+        NodeInputBP(dtype=dtypes.Integer(default=8, allow_none=True), label="ndigits"),
+        NodeInputBP(
+            dtype=dtypes.Data(
+                default=None,
+                valid_classes=dict,
+                allow_none=True),
+            label="special_symbols"
+        ),
     ]
     init_outputs = [
         NodeOutputBP(label="job_name", dtype=dtypes.String()),
     ]
     color = "#aabb44"
 
-    def update_event(self, inp=-1):
-        val = self.inputs.values.base + f"{float(self.inputs.values.float)}".replace(
-            "-", "m"
-        ).replace(".", "p")
-        self.set_output_val(0, val)
+    def node_function(self, name_base, parameter, ndigits, special_symbols, **kwargs):
+        name = (name_base, parameter) if parameter is not None else name_base
+        return {
+            "job_name": _get_safe_job_name(
+                name,
+                ndigits=ndigits,
+                special_symbols=special_symbols
+            )
+        }
 
 
 class Linspace_Node(DataNode):
