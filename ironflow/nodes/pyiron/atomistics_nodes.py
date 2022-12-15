@@ -567,10 +567,11 @@ class CalcMD_Node(AtomisticTaker):
         return copied_job
 
 
-class PyironTable_Node(MakesJob):
+class PyironTable_Node(JobMaker):
     title = "PyironTable"
+    valid_job_classes = [pyiron_base.TableJob]
 
-    init_inputs = list(MakesJob.init_inputs)
+    init_inputs = list(JobMaker.init_inputs)
     n_fixed_input_cols = len(init_inputs)
     n_table_cols = 2  # TODO: allow user to change number of cols
     for n in np.arange(n_table_cols):
@@ -585,31 +586,25 @@ class PyironTable_Node(MakesJob):
                 label=f"Col_{n + 1}",
             )
         )
-    init_outputs = MakesJob.init_outputs + [
-        NodeOutputBP(
-            dtype=dtypes.Data(valid_classes=pyiron_base.TableJob), label="job"
-        ),
+    init_outputs = JobMaker.init_outputs + [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=DataFrame), label="dataframe"),
     ]
     n_fixed_output_cols = len(init_outputs)
     for n in np.arange(n_table_cols):
         init_outputs.append(NodeOutputBP(label=f"Col_{n + 1}"))
 
-    def _generate_job(self) -> pyiron_base.TableJob:
-        return self.inputs.values.project.base.job.TableJob(self.inputs.values.name)
-
-    def _run(self):
+    def _generate_job(self, name, project, **kwargs) -> pyiron_base.TableJob:
+        job = project.base.job.TableJob(name)
         for n in np.arange(self.n_table_cols):
-            getattr(self.job.add, self.inputs[n + self.n_fixed_input_cols].val)
-        self.job.run()
+            getattr(job.add, self.inputs[n + self.n_fixed_input_cols].val)
+        return job
 
-    def _set_output(self):
-        super()._set_output()
-        df = self.job.get_dataframe()
-        self.set_output_val(2, df)
-        for n in range(self.n_table_cols):
-            self.set_output_val(n + self.n_fixed_output_cols, df.iloc[:, n + 1].values)
-            # n + 1 because somehow job_id is always a column, and we don't care
+    def _get_output_from_job(self, finished_job: pyiron_base.TableJob, **kwargs):
+        df = finished_job.get_dataframe()
+        return {
+            f"Col_{n + 1}": df.iloc[:, n + 1].values for n in range(self.n_table_cols)
+            # iloc n + 1 because somehow job_id is always a column, and we don't care
+        }
 
 
 class Engine(DataNode):
