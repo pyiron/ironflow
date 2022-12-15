@@ -1003,34 +1003,6 @@ class Sin_Node(DataNode):
         return {"sin": np.sun(x)}
 
 
-class Result_Node(Node):
-    """Simply shows a value converted to str"""
-
-    version = "v0.1"
-
-    title = "Result"
-    init_inputs = [
-        NodeInputBP(type_="data"),
-    ]
-    color = "#c69a15"
-
-    def __init__(self, params):
-        super().__init__(params)
-        self.val = None
-
-    def place_event(self):
-        super().place_event()
-        self.update()
-
-    def view_place_event(self):
-        self.main_widget().show_val(self.val)
-
-    def update_event(self, inp=-1):
-        self.val = self.inputs.data.val
-        if self.session.gui:
-            self.main_widget().show_val(self.val)
-
-
 class ForEach_Node(Node):
     title = "ForEach"
     version = "v0.1"
