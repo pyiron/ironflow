@@ -700,7 +700,7 @@ class AtomisticOutput_Node(Node):
         self._update_value()
 
 
-class IntRand_Node(Node):
+class IntRand_Node(DataNode):
     """
     Generate a random non-negative integer.
 
@@ -716,19 +716,17 @@ class IntRand_Node(Node):
 
     title = "IntRandom"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(10, 100)), label="high"),
-        NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="length"),
+        NodeInputBP(dtype=dtypes.Integer(default=0), label="low"),
+        NodeInputBP(dtype=dtypes.Integer(default=1), label="high"),
+        NodeInputBP(dtype=dtypes.Integer(default=1), label="length"),
     ]
     init_outputs = [
         NodeOutputBP(label="randint"),
     ]
     color = "#aabb44"
 
-    def update_event(self, inp=-1):
-        val = np.random.randint(
-            0, high=self.inputs.values.high, size=self.inputs.values.length
-        )
-        self.set_output_val(0, val)
+    def node_function(self, low, high, length, *args, **kwargs) -> dict:
+        return {"randint": np.random.randint(low, high=high, size=length)}
 
 
 class JobName_Node(Node):
