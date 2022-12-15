@@ -1081,7 +1081,6 @@ nodes = [
     IntRand_Node,
     Linspace_Node,
     Sin_Node,
-    Result_Node,
     ExecCounter_Node,
     Matplot_Node,
     Click_Node,
