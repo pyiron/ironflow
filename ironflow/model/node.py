@@ -379,13 +379,13 @@ class BatchingNode(Node, ABC):
             self.clear_output()
             raise e
         for k, v in output.items():
-            self.outputs.ports[k].val = v
+            self.outputs.ports[k].set_val(v)
             self.outputs.ports[k].dtype.batched = self.batched
 
     def clear_output(self):
         for p in self.outputs.ports:
             if p.type_ == "data":
-                p.val = None
+                p.set_val(None)
                 p.dtype.batched = self.batched
 
     def batched_representation(
