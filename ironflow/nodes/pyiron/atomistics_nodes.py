@@ -614,8 +614,9 @@ class Lammps_Node(Engine):
     ]
 
     def _get_potentials(self):
+        # TODO: This is terribly inefficient for very large structures or long batches
         if self.inputs.ports.structure.dtype.batched:
-            structure = self.inputs.values.structure[0]
+            structure = self.inputs.values.structure[0].copy()
             for other in self.inputs.values.structure[1:]:
                 structure += other
         else:
