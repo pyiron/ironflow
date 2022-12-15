@@ -795,16 +795,12 @@ class Linspace_Node(DataNode):
     init_inputs = [
         NodeInputBP(dtype=dtypes.Float(default=1.0), label="min"),
         NodeInputBP(dtype=dtypes.Float(default=2.0), label="max"),
-        NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
+        NodeInputBP(dtype=dtypes.Integer(default=10), label="steps"),
     ]
     init_outputs = [
         NodeOutputBP(label="linspace") #, dtype=dtypes.Data(valid_classes=np.array)),
     ]
     color = "#aabb44"
-
-    def place_event(self):
-        super().place_event()
-        self.update()
 
     def node_function(self, min, max, steps, **kwargs) -> dict:
         return {'linspace': np.linspace(min, max, steps)}
