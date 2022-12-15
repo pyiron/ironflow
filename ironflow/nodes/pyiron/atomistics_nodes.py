@@ -35,7 +35,15 @@ from pyiron_atomistics.table.datamining import TableJob  # Triggers the function
 from pyiron_base.jobs.job.util import _get_safe_job_name
 
 from ironflow.node_tools import (
-    dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP, PortList, DataNode
+    DataNode,
+    dtypes,
+    JobMaker,
+    JobTaker,
+    main_widgets,
+    Node,
+    NodeInputBP,
+    NodeOutputBP,
+    PortList,
 )
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
@@ -417,25 +425,36 @@ class MakesJob(JobRunner):
     ]
 
 
-class CalcStatic_Node(TakesJob):
+class CalcStatic_Node(JobTaker):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcStatic"
-    init_inputs = TakesJob.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
-    ]
-    init_outputs = TakesJob.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
+    valid_job_classes = [Lammps]
+
+    init_outputs = JobTaker.init_outputs + [
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="energy_pot"),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="forces"),
     ]
 
-    def _run(self):
-        self.job.run()
+    def _modify_job(self, copied_job: Lammps, **kwargs) -> Lammps:
+        copied_job.calc_static()
+        return copied_job
+
+    def _get_output_from_job(self, finished_job: Lammps, **kwargs):
+        return {
+            "energy_pot": finished_job.output.energy_pot,
+            "forces": finished_job.output.forces
+        }
 
     @property
     def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return {
+            **self.batched_representation(
+                "job", BeautifulHasGroups, self.outputs.values.engine
+            ),
+        }
 
 
 def pressure_input():
