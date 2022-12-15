@@ -368,6 +368,22 @@ class BatchingNode(Node, ABC):
             key: [d[key] for d in outputs] for key in outputs[0].keys()
         }
 
+    def set_output(self):
+        try:
+            output = self.generate_output()
+        except Exception as e:
+            self.set_output_val(0, None)
+            raise e
+        for k, v in output.items():
+            self.outputs.ports[k].val = v
+            self.outputs.ports[k].dtype.batched = self.batched
+
+    def clear_output(self):
+        for p in self.outputs.ports:
+            if p.type_ == "data":
+                p.val = None
+                p.dtype.batched = self.batched
+
     def batched_representation(
             self, label: str, representation_function: Callable, *args
     ) -> dict | None:
@@ -423,18 +439,9 @@ class DataNode(BatchingNode, ABC):
     """
     def update_event(self, inp=-1):
         if self.all_input_is_valid:
-            try:
-                output = self.generate_output()
-            except Exception as e:
-                self.set_output_val(0, None)
-                raise e
-            for k, v in output.items():
-                self.outputs.ports[k].val = v
-                self.outputs.ports[k].dtype.batched = self.batched
+            self.set_output()
         else:
-            for p in self.outputs.ports:
-                p.val = None
-                p.dtype.batched = self.batched
+            self.clear_output()
 
     def place_event(self):
         super().place_event()
