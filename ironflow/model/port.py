@@ -45,7 +45,7 @@ class NodeInput(NodeInputCore, HasDType):
     ):
         super().__init__(
             node=node,
-            type_=type_ if dtype is None else "data",
+            type_=type_,
             label_str=label_str,
             add_data=add_data if add_data is not None else {},
             dtype=Untyped() if dtype is None else deepcopy(dtype),
@@ -71,9 +71,7 @@ class NodeInput(NodeInputCore, HasDType):
 
 class NodeOutput(NodeOutputCore, HasDType):
     def __init__(self, node, type_="data", label_str="", dtype: Optional[DType] = None):
-        super().__init__(
-            node=node, type_=type_ if dtype is None else "data", label_str=label_str
-        )
+        super().__init__(node=node, type_=type_, label_str=label_str)
         self.dtype = Untyped() if dtype is None else deepcopy(dtype)
 
     def data(self) -> dict:
