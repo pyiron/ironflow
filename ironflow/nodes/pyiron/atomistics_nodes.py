@@ -311,7 +311,7 @@ class AtomisticTaker(JobTaker, ABC):
     def extra_representations(self) -> dict:
         return {
             **self.batched_representation(
-                "job", BeautifulHasGroups, self.outputs.values.engine
+                "job", BeautifulHasGroups, self.outputs.values.job
             ),
         }
 
