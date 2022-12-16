@@ -197,9 +197,7 @@ class NodeController(NodeInterfaceBase):
             try:
                 associated_input_field.value = default
             except TraitError:
-                associated_input_field.value = associated_input_field.traits()[
-                    "value"
-                ].default()
+                self.screen.update_node_control()
             finally:
                 pass
             self.node.update(i_c)
