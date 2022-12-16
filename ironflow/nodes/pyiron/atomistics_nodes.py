@@ -16,6 +16,7 @@ from typing import Type, TYPE_CHECKING
 
 import matplotlib.pylab as plt
 import numpy as np
+import seaborn as sns
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from nglview import NGLWidget
@@ -917,6 +918,58 @@ class Matplot_Node(Node):
         buf.seek(0)
         fig_copy = pickle.load(buf)
         return fig_copy, fig_copy.axes[0]
+
+
+_seaborn_method_map = {
+        "scatter": sns.scatterplot,
+        "hist": sns.histplot,
+        "joint": sns.jointplot,
+    }
+
+
+class QuickPlot_Node(Node):
+    """
+    Make a variety of quick and dirty plots with Seaborn.
+    """
+
+    title = "QuickPlot"
+    color = "#5d95de"
+
+    init_inputs = [
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=[list, np.ndarray], allow_none=True),
+            label="x"
+        ),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=[list, np.ndarray], allow_none=True),
+            label="y"
+        ),
+        NodeInputBP(
+            dtype=dtypes.Choice(
+                default="scatter",
+                items=list(_seaborn_method_map.keys()),
+            ),
+            label="type"
+        )
+    ]
+    init_outputs = [
+        NodeOutputBP(label="plot")
+    ]
+
+    def update_event(self, inp=-1):
+        super().update_event()
+        plt.ioff()
+        if self.all_input_is_valid:
+            try:
+                plt.clf()
+                plot_function = _seaborn_method_map[self.inputs.values.type]
+                out = plot_function(x=self.inputs.values.x, y=self.inputs.values.y)
+                self.set_output_val(0, out.figure)
+                plt.ion()
+            except Exception as e:
+                self.set_all_outputs_to_none()
+                plt.ion()
+                raise e
 
 
 class Sin_Node(DataNode):
