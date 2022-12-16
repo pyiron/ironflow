@@ -37,7 +37,8 @@ setup(
         'pyiron_base',
         'pyiron_atomistics',
         'pyiron_gui >= 0.0.8',
-        'ryvencore'
+        'ryvencore',
+        'seaborn',
     ],
     cmdclass=versioneer.get_cmdclass(),
 
