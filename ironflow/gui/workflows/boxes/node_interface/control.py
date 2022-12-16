@@ -121,9 +121,8 @@ class NodeController(NodeInterfaceBase):
                             value=str(inp.val), continuous_update=False, disabled=True
                         )
                 except TraitError as e:
-                    inp_widget = widgets.Text(
-                        value="Trait error -- check log and/or change input.",
-                        disabled=True,
+                    inp_widget = widgets.Label(
+                        value="Trait error -- check log and/or change input."
                     )
                     InfoMsgs.write_err(e)
 
@@ -146,7 +145,7 @@ class NodeController(NodeInterfaceBase):
                     tooltip="Reset to default",
                     icon="refresh",
                     layout=widgets.Layout(width="30px"),
-                    disabled=inp.dtype is None or inp_widget.disabled,
+                    disabled=len(inp.connections) > 0,
                 )
                 reset_button.on_click(self.input_reset_i(i_c, inp_widget))
 
