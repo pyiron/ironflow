@@ -74,51 +74,58 @@ class NodeController(NodeInterfaceBase):
                 if inp.val is None:
                     inp.val = dtype_state["val"]
 
-                if dtype_state["batched"]:
+                try:
+                    if dtype_state["batched"]:
+                        inp_widget = widgets.Text(
+                            f"Batched {dtype}",
+                            continuous_update=False,
+                            disabled=True,
+                        )
+                    elif dtype == "Integer":
+                        inp_widget = widgets.IntText(
+                            value=inp.val,
+                            description="",
+                            continuous_update=False,
+                            disabled=disabled,
+                        )
+                    elif dtype == "Float":
+                        inp_widget = widgets.FloatText(
+                            value=inp.val,
+                            description="",
+                            continuous_update=False,
+                            disabled=disabled,
+                        )
+                    elif dtype == "Boolean":
+                        inp_widget = widgets.Checkbox(
+                            value=inp.val,
+                            indent=False,
+                            description="",
+                            disabled=disabled,
+                        )
+                    elif dtype == "Choice":
+                        inp_widget = widgets.Dropdown(
+                            value=inp.val,
+                            options=inp.dtype.items,
+                            description="",
+                            ensure_option=True,
+                            disabled=disabled,
+                        )
+                    elif dtype == "String" or dtype == "Char":
+                        inp_widget = widgets.Text(
+                            value=str(inp.val),
+                            continuous_update=False,
+                            disabled=disabled,
+                        )
+                    else:
+                        inp_widget = widgets.Text(
+                            value=str(inp.val), continuous_update=False, disabled=True
+                        )
+                except TraitError as e:
                     inp_widget = widgets.Text(
-                        f"Batched {dtype}",
-                        continuous_update=False,
+                        value="Trait error -- check log and/or change input.",
                         disabled=True,
                     )
-                elif dtype == "Integer":
-                    inp_widget = widgets.IntText(
-                        value=inp.val,
-                        description="",
-                        continuous_update=False,
-                        disabled=disabled,
-                    )
-                elif dtype == "Float":
-                    inp_widget = widgets.FloatText(
-                        value=inp.val,
-                        description="",
-                        continuous_update=False,
-                        disabled=disabled,
-                    )
-                elif dtype == "Boolean":
-                    inp_widget = widgets.Checkbox(
-                        value=inp.val,
-                        indent=False,
-                        description="",
-                        disabled=disabled,
-                    )
-                elif dtype == "Choice":
-                    inp_widget = widgets.Dropdown(
-                        value=inp.val,
-                        options=inp.dtype.items,
-                        description="",
-                        ensure_option=True,
-                        disabled=disabled,
-                    )
-                elif dtype == "String" or dtype == "Char":
-                    inp_widget = widgets.Text(
-                        value=str(inp.val),
-                        continuous_update=False,
-                        disabled=disabled,
-                    )
-                else:
-                    inp_widget = widgets.Text(
-                        value=str(inp.val), continuous_update=False, disabled=True
-                    )
+                    InfoMsgs.write_err(e)
 
                 description = inp.label_str if inp.label_str != "" else inp.type_
                 inp_widget.layout.width = "100px"
