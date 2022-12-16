@@ -563,7 +563,7 @@ class LammpsPotentials_Node(DataNode):
         NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
     ]
     init_outputs = [
-        NodeOutputBP(dtype=dtypes.List(), label="potentials")
+        NodeOutputBP(label="potentials")
     ]
 
     def node_function(self, structure, **kwargs) -> dict:
