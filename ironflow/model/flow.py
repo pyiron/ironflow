@@ -52,10 +52,11 @@ class Flow(FlowCore):
                 check_type = "dtype"
             InfoMsgs.write(
                 f"{inp.node.title}.{inp.label_str} input "
-                f"{self.batched_or_nothing(inp.dtype)}{inp.dtype.__class__.__name__} made "
-                f"a {check_type} check to receive {out.node.title}.{out.label_str} output "
-                f"{self.batched_or_nothing(out.dtype)}{out.dtype.__class__.__name__} and "
-                f"returned {type_valid}"
+                f"{self.batched_or_nothing(inp.dtype)}{inp.dtype.__class__.__name__} "
+                f"made a {check_type} check to receive "
+                f"{out.node.title}.{out.label_str} output "
+                f"{self.batched_or_nothing(out.dtype)}{out.dtype.__class__.__name__} "
+                f"and returned {type_valid}"
             )
             valid = valid and type_valid
 
