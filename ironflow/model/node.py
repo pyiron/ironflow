@@ -185,7 +185,7 @@ class Node(NodeCore):
 
     def setup_ports(self, inputs_data=None, outputs_data=None):
         # A streamlined version of the ryvencore method which exploits our NodeInput
-        # and NodeOutput classes instead.
+        # and NodeOutput classes instead, and for which all ports have a dtype
         if not inputs_data and not outputs_data:
 
             for i in range(len(self.init_inputs)):
@@ -206,31 +206,28 @@ class Node(NodeCore):
             # initial ports specifications are irrelevant then
 
             for inp in inputs_data:
-                if "dtype" in inp:
-                    dtype = dtypes.DType.from_str(inp["dtype"])(
-                        _load_state=deserialize(inp["dtype state"])
-                    )
-                    self.create_input(label=inp["label"], add_data=inp, dtype=dtype)
-                else:
-                    self.create_input(
-                        type_=inp["type"], label=inp["label"], add_data=inp
-                    )
+                dtype = dtypes.DType.from_str(inp["dtype"])(
+                    _load_state=deserialize(inp["dtype state"])
+                )
+                self.create_input(
+                    type_=inp["type"],
+                    label=inp["label"],
+                    add_data=inp,
+                    dtype=dtype
+                )
 
                 if "val" in inp:
                     # this means the input is 'data' and did not have any connections,
-                    # so we saved its value which was probably represented by some widget
-                    # in the front end which has probably overridden the Node.input() method
+                    # so we saved its value which was probably represented by some
+                    # widget in the front end which has probably overridden the
+                    # Node.input() method
                     self.inputs[-1].val = deserialize(inp["val"])
 
-            # ironflow modification
             for out in outputs_data:
-                if "dtype" in out:
-                    dtype = dtypes.DType.from_str(out["dtype"])(
-                        _load_state=deserialize(out["dtype state"])
-                    )
-                    self.create_output(label=out["label"], dtype=dtype)
-                else:
-                    self.create_output(type_=out["type"], label=out["label"])
+                dtype = dtypes.DType.from_str(out["dtype"])(
+                    _load_state=deserialize(out["dtype state"])
+                )
+                self.create_output(type_=out["type"], label=out["label"], dtype=dtype)
 
     @property
     def all_input_is_valid(self):
