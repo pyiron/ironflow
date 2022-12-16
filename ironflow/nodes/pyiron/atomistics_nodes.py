@@ -572,6 +572,40 @@ class LammpsPotentials_Node(DataNode):
         }
 
 
+class Slice_Node(DataNode):
+    """
+    Slice a sliceable (list, numpy.ndarray).
+    """
+
+    title = "Slice"
+    color = "#aabb44"
+
+    init_inputs = [
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="array"
+        ),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="start"),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="end"),
+    ]
+    init_outputs = [
+        NodeOutputBP(label="sliced")
+    ]
+
+    def node_function(self, array, start, end, **kwargs) -> dict:
+        if start is None and end is None:
+            raise ValueError(
+                f"At least one of start and end must be supplied, but got {start}, "
+                f"{end}."
+            )
+        elif start is None and end is not None:
+            sliced = array[:end]
+        elif start is not None and end is None:
+            sliced = array[start:]
+        else:
+            sliced = array[start:end]
+        return {"sliced": sliced}
+
+
 class AtomisticOutput_Node(DataNode):
     """
     Select Generic Output item.
