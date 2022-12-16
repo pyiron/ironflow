@@ -57,7 +57,8 @@ class NodeInput(NodeInputCore, HasDType):
     def batch(self):
         if self.dtype is not None and not self.dtype.batched:
             self.dtype.batched = True
-            self.val = [self.val]
+            if len(self.connections) == 0:
+                self.val = [self.val]
             self._update_node()
 
     def unbatch(self):
