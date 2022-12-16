@@ -547,6 +547,27 @@ class Lammps_Node(Engine):
         }
 
 
+class LammpsPotentials_Node(DataNode):
+    """
+    Given a structure, returns the available compatible Lammps potential names.
+    """
+
+    title = "LammpsPotentials"
+    color = "#aabb44"
+
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
+    ]
+    init_outputs = [
+        NodeOutputBP(dtype=dtypes.List(), label="potentials")
+    ]
+
+    def node_function(self, structure, **kwargs) -> dict:
+        return {
+            "potentials": list_potentials(structure),
+        }
+
+
 class AtomisticOutput_Node(DataNode):
     """
     Select Generic Output item.
