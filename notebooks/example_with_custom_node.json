@@ -15,75 +15,73 @@
                             {
                                 "type": "data",
                                 "label": "foo",
-                                "GID": 73,
-                                "val": "gARLAS4=",
+                                "GID": 193,
                                 "dtype": "DType.Integer",
-                                "dtype state": "gASVYAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZSMCGJ1aWx0aW5zlIwDaW50lJOUYYwKYWxsb3dfbm9uZZSJdS4="
+                                "dtype state": "gASVgAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "bar",
-                                "GID": 74
+                                "GID": 194,
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
                             }
                         ],
-                        "GID": 72,
-                        "pos x": 175.82781456953643,
-                        "pos y": 229.8507462686567
+                        "GID": 192,
+                        "pos x": 630.6273274133487,
+                        "pos y": 400.75824175824175
                     },
                     {
-                        "identifier": "IntRand_Node",
-                        "version": null,
-                        "state data": "gAR9lC4=",
+                        "identifier": "Slider_Node",
+                        "version": "v0.1",
+                        "state data": "gASVEwAAAAAAAAB9lIwDdmFslEc/8zMzMzMzM3Mu",
                         "additional data": {},
                         "inputs": [
                             {
                                 "type": "data",
-                                "label": "high",
-                                "GID": 76,
+                                "label": "scl",
+                                "GID": 201,
+                                "val": "gARLAS4=",
                                 "dtype": "DType.Integer",
-                                "dtype state": "gASVZQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsKS2SGlIwNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANpbnSUk5RhjAphbGxvd19ub25llIl1Lg=="
+                                "dtype state": "gASVgAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
                             },
                             {
                                 "type": "data",
-                                "label": "length",
-                                "GID": 77,
-                                "dtype": "DType.Integer",
-                                "dtype state": "gASVZQAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlEsBS2SGlIwNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANpbnSUk5RhjAphbGxvd19ub25llIl1Lg=="
+                                "label": "round",
+                                "GID": 202,
+                                "val": "gASILg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASVfQAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
-                                "label": "randint",
-                                "GID": 78
+                                "label": "",
+                                "GID": 203,
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
                             }
                         ],
-                        "GID": 75,
-                        "pos x": 665.9654940158541,
-                        "pos y": 274.6268656716418
+                        "GID": 200,
+                        "pos x": 260.0401031223145,
+                        "pos y": 426.37362637362634
                     }
                 ],
                 "connections": [
                     {
-                        "GID": 79,
-                        "parent node index": 0,
+                        "GID": 204,
+                        "parent node index": 1,
                         "output port index": 0,
-                        "connected node": 1,
+                        "connected node": 0,
                         "connected input port index": 0
-                    },
-                    {
-                        "GID": 80,
-                        "parent node index": 0,
-                        "output port index": 0,
-                        "connected node": 1,
-                        "connected input port index": 1
                     }
                 ],
-                "GID": 71
+                "GID": 191
             },
-            "GID": 65
+            "GID": 185
         }
     ]
 }
