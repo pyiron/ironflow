@@ -2,9 +2,25 @@
 # Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 """
-Wrapped dtypes to avoid mutable defaults.
+Initially wrapped dtypes to avoid mutable defaults, but after that expanded to
+facilitate strict type checking when flow connections are made, and to add batching.
 
-Implementation changes in ryvencore v0.4, so this file may be short-lived.
+Node ports were overridden so that by default they come with an `Untyped` dtype, and
+always have a batching flag.
+
+Spec for connection cases:
+- Typed output / Typed input: output classes must be subset of input classes.
+- Batched output / Typed input: Input must be List-type, and output classes must be a
+    subset of input classes.
+- Typed output / Batched input: Output must be List-type, and output classes must be
+    subset of input classes.
+- Batched output / Batched input: output classes must be subset of input classes.
+- Untyped output / Typed input: value is instance of allowed classes.
+- Untyped output / Batched input: value is iterable and each element is an instance of
+    allowed classes.
+- Untyped output / Untyped input: always allow.
+
+Implementation of Dtypes changes in ryvencore v0.4, so this file may be short-lived.
 """
 
 from __future__ import annotations
