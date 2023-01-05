@@ -575,36 +575,38 @@ class LammpsPotentials_Node(DataNode):
 
 class Slice_Node(DataNode):
     """
-    Slice a sliceable (list, numpy.ndarray).
+    Slice a numpy array, list, or tuple, and return it as a numpy array.
+
+    When both `i` and `j` are `None`: Return the input whole.
+    When `i` is not `None` and `j` is: Return the slice `[i:]`
+    When `i` is `None` and `j` isn't: Return the slice `[:j]`
+    When neither are `None`: Return the slice `[i:j]`
     """
 
     title = "Slice"
-    color = "#aabb44"
-
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="array"
+            dtype=dtypes.Data(valid_classes=[np.ndarray, list, tuple]), label="array"
         ),
-        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="start"),
-        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="end"),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="i"),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="j"),
     ]
     init_outputs = [
-        NodeOutputBP(label="sliced")
+        NodeOutputBP(label="sliced", dtype=dtypes.Data(valid_classes=np.array)),
     ]
+    color = "#aabb44"
 
-    def node_function(self, array, start, end, **kwargs) -> dict:
-        if start is None and end is None:
-            raise ValueError(
-                f"At least one of start and end must be supplied, but got {start}, "
-                f"{end}."
-            )
-        elif start is None and end is not None:
-            sliced = array[:end]
-        elif start is not None and end is None:
-            sliced = array[start:]
+    def node_function(self, array, i, j, **kwargs) -> dict:
+        converted = np.array(array)
+        if i is None and j is None:
+            sliced = converted
+        elif i is not None and j is None:
+            sliced = converted[i:]
+        elif i is None and j is not None:
+            sliced = converted[:j]
         else:
-            sliced = array[start:end]
-        return {"sliced": sliced}
+            sliced = converted[i:j]
+        return {'sliced': sliced}
 
 
 class AtomisticOutput_Node(DataNode):
