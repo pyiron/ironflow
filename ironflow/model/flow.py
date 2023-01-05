@@ -43,7 +43,7 @@ class Flow(FlowCore):
 
         # ironflow content
         if not self._ports_are_connected(p1, p2):
-        # Only validate connections, not disconnections
+            # Only validate connections, not disconnections
             inp, out = (p1, p2) if p1.io_pos == 1 else (p2, p1)
             if isinstance(inp.dtype, Untyped) or isinstance(out.dtype, Untyped) or (
                 inp.dtype.batched != out.dtype.batched and
