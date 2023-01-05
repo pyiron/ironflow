@@ -46,8 +46,7 @@ class Flow(FlowCore):
         # Only validate connections, not disconnections
             inp, out = (p1, p2) if p1.io_pos == 1 else (p2, p1)
             if isinstance(inp.dtype, Untyped) or isinstance(out.dtype, Untyped) or (
-                inp.dtype.batched and
-                not out.dtype.batched and
+                inp.dtype.batched != out.dtype.batched and
                 isinstance(out.val, (list, np.ndarray))
             ):
                 type_valid = inp.dtype.matches(out.val)
