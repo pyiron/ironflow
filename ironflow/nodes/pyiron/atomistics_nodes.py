@@ -1068,6 +1068,27 @@ class Click_Node(Node):
         self.exec_output(0)
 
 
+class Transpose_Node(DataNode):
+    """
+    Interprets list-like input as a numpy array and transposes it.
+    """
+
+    title = "Transpose"
+    init_inputs = [
+        NodeInputBP(
+            # dtype=dtypes.Data(valid_classes=[np.ndarray, list, tuple]), label="array"
+            dtype=dtypes.Untyped(), label="array"
+        ),
+    ]
+    init_outputs = [
+        NodeOutputBP(label="transposed"),  #, dtype=dtypes.Data(valid_classes=np.array)
+    ]
+    color = "#aabb44"
+
+    def node_function(self, array, **kwargs) -> dict:
+        return {'transposed': array}  #np.array(array).T
+
+
 nodes = [
     Project_Node,
     BulkStructure_Node,
@@ -1084,4 +1105,6 @@ nodes = [
     Matplot_Node,
     Click_Node,
     ForEach_Node,
+    Transpose_Node,
+    Slice_Node,
 ]
