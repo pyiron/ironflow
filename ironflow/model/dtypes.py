@@ -191,7 +191,7 @@ class Data(DType):
         self.add_data("size")
 
 
-class Integer(DType):
+class Integer(Data):
     def __init__(
         self,
         default: int = 0,
@@ -202,18 +202,19 @@ class Integer(DType):
         allow_none=False,
         batched=False,
     ):
+        self.bounds = bounds
         super().__init__(
             default=default,
-            bounds=bounds,
             doc=doc,
             _load_state=_load_state,
             valid_classes=[int, np.integer] if valid_classes is None else valid_classes,
             allow_none=allow_none,
             batched=batched,
         )
+        self.add_data("bounds")
 
 
-class Float(DType):
+class Float(Data):
     def __init__(
         self,
         default: float = 0.0,
@@ -225,20 +226,21 @@ class Float(DType):
         allow_none=False,
         batched=False,
     ):
+        self.bounds = bounds
         self.decimals = decimals
         super().__init__(
             default=default,
-            bounds=bounds,
             doc=doc,
             _load_state=_load_state,
             valid_classes=[float, np.floating] if valid_classes is None else valid_classes,
             allow_none=allow_none,
             batched=batched,
         )
+        self.add_data("bounds")
         self.add_data("decimals")
 
 
-class Boolean(DType):
+class Boolean(Data):
     def __init__(
         self,
         default: bool = False,
@@ -258,21 +260,16 @@ class Boolean(DType):
         )
 
 
-class String(DType):
+class String(Data):
     def __init__(
         self,
         default: str = "",
-        size: str = "m",
         doc: str = "",
         _load_state=None,
         valid_classes=None,
         allow_none=False,
         batched=False,
     ):
-        """
-        size: 's' / 'm' / 'l'
-        """
-        self.size = size
         super().__init__(
             default=default,
             doc=doc,
@@ -281,7 +278,6 @@ class String(DType):
             allow_none=allow_none,
             batched=batched,
         )
-        self.add_data("size")
 
 
 class Choice(DType):

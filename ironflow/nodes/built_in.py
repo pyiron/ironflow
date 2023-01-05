@@ -20,7 +20,7 @@ class GetVar_Node(NodeBase):
 
     title = "get var"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.String(size="m")),
+        NodeInputBP(dtype=dtypes.String()),
     ]
     init_outputs = [NodeOutputBP(label="val")]
     color = "#c69a15"
