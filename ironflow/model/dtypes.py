@@ -294,7 +294,8 @@ class Choice(DType):
         return val in self.items or self._matches_none(val)
 
     def _instance_matches_batch(self, val: Any):
-        return all([self._instance_matches_classes(v) for v in val])
+        return isinstance(val, (list, np.ndarray)) and \
+            all([self._instance_matches_classes(v) for v in val])
 
 
 class List(DType):
