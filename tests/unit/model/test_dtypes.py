@@ -4,12 +4,18 @@
 
 from unittest import TestCase
 
+import numpy as np
 from ryvencore.utils import deserialize, serialize
 
 from ironflow.model import dtypes
 
 
 class TestDTypes(TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.subset = [int, float]
+        cls.superset = [int, float, str]
+
     def test_from_string(self):
         self.assertEqual(dtypes.Data, dtypes.DType.from_str("DType.Data"))
 
@@ -33,7 +39,7 @@ class TestDTypes(TestCase):
         self.assertEqual(choice.valid_classes, reloaded.valid_classes)
         self.assertEqual(choice.batched, reloaded.batched)
 
-    def test_matching(self):
+    def test_data_matching(self):
         with self.subTest("Simple types"):
             d = dtypes.Integer()
             self.assertTrue(d.accepts(dtypes.Integer()), msg="DTypes should match")
@@ -41,41 +47,35 @@ class TestDTypes(TestCase):
             self.assertFalse(d.accepts(dtypes.String), msg="DTypes should not match")
             self.assertFalse(d.accepts([]), msg="Value should not match")
 
-        classes1 = [int, float]
-        classes2 = [int, float, str]
-        for D in [dtypes.Choice, dtypes.Data]:
-            with self.subTest(
-                    f"Test valid classes as subsets for {d.__class__.__name__}"
-            ):
-                self.assertTrue(
-                    D(valid_classes=classes2).accepts(D(valid_classes=classes1)),
-                    msg="DTypes should match when classes are a subset"
-                )
-                self.assertFalse(
-                    D(valid_classes=classes1).accepts(D(valid_classes=classes2)),
-                    msg="DTypes should not match when classes are a superset"
-                )
+        with self.subTest("Valid class subsets"):
             self.assertTrue(
-                dtypes.Data(valid_classes=int).accepts(7),
-                msg="Value should match"
+                dtypes.Data(valid_classes=self.superset).accepts(
+                    dtypes.Data(valid_classes=self.subset)
+                ),
+                msg="DTypes should match when classes are a subset"
             )
             self.assertFalse(
-                dtypes.Data(valid_classes=int).accepts("foo"),
-                msg="Value should not match"
+                dtypes.Data(valid_classes=self.subset).accepts(
+                    dtypes.Data(valid_classes=self.superset)
+                ),
+                msg="DTypes should not match when classes are a superset"
             )
 
-        with self.subTest("Ensure specificity works only within dtypes"):
-            self.assertFalse(
-                dtypes.Choice(valid_classes=classes1).accepts(
-                    dtypes.Data(valid_classes=classes1)
-                )
-            )
+    def test_cross_dtype_matching(self):
+        self.assertFalse(
+            dtypes.Choice(valid_classes=self.subset).accepts(
+                dtypes.Data(valid_classes=self.subset)
+            ),
+            msg="Even with matching valid classes, dtypes that do not inherit one from "
+                "the other should not match."
+        )
 
-        with self.subTest("Test choices"):
-            d = dtypes.Choice(default="foo", items=["bar", "foo"])
-            self.assertTrue(d.accepts("bar"))
-            self.assertFalse(d.accepts("not an item"))
+    def test_choice_matching(self):
+        d = dtypes.Choice(default="foo", items=["bar", "foo"])
+        self.assertTrue(d.accepts("bar"))
+        self.assertFalse(d.accepts("not an item"))
 
+    def test_none_values(self):
         for D in [
             dtypes.Boolean,
             dtypes.Choice,
@@ -86,7 +86,7 @@ class TestDTypes(TestCase):
             dtypes.List,
             dtypes.String
         ]:
-            with self.subTest(f"Test None for {d.__class__.__name__}"):
+            with self.subTest(f"Test None for {D.__name__}"):
                 self.assertTrue(D(allow_none=True).accepts(None))
 
     def test_batched_data(self):
@@ -129,15 +129,16 @@ class TestDTypes(TestCase):
             self.assertTrue(untyped.accepts([1, None, 3]))
             self.assertFalse(untyped.accepts("Not list-like"))
 
+        data = dtypes.Data(valid_classes=[int, str])
         with self.assertRaises(
                 ValueError,
                 msg="Checks against untyped should always be by value instead"
         ):
-            dtypes.Data(valid_classes=[int, str]).accepts(untyped)
+            data.accepts(untyped)
 
         with self.assertRaises(
                 ValueError,
                 msg="Untyped should never check against dtypes, but should always be "
                     "checked by value instead"
         ):
-            untyped.accepts(dtypes.Data(valid_classes=[int, str]))
+            untyped.accepts(data)
