@@ -123,7 +123,7 @@ class DType(DTypeCore):
         return val is None and self.allow_none
 
     def _batch_accepts_instance(self, val: Any):
-        if isinstance(val, (list, np.ndarray)):
+        if hasattr(val, "__iter__"):
             if any([v is None for v in val]) and not self.allow_none:
                 return False
             else:
