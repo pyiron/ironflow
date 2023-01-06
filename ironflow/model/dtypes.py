@@ -91,7 +91,7 @@ class DType(DTypeCore, ABC):
         if self.batched:
             return self._batch_accepts_instance(val)
         else:
-            return self._accepts_none(val) or self._instance_matches_classes(val)
+            return self._accepts_none(val) or self._accepts_non_none_instance(val)
 
     @abstractmethod
     def _batch_accepts_instance(self, val: Any):
@@ -101,7 +101,7 @@ class DType(DTypeCore, ABC):
         return val is None and self.allow_none
 
     @abstractmethod
-    def _instance_matches_classes(self, val: Any):
+    def _accepts_non_none_instance(self, val: Any):
         pass
 
     def valid_val(self, val: Any):
@@ -146,7 +146,7 @@ class Untyped(DType):
             f"you got to this error."
         )
 
-    def _instance_matches_classes(self, val: Any):
+    def _accepts_non_none_instance(self, val: Any):
         return True
 
     def _batch_accepts_instance(self, val: Any):
@@ -215,7 +215,7 @@ class Data(DType):
         else:
             return False
 
-    def _instance_matches_classes(self, val: Any):
+    def _accepts_non_none_instance(self, val: Any):
         return any([isinstance(val, c) for c in self.valid_classes])
 
     def _batch_accepts_instance(self, val: Any):
@@ -381,12 +381,12 @@ class Choice(DType):
         else:
             return False
 
-    def _instance_matches_classes(self, val: Any):
+    def _accepts_non_none_instance(self, val: Any):
         return val in self.items
 
     def _batch_accepts_instance(self, val: Any):
         return isinstance(val, (list, np.ndarray)) and \
-            all([self._instance_matches_classes(v) for v in val])
+            all([self._accepts_non_none_instance(v) for v in val])
 
 
 class List(DType):
@@ -431,7 +431,7 @@ class List(DType):
     def _accepts_dtype(self, other: DType):
         raise NotImplementedError
 
-    def _instance_matches_classes(self, val: Any):
+    def _accepts_non_none_instance(self, val: Any):
         raise NotImplementedError
 
     def _batch_accepts_instance(self, val: Any):
