@@ -83,7 +83,7 @@ class DType(DTypeCore, ABC):
         return None
 
     @staticmethod
-    def _other_types_are_subset(other, reference):
+    def _other_classes_are_subset(other, reference):
         return all(
             [
                 any([issubclass(o, ref) for ref in reference])
@@ -195,7 +195,7 @@ class Data(DType):
             )
         elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
                 and other.batched == self.batched:
-            other_is_more_specific = self._other_types_are_subset(
+            other_is_more_specific = self._other_classes_are_subset(
                 other.valid_classes, self.valid_classes
             )
             might_get_surprising_none = other.allow_none and not self.allow_none
@@ -211,7 +211,7 @@ class Data(DType):
             if any([v is None for v in val]) and not self.allow_none:
                 return False
             else:
-                return self._other_types_are_subset(
+                return self._other_classes_are_subset(
                     set([type(v) for v in val if v is not None]), self.valid_classes
                 )
         else:
@@ -339,7 +339,7 @@ class Choice(DType):
             )
         elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
                 and other.batched == self.batched:
-            other_is_more_specific = self._other_types_are_subset(
+            other_is_more_specific = self._other_classes_are_subset(
                 other.valid_classes, self.valid_classes
             )
             might_get_surprising_none = other.allow_none and not self.allow_none
