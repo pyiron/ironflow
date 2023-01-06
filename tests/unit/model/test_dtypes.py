@@ -133,7 +133,7 @@ class TestDTypes(TestCase):
             untyped.batched = True
             self.assertTrue(untyped.accepts([1, 2, 3]))
             self.assertTrue(untyped.accepts([1, None, 3]))
-            self.assertFalse(untyped.accepts("Not list-like"))
+            self.assertTrue(untyped.accepts("Strings are iterable"))
 
         data = dtypes.Data(valid_classes=[int, str])
         with self.assertRaises(
