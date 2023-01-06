@@ -20,6 +20,10 @@ Spec for connection cases:
     allowed classes.
 - Untyped output / Untyped input: always allow.
 
+Warning:
+    Any additional types defined here later need to be added to the list in
+    `DType.from_str` to work with (de)serialization.
+
 Implementation of Dtypes changes in ryvencore v0.4, so this file may be short-lived.
 """
 
