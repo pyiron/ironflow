@@ -8,22 +8,8 @@ facilitate strict type checking when flow connections are made, and to add batch
 Node ports were overridden so that by default they come with an `Untyped` dtype, and
 always have a batching flag.
 
-Spec for Data connection cases:
-- Typed output / Typed input: output classes must be subset of input classes, and one
-    of input or output classes must inherit from the other (or be the same).
-- Batched output / Typed input: Input must be List-type, and output classes must be a
-    subset of input classes.
-- Typed output / Batched input: Output must be List-type, and output classes must be
-    subset of input classes.
-- Batched output / Batched input: output classes must be subset of input classes, and
-    one of input or output classes must inherit from the other (or be the same).
-- Untyped output / Typed input: value is instance of allowed classes.
-- Untyped output / Batched input: value is iterable and each element is an instance of
-    allowed classes.
-- Any / Untyped input: always allow values, always raise an error for dtypes.
-
-There are also two special dtypes that carry information with a more defined structure:
-Choice and List.
+Further, the dtypes are broken down into broad categories of `Data`, `List`, and
+`Choice` with different behaviours under regular and batched conditions.
 
 Warning:
     Any additional types defined here later need to be added to the list in
@@ -127,6 +113,14 @@ class Untyped(DType):
     Untyped data always performs an instance-check when used as input and when it's
     used as output, other input nodes always perform an instance-check against it.
     That means it can't be used to pre-wire a graph that has missing data.
+
+    When Untyped as an input receives output connections...
+    Normally:
+        - Accept anything.
+    When batched:
+        - Accept any value that is iterable.
+
+    Untyped is always valid unless the value is None and None is not allowed.
     """
 
     def __init__(
@@ -160,7 +154,25 @@ class Untyped(DType):
 
 
 class Data(DType):
-    """Any kind of data represented by some evaluated text input"""
+    """
+    For most types of data.
+
+    When Data as an input receives output connections...
+    Normally:
+        - Data output: output valid classes must be a subset of input valid classes, and
+            one of input or output classes must inherit from the other (or be the same).
+        - Untyped output: output value must be an instance of valid classes
+        - All else: Fail.
+    When batched:
+        - Batched Data output: same as the unbatched case, but now both are batched.
+        - Untyped output: output value must be iterable and each element must be an
+            instance of valid classes.
+        - List output: output valid classes must be a subset of input valid classes.
+        - All else: Fail.
+
+    Data is valid when the value is an instance of the valid classes, or is None and
+    None is allowed.
+    """
 
     def __init__(
         self,
@@ -308,6 +320,28 @@ class String(Data):
 
 
 class Choice(DType):
+    """
+    Data that must be chosen from among a list of items.
+
+    When Choice as an input receives output connections...
+    Normally:
+        - Data output: output valid classes must be a subset.
+        - Untyped output: output value must be in the items list.
+        - All else: Fail.
+    When batched:
+        - Batched Data output: output valid classes must be a subset.
+        - List output: output valid classes must be a subset.
+        - Untyped: output value must be iterable, and each element must be in the items
+            list.
+        - All else: Fail.
+
+    Choice is valid when the value is in the items list, or value is None and None is
+    allowed.
+
+    Note that when making Data (or List) connections, the connection may be allowed
+    but still result in an invalid value state (in cases where the output value does
+    not match the input items list).
+    """
     def __init__(
         self,
         default=None,
@@ -357,10 +391,23 @@ class Choice(DType):
 
 class List(DType):
     """
-    TODO: List can probably be more like `Choice`, with special matching rules. For
-          instance, I would expect a `List` input to accept other output, as long as
-          that output was batched and the other `valid_classes` were a subset of the
-          `List.valid_classes`.
+    Data that is explicitly iterable.
+
+    When List as an input receives output connections...
+    Normally:
+        - List output: output valid classes must be a subset.
+        - Batched Data output: output valid classes must be a subset.
+        - Untyped output: output value must be iterable and each element must be an
+            instance of valid classes.
+        - All else: Fail.
+    When batched:
+        - Batched List output: output valid classes must be a subset.
+        - Untyped: output value must be iterable, each element must be iterable, and
+            each element's element must be an instance of a valid class.
+        - All else: Fail.
+
+    List is valid when the value is iterable and all elements are instances of the
+    valid classes, or the value is None and None is allowed.
     """
     def __init__(
         self,
