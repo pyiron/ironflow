@@ -34,13 +34,14 @@ Implementation of Dtypes changes in ryvencore v0.4, so this file may be short-li
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 import numpy as np
 from ryvencore.dtypes import DType as DTypeCore
 
 
-class DType(DTypeCore):
+class DType(DTypeCore, ABC):
     def __init__(
         self,
         default,
@@ -90,22 +91,9 @@ class DType(DTypeCore):
             ]
         )
 
+    @abstractmethod
     def _accepts_dtype(self, other: DType):
-        if isinstance(other, Untyped):
-            raise ValueError(
-                f"Match checks against {Untyped.__class__.__name__} should always be "
-                f"done by value, not by dtype. Please contact a package maintainer and "
-                f"explain how you got to this error."
-            )
-        elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
-                and other.batched == self.batched:
-            other_is_more_specific = self._other_types_are_subset(
-                other.valid_classes, self.valid_classes
-            )
-            might_get_surprising_none = other.allow_none and not self.allow_none
-            return other_is_more_specific and not might_get_surprising_none
-        else:
-            return False
+        pass
 
     def _accepts_instance(self, val: Any):
         if self.batched:
@@ -113,25 +101,19 @@ class DType(DTypeCore):
         else:
             return self._accepts_none(val) or self._instance_matches_classes(val)
 
+    @abstractmethod
+    def _instance_matches_classes(self, val: Any):
+        pass
+
+    @abstractmethod
+    def _batch_accepts_instance(self, val: Any):
+        pass
+
     def valid_val(self, val: Any):
         return self._accepts_instance(val)
 
-    def _instance_matches_classes(self, val: Any):
-        return any([isinstance(val, c) for c in self.valid_classes])
-
     def _accepts_none(self, val: Any):
         return val is None and self.allow_none
-
-    def _batch_accepts_instance(self, val: Any):
-        if hasattr(val, "__iter__"):
-            if any([v is None for v in val]) and not self.allow_none:
-                return False
-            else:
-                return self._other_types_are_subset(
-                    set([type(v) for v in val if v is not None]), self.valid_classes
-                )
-        else:
-            return False
 
     def accepts(self, other: DType | Any | None):
         if isinstance(other, DType):
@@ -203,6 +185,37 @@ class Data(DType):
             batched=batched,
         )
         self.add_data("size")
+
+    def _accepts_dtype(self, other: DType):
+        if isinstance(other, Untyped):
+            raise ValueError(
+                f"Match checks against {Untyped.__class__.__name__} should always be "
+                f"done by value, not by dtype. Please contact a package maintainer and "
+                f"explain how you got to this error."
+            )
+        elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
+                and other.batched == self.batched:
+            other_is_more_specific = self._other_types_are_subset(
+                other.valid_classes, self.valid_classes
+            )
+            might_get_surprising_none = other.allow_none and not self.allow_none
+            return other_is_more_specific and not might_get_surprising_none
+        else:
+            return False
+
+    def _instance_matches_classes(self, val: Any):
+        return any([isinstance(val, c) for c in self.valid_classes])
+
+    def _batch_accepts_instance(self, val: Any):
+        if hasattr(val, "__iter__"):
+            if any([v is None for v in val]) and not self.allow_none:
+                return False
+            else:
+                return self._other_types_are_subset(
+                    set([type(v) for v in val if v is not None]), self.valid_classes
+                )
+        else:
+            return False
 
 
 class Integer(Data):
@@ -316,6 +329,24 @@ class Choice(DType):
         )
         self.add_data("items")
 
+    def _accepts_dtype(self, other: DType):
+        # TODO: Temporary code duplication while splitting Data and Choice
+        if isinstance(other, Untyped):
+            raise ValueError(
+                f"Match checks against {Untyped.__class__.__name__} should always be "
+                f"done by value, not by dtype. Please contact a package maintainer and "
+                f"explain how you got to this error."
+            )
+        elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
+                and other.batched == self.batched:
+            other_is_more_specific = self._other_types_are_subset(
+                other.valid_classes, self.valid_classes
+            )
+            might_get_surprising_none = other.allow_none and not self.allow_none
+            return other_is_more_specific and not might_get_surprising_none
+        else:
+            return False
+
     def _instance_matches_classes(self, val: Any):
         return val in self.items
 
@@ -349,3 +380,12 @@ class List(DType):
             allow_none=allow_none,
             batched=batched,
         )
+
+    def _accepts_dtype(self, other: DType):
+        raise NotImplementedError
+
+    def _instance_matches_classes(self, val: Any):
+        raise NotImplementedError
+
+    def _batch_accepts_instance(self, val: Any):
+        raise NotImplementedError
