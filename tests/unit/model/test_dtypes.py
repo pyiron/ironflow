@@ -157,3 +157,74 @@ class TestDTypes(TestCase):
                     "checked by value instead"
         ):
             untyped.accepts(data)
+
+    def test_list(self):
+        list1 = dtypes.List(valid_classes=self.subset)
+
+        with self.subTest("Test simple values"):
+            self.assertTrue(list1.accepts([1, 2, 3.3]))
+            self.assertFalse(
+                list1.accepts(np.arange(5)),
+                msg=f"Numpy number types are not just int and float, so they shouldn't "
+                    "pass for {self.subset}."
+            )
+            self.assertFalse(
+                list1.accepts(5), msg="Non-iterables should not be accepted"
+            )
+
+        list2 = dtypes.List(valid_classes=list1.valid_classes)
+        list3 = dtypes.List(valid_classes=self.superset)
+        data1 = dtypes.Data(valid_classes=list1.valid_classes, batched=True)
+        data2 = dtypes.Data(valid_classes=list1.valid_classes, batched=False)
+        data3 = dtypes.Data(valid_classes=self.superset, batched=True)
+        choice = dtypes.Choice(valid_classes=list1.valid_classes)
+
+        with self.subTest("Test dtypes"):
+            self.assertTrue(
+                list1.accepts(list2),
+                msg="Should accept other lists of equivalent or subset classes"
+            )
+            self.assertFalse(
+                list1.accepts(list3),
+                msg="Shouldn't accept lists with superset of classes"
+            )
+            self.assertTrue(
+                list1.accepts(data1),
+                msg="Should accept batched data with equivalent or subset classes"
+            )
+            self.assertFalse(
+                list1.accepts(data2), msg="Shouldn't accept non-batched data"
+            )
+            self.assertFalse(
+                list1.accepts(data3),
+                msg="Shouldn't accept batched data without more specific classes"
+            )
+            self.assertFalse(
+                list1.accepts(choice),
+                msg="Shouldn't accept non-List, non-(batched-)Data dtypes"
+            )
+
+        list1.batched = True
+        with self.subTest("Test batching"):
+            self.assertFalse(list1.accepts([1, 2, 3.3]))
+            self.assertTrue(list1.accepts([[1], [2], [3.3]]))
+
+            self.assertFalse(
+                list1.accepts(list2),
+                msg="Shouldn't accept other unbatched lists."
+            )
+            list2.batched = True
+            self.assertTrue(
+                list1.accepts(list2),
+                msg="Should accept other batched lists of equivalent or subset classes"
+            )
+            list3.batched = True
+            self.assertFalse(
+                list1.accepts(list3),
+                msg="Still shouldn't accept lists with superset of classes"
+            )
+
+        with self.subTest("Test None acceptance"):
+            self.assertFalse(list1.accepts([[1], [2, None], [3.3]]))
+            list1.allow_none = True
+            self.assertTrue(list1.accepts([[1], None, [3.3]]))

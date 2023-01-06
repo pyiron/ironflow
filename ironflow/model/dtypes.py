@@ -437,10 +437,21 @@ class List(DType):
         )
 
     def _accepts_dtype(self, other: DType):
-        raise NotImplementedError
+        if self.batched:
+            return isinstance(other, List) and other.batched and \
+                self._other_classes_are_subset(other.valid_classes, self.valid_classes)
+        else:
+            if isinstance(other, List) or (isinstance(other, Data) and other.batched):
+                return self._other_classes_are_subset(
+                    other.valid_classes, self.valid_classes
+                )
 
     def _accepts_non_none_instance(self, val: Any):
-        raise NotImplementedError
+        return isiterable(val) and all(
+            [any([isinstance(v, c) for c in self.valid_classes]) for v in val]
+        )
 
     def _batch_accepts_instance(self, val: Any):
-        raise NotImplementedError
+        return isiterable(val) and all(
+            [self._accepts_none(v) or self._accepts_non_none_instance(v) for v in val]
+        )
