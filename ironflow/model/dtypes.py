@@ -8,7 +8,7 @@ facilitate strict type checking when flow connections are made, and to add batch
 Node ports were overridden so that by default they come with an `Untyped` dtype, and
 always have a batching flag.
 
-Spec for connection cases:
+Spec for Data connection cases:
 - Typed output / Typed input: output classes must be subset of input classes.
 - Batched output / Typed input: Input must be List-type, and output classes must be a
     subset of input classes.
@@ -19,6 +19,9 @@ Spec for connection cases:
 - Untyped output / Batched input: value is iterable and each element is an instance of
     allowed classes.
 - Untyped output / Untyped input: always allow.
+
+There are also two special dtypes that carry information with a more defined structure:
+Choice and List.
 
 Warning:
     Any additional types defined here later need to be added to the list in
