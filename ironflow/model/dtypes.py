@@ -9,16 +9,18 @@ Node ports were overridden so that by default they come with an `Untyped` dtype,
 always have a batching flag.
 
 Spec for Data connection cases:
-- Typed output / Typed input: output classes must be subset of input classes.
+- Typed output / Typed input: output classes must be subset of input classes, and one
+    of input or output classes must inherit from the other (or be the same).
 - Batched output / Typed input: Input must be List-type, and output classes must be a
     subset of input classes.
 - Typed output / Batched input: Output must be List-type, and output classes must be
     subset of input classes.
-- Batched output / Batched input: output classes must be subset of input classes.
+- Batched output / Batched input: output classes must be subset of input classes, and
+    one of input or output classes must inherit from the other (or be the same).
 - Untyped output / Typed input: value is instance of allowed classes.
 - Untyped output / Batched input: value is iterable and each element is an instance of
     allowed classes.
-- Untyped output / Untyped input: always allow.
+- Any / Untyped input: always allow values, always raise an error for dtypes.
 
 There are also two special dtypes that carry information with a more defined structure:
 Choice and List.
