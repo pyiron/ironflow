@@ -171,7 +171,7 @@ class Untyped(DType):
         return True
 
     def _batch_accepts_instance(self, val: Any):
-        return isinstance(val, (list, np.ndarray))
+        return hasattr(val, "__iter__")
 
 
 class Data(DType):
