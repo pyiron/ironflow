@@ -81,17 +81,17 @@ class DType(DTypeCore):
             ]
         )
 
-    def _accepts_dtype(self, val: DType):
-        if isinstance(val, Untyped):
+    def _accepts_dtype(self, other: DType):
+        if isinstance(other, Untyped):
             raise ValueError(
                 f"Match checks against {Untyped.__class__.__name__} should always be "
                 f"done by value, not by dtype"
             )
-        elif isinstance(val, self.__class__) and val.batched == self.batched:
+        elif isinstance(other, self.__class__) and other.batched == self.batched:
             other_is_more_specific = self._other_types_are_subset(
-                val.valid_classes, self.valid_classes
+                other.valid_classes, self.valid_classes
             )
-            might_get_surprising_none = val.allow_none and not self.allow_none
+            might_get_surprising_none = other.allow_none and not self.allow_none
             return other_is_more_specific and not might_get_surprising_none
         else:
             return False
@@ -123,11 +123,11 @@ class DType(DTypeCore):
         else:
             return False
 
-    def accepts(self, val: DType | Any | None):
-        if isinstance(val, DType):
-            return self._accepts_dtype(val)
+    def accepts(self, other: DType | Any | None):
+        if isinstance(other, DType):
+            return self._accepts_dtype(other)
         else:
-            return self._accepts_instance(val)
+            return self._accepts_instance(other)
 
 
 class Untyped(DType):
@@ -153,7 +153,7 @@ class Untyped(DType):
             batched=batched,
         )
 
-    def _accepts_dtype(self, val: DType):
+    def _accepts_dtype(self, other: DType):
         raise ValueError(
             f"Match checks to {self.__class__.__name__} should always be done by "
             f"value, not by dtype"
