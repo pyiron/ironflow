@@ -27,6 +27,14 @@ import numpy as np
 from ryvencore.dtypes import DType as DTypeCore
 
 
+def isiterable(obj):
+    try:
+        iter(obj)
+        return True
+    except TypeError:
+        return False
+
+
 class DType(DTypeCore, ABC):
     def __init__(
         self,

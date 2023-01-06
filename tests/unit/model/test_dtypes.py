@@ -10,6 +10,15 @@ from ryvencore.utils import deserialize, serialize
 from ironflow.model import dtypes
 
 
+class TestIsiterable(TestCase):
+    def test_isiterable(self):
+        self.assertTrue(dtypes.isiterable([0]))
+        self.assertTrue(dtypes.isiterable((1, 2, 3)))
+        self.assertTrue(dtypes.isiterable(np.array([4, 5])))
+        self.assertTrue(dtypes.isiterable("Strings are"))
+        self.assertFalse(dtypes.isiterable(42))
+
+
 class TestDTypes(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
