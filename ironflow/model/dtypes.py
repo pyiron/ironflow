@@ -95,7 +95,8 @@ class DType(DTypeCore):
                 f"done by value, not by dtype. Please contact a package maintainer and "
                 f"explain how you got to this error."
             )
-        elif isinstance(other, self.__class__) and other.batched == self.batched:
+        elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
+                and other.batched == self.batched:
             other_is_more_specific = self._other_types_are_subset(
                 other.valid_classes, self.valid_classes
             )
