@@ -100,14 +100,13 @@ class DType(DTypeCore):
         if self.batched:
             return self._batch_accepts_instance(val)
         else:
-            return self._instance_matches_classes(val)
+            return self._accepts_none(val) or self._instance_matches_classes(val)
 
     def valid_val(self, val: Any):
         return self._accepts_instance(val)
 
     def _instance_matches_classes(self, val: Any):
-        return any([isinstance(val, c) for c in self.valid_classes]) or \
-               self._accepts_none(val)
+        return any([isinstance(val, c) for c in self.valid_classes])
 
     def _accepts_none(self, val: Any):
         return val is None and self.allow_none
