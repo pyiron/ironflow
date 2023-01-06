@@ -85,7 +85,8 @@ class DType(DTypeCore):
         if isinstance(other, Untyped):
             raise ValueError(
                 f"Match checks against {Untyped.__class__.__name__} should always be "
-                f"done by value, not by dtype"
+                f"done by value, not by dtype. Please contact a package maintainer and "
+                f"explain how you got to this error."
             )
         elif isinstance(other, self.__class__) and other.batched == self.batched:
             other_is_more_specific = self._other_types_are_subset(
@@ -155,7 +156,8 @@ class Untyped(DType):
     def _accepts_dtype(self, other: DType):
         raise ValueError(
             f"Match checks to {self.__class__.__name__} should always be done by "
-            f"value, not by dtype"
+            f"value, not by dtype. Please contact a package maintainer and explain how"
+            f"you got to this error."
         )
 
     def _instance_matches_classes(self, val: Any):
