@@ -69,6 +69,12 @@ class TestDTypes(TestCase):
             msg="Even with matching valid classes, dtypes that do not inherit one from "
                 "the other should not match."
         )
+        self.assertTrue(
+            dtypes.Data(valid_classes=[int, np.integer]).accepts(dtypes.Integer())
+        )
+        self.assertTrue(
+            dtypes.Integer().accepts(dtypes.Data(valid_classes=[int, np.integer]))
+        )
 
     def test_choice_matching(self):
         d = dtypes.Choice(default="foo", items=["bar", "foo"])
