@@ -49,10 +49,10 @@ class Flow(FlowCore):
                 inp.dtype.batched != out.dtype.batched and
                 isinstance(out.val, (list, np.ndarray))
             ):
-                type_valid = inp.dtype.matches(out.val)
+                type_valid = inp.dtype.accepts(out.val)
                 check_type = "value"
             else:
-                type_valid = inp.dtype.matches(out.dtype)
+                type_valid = inp.dtype.accepts(out.dtype)
                 check_type = "dtype"
             InfoMsgs.write(
                 f"{inp.node.title}.{inp.label_str} input "

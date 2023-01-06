@@ -27,7 +27,7 @@ class HasDType:
     def valid_val(self):
         if self.dtype is not None:
             if self.val is not None:
-                return self.dtype._instance_matches(self.val)
+                return self.dtype.valid_val(self.val)
             else:
                 return self.dtype.allow_none
         else:

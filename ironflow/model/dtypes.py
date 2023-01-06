@@ -81,7 +81,7 @@ class DType(DTypeCore):
             ]
         )
 
-    def _dtype_matches(self, val: DType):
+    def _accepts_dtype(self, val: DType):
         if isinstance(val, Untyped):
             raise ValueError(
                 f"Match checks against {Untyped.__class__.__name__} should always be "
@@ -96,20 +96,23 @@ class DType(DTypeCore):
         else:
             return False
 
-    def _instance_matches(self, val: Any):
+    def _accepts_instance(self, val: Any):
         if self.batched:
-            return self._instance_matches_batch(val)
+            return self._batch_accepts_instance(val)
         else:
             return self._instance_matches_classes(val)
 
+    def valid_val(self, val: Any):
+        return self._accepts_instance(val)
+
     def _instance_matches_classes(self, val: Any):
         return any([isinstance(val, c) for c in self.valid_classes]) or \
-               self._matches_none(val)
+               self._accepts_none(val)
 
-    def _matches_none(self, val: Any):
+    def _accepts_none(self, val: Any):
         return val is None and self.allow_none
 
-    def _instance_matches_batch(self, val: Any):
+    def _batch_accepts_instance(self, val: Any):
         if isinstance(val, (list, np.ndarray)):
             if any([v is None for v in val]) and not self.allow_none:
                 return False
@@ -120,11 +123,11 @@ class DType(DTypeCore):
         else:
             return False
 
-    def matches(self, val: DType | Any | None):
+    def accepts(self, val: DType | Any | None):
         if isinstance(val, DType):
-            return self._dtype_matches(val)
+            return self._accepts_dtype(val)
         else:
-            return self._instance_matches(val)
+            return self._accepts_instance(val)
 
 
 class Untyped(DType):
@@ -150,7 +153,7 @@ class Untyped(DType):
             batched=batched,
         )
 
-    def _dtype_matches(self, val: DType):
+    def _accepts_dtype(self, val: DType):
         raise ValueError(
             f"Match checks to {self.__class__.__name__} should always be done by "
             f"value, not by dtype"
@@ -159,7 +162,7 @@ class Untyped(DType):
     def _instance_matches_classes(self, val: Any):
         return True
 
-    def _instance_matches_batch(self, val: Any):
+    def _batch_accepts_instance(self, val: Any):
         return isinstance(val, (list, np.ndarray))
 
 
@@ -303,9 +306,9 @@ class Choice(DType):
         self.add_data("items")
 
     def _instance_matches_classes(self, val: Any):
-        return val in self.items or self._matches_none(val)
+        return val in self.items or self._accepts_none(val)
 
-    def _instance_matches_batch(self, val: Any):
+    def _batch_accepts_instance(self, val: Any):
         return isinstance(val, (list, np.ndarray)) and \
             all([self._instance_matches_classes(v) for v in val])
 
