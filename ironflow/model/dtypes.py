@@ -91,6 +91,12 @@ class DType(DTypeCore, ABC):
             ]
         )
 
+    def accepts(self, other: DType | Any | None):
+        if isinstance(other, DType):
+            return self._accepts_dtype(other)
+        else:
+            return self._accepts_instance(other)
+
     @abstractmethod
     def _accepts_dtype(self, other: DType):
         pass
@@ -102,24 +108,18 @@ class DType(DTypeCore, ABC):
             return self._accepts_none(val) or self._instance_matches_classes(val)
 
     @abstractmethod
-    def _instance_matches_classes(self, val: Any):
-        pass
-
-    @abstractmethod
     def _batch_accepts_instance(self, val: Any):
         pass
-
-    def valid_val(self, val: Any):
-        return self._accepts_instance(val)
 
     def _accepts_none(self, val: Any):
         return val is None and self.allow_none
 
-    def accepts(self, other: DType | Any | None):
-        if isinstance(other, DType):
-            return self._accepts_dtype(other)
-        else:
-            return self._accepts_instance(other)
+    @abstractmethod
+    def _instance_matches_classes(self, val: Any):
+        pass
+
+    def valid_val(self, val: Any):
+        return self._accepts_instance(val)
 
 
 class Untyped(DType):
