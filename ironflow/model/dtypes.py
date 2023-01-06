@@ -317,7 +317,7 @@ class Choice(DType):
         self.add_data("items")
 
     def _instance_matches_classes(self, val: Any):
-        return val in self.items or self._accepts_none(val)
+        return val in self.items
 
     def _batch_accepts_instance(self, val: Any):
         return isinstance(val, (list, np.ndarray)) and \
