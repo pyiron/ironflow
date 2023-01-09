@@ -48,7 +48,7 @@ class TestDTypes(TestCase):
         self.assertEqual(choice.valid_classes, reloaded.valid_classes)
         self.assertEqual(choice.batched, reloaded.batched)
 
-    def test_data_matching(self):
+    def test_data(self):
         with self.subTest("Simple types"):
             d = dtypes.Integer()
             self.assertTrue(d.accepts(dtypes.Integer()), msg="DTypes should match")
@@ -85,7 +85,7 @@ class TestDTypes(TestCase):
             dtypes.Integer().accepts(dtypes.Data(valid_classes=[int, np.integer]))
         )
 
-    def test_choice_matching(self):
+    def test_choice(self):
         d = dtypes.Choice(default="foo", items=["bar", "foo"])
         self.assertTrue(d.accepts("bar"))
         self.assertFalse(d.accepts("not an item"))
