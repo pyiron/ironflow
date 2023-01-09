@@ -85,11 +85,6 @@ class TestDTypes(TestCase):
             dtypes.Integer().accepts(dtypes.Data(valid_classes=[int, np.integer]))
         )
 
-    def test_choice(self):
-        d = dtypes.Choice(default="foo", items=["bar", "foo"])
-        self.assertTrue(d.accepts("bar"))
-        self.assertFalse(d.accepts("not an item"))
-
     def test_none_values(self):
         for D in [
             dtypes.Boolean,
@@ -157,6 +152,11 @@ class TestDTypes(TestCase):
                     "checked by value instead"
         ):
             untyped.accepts(data)
+
+    def test_choice(self):
+        d = dtypes.Choice(default="foo", items=["bar", "foo"])
+        self.assertTrue(d.accepts("bar"))
+        self.assertFalse(d.accepts("not an item"))
 
     def test_list(self):
         list1 = dtypes.List(valid_classes=self.subset)
