@@ -228,3 +228,7 @@ class TestDTypes(TestCase):
             self.assertFalse(list1.accepts([[1], [2, None], [3.3]]))
             list1.allow_none = True
             self.assertTrue(list1.accepts([[1], None, [3.3]]))
+
+            self.assertFalse(list1.accepts([[1], None, [3.3, None]]))
+            list1.valid_classes.append(type(None))
+            self.assertTrue(list1.accepts([[1], None, [3.3, None]]))

@@ -416,6 +416,10 @@ class List(DType):
 
     List is valid when the value is iterable and all elements are instances of the
     valid classes, or the value is None and None is allowed.
+
+    Note: `allow_none` in this case determines whether the _entire dtype value_ may be
+        `None`. If you want to specify that the list-like object itself may _contain_
+        `None` values, add `type(None)` to the `valid_classes`.
     """
     def __init__(
         self,
