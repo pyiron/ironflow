@@ -74,14 +74,33 @@ class TestDTypes(TestCase):
             untyped.accepts(data)
 
     def test_data(self):
-        with self.subTest("Simple types"):
-            d = dtypes.Integer()
-            self.assertTrue(d.accepts(dtypes.Integer()), msg="DTypes should match")
+        d = dtypes.Integer()
+        with self.subTest("Value checking"):
             self.assertTrue(d.accepts(7), msg="Value should match")
-            self.assertFalse(d.accepts(dtypes.String), msg="DTypes should not match")
             self.assertFalse(d.accepts([]), msg="Value should not match")
 
-        with self.subTest("Valid class subsets"):
+        with self.subTest("Dtype checking"):
+            self.assertTrue(
+                d.accepts(dtypes.Integer()),
+                msg="Should match -- identical"
+            )
+            self.assertTrue(
+                d.accepts(dtypes.Data(valid_classes=int)),
+                msg="Should match -- dtypes are parent-child related and other valid "
+                    "classes are a subset"
+            )
+            self.assertFalse(
+                d.accepts(dtypes.String),
+                msg="Should not match -- dtypes are not parent-child (and valid "
+                    "classes don't match"
+            )
+            self.assertFalse(
+                d.accepts(dtypes.List(valid_classes=d.valid_classes)),
+                msg="Should not match even though valid classes are the same -- dtypes "
+                    "are not parent-child"
+            )
+
+        with self.subTest("Test valid class sub- and supersets"):
             self.assertTrue(
                 dtypes.Data(valid_classes=self.superset).accepts(
                     dtypes.Data(valid_classes=self.subset)
