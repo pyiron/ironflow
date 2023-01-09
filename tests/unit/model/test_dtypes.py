@@ -48,6 +48,31 @@ class TestDTypes(TestCase):
         self.assertEqual(choice.valid_classes, reloaded.valid_classes)
         self.assertEqual(choice.batched, reloaded.batched)
 
+    def test_untyped(self):
+        untyped = dtypes.Untyped()
+        with self.subTest("Test untyped input"):
+            self.assertTrue(untyped.accepts(7))
+            self.assertTrue(untyped.accepts(None))
+
+            untyped.batched = True
+            self.assertTrue(untyped.accepts([1, 2, 3]))
+            self.assertTrue(untyped.accepts([1, None, 3]))
+            self.assertTrue(untyped.accepts("Strings are iterable"))
+
+        data = dtypes.Data(valid_classes=[int, str])
+        with self.assertRaises(
+                ValueError,
+                msg="Checks against untyped should always be by value instead"
+        ):
+            data.accepts(untyped)
+
+        with self.assertRaises(
+                ValueError,
+                msg="Untyped should never check against dtypes, but should always be "
+                    "checked by value instead"
+        ):
+            untyped.accepts(data)
+
     def test_data(self):
         with self.subTest("Simple types"):
             d = dtypes.Integer()
@@ -69,35 +94,6 @@ class TestDTypes(TestCase):
                 ),
                 msg="DTypes should not match when classes are a superset"
             )
-
-    def test_cross_dtype_matching(self):
-        self.assertFalse(
-            dtypes.Choice(valid_classes=self.subset).accepts(
-                dtypes.Data(valid_classes=self.subset)
-            ),
-            msg="Even with matching valid classes, dtypes that do not inherit one from "
-                "the other should not match."
-        )
-        self.assertTrue(
-            dtypes.Data(valid_classes=[int, np.integer]).accepts(dtypes.Integer())
-        )
-        self.assertTrue(
-            dtypes.Integer().accepts(dtypes.Data(valid_classes=[int, np.integer]))
-        )
-
-    def test_none_values(self):
-        for D in [
-            dtypes.Boolean,
-            dtypes.Choice,
-            dtypes.Data,
-            dtypes.Data,
-            dtypes.Float,
-            dtypes.Integer,
-            dtypes.List,
-            dtypes.String
-        ]:
-            with self.subTest(f"Test None for {D.__name__}"):
-                self.assertTrue(D(allow_none=True).accepts(None))
 
     def test_batched_data(self):
         valid_classes = [TestCase, str]
@@ -127,31 +123,6 @@ class TestDTypes(TestCase):
 
             self.assertTrue(batch_data.accepts(subset))
             self.assertFalse(batch_data.accepts(superset))
-
-    def test_untyped(self):
-        untyped = dtypes.Untyped()
-        with self.subTest("Test untyped input"):
-            self.assertTrue(untyped.accepts(7))
-            self.assertTrue(untyped.accepts(None))
-
-            untyped.batched = True
-            self.assertTrue(untyped.accepts([1, 2, 3]))
-            self.assertTrue(untyped.accepts([1, None, 3]))
-            self.assertTrue(untyped.accepts("Strings are iterable"))
-
-        data = dtypes.Data(valid_classes=[int, str])
-        with self.assertRaises(
-                ValueError,
-                msg="Checks against untyped should always be by value instead"
-        ):
-            data.accepts(untyped)
-
-        with self.assertRaises(
-                ValueError,
-                msg="Untyped should never check against dtypes, but should always be "
-                    "checked by value instead"
-        ):
-            untyped.accepts(data)
 
     def test_choice(self):
         d = dtypes.Choice(default="foo", items=["bar", "foo"])
@@ -232,3 +203,32 @@ class TestDTypes(TestCase):
             self.assertFalse(list1.accepts([[1], None, [3.3, None]]))
             list1.valid_classes.append(type(None))
             self.assertTrue(list1.accepts([[1], None, [3.3, None]]))
+
+    def test_cross_dtype_matching(self):
+        self.assertFalse(
+            dtypes.Choice(valid_classes=self.subset).accepts(
+                dtypes.Data(valid_classes=self.subset)
+            ),
+            msg="Even with matching valid classes, dtypes that do not inherit one from "
+                "the other should not match."
+        )
+        self.assertTrue(
+            dtypes.Data(valid_classes=[int, np.integer]).accepts(dtypes.Integer())
+        )
+        self.assertTrue(
+            dtypes.Integer().accepts(dtypes.Data(valid_classes=[int, np.integer]))
+        )
+
+    def test_none_values(self):
+        for D in [
+            dtypes.Boolean,
+            dtypes.Choice,
+            dtypes.Data,
+            dtypes.Data,
+            dtypes.Float,
+            dtypes.Integer,
+            dtypes.List,
+            dtypes.String
+        ]:
+            with self.subTest(f"Test None for {D.__name__}"):
+                self.assertTrue(D(allow_none=True).accepts(None))
