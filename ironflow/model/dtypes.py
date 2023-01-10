@@ -447,14 +447,15 @@ class List(DType):
         if self.batched:
             return isinstance(other, List) and other.batched and \
                 self._classes_are_subset(other.valid_classes)
+        elif isinstance(other, List) or (isinstance(other, Data) and other.batched):
+            # TODO: Only other unbatched lists should be accepted to conform to spec
+            #       At the moment, this is a very useful bug, since it lets us pass
+            #       batched data to the `Transpose` and `Slice` nodes to modify them
+            #       The correct fix is to introduce a new Matrix DType, of which
+            #       List is a special case
+            return self._classes_are_subset(other.valid_classes)
         else:
-            if isinstance(other, List) or (isinstance(other, Data) and other.batched):
-                # TODO: Only other unbatched lists should be accepted to conform to spec
-                #       At the moment, this is a very useful bug, since it lets us pass
-                #       batched data to the `Transpose` and `Slice` nodes to modify them
-                #       The correct fix is to introduce a new Matrix DType, of which
-                #       List is a special case
-                return self._classes_are_subset(other.valid_classes)
+            return False
 
     def _accepts_non_none_instance(self, val: Any):
         return isiterable(val) and all(
