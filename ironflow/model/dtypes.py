@@ -220,6 +220,10 @@ class Data(DType):
             )
             might_get_surprising_none = other.allow_none and not self.allow_none
             return other_is_more_specific and not might_get_surprising_none
+        elif self.batched and isinstance(other, List) and not other.batched:
+            return self._other_classes_are_subset(
+                other.valid_classes, self.valid_classes
+            )
         else:
             return False
 

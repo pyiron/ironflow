@@ -114,34 +114,44 @@ class TestDTypes(TestCase):
                 msg="DTypes should not match when classes are a superset"
             )
 
-    def test_batched_data(self):
-        valid_classes = [TestCase, str]
-        data = dtypes.Data(valid_classes=valid_classes)
-        batch_data = dtypes.Data(valid_classes=valid_classes, batched=True)
-        batch_none = dtypes.Data(
-            valid_classes=valid_classes, batched=True, allow_none=True
-        )
+        batched = dtypes.Data(valid_classes=[int, str], batched=True)
+        with self.subTest("Test batched value checks"):
+            self.assertFalse(
+                batched.accepts(42), msg="Should not accept non-iterable data"
+            )
+            self.assertTrue(batched.accepts([42]), msg="Should accept iterable data")
+            self.assertTrue(
+                batched.accepts("Remember strings are iterable"),
+                msg="Accepting strings is a feature, not a bug"
+            )
 
-        with self.subTest("Value matching tests elements"):
-            # self.assertFalse(batch_data.accepts("But we want an iterable"))
-            self.assertTrue(batch_data.accepts(["don't panic", TestCase()]))
-            self.assertFalse(batch_data.accepts(["don't allow None", None]))
+        with self.subTest("Test batched dtype checks"):
+            self.assertFalse(
+                batched.accepts(dtypes.Data(valid_classes=batched.valid_classes)),
+                msg="Batched should not accept unbatched of the same type"
+            )
+            self.assertTrue(
+                batched.accepts(dtypes.Data(valid_classes=int, batched=True)),
+                msg="Accept batched subsets"
+            )
+            list_ = dtypes.List(valid_classes=batched.valid_classes)
+            self.assertTrue(
+                batched.accepts(list_), msg="Accept lists of the right types"
+            )
+            list_.batched = True
+            self.assertFalse(
+                batched.accepts(list_),
+                msg="But not if those lists are themselves batched"
+            )
 
-            self.assertFalse(batch_none.accepts(None))
-            self.assertTrue(batch_none.accepts([None, "None in iterable is ok"]))
-
-        with self.subTest("Only match other batches"):
-            self.assertFalse(batch_data.accepts(data))
-
-        with self.subTest("Match subsets but not supersets"):
-            class MyString(str):
-                pass
-
-            subset = dtypes.Data(valid_classes=MyString, batched=True)
-            superset = dtypes.Data(valid_classes=[TestCase, str, int], batched=True)
-
-            self.assertTrue(batch_data.accepts(subset))
-            self.assertFalse(batch_data.accepts(superset))
+        with self.subTest("Test batching and None"):
+            batched_none = dtypes.Data(
+                valid_classes=batched.valid_classes, batched=True, allow_none=True
+            )
+            self.assertFalse(batched.accepts([1, None, 3]))
+            self.assertTrue(batched_none.accepts([1, None, 3]))
+            self.assertFalse(batched.accepts(batched_none), msg="Don't accept broader")
+            self.assertTrue(batched_none.accepts(batched), msg="Accept narrower")
 
     def test_choice(self):
         d = dtypes.Choice(default="foo", items=["bar", "foo"])
