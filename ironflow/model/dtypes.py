@@ -384,8 +384,14 @@ class Choice(DType):
                 f"done by value, not by dtype. Please contact a package maintainer and "
                 f"explain how you got to this error."
             )
-        elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
-                and other.batched == self.batched:
+        if self.batched:
+            dtype_ok = (isinstance(other, List) and not other.batched) \
+                       or (isinstance(other, Data) and other.batched)
+            classes_ok = self._other_classes_are_subset(
+                other.valid_classes, self.valid_classes
+            )
+            return dtype_ok and classes_ok and not self._might_get_surprising_none(other)
+        elif isinstance(other, Data) and not other.batched:
             return self._other_classes_are_subset(
                 other.valid_classes, self.valid_classes
             ) and not self._might_get_surprising_none(other)

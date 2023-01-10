@@ -154,9 +154,49 @@ class TestDTypes(TestCase):
             self.assertTrue(batched_none.accepts(batched), msg="Accept narrower")
 
     def test_choice(self):
-        d = dtypes.Choice(default="foo", items=["bar", "foo"])
-        self.assertTrue(d.accepts("bar"))
-        self.assertFalse(d.accepts("not an item"))
+        choice = dtypes.Choice(
+            default="foo", items=["bar", "foo"], valid_classes=[str, np.str_]
+        )
+        with self.subTest("Test values"):
+            self.assertTrue(choice.accepts("foo"))
+            self.assertFalse(choice.accepts("baz"))
+            self.assertFalse(choice.accepts(42))
+
+        string = dtypes.String()
+        with self.subTest("Test data"):
+            self.assertTrue(choice.accepts(string))
+            self.assertFalse(
+                choice.accepts(dtypes.Integer()), msg="Reject wrong classes"
+            )
+
+        choice.batched = True
+        with self.subTest("Test batched values"):
+            self.assertTrue(choice.accepts(["foo", "bar"]))
+            self.assertFalse(choice.accepts(["foo", "bar", "baz"]))
+
+        with self.subTest("Test batched dtypes"):
+            self.assertTrue(
+                choice.accepts(dtypes.List(valid_classes=str)),
+                msg="Accept lists with the right classes"
+            )
+            self.assertFalse(
+                choice.accepts(dtypes.List(valid_classes=int)),
+                msg="Reject lists with the wrong classes"
+            )
+            self.assertFalse(
+                choice.accepts(dtypes.List(valid_classes=str, batched=True)),
+                msg="Reject batched lists with the right classes"
+            )
+            self.assertFalse(
+                choice.accepts(dtypes.List(valid_classes=str, allow_none=True)),
+                msg="Reject when a surprising None might appear"
+            )
+            self.assertFalse(choice.accepts(string), msg="Reject unbatched data")
+            string.batched = True
+            self.assertTrue(
+                choice.accepts(string),
+                msg="Accept batched data with the right classes"
+            )
 
     def test_list(self):
         list1 = dtypes.List(valid_classes=self.subset)
