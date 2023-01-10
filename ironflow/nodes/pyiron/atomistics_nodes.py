@@ -999,7 +999,7 @@ class Sin_Node(DataNode):
     color = "#5d95de"
 
     def node_function(self, x, **kwargs) -> dict:
-        return {"sin": np.sun(x)}
+        return {"sin": np.sin(x)}
 
 
 class ForEach_Node(Node):
