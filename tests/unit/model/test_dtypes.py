@@ -275,9 +275,7 @@ class TestDTypes(TestCase):
 
     def test_cross_dtype_matching(self):
         self.assertFalse(
-            dtypes.Choice(valid_classes=self.subset).accepts(
-                dtypes.Data(valid_classes=self.subset)
-            ),
+            dtypes.String(valid_classes=int).accepts(dtypes.Float(valid_classes=int)),
             msg="Even with matching valid classes, dtypes that do not inherit one from "
                 "the other should not match."
         )
