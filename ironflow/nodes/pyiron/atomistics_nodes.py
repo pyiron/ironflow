@@ -260,7 +260,7 @@ class Repeat_Node(OutputsOnlyAtoms):
     title = "Repeat"
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+            dtype=dtypes.Data(valid_classes=Atoms), label="structure"
         ),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
@@ -284,7 +284,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
     title = "ApplyStrain"
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+            dtype=dtypes.Data(valid_classes=Atoms), label="structure"
         ),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
@@ -769,7 +769,7 @@ class Plot3d_Node(Node):
     version = "v0.1"
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
+            dtype=dtypes.Data(valid_classes=Atoms), label="structure"
         ),
     ]
     init_outputs = [
