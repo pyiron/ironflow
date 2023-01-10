@@ -52,6 +52,7 @@ if TYPE_CHECKING:
     from pyiron_base import HasGroups
 
 STRUCTURE_FACTORY = StructureFactory()
+NUMERIC_TYPES = [int, float, np.number]
 
 
 class BeautifulHasGroups:
@@ -297,8 +298,12 @@ class AtomisticTaker(JobTaker, ABC):
 
     valid_job_classes = [Lammps]
     init_outputs = JobTaker.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="energy_pot"),
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="forces"),
+        NodeOutputBP(
+            dtype=dtypes.List(valid_classes=[float, np.floating]), label="energy_pot"
+        ),
+        NodeOutputBP(
+            dtype=dtypes.List(valid_classes=[float, np.floating]), label="forces"
+        ),
     ]
 
     def _get_output_from_job(self, finished_job: Lammps, **kwargs):
@@ -564,7 +569,7 @@ class LammpsPotentials_Node(DataNode):
         NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
     ]
     init_outputs = [
-        NodeOutputBP(label="potentials")
+        NodeOutputBP(dtype=dtypes.List(valid_classes=str), label="potentials"),
     ]
 
     def node_function(self, structure, **kwargs) -> dict:
@@ -586,13 +591,13 @@ class Slice_Node(DataNode):
     title = "Slice"
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(valid_classes=[np.ndarray, list, tuple]), label="array"
+            dtype=dtypes.List(valid_classes=object), label="array"
         ),
         NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="i"),
         NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="j"),
     ]
     init_outputs = [
-        NodeOutputBP(label="sliced", dtype=dtypes.Data(valid_classes=np.array)),
+        NodeOutputBP(label="sliced", dtype=dtypes.List(valid_classes=object)),
     ]
     color = "#aabb44"
 
@@ -638,7 +643,9 @@ class AtomisticOutput_Node(DataNode):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="output"),
+        NodeOutputBP(
+            dtype=dtypes.List(valid_classes=[int, float, np.number]), label="output"
+        ),
     ]
     color = "#c69a15"
 
@@ -669,7 +676,7 @@ class IntRand_Node(DataNode):
         NodeInputBP(dtype=dtypes.Integer(default=1), label="length"),
     ]
     init_outputs = [
-        NodeOutputBP(label="randint"),
+        NodeOutputBP(dtype=dtypes.List(valid_classes=np.integer), label="randint"),
     ]
     color = "#aabb44"
 
@@ -745,7 +752,7 @@ class Linspace_Node(DataNode):
         NodeInputBP(dtype=dtypes.Integer(default=10), label="steps"),
     ]
     init_outputs = [
-        NodeOutputBP(label="linspace") #, dtype=dtypes.Data(valid_classes=np.array)),
+        NodeOutputBP(dtype=dtypes.List(valid_classes=np.floating), label="linspace")
     ]
     color = "#aabb44"
 
@@ -773,12 +780,8 @@ class Plot3d_Node(Node):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(
-            type_="data", label="plot3d", dtype=dtypes.Data(valid_classes=NGLWidget)
-        ),
-        NodeOutputBP(
-            type_="data", label="structure", dtype=dtypes.Data(valid_classes=Atoms)
-        ),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=NGLWidget), label="plot3d"),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
     ]
     color = "#5d95de"
 
@@ -814,8 +817,14 @@ class Matplot_Node(Node):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="x"),
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="y"),
+        NodeInputBP(
+            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
+            label="x"
+        ),
+        NodeInputBP(
+            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
+            label="y"
+        ),
         NodeInputBP(
             dtype=dtypes.Data(valid_classes=Figure, allow_none=True), label="fig"
         ),
@@ -870,9 +879,7 @@ class Matplot_Node(Node):
         NodeInputBP(dtype=dtypes.Boolean(default=True), label="tight_layout"),
     ]
     init_outputs = [
-        NodeOutputBP(
-            type_="data", label="fig", dtype=dtypes.Data(valid_classes=Figure)
-        ),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=Figure), label="fig"),
     ]
     color = "#5d95de"
 
@@ -939,11 +946,11 @@ class QuickPlot_Node(Node):
 
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.Data(valid_classes=[list, np.ndarray], allow_none=True),
+            dtype=dtypes.List(valid_classes=NUMERIC_TYPES, default=None, allow_none=True),
             label="x"
         ),
         NodeInputBP(
-            dtype=dtypes.Data(valid_classes=[list, np.ndarray], allow_none=True),
+            dtype=dtypes.List(valid_classes=NUMERIC_TYPES, default=None, allow_none=True),
             label="y"
         ),
         NodeInputBP(
@@ -988,13 +995,10 @@ class Sin_Node(DataNode):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(valid_classes=[int, float, np.number, list, np.ndarray]),
-            label="x",
-        ),
+        NodeInputBP(dtype=dtypes.List(valid_classes=NUMERIC_TYPES), label="x"),
     ]
     init_outputs = [
-        NodeOutputBP(label="sin"),
+        NodeOutputBP(dtype=dtypes.List(valid_classes=NUMERIC_TYPES), label="sin"),
     ]
     color = "#5d95de"
 
@@ -1075,13 +1079,10 @@ class Transpose_Node(DataNode):
 
     title = "Transpose"
     init_inputs = [
-        NodeInputBP(
-            # dtype=dtypes.Data(valid_classes=[np.ndarray, list, tuple]), label="array"
-            dtype=dtypes.Untyped(), label="array"
-        ),
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
     ]
     init_outputs = [
-        NodeOutputBP(label="transposed"),  #, dtype=dtypes.Data(valid_classes=np.array)
+        NodeOutputBP(dtype=dtypes.List(valid_classes=object), label="transposed"),
     ]
     color = "#aabb44"
 
