@@ -118,7 +118,7 @@ class DType(DTypeCore, ABC):
     def valid_val(self, val: Any):
         return self._accepts_instance(val)
 
-    def _might_get_surprising_none(self, other: DType):
+    def _surprise_none_possible(self, other: DType):
         return other.allow_none and not self.allow_none
 
 
@@ -221,7 +221,7 @@ class Data(DType):
             )
         elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
                 and other.batched == self.batched:
-            return self._classes_are_subset(other.valid_classes) and not self._might_get_surprising_none(other)
+            return self._classes_are_subset(other.valid_classes) and not self._surprise_none_possible(other)
         elif self.batched and isinstance(other, List) and not other.batched:
             return self._classes_are_subset(other.valid_classes)
         else:
@@ -387,9 +387,9 @@ class Choice(DType):
             dtype_ok = (isinstance(other, List) and not other.batched) \
                        or (isinstance(other, Data) and other.batched)
             classes_ok = self._classes_are_subset(other.valid_classes)
-            return dtype_ok and classes_ok and not self._might_get_surprising_none(other)
+            return dtype_ok and classes_ok and not self._surprise_none_possible(other)
         elif isinstance(other, Data) and not other.batched:
-            return self._classes_are_subset(other.valid_classes) and not self._might_get_surprising_none(other)
+            return self._classes_are_subset(other.valid_classes) and not self._surprise_none_possible(other)
         else:
             return False
 
