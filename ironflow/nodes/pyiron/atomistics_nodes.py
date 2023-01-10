@@ -859,14 +859,8 @@ class Matplot_Node(Node):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
-            label="x"
-        ),
-        NodeInputBP(
-            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
-            label="y"
-        ),
+        NodeInputBP(dtype=dtypes.Untyped(), label="x"),
+        NodeInputBP(dtype=dtypes.Untyped(), label="y"),
         NodeInputBP(
             dtype=dtypes.Data(valid_classes=Figure, allow_none=True), label="fig"
         ),
@@ -987,14 +981,8 @@ class QuickPlot_Node(Node):
     color = "#5d95de"
 
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
-            label="x"
-        ),
-        NodeInputBP(
-            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
-            label="y"
-        ),
+        NodeInputBP(dtype=dtypes.Untyped(), label="x"),
+        NodeInputBP(dtype=dtypes.Untyped(), label="y"),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default="scatter",
