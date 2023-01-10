@@ -578,6 +578,27 @@ class LammpsPotentials_Node(DataNode):
         }
 
 
+class Select_Node(DataNode):
+    """
+    Select a single elemnt of an iterable input.
+    """
+
+    title = "Select"
+    init_inputs = [
+        NodeInputBP(
+            dtype=dtypes.List(valid_classes=object), label="array"
+        ),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="i"),
+    ]
+    init_outputs = [
+        NodeOutputBP(label="item", dtype=dtypes.Data(valid_classes=object)),
+    ]
+    color = "#aabb44"
+
+    def node_function(self, array, i, **kwargs) -> dict:
+        return {'item': array[i]}
+
+
 class Slice_Node(DataNode):
     """
     Slice a numpy array, list, or tuple, and return it as a numpy array.
