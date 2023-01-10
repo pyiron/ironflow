@@ -253,6 +253,10 @@ class TestDTypes(TestCase):
                 list1.accepts(list2),
                 msg="Shouldn't accept other unbatched lists."
             )
+            # self.assertFalse(
+            #     list2.accepts(list1),
+            #     msg="Unbatched Lists Shouldn't accept batched lists."
+            # )  # This bug is a feature right now!
             list2.batched = True
             self.assertTrue(
                 list1.accepts(list2),
