@@ -35,6 +35,15 @@ def isiterable(obj):
         return False
 
 
+def other_classes_are_subset(other, reference):
+    return all(
+        [
+            any([issubclass(o, ref) for ref in reference])
+            for o in other
+        ]
+    )
+
+
 class DType(DTypeCore, ABC):
     def __init__(
         self,
@@ -76,14 +85,8 @@ class DType(DTypeCore, ABC):
 
         return None
 
-    @staticmethod
-    def _other_classes_are_subset(other, reference):
-        return all(
-            [
-                any([issubclass(o, ref) for ref in reference])
-                for o in other
-            ]
-        )
+    def _classes_are_subset(self, other_classes):
+        return other_classes_are_subset(other_classes, self.valid_classes)
 
     def accepts(self, other: DType | Any | None):
         if isinstance(other, DType):
@@ -218,13 +221,9 @@ class Data(DType):
             )
         elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
                 and other.batched == self.batched:
-            return self._other_classes_are_subset(
-                other.valid_classes, self.valid_classes
-            ) and not self._might_get_surprising_none(other)
+            return self._classes_are_subset(other.valid_classes) and not self._might_get_surprising_none(other)
         elif self.batched and isinstance(other, List) and not other.batched:
-            return self._other_classes_are_subset(
-                other.valid_classes, self.valid_classes
-            )
+            return self._classes_are_subset(other.valid_classes)
         else:
             return False
 
@@ -236,8 +235,8 @@ class Data(DType):
             if any([v is None for v in val]) and not self.allow_none:
                 return False
             else:
-                return self._other_classes_are_subset(
-                    set([type(v) for v in val if v is not None]), self.valid_classes
+                return self._classes_are_subset(
+                    set([type(v) for v in val if v is not None])
                 )
         else:
             return False
@@ -387,14 +386,10 @@ class Choice(DType):
         if self.batched:
             dtype_ok = (isinstance(other, List) and not other.batched) \
                        or (isinstance(other, Data) and other.batched)
-            classes_ok = self._other_classes_are_subset(
-                other.valid_classes, self.valid_classes
-            )
+            classes_ok = self._classes_are_subset(other.valid_classes)
             return dtype_ok and classes_ok and not self._might_get_surprising_none(other)
         elif isinstance(other, Data) and not other.batched:
-            return self._other_classes_are_subset(
-                other.valid_classes, self.valid_classes
-            ) and not self._might_get_surprising_none(other)
+            return self._classes_are_subset(other.valid_classes) and not self._might_get_surprising_none(other)
         else:
             return False
 
@@ -452,12 +447,10 @@ class List(DType):
     def _accepts_dtype(self, other: DType):
         if self.batched:
             return isinstance(other, List) and other.batched and \
-                self._other_classes_are_subset(other.valid_classes, self.valid_classes)
+                self._classes_are_subset(other.valid_classes)
         else:
             if isinstance(other, List) or (isinstance(other, Data) and other.batched):
-                return self._other_classes_are_subset(
-                    other.valid_classes, self.valid_classes
-                )
+                return self._classes_are_subset(other.valid_classes)
 
     def _accepts_non_none_instance(self, val: Any):
         return isiterable(val) and all(
