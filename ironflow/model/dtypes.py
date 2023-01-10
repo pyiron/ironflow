@@ -115,6 +115,9 @@ class DType(DTypeCore, ABC):
     def valid_val(self, val: Any):
         return self._accepts_instance(val)
 
+    def _might_get_surprising_none(self, other: DType):
+        return other.allow_none and not self.allow_none
+
 
 class Untyped(DType):
     """
@@ -215,11 +218,9 @@ class Data(DType):
             )
         elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
                 and other.batched == self.batched:
-            other_is_more_specific = self._other_classes_are_subset(
+            return self._other_classes_are_subset(
                 other.valid_classes, self.valid_classes
-            )
-            might_get_surprising_none = other.allow_none and not self.allow_none
-            return other_is_more_specific and not might_get_surprising_none
+            ) and not self._might_get_surprising_none(other)
         elif self.batched and isinstance(other, List) and not other.batched:
             return self._other_classes_are_subset(
                 other.valid_classes, self.valid_classes
@@ -385,11 +386,9 @@ class Choice(DType):
             )
         elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
                 and other.batched == self.batched:
-            other_is_more_specific = self._other_classes_are_subset(
+            return self._other_classes_are_subset(
                 other.valid_classes, self.valid_classes
-            )
-            might_get_surprising_none = other.allow_none and not self.allow_none
-            return other_is_more_specific and not might_get_surprising_none
+            ) and not self._might_get_surprising_none(other)
         else:
             return False
 
