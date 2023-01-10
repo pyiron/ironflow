@@ -967,11 +967,11 @@ class QuickPlot_Node(Node):
 
     init_inputs = [
         NodeInputBP(
-            dtype=dtypes.List(valid_classes=NUMERIC_TYPES, default=None, allow_none=True),
+            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
             label="x"
         ),
         NodeInputBP(
-            dtype=dtypes.List(valid_classes=NUMERIC_TYPES, default=None, allow_none=True),
+            dtype=dtypes.List(valid_classes=object, default=None, allow_none=True),
             label="y"
         ),
         NodeInputBP(
