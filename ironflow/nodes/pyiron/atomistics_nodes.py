@@ -614,6 +614,27 @@ class Slice_Node(DataNode):
         return {'sliced': sliced}
 
 
+class Transpose_Node(DataNode):
+    """
+    Interprets list-like input as a numpy array and transposes it.
+    """
+
+    title = "Transpose"
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
+    ]
+    init_outputs = [
+        NodeOutputBP(dtype=dtypes.List(valid_classes=object), label="transposed"),
+    ]
+    color = "#aabb44"
+
+    def node_function(self, array, **kwargs) -> dict:
+        array = np.array(array)  # Ensure array
+        if len(array.shape) < 2:
+            array = np.array([array])  # Ensure transposable
+        return {'transposed': np.array(array).T}
+
+
 class AtomisticOutput_Node(DataNode):
     """
     Select Generic Output item.
@@ -1070,27 +1091,6 @@ class Click_Node(Node):
 
     def update_event(self, inp=-1):
         self.exec_output(0)
-
-
-class Transpose_Node(DataNode):
-    """
-    Interprets list-like input as a numpy array and transposes it.
-    """
-
-    title = "Transpose"
-    init_inputs = [
-        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
-    ]
-    init_outputs = [
-        NodeOutputBP(dtype=dtypes.List(valid_classes=object), label="transposed"),
-    ]
-    color = "#aabb44"
-
-    def node_function(self, array, **kwargs) -> dict:
-        array = np.array(array)  # Ensure array
-        if len(array.shape) < 2:
-            array = np.array([array])  # Ensure transposable
-        return {'transposed': np.array(array).T}
 
 
 nodes = [
