@@ -1086,7 +1086,7 @@ class Transpose_Node(DataNode):
     color = "#aabb44"
 
     def node_function(self, array, **kwargs) -> dict:
-        return {'transposed': array}  #np.array(array).T
+        return {'transposed': np.array(array).T}
 
 
 nodes = [
