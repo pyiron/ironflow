@@ -434,7 +434,6 @@ class List(DType):
         allow_none=False,
         batched=False,
     ):
-        default = default if default is not None else []
         super().__init__(
             default=default,
             doc=doc,
