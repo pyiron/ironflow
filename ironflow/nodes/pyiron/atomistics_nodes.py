@@ -588,7 +588,7 @@ class Select_Node(DataNode):
         NodeInputBP(
             dtype=dtypes.List(valid_classes=object), label="array"
         ),
-        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="i"),
+        NodeInputBP(dtype=dtypes.Integer(default=0), label="i"),
     ]
     init_outputs = [
         NodeOutputBP(label="item", dtype=dtypes.Data(valid_classes=object)),
