@@ -29,6 +29,11 @@ import ironflow.node_tools.input_widgets
 import ironflow.node_tools.main_widgets
 from ironflow.model import dtypes, NodeInputBP
 from ironflow.model.node import (
-    Node, PlaceholderWidgetsContainer, PortList, DataNode, JobMaker, JobTaker
+    Node,
+    PlaceholderWidgetsContainer,
+    PortList,
+    DataNode,
+    JobMaker,
+    JobTaker,
 )
 from ironflow.model.port import NodeOutputBP

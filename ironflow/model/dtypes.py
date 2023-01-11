@@ -36,12 +36,7 @@ def isiterable(obj):
 
 
 def other_classes_are_subset(other, reference):
-    return all(
-        [
-            any([issubclass(o, ref) for ref in reference])
-            for o in other
-        ]
-    )
+    return all([any([issubclass(o, ref) for ref in reference]) for o in other])
 
 
 class DType(DTypeCore, ABC):
@@ -78,7 +73,14 @@ class DType(DTypeCore, ABC):
     def from_str(s):
         # Load local dtypes, not ryven dtypes
         for DTypeClass in [
-            Boolean, Choice, Data, Float, Integer, List, String, Untyped
+            Boolean,
+            Choice,
+            Data,
+            Float,
+            Integer,
+            List,
+            String,
+            Untyped,
         ]:
             if s == "DType." + DTypeClass.__name__:
                 return DTypeClass
@@ -219,9 +221,12 @@ class Data(DType):
                 f"done by value, not by dtype. Please contact a package maintainer and "
                 f"explain how you got to this error."
             )
-        elif (isinstance(other, self.__class__) or isinstance(self, other.__class__)) \
-                and other.batched == self.batched:
-            return self._classes_are_subset(other.valid_classes) and not self._surprise_none_possible(other)
+        elif (
+            isinstance(other, self.__class__) or isinstance(self, other.__class__)
+        ) and other.batched == self.batched:
+            return self._classes_are_subset(
+                other.valid_classes
+            ) and not self._surprise_none_possible(other)
         elif self.batched and isinstance(other, List) and not other.batched:
             return self._classes_are_subset(other.valid_classes)
         else:
@@ -283,7 +288,9 @@ class Float(Data):
             default=default,
             doc=doc,
             _load_state=_load_state,
-            valid_classes=[float, np.floating] if valid_classes is None else valid_classes,
+            valid_classes=[float, np.floating]
+            if valid_classes is None
+            else valid_classes,
             allow_none=allow_none,
             batched=batched,
         )
@@ -354,6 +361,7 @@ class Choice(DType):
     but still result in an invalid value state (in cases where the output value does
     not match the input items list).
     """
+
     def __init__(
         self,
         default=None,
@@ -384,12 +392,15 @@ class Choice(DType):
                 f"explain how you got to this error."
             )
         if self.batched:
-            dtype_ok = (isinstance(other, List) and not other.batched) \
-                       or (isinstance(other, Data) and other.batched)
+            dtype_ok = (isinstance(other, List) and not other.batched) or (
+                isinstance(other, Data) and other.batched
+            )
             classes_ok = self._classes_are_subset(other.valid_classes)
             return dtype_ok and classes_ok and not self._surprise_none_possible(other)
         elif isinstance(other, Data) and not other.batched:
-            return self._classes_are_subset(other.valid_classes) and not self._surprise_none_possible(other)
+            return self._classes_are_subset(
+                other.valid_classes
+            ) and not self._surprise_none_possible(other)
         else:
             return False
 
@@ -397,8 +408,9 @@ class Choice(DType):
         return val in self.items
 
     def _batch_accepts_instance(self, val: Any):
-        return isinstance(val, (list, np.ndarray)) and \
-            all([self._accepts_non_none_instance(v) for v in val])
+        return isinstance(val, (list, np.ndarray)) and all(
+            [self._accepts_non_none_instance(v) for v in val]
+        )
 
 
 class List(DType):
@@ -425,6 +437,7 @@ class List(DType):
         `None`. If you want to specify that the list-like object itself may _contain_
         `None` values, add `type(None)` to the `valid_classes`.
     """
+
     def __init__(
         self,
         default: Optional[list] = None,
@@ -445,8 +458,11 @@ class List(DType):
 
     def _accepts_dtype(self, other: DType):
         if self.batched:
-            return isinstance(other, List) and other.batched and \
-                self._classes_are_subset(other.valid_classes)
+            return (
+                isinstance(other, List)
+                and other.batched
+                and self._classes_are_subset(other.valid_classes)
+            )
         elif isinstance(other, List) or (isinstance(other, Data) and other.batched):
             # TODO: Only other unbatched lists should be accepted to conform to spec
             #       At the moment, this is a very useful bug, since it lets us pass

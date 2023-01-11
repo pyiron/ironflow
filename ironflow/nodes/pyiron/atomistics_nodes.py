@@ -116,7 +116,7 @@ class Project_Node(DataNode):
             "name": str(self.inputs.values.name),
             **self.batched_representation(
                 "job_table", self._job_table, self.outputs.values.project
-            )
+            ),
         }
 
     @staticmethod
@@ -219,16 +219,16 @@ class BulkStructure_Node(OutputsOnlyAtoms):
     ]
 
     def node_function(
-            self,
-            element,
-            crystal_structure,
-            a,
-            c,
-            c_over_a,
-            u,
-            orthorhombic,
-            cubic,
-            **kwargs
+        self,
+        element,
+        crystal_structure,
+        a,
+        c,
+        c_over_a,
+        u,
+        orthorhombic,
+        cubic,
+        **kwargs,
     ) -> dict:
         return {
             "structure": STRUCTURE_FACTORY.bulk(
@@ -239,7 +239,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                 covera=c_over_a,
                 u=u,
                 orthorhombic=orthorhombic,
-                cubic=cubic
+                cubic=cubic,
             )
         }
 
@@ -260,9 +260,7 @@ class Repeat_Node(OutputsOnlyAtoms):
 
     title = "Repeat"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
 
@@ -284,9 +282,7 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
     title = "ApplyStrain"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
 
@@ -309,7 +305,7 @@ class AtomisticTaker(JobTaker, ABC):
     def _get_output_from_job(self, finished_job: Lammps, **kwargs):
         return {
             "energy_pot": finished_job.output.energy_pot,
-            "forces": finished_job.output.forces
+            "forces": finished_job.output.forces,
         }
 
     @property
@@ -358,15 +354,15 @@ class CalcMinimize_Node(AtomisticTaker):
     ]
 
     def _modify_job(
-            self,
-            copied_job: Lammps,
-            ionic_energy_tolerance,
-            ionic_force_tolerance,
-            max_iter,
-            pressure,
-            n_print,
-            style,
-            **kwargs
+        self,
+        copied_job: Lammps,
+        ionic_energy_tolerance,
+        ionic_force_tolerance,
+        max_iter,
+        pressure,
+        n_print,
+        style,
+        **kwargs,
     ) -> Lammps:
         copied_job.calc_minimize(
             ionic_energy_tolerance=ionic_energy_tolerance,
@@ -411,19 +407,19 @@ class CalcMD_Node(AtomisticTaker):
     ]
 
     def _modify_job(
-            self,
-            copied_job: Lammps,
-            temperature,
-            pressure,
-            n_ionic_steps,
-            time_step,
-            n_print,
-            temperature_damping_timescale,
-            pressure_damping_timescale,
-            seed,
-            initial_temperature,
-            dynamics,
-            **kwargs
+        self,
+        copied_job: Lammps,
+        temperature,
+        pressure,
+        n_ionic_steps,
+        time_step,
+        n_print,
+        temperature_damping_timescale,
+        pressure_damping_timescale,
+        seed,
+        initial_temperature,
+        dynamics,
+        **kwargs,
     ) -> Lammps:
         copied_job.calc_md(
             temperature=temperature,
@@ -475,7 +471,8 @@ class PyironTable_Node(JobMaker):
     def _get_output_from_job(self, finished_job: pyiron_base.TableJob, **kwargs):
         df = finished_job.get_dataframe()
         return {
-            f"Col_{n + 1}": df.iloc[:, n + 1].values for n in range(self.n_table_cols)
+            f"Col_{n + 1}": df.iloc[:, n + 1].values
+            for n in range(self.n_table_cols)
             # iloc n + 1 because somehow job_id is always a column, and we don't care
         }
 
@@ -529,8 +526,10 @@ class Lammps_Node(Engine):
             self.inputs.ports.potential.val = None
             self.inputs.ports.potential.dtype.items = ["No valid potential"]
         else:
-            if last_potential not in available_potentials and \
-                    len(self.inputs.ports.potential.connections) == 0:
+            if (
+                last_potential not in available_potentials
+                and len(self.inputs.ports.potential.connections) == 0
+            ):
                 if self.inputs.ports.potential.dtype.batched:
                     self.inputs.ports.potential.val = available_potentials
                 else:
@@ -585,9 +584,7 @@ class Select_Node(DataNode):
 
     title = "Select"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.List(valid_classes=object), label="array"
-        ),
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
         NodeInputBP(dtype=dtypes.Integer(default=0), label="i"),
     ]
     init_outputs = [
@@ -596,7 +593,7 @@ class Select_Node(DataNode):
     color = "#aabb44"
 
     def node_function(self, array, i, **kwargs) -> dict:
-        return {'item': array[i]}
+        return {"item": array[i]}
 
 
 class Slice_Node(DataNode):
@@ -611,9 +608,7 @@ class Slice_Node(DataNode):
 
     title = "Slice"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.List(valid_classes=object), label="array"
-        ),
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
         NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="i"),
         NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="j"),
     ]
@@ -632,7 +627,7 @@ class Slice_Node(DataNode):
             sliced = converted[:j]
         else:
             sliced = converted[i:j]
-        return {'sliced': sliced}
+        return {"sliced": sliced}
 
 
 class Transpose_Node(DataNode):
@@ -653,7 +648,7 @@ class Transpose_Node(DataNode):
         array = np.array(array)  # Ensure array
         if len(array.shape) < 2:
             array = np.array([array])  # Ensure transposable
-        return {'transposed': np.array(array).T}
+        return {"transposed": np.array(array).T}
 
 
 class AtomisticOutput_Node(DataNode):
@@ -692,9 +687,7 @@ class AtomisticOutput_Node(DataNode):
     color = "#c69a15"
 
     def node_function(self, job, field, **kwargs) -> dict:
-        return {
-            "output": job[f"output/generic/{field}"]
-        }
+        return {"output": job[f"output/generic/{field}"]}
 
 
 class IntRand_Node(DataNode):
@@ -749,11 +742,8 @@ class JobName_Node(DataNode):
         ),
         NodeInputBP(dtype=dtypes.Integer(default=8, allow_none=True), label="ndigits"),
         NodeInputBP(
-            dtype=dtypes.Data(
-                default=None,
-                valid_classes=dict,
-                allow_none=True),
-            label="special_symbols"
+            dtype=dtypes.Data(default=None, valid_classes=dict, allow_none=True),
+            label="special_symbols",
         ),
     ]
     init_outputs = [
@@ -765,9 +755,7 @@ class JobName_Node(DataNode):
         name = (name_base, parameter) if parameter is not None else name_base
         return {
             "job_name": _get_safe_job_name(
-                name,
-                ndigits=ndigits,
-                special_symbols=special_symbols
+                name, ndigits=ndigits, special_symbols=special_symbols
             )
         }
 
@@ -799,7 +787,7 @@ class Linspace_Node(DataNode):
     color = "#aabb44"
 
     def node_function(self, min, max, steps, **kwargs) -> dict:
-        return {'linspace': np.linspace(min, max, steps)}
+        return {"linspace": np.linspace(min, max, steps)}
 
 
 class Plot3d_Node(Node):
@@ -817,9 +805,7 @@ class Plot3d_Node(Node):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
     ]
     init_outputs = [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=NGLWidget), label="plot3d"),
@@ -966,10 +952,10 @@ class Matplot_Node(Node):
 
 
 _seaborn_method_map = {
-        "scatter": sns.scatterplot,
-        "hist": sns.histplot,
-        "joint": sns.jointplot,
-    }
+    "scatter": sns.scatterplot,
+    "hist": sns.histplot,
+    "joint": sns.jointplot,
+}
 
 
 class QuickPlot_Node(Node):
@@ -988,12 +974,10 @@ class QuickPlot_Node(Node):
                 default="scatter",
                 items=list(_seaborn_method_map.keys()),
             ),
-            label="type"
-        )
+            label="type",
+        ),
     ]
-    init_outputs = [
-        NodeOutputBP(label="plot")
-    ]
+    init_outputs = [NodeOutputBP(label="plot")]
 
     def update_event(self, inp=-1):
         super().update_event()

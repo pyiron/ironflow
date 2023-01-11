@@ -45,9 +45,13 @@ class Flow(FlowCore):
         if not self._ports_are_connected(p1, p2):
             # Only validate connections, not disconnections
             inp, out = (p1, p2) if p1.io_pos == 1 else (p2, p1)
-            if isinstance(inp.dtype, Untyped) or isinstance(out.dtype, Untyped) or (
-                inp.dtype.batched != out.dtype.batched and
-                isinstance(out.val, (list, np.ndarray))
+            if (
+                isinstance(inp.dtype, Untyped)
+                or isinstance(out.dtype, Untyped)
+                or (
+                    inp.dtype.batched != out.dtype.batched
+                    and isinstance(out.val, (list, np.ndarray))
+                )
             ):
                 type_valid = inp.dtype.accepts(out.val)
                 check_type = "value"
@@ -63,7 +67,6 @@ class Flow(FlowCore):
                 f"and returned {type_valid}"
             )
             valid = valid and type_valid
-
 
         # ryvencore.Flow.Flow content
         self.connection_request_valid.emit(valid)

@@ -133,11 +133,11 @@ class NodeController(NodeInterfaceBase):
                 batch_button = widgets.ToggleButton(
                     description="Batched",
                     tooltip="Use batches batches of correctly typed data instead of "
-                            "instances",
+                    "instances",
                     layout=widgets.Layout(width="75px"),
-                    disabled=inp.dtype is None or
-                                not isinstance(inp.node, BatchingNode),
-                    value=inp.dtype.batched if hasattr(inp, "dtype") else False
+                    disabled=inp.dtype is None
+                    or not isinstance(inp.node, BatchingNode),
+                    value=inp.dtype.batched if hasattr(inp, "dtype") else False,
                 )
                 batch_button.observe(self.toggle_batching_i(i_c), names="value")
 
@@ -150,12 +150,7 @@ class NodeController(NodeInterfaceBase):
                 reset_button.on_click(self.input_reset_i(i_c, inp_widget))
 
                 input.append(
-                    [
-                        widgets.Label(description),
-                        inp_widget,
-                        batch_button,
-                        reset_button
-                    ]
+                    [widgets.Label(description), inp_widget, batch_button, reset_button]
                 )
         return input
 

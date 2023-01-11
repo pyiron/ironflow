@@ -210,10 +210,7 @@ class Node(NodeCore):
                     _load_state=deserialize(inp["dtype state"])
                 )
                 self.create_input(
-                    type_=inp["type"],
-                    label=inp["label"],
-                    add_data=inp,
-                    dtype=dtype
+                    type_=inp["type"], label=inp["label"], add_data=inp, dtype=dtype
                 )
 
                 if "val" in inp:
@@ -312,14 +309,16 @@ class BatchingNode(Node, ABC):
     @property
     def batched_inputs(self):
         return {
-            inp.label_str: inp for inp in self.inputs
+            inp.label_str: inp
+            for inp in self.inputs
             if inp.type_ == "data" and inp.dtype.batched
         }
 
     @property
     def unbatched_inputs(self):
         return {
-            inp.label_str: inp for inp in self.inputs
+            inp.label_str: inp
+            for inp in self.inputs
             if inp.type_ == "data" and not inp.dtype.batched
         }
 
@@ -339,8 +338,10 @@ class BatchingNode(Node, ABC):
     def _batched_kwargs(self):
         return [
             {
-                k: v.val[i] for k, v in
-                zip(self.batched_inputs.keys(), self.batched_inputs.values())
+                k: v.val[i]
+                for k, v in zip(
+                    self.batched_inputs.keys(), self.batched_inputs.values()
+                )
             }
             for i in range(list(self.batch_lengths.values())[0])
         ]
@@ -348,8 +349,9 @@ class BatchingNode(Node, ABC):
     def generate_output(self) -> dict:
         if self.batched:
             batch_length_vals = list(self.batch_lengths.values())
-            if len(batch_length_vals) > 0 and \
-                    not np.all(np.array(batch_length_vals) == batch_length_vals[0]):
+            if len(batch_length_vals) > 0 and not np.all(
+                np.array(batch_length_vals) == batch_length_vals[0]
+            ):
                 raise ValueError(
                     f"Not all batch lengths are the same: {self.batch_lengths}"
                 )
@@ -365,9 +367,7 @@ class BatchingNode(Node, ABC):
         for i, kwargs in enumerate(self._batched_kwargs):
             kwargs.update(self._unbatched_kwargs)
             outputs.append(self.node_function(batch_index=i, **kwargs))
-        return {
-            key: [d[key] for d in outputs] for key in outputs[0].keys()
-        }
+        return {key: [d[key] for d in outputs] for key in outputs[0].keys()}
 
     def set_output(self):
         try:
@@ -386,7 +386,7 @@ class BatchingNode(Node, ABC):
                 p.dtype.batched = self.batched
 
     def batched_representation(
-            self, label: str, representation_function: Callable, *args
+        self, label: str, representation_function: Callable, *args
     ) -> dict | None:
         """
         Batched output requires multiple representations instead of a single one. Use
@@ -438,6 +438,7 @@ class DataNode(BatchingNode, ABC):
     """
     A node that can update as soon as all input is valid and produces output data.
     """
+
     def update_event(self, inp=-1):
         if self.all_input_is_valid:
             self.set_output()
@@ -490,9 +491,7 @@ class JobNode(BatchingNode, ABC):
     ]
     init_outputs = [
         NodeOutputBP(type_="exec", label="ran"),
-        NodeOutputBP(
-            dtype=dtypes.Data(valid_classes=GenericJob), label="job"
-        )
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=GenericJob), label="job"),
     ]
 
     def place_event(self):
@@ -542,9 +541,7 @@ class JobNode(BatchingNode, ABC):
         self.clear_output()
         self.block_updates = False
 
-    def _raise_error_if_not_initialized(
-        self, job: GenericJob
-    ) -> GenericJob:
+    def _raise_error_if_not_initialized(self, job: GenericJob) -> GenericJob:
         if job.status == "initialized":
             return job
         else:
@@ -610,9 +607,7 @@ class JobTaker(JobNode, ABC):
     """
 
     init_inputs = JobNode.init_inputs + [
-        NodeInputBP(
-            dtype=dtypes.Data(valid_classes=GenericJob), label="job"
-        )
+        NodeInputBP(dtype=dtypes.Data(valid_classes=GenericJob), label="job")
     ]
 
     def place_event(self):
