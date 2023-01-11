@@ -12,6 +12,7 @@ dependencies:
 - pyiron_atomistics >= 0.2.57
 - pyiron_gui >= 0.0.8
 - ryvencore
+- seaborn
 - traitlets
 - python >= 3.8
 - lammps

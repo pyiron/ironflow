@@ -12,10 +12,11 @@ import json
 import pickle
 from abc import ABC, abstractmethod
 from io import BytesIO
-from typing import TYPE_CHECKING
+from typing import Type, TYPE_CHECKING
 
 import matplotlib.pylab as plt
 import numpy as np
+import seaborn as sns
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from nglview import NGLWidget
@@ -32,14 +33,26 @@ from pyiron_atomistics.atomistics.job.atomistic import (
 from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
+from pyiron_base.jobs.job.util import _get_safe_job_name
 
-from ironflow.node_tools import dtypes, main_widgets, Node, NodeInputBP, NodeOutputBP
+from ironflow.node_tools import (
+    DataNode,
+    dtypes,
+    JobMaker,
+    JobTaker,
+    main_widgets,
+    Node,
+    NodeInputBP,
+    NodeOutputBP,
+    PortList,
+)
 from ironflow.nodes.std.special_nodes import DualNodeBase
 
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
 
 STRUCTURE_FACTORY = StructureFactory()
+NUMERIC_TYPES = [int, float, np.number]
 
 
 class BeautifulHasGroups:
@@ -72,7 +85,7 @@ class BeautifulHasGroups:
         return "<pre>" + plain + "</pre>"
 
 
-class Project_Node(Node):
+class Project_Node(DataNode):
     """
     Create a pyiron project.
 
@@ -94,20 +107,21 @@ class Project_Node(Node):
     ]
     color = "#aabb44"
 
-    def place_event(self):
-        super().place_event()
-        self.update()
-
-    def update_event(self, inp=-1):
-        pr = Project(self.inputs.values.name)
-        self.set_output_val(0, pr)
+    def node_function(self, name, **kwargs) -> dict:
+        return {"project": Project(name)}
 
     @property
     def extra_representations(self) -> dict:
         return {
             "name": str(self.inputs.values.name),
-            "job_table": self.outputs.values.project.job_table(all_columns=False),
+            **self.batched_representation(
+                "job_table", self._job_table, self.outputs.values.project
+            ),
         }
+
+    @staticmethod
+    def _job_table(project: Project):
+        return project.job_table(all_columns=False)
 
 
 class JobTable_Node(Node):
@@ -119,14 +133,11 @@ class JobTable_Node(Node):
     init_outputs = [NodeOutputBP(label="Table")]
     color = "#aabb44"
 
-    def update_event(self, inp=-1):
-        if self.inputs.ports.project.valid_val:
-            self.set_output_val(
-                0, self.inputs.values.project.job_table(all_columns=False)
-            )
+    def node_function(self, project, **kwargs) -> dict:
+        return {"Table": self.outputs.values.project.job_table(all_columns=False)}
 
 
-class OutputsOnlyAtoms(Node, ABC):
+class OutputsOnlyAtoms(DataNode, ABC):
     """
     A helper class that manages representations for nodes whose only output is a `pyiron_atomistics.Atoms` object.
 
@@ -139,16 +150,17 @@ class OutputsOnlyAtoms(Node, ABC):
     ]
     color = "#aabb44"
 
-    @abstractmethod
-    def update_event(self, inp=-1):
-        """Must set output 0 to an instance of pyiron_atomistics.atomistics.atoms.Atoms"""
-        pass
-
     @property
     def extra_representations(self) -> dict:
         return {
-            "plot3d": self.outputs.values.structure.plot3d(),
+            **self.batched_representation(
+                "plot3d", self._plot3d, self.outputs.values.structure
+            ),
         }
+
+    @staticmethod
+    def _plot3d(structure):
+        return structure.plot3d()
 
 
 class BulkStructure_Node(OutputsOnlyAtoms):
@@ -206,28 +218,30 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="cubic"),
     ]
 
-    def update_event(self, inp=-1):
-        try:
-            self.set_output_val(
-                0,
-                STRUCTURE_FACTORY.bulk(
-                    self.inputs.values.element,
-                    crystalstructure=self.inputs.values.crystal_structure,
-                    a=self.inputs.values.a,
-                    c=self.inputs.values.c,
-                    covera=self.inputs.values.c_over_a,
-                    u=self.inputs.values.u,
-                    orthorhombic=self.inputs.values.orthorhombic,
-                    cubic=self.inputs.values.cubic,
-                ),
+    def node_function(
+        self,
+        element,
+        crystal_structure,
+        a,
+        c,
+        c_over_a,
+        u,
+        orthorhombic,
+        cubic,
+        **kwargs,
+    ) -> dict:
+        return {
+            "structure": STRUCTURE_FACTORY.bulk(
+                element,
+                crystalstructure=crystal_structure,
+                a=a,
+                c=c,
+                covera=c_over_a,
+                u=u,
+                orthorhombic=orthorhombic,
+                cubic=cubic,
             )
-        except RuntimeError as e:
-            self.set_output_val(0, None)
-            raise e
-
-    def place_event(self):
-        super().place_event()
-        self.update()
+        }
 
 
 class Repeat_Node(OutputsOnlyAtoms):
@@ -246,16 +260,12 @@ class Repeat_Node(OutputsOnlyAtoms):
 
     title = "Repeat"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
         NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="all"),
     ]
 
-    def update_event(self, inp=-1):
-        self.set_output_val(
-            0, self.inputs.values.structure.repeat(self.inputs.values.all)
-        )
+    def node_function(self, structure, all, **kwargs) -> dict:
+        return {"structure": structure.repeat(all)}
 
 
 class ApplyStrain_Node(OutputsOnlyAtoms):
@@ -272,173 +282,51 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
     title = "ApplyStrain"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
         NodeInputBP(dtype=dtypes.Float(default=0, bounds=(-100, 100)), label="strain"),
     ]
 
-    def update_event(self, inp=-1):
-        self.set_output_val(
-            0,
-            self.inputs.values.structure.apply_strain(
-                float(self.inputs.values.strain), return_box=True
-            ),
-        )
+    def node_function(self, structure, strain, **kwargs) -> dict:
+        return {"structure": structure.apply_strain(float(strain), return_box=True)}
 
 
-class JobRunner(Node, ABC):
-    """
-    A parent class for nodes that run a pyiron job.
+class AtomisticTaker(JobTaker, ABC):
 
-    Child classes are required to specify a `_generate_job` method, which produces
-    a `pyiron_base.GenericJob` object, and a `_run` method which can access this job
-    at the `.job` attribute, in addition to whatever input is necessary to accomplish
-    this. They can optionally override the `_set_output` method, which by default
-    assumes there is an output field labeled `"job"` and sends the executed job there.
-
-    The node has `run` and `remove` input exec ports and a `ran` output exec port.
-    Once the node has been run, all inputs get locked and remain locked until the
-    removal process is triggered. Remove clears all the outputs and sets them to `None`.
-
-    The tricky thing is that we can't easily pre-define the available inputs *and* have
-    them be sufficiently detailed in their dtype without running into awkwardness, so
-    assumptions get made about what IO fields are available, and these assumptions
-    must be satisfied by child classes.
-    """
-
-    color = "#c4473f"
-    init_inputs = [
-        NodeInputBP(type_="exec", label="run"),
-        NodeInputBP(type_="exec", label="remove"),
-        NodeInputBP(dtype=dtypes.String(default="calc"), label="name"),
+    valid_job_classes = [Lammps]
+    init_outputs = JobTaker.init_outputs + [
+        NodeOutputBP(
+            dtype=dtypes.List(valid_classes=[float, np.floating]), label="energy_pot"
+        ),
+        NodeOutputBP(
+            dtype=dtypes.List(valid_classes=[float, np.floating]), label="forces"
+        ),
     ]
-    init_outputs = [
-        NodeOutputBP(type_="exec", label="ran"),
-    ]
+
+    def _get_output_from_job(self, finished_job: Lammps, **kwargs):
+        return {
+            "energy_pot": finished_job.output.energy_pot,
+            "forces": finished_job.output.forces,
+        }
 
     @property
-    def job(self):
-        try:
-            return self._job
-        except AttributeError:
-            return None
-
-    def update_event(self, inp=-1):
-        if inp == 0 and (not self.block_updates) and self.all_input_is_valid:
-            self._on_run_signal()
-
-    def update(self, inp=-1):
-        if inp == 1:
-            # Bypass the `lock_updates` to delete the executed job and unlock updates
-            self._on_remove_signal()
-        else:
-            super().update(inp=inp)
-
-    def _on_run_signal(self):
-        self.block_updates = True
-        self._job = self._raise_error_if_not_initialized(self._generate_job())
-        self._run()
-        self._set_output()
-        self.exec_output(0)
-
-    def _on_remove_signal(self):
-        try:
-            self.job.remove()
-        except AttributeError:
-            InfoMsgs.write("No attribute job, no job removed")
-        for i in range(1, len(self.outputs)):
-            self.set_output_val(i, None)
-        self.block_updates = False
-        self.update(-1)
-
-    def _raise_error_if_not_initialized(
-        self, job: pyiron_base.GenericJob
-    ) -> pyiron_base.GenericJob:
-        if job.status == "initialized":
-            return job
-        else:
-            self.block_updates = False
-            raise RuntimeError(
-                f"The job {self.inputs.values.name} already exists. Delete it first or"
-                f"choose a different name."
-            )
-
-    @abstractmethod
-    def _generate_job(self) -> pyiron_base.GenericJob:
-        """
-        Return the job to be executed.
-
-        Should use the `self.inputs.values.name` job name and whatever other input is
-        necessary and specified in child classes.
-        """
-
-        pass
-
-    @abstractmethod
-    def _run(self):
-        """
-        Manipulates `self.job` and adds anything necessary to the output beyond the job
-        itself
-        """
-
-        pass
-
-    def _set_output(self):
-        """
-        With the executed `self.job` available, set output fields.
-        """
-
-        self.set_output_val(1, self.job)
+    def extra_representations(self) -> dict:
+        return {
+            **self.batched_representation(
+                "job", BeautifulHasGroups, self.outputs.values.job
+            ),
+        }
 
 
-class TakesJob(JobRunner):
-    """
-    Parent class for job running nodes that take the job as input and copy it.
-
-    Assumes that this job is input with the label `"job"` and the appropriate dtype.
-    """
-
-    def _generate_job(self):
-        return self.inputs.values.job.copy_to(
-            new_job_name=self.inputs.values.name,
-            delete_existing_job=False,  # TODO: Make this input?
-        )
-
-
-class MakesJob(JobRunner):
-    """
-    Parent class for job running nodes that take the project as input and generate a
-    new job from scratch.
-
-    Project input should be used in `_generate_job` to produce a job of the correct
-    type.
-    """
-
-    init_inputs = JobRunner.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project")
-    ]
-
-
-class CalcStatic_Node(TakesJob):
+class CalcStatic_Node(AtomisticTaker):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcStatic"
-    init_inputs = TakesJob.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
-    ]
-    init_outputs = TakesJob.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
-    ]
 
-    def _run(self):
-        self.job.run()
-
-    @property
-    def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+    def _modify_job(self, copied_job: Lammps, **kwargs) -> Lammps:
+        copied_job.calc_static()
+        return copied_job
 
 
 def pressure_input():
@@ -450,14 +338,13 @@ def pressure_input():
     )
 
 
-class CalcMinimize_Node(TakesJob):
+class CalcMinimize_Node(AtomisticTaker):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcMinimize"
-    init_inputs = TakesJob.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
+    init_inputs = AtomisticTaker.init_inputs + [
         NodeInputBP(dtype=dtypes.Float(default=0.0), label="ionic_energy_tolerance"),
         NodeInputBP(dtype=dtypes.Float(default=1e-4), label="ionic_force_tolerance"),
         NodeInputBP(dtype=dtypes.Integer(default=100000), label="max_iter"),
@@ -465,34 +352,36 @@ class CalcMinimize_Node(TakesJob):
         NodeInputBP(dtype=dtypes.Integer(default=100), label="n_print"),
         NodeInputBP(dtype=dtypes.Choice(default="cg", items=["cg"]), label="style"),
     ]
-    init_outputs = TakesJob.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
-    ]
 
-    def _run(self):
-        self.job.calc_minimize(
-            ionic_energy_tolerance=self.inputs.values.ionic_energy_tolerance,
-            ionic_force_tolerance=self.inputs.values.ionic_force_tolerance,
-            max_iter=self.inputs.values.max_iter,
-            pressure=self.inputs.values.pressure,
-            n_print=self.inputs.values.n_print,
-            style=self.inputs.values.style,
+    def _modify_job(
+        self,
+        copied_job: Lammps,
+        ionic_energy_tolerance,
+        ionic_force_tolerance,
+        max_iter,
+        pressure,
+        n_print,
+        style,
+        **kwargs,
+    ) -> Lammps:
+        copied_job.calc_minimize(
+            ionic_energy_tolerance=ionic_energy_tolerance,
+            ionic_force_tolerance=ionic_force_tolerance,
+            max_iter=max_iter,
+            pressure=pressure,
+            n_print=n_print,
+            style=style,
         )
-        self.job.run()
-
-    @property
-    def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return copied_job
 
 
-class CalcMD_Node(TakesJob):
+class CalcMD_Node(AtomisticTaker):
     """
     Execute a static atomistic engine evaluation.
     """
 
     title = "CalcMD"
-    init_inputs = TakesJob.init_inputs + [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job"),
+    init_inputs = AtomisticTaker.init_inputs + [
         NodeInputBP(
             dtype=dtypes.Float(default=None, allow_none=True), label="temperature"
         ),
@@ -516,34 +405,42 @@ class CalcMD_Node(TakesJob):
             label="dynamics",
         ),
     ]
-    init_outputs = TakesJob.init_outputs + [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=[Lammps]), label="job")
-    ]
 
-    def _run(self):
-        self.job.calc_md(
-            temperature=self.inputs.values.temperature,
-            pressure=self.inputs.values.pressure,
-            n_ionic_steps=self.inputs.values.n_ionic_steps,
-            time_step=self.inputs.values.time_step,
-            n_print=self.inputs.values.n_print,
-            temperature_damping_timescale=self.inputs.values.temperature_damping_timescale,
-            pressure_damping_timescale=self.inputs.values.pressure_damping_timescale,
-            seed=self.inputs.values.seed,
-            initial_temperature=self.inputs.values.initial_temperature,
-            langevin=self.inputs.values.dynamics == "langevin",
+    def _modify_job(
+        self,
+        copied_job: Lammps,
+        temperature,
+        pressure,
+        n_ionic_steps,
+        time_step,
+        n_print,
+        temperature_damping_timescale,
+        pressure_damping_timescale,
+        seed,
+        initial_temperature,
+        dynamics,
+        **kwargs,
+    ) -> Lammps:
+        copied_job.calc_md(
+            temperature=temperature,
+            pressure=pressure,
+            n_ionic_steps=n_ionic_steps,
+            time_step=time_step,
+            n_print=n_print,
+            temperature_damping_timescale=temperature_damping_timescale,
+            pressure_damping_timescale=pressure_damping_timescale,
+            seed=seed,
+            initial_temperature=initial_temperature,
+            langevin=dynamics == "langevin",
         )
-        self.job.run()
-
-    @property
-    def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return copied_job
 
 
-class PyironTable_Node(MakesJob):
+class PyironTable_Node(JobMaker):
     title = "PyironTable"
+    valid_job_classes = [pyiron_base.TableJob]
 
-    init_inputs = list(MakesJob.init_inputs)
+    init_inputs = list(JobMaker.init_inputs)
     n_fixed_input_cols = len(init_inputs)
     n_table_cols = 2  # TODO: allow user to change number of cols
     for n in np.arange(n_table_cols):
@@ -558,34 +455,29 @@ class PyironTable_Node(MakesJob):
                 label=f"Col_{n + 1}",
             )
         )
-    init_outputs = MakesJob.init_outputs + [
-        NodeOutputBP(
-            dtype=dtypes.Data(valid_classes=pyiron_base.TableJob), label="job"
-        ),
+    init_outputs = JobMaker.init_outputs + [
         NodeOutputBP(dtype=dtypes.Data(valid_classes=DataFrame), label="dataframe"),
     ]
     n_fixed_output_cols = len(init_outputs)
     for n in np.arange(n_table_cols):
         init_outputs.append(NodeOutputBP(label=f"Col_{n + 1}"))
 
-    def _generate_job(self) -> pyiron_base.TableJob:
-        return self.inputs.values.project.base.job.TableJob(self.inputs.values.name)
-
-    def _run(self):
+    def _generate_job(self, name, project, **kwargs) -> pyiron_base.TableJob:
+        job = project.base.job.TableJob(name)
         for n in np.arange(self.n_table_cols):
-            getattr(self.job.add, self.inputs[n + self.n_fixed_input_cols].val)
-        self.job.run()
+            getattr(job.add, self.inputs[n + self.n_fixed_input_cols].val)
+        return job
 
-    def _set_output(self):
-        super()._set_output()
-        df = self.job.get_dataframe()
-        self.set_output_val(2, df)
-        for n in range(self.n_table_cols):
-            self.set_output_val(n + self.n_fixed_output_cols, df.iloc[:, n + 1].values)
-            # n + 1 because somehow job_id is always a column, and we don't care
+    def _get_output_from_job(self, finished_job: pyiron_base.TableJob, **kwargs):
+        df = finished_job.get_dataframe()
+        return {
+            f"Col_{n + 1}": df.iloc[:, n + 1].values
+            for n in range(self.n_table_cols)
+            # iloc n + 1 because somehow job_id is always a column, and we don't care
+        }
 
 
-class Engine(Node):
+class Engine(DataNode):
     """
     A parent class for engines (jobs).
     """
@@ -616,35 +508,150 @@ class Lammps_Node(Engine):
         NodeOutputBP(label="engine", dtype=dtypes.Data(valid_classes=Lammps)),
     ]
 
+    def _get_potentials(self):
+        # TODO: This is terribly inefficient for very large structures or long batches
+        if self.inputs.ports.structure.dtype.batched:
+            structure = self.inputs.values.structure[0].copy()
+            for other in self.inputs.values.structure[1:]:
+                structure += other
+        else:
+            structure = self.inputs.values.structure
+        return list_potentials(structure)
+
     def _update_potential_choices(self):
         last_potential = self.inputs.values.potential
-        available_potentials = list_potentials(self.inputs.values.structure)
+        available_potentials = self._get_potentials()
 
         if len(available_potentials) == 0:
             self.inputs.ports.potential.val = None
             self.inputs.ports.potential.dtype.items = ["No valid potential"]
         else:
-            if last_potential not in available_potentials:
-                self.inputs.ports.potential.val = available_potentials[0]
+            if (
+                last_potential not in available_potentials
+                and len(self.inputs.ports.potential.connections) == 0
+            ):
+                if self.inputs.ports.potential.dtype.batched:
+                    self.inputs.ports.potential.val = available_potentials
+                else:
+                    self.inputs.ports.potential.val = available_potentials[0]
             self.inputs.ports.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
         if inp == 1 and self.inputs.ports.structure.valid_val:
             self._update_potential_choices()
-        if self.all_input_is_valid:
-            job = self.inputs.values.project.create.job.Lammps(
-                "_Lammps_Engine", delete_existing_job=True
-            )
-            job.structure = self.inputs.values.structure
-            job.potential = self.inputs.values.potential
-            self.set_output_val(0, job)
+        super().update_event(inp=inp)
+
+    def node_function(self, project, structure, potential, **kwargs) -> dict:
+        job = project.create.job.Lammps("_Lammps_Engine", delete_existing_job=True)
+        job.structure = structure
+        job.potential = potential
+        return {"engine": job}
 
     @property
     def extra_representations(self) -> dict:
-        return {"job": BeautifulHasGroups(self.outputs.values.job)}
+        return {
+            **self.batched_representation(
+                "job", BeautifulHasGroups, self.outputs.values.engine
+            ),
+        }
 
 
-class AtomisticOutput_Node(Node):
+class LammpsPotentials_Node(DataNode):
+    """
+    Given a structure, returns the available compatible Lammps potential names.
+    """
+
+    title = "LammpsPotentials"
+    color = "#aabb44"
+
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
+    ]
+    init_outputs = [
+        NodeOutputBP(dtype=dtypes.List(valid_classes=str), label="potentials"),
+    ]
+
+    def node_function(self, structure, **kwargs) -> dict:
+        return {
+            "potentials": list_potentials(structure),
+        }
+
+
+class Select_Node(DataNode):
+    """
+    Select a single elemnt of an iterable input.
+    """
+
+    title = "Select"
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
+        NodeInputBP(dtype=dtypes.Integer(default=0), label="i"),
+    ]
+    init_outputs = [
+        NodeOutputBP(label="item", dtype=dtypes.Data(valid_classes=object)),
+    ]
+    color = "#aabb44"
+
+    def node_function(self, array, i, **kwargs) -> dict:
+        return {"item": array[i]}
+
+
+class Slice_Node(DataNode):
+    """
+    Slice a numpy array, list, or tuple, and return it as a numpy array.
+
+    When both `i` and `j` are `None`: Return the input whole.
+    When `i` is not `None` and `j` is: Return the slice `[i:]`
+    When `i` is `None` and `j` isn't: Return the slice `[:j]`
+    When neither are `None`: Return the slice `[i:j]`
+    """
+
+    title = "Slice"
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="i"),
+        NodeInputBP(dtype=dtypes.Integer(default=None, allow_none=True), label="j"),
+    ]
+    init_outputs = [
+        NodeOutputBP(label="sliced", dtype=dtypes.List(valid_classes=object)),
+    ]
+    color = "#aabb44"
+
+    def node_function(self, array, i, j, **kwargs) -> dict:
+        converted = np.array(array)
+        if i is None and j is None:
+            sliced = converted
+        elif i is not None and j is None:
+            sliced = converted[i:]
+        elif i is None and j is not None:
+            sliced = converted[:j]
+        else:
+            sliced = converted[i:j]
+        return {"sliced": sliced}
+
+
+class Transpose_Node(DataNode):
+    """
+    Interprets list-like input as a numpy array and transposes it.
+    """
+
+    title = "Transpose"
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.List(valid_classes=object), label="array"),
+    ]
+    init_outputs = [
+        NodeOutputBP(dtype=dtypes.List(valid_classes=object), label="transposed"),
+    ]
+    color = "#aabb44"
+
+    def node_function(self, array, **kwargs) -> dict:
+        array = np.array(array)  # Ensure array
+        if len(array.shape) < 2:
+            array = np.array([array])  # Ensure transposable
+        return {"transposed": np.array(array).T}
+
+
+class AtomisticOutput_Node(DataNode):
     """
     Select Generic Output item.
 
@@ -673,25 +680,17 @@ class AtomisticOutput_Node(Node):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(dtype=dtypes.Data(valid_classes=np.ndarray), label="output"),
+        NodeOutputBP(
+            dtype=dtypes.List(valid_classes=[int, float, np.number]), label="output"
+        ),
     ]
     color = "#c69a15"
 
-    def __init__(self, params):
-        super().__init__(params)
-
-    def _update_value(self):
-        if isinstance(self.inputs.values.job, AtomisticGenericJob):
-            val = self.inputs.values.job[f"output/generic/{self.inputs.values.field}"]
-        else:
-            val = None
-        self.set_output_val(0, val)
-
-    def update_event(self, inp=-1):
-        self._update_value()
+    def node_function(self, job, field, **kwargs) -> dict:
+        return {"output": job[f"output/generic/{field}"]}
 
 
-class IntRand_Node(Node):
+class IntRand_Node(DataNode):
     """
     Generate a random non-negative integer.
 
@@ -707,54 +706,61 @@ class IntRand_Node(Node):
 
     title = "IntRandom"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(10, 100)), label="high"),
-        NodeInputBP(dtype=dtypes.Integer(default=1, bounds=(1, 100)), label="length"),
+        NodeInputBP(dtype=dtypes.Integer(default=0), label="low"),
+        NodeInputBP(dtype=dtypes.Integer(default=1), label="high"),
+        NodeInputBP(dtype=dtypes.Integer(default=1), label="length"),
     ]
     init_outputs = [
-        NodeOutputBP(label="randint"),
+        NodeOutputBP(dtype=dtypes.List(valid_classes=np.integer), label="randint"),
     ]
     color = "#aabb44"
 
-    def update_event(self, inp=-1):
-        val = np.random.randint(
-            0, high=self.inputs.values.high, size=self.inputs.values.length
-        )
-        self.set_output_val(0, val)
+    def node_function(self, low, high, length, *args, **kwargs) -> dict:
+        return {"randint": np.random.randint(low, high=high, size=length)}
 
 
-class JobName_Node(Node):
+class JobName_Node(DataNode):
     """
-    Create job name for parameters.
+    Create a sanitized job name, optionally with a floating point parameter.
 
     Inputs:
-        base (str): The stem for the final name. (Default is "job_".)
-        float (float): The parameter value to add to the name.
+        name_base (str): The stem for the final name. (Default is "job".)
+        parameter (float|None): The parameter value to add to the name.
+        ndigits (int|None): How many digits to keep from floating point values.
+            (Default 8. Use None to not round at all.)
+        special_symbols (dict|None): Not documented, sorry. (Default is None.)
 
     Outputs:
         job_name (str): The base plus float sanitized into a valid job name.
-
-    Todo:
-        There has been some work in pyiron_base on getting a cleaner job name sanitizer, so lean on that.
     """
 
     title = "JobName"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.String(default="job_"), label="base"),
-        NodeInputBP(dtype=dtypes.Float(default=0.0), label="float"),
+        NodeInputBP(dtype=dtypes.String(default="job"), label="name_base"),
+        NodeInputBP(
+            dtype=dtypes.Float(default=None, allow_none=True), label="parameter"
+        ),
+        NodeInputBP(dtype=dtypes.Integer(default=8, allow_none=True), label="ndigits"),
+        NodeInputBP(
+            dtype=dtypes.Data(default=None, valid_classes=dict, allow_none=True),
+            label="special_symbols",
+        ),
     ]
     init_outputs = [
         NodeOutputBP(label="job_name", dtype=dtypes.String()),
     ]
     color = "#aabb44"
 
-    def update_event(self, inp=-1):
-        val = self.inputs.values.base + f"{float(self.inputs.values.float)}".replace(
-            "-", "m"
-        ).replace(".", "p")
-        self.set_output_val(0, val)
+    def node_function(self, name_base, parameter, ndigits, special_symbols, **kwargs):
+        name = (name_base, parameter) if parameter is not None else name_base
+        return {
+            "job_name": _get_safe_job_name(
+                name, ndigits=ndigits, special_symbols=special_symbols
+            )
+        }
 
 
-class Linspace_Node(Node):
+class Linspace_Node(DataNode):
     """
     Generate a linear mesh in a given range using `np.linspace`.
 
@@ -773,22 +779,15 @@ class Linspace_Node(Node):
     init_inputs = [
         NodeInputBP(dtype=dtypes.Float(default=1.0), label="min"),
         NodeInputBP(dtype=dtypes.Float(default=2.0), label="max"),
-        NodeInputBP(dtype=dtypes.Integer(default=10, bounds=(1, 100)), label="steps"),
+        NodeInputBP(dtype=dtypes.Integer(default=10), label="steps"),
     ]
     init_outputs = [
-        NodeOutputBP(label="linspace"),
+        NodeOutputBP(dtype=dtypes.List(valid_classes=np.floating), label="linspace")
     ]
     color = "#aabb44"
 
-    def place_event(self):
-        super().place_event()
-        self.update()
-
-    def update_event(self, inp=-1):
-        val = np.linspace(
-            self.inputs.values.min, self.inputs.values.max, self.inputs.values.steps
-        )
-        self.set_output_val(0, val)
+    def node_function(self, min, max, steps, **kwargs) -> dict:
+        return {"linspace": np.linspace(min, max, steps)}
 
 
 class Plot3d_Node(Node):
@@ -806,17 +805,11 @@ class Plot3d_Node(Node):
     title = "Plot3d"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=Atoms), label="structure"
-        ),
+        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
     ]
     init_outputs = [
-        NodeOutputBP(
-            type_="data", label="plot3d", dtype=dtypes.Data(valid_classes=NGLWidget)
-        ),
-        NodeOutputBP(
-            type_="data", label="structure", dtype=dtypes.Data(valid_classes=Atoms)
-        ),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=NGLWidget), label="plot3d"),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
     ]
     color = "#5d95de"
 
@@ -852,8 +845,8 @@ class Matplot_Node(Node):
     title = "MatPlot"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="x"),
-        NodeInputBP(dtype=dtypes.Data(valid_classes=[list, np.ndarray]), label="y"),
+        NodeInputBP(dtype=dtypes.Untyped(), label="x"),
+        NodeInputBP(dtype=dtypes.Untyped(), label="y"),
         NodeInputBP(
             dtype=dtypes.Data(valid_classes=Figure, allow_none=True), label="fig"
         ),
@@ -908,9 +901,7 @@ class Matplot_Node(Node):
         NodeInputBP(dtype=dtypes.Boolean(default=True), label="tight_layout"),
     ]
     init_outputs = [
-        NodeOutputBP(
-            type_="data", label="fig", dtype=dtypes.Data(valid_classes=Figure)
-        ),
+        NodeOutputBP(dtype=dtypes.Data(valid_classes=Figure), label="fig"),
     ]
     color = "#5d95de"
 
@@ -960,7 +951,51 @@ class Matplot_Node(Node):
         return fig_copy, fig_copy.axes[0]
 
 
-class Sin_Node(Node):
+_seaborn_method_map = {
+    "scatter": sns.scatterplot,
+    "hist": sns.histplot,
+    "joint": sns.jointplot,
+}
+
+
+class QuickPlot_Node(Node):
+    """
+    Make a variety of quick and dirty plots with Seaborn.
+    """
+
+    title = "QuickPlot"
+    color = "#5d95de"
+
+    init_inputs = [
+        NodeInputBP(dtype=dtypes.Untyped(), label="x"),
+        NodeInputBP(dtype=dtypes.Untyped(), label="y"),
+        NodeInputBP(
+            dtype=dtypes.Choice(
+                default="scatter",
+                items=list(_seaborn_method_map.keys()),
+            ),
+            label="type",
+        ),
+    ]
+    init_outputs = [NodeOutputBP(label="plot")]
+
+    def update_event(self, inp=-1):
+        super().update_event()
+        plt.ioff()
+        if self.all_input_is_valid:
+            try:
+                plt.clf()
+                plot_function = _seaborn_method_map[self.inputs.values.type]
+                out = plot_function(x=self.inputs.values.x, y=self.inputs.values.y)
+                self.set_output_val(0, out.figure)
+                plt.ion()
+            except Exception as e:
+                self.set_all_outputs_to_none()
+                plt.ion()
+                raise e
+
+
+class Sin_Node(DataNode):
     """
     Call `numpy.sin` on a value.
 
@@ -974,46 +1009,15 @@ class Sin_Node(Node):
     title = "Sin"
     version = "v0.1"
     init_inputs = [
-        NodeInputBP(
-            dtype=dtypes.Data(size="m", valid_classes=[int, float, list, np.ndarray]),
-            label="x",
-        ),
+        NodeInputBP(dtype=dtypes.List(valid_classes=NUMERIC_TYPES), label="x"),
     ]
     init_outputs = [
-        NodeOutputBP(label="sin"),
+        NodeOutputBP(dtype=dtypes.List(valid_classes=NUMERIC_TYPES), label="sin"),
     ]
     color = "#5d95de"
 
-    def update_event(self, inp=-1):
-        self.set_output_val(0, np.sin(self.inputs.values.x))
-
-
-class Result_Node(Node):
-    """Simply shows a value converted to str"""
-
-    version = "v0.1"
-
-    title = "Result"
-    init_inputs = [
-        NodeInputBP(type_="data"),
-    ]
-    color = "#c69a15"
-
-    def __init__(self, params):
-        super().__init__(params)
-        self.val = None
-
-    def place_event(self):
-        super().place_event()
-        self.update()
-
-    def view_place_event(self):
-        self.main_widget().show_val(self.val)
-
-    def update_event(self, inp=-1):
-        self.val = self.inputs.data.val
-        if self.session.gui:
-            self.main_widget().show_val(self.val)
+    def node_function(self, x, **kwargs) -> dict:
+        return {"sin": np.sin(x)}
 
 
 class ForEach_Node(Node):
@@ -1094,9 +1098,10 @@ nodes = [
     IntRand_Node,
     Linspace_Node,
     Sin_Node,
-    Result_Node,
     ExecCounter_Node,
     Matplot_Node,
     Click_Node,
     ForEach_Node,
+    Transpose_Node,
+    Slice_Node,
 ]

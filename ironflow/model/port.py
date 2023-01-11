@@ -14,7 +14,7 @@ from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOut
 from ryvencore.NodePortBP import NodeOutputBP as NodeOutputBPCore
 from ryvencore.utils import serialize
 
-from ironflow.model.dtypes import DType
+from ironflow.model.dtypes import DType, Untyped
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
@@ -27,7 +27,7 @@ class HasDType:
     def valid_val(self):
         if self.dtype is not None:
             if self.val is not None:
-                return self.dtype._instance_matches(self.val)
+                return self.dtype.valid_val(self.val)
             else:
                 return self.dtype.allow_none
         else:
@@ -45,19 +45,34 @@ class NodeInput(NodeInputCore, HasDType):
     ):
         super().__init__(
             node=node,
-            type_=type_ if dtype is None else "data",
+            type_=type_,
             label_str=label_str,
             add_data=add_data if add_data is not None else {},
-            dtype=deepcopy(dtype),  # Because some dtypes have mutable fields
+            dtype=Untyped() if dtype is None else deepcopy(dtype),
         )
+
+    def _update_node(self):
+        self.node.update(self.node.inputs.index(self))
+
+    def batch(self):
+        if self.dtype is not None and not self.dtype.batched:
+            self.dtype.batched = True
+            if len(self.connections) == 0:
+                self.val = [self.val]
+            self._update_node()
+
+    def unbatch(self):
+        if self.dtype is not None and self.dtype.batched:
+            self.dtype.batched = False
+            if len(self.connections) == 0:
+                self.val = self.val[-1]
+            self._update_node()
 
 
 class NodeOutput(NodeOutputCore, HasDType):
-    def __init__(self, node, type_="data", label_str="", dtype: DType = None):
-        super().__init__(
-            node=node, type_=type_ if dtype is None else "data", label_str=label_str
-        )
-        self.dtype = deepcopy(dtype)  # Some dtypes have mutable fields
+    def __init__(self, node, type_="data", label_str="", dtype: Optional[DType] = None):
+        super().__init__(node=node, type_=type_, label_str=label_str)
+        self.dtype = Untyped() if dtype is None else deepcopy(dtype)
 
     def data(self) -> dict:
         data = super().data()
