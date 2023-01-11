@@ -281,6 +281,11 @@ class NodeController:
         if hasattr(w, "children"):
             for c in w.children:
                 self._close_widget(c)
+        w.layout.close()
+        try:
+            w.style.close()
+        except AttributeError:
+            pass
         w.close()
 
     def clear(self) -> None:
