@@ -22,6 +22,7 @@ from ironflow.model.node import BatchingNode
 
 
 if TYPE_CHECKING:
+    from ipywidgets import DOMWidget
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.node import Node
 
@@ -41,11 +42,14 @@ class NodeController(NodeInterfaceBase):
         self.node = None
         self._row_height = 30  # px
 
+        self.input_box: widgets.DOMWidget | None = None
+        self.input_widget: widgets.Widget | None = None
+        self.info_box: widgets.VBox | None = None
+
     def _box_height(self, n_rows: int) -> int:
         return n_rows * self._row_height + 8
 
-    @property
-    def input_widget(self) -> widgets.Widget:
+    def draw_input_widget(self) -> widgets.Widget:
         try:
             widget = self.node.input_widget(self.screen, self.node).widget
             widget.layout = widgets.Layout(
@@ -200,8 +204,7 @@ class NodeController(NodeInterfaceBase):
 
         return input_reset
 
-    @property
-    def input_box(self) -> widgets.GridBox | widgets.Output:
+    def draw_input_box(self) -> widgets.GridBox | widgets.Output:
         input_fields = self.input_field_list()
         n_fields = len(input_fields)
         if n_fields > 0:
@@ -219,8 +222,7 @@ class NodeController(NodeInterfaceBase):
         else:
             return widgets.Output()
 
-    @property
-    def info_box(self) -> widgets.VBox:
+    def draw_info_box(self) -> widgets.VBox:
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
@@ -248,6 +250,9 @@ class NodeController(NodeInterfaceBase):
     def draw(self) -> None:
         self.clear_output()
         if self.node is not None:
+            self.input_box = self.draw_input_box()
+            self.input_widget = self.draw_input_widget()
+            self.info_box = self.draw_info_box()
             with self.output:
                 display(
                     widgets.VBox([self.input_box, self.input_widget, self.info_box])
@@ -260,3 +265,16 @@ class NodeController(NodeInterfaceBase):
 
     def close(self) -> None:
         self.draw_for_node(None)
+
+    def _close_widget(self, w):
+        if hasattr(w, "children"):
+            for c in w.children:
+                self._close_widget(c)
+        w.close()
+
+    def clear_output(self) -> None:
+        self.output.clear_output()
+        for w in [self.input_widget, self.input_box, self.info_box]:
+            if w is not None:
+                self._close_widget(w)
+        self.input_box = self.input_widget = self.info_box = None
