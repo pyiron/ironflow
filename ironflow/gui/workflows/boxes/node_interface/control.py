@@ -13,11 +13,9 @@ from typing import TYPE_CHECKING, Callable
 
 import ipywidgets as widgets
 import numpy as np
-from IPython.display import display
 from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
-from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
 from ironflow.model.node import BatchingNode
 
 
@@ -31,7 +29,7 @@ def deserialize(data):
     return pickle.loads(base64.b64decode(data))
 
 
-class NodeController(NodeInterfaceBase):
+class NodeController:
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
@@ -45,6 +43,22 @@ class NodeController(NodeInterfaceBase):
         self.input_box: widgets.DOMWidget | None = None
         self.input_widget: widgets.Widget | None = None
         self.info_box: widgets.VBox | None = None
+
+        self._border = "1px solid black"
+        self._box = widgets.VBox(
+            [],
+            layout=widgets.Layout(
+                width="50%",
+                border="",
+                max_height="360px",
+                margin="10px",
+                padding="5px",
+            )
+        )
+
+    @property
+    def box(self) -> widgets.Box:
+        return self._box
 
     def _box_height(self, n_rows: int) -> int:
         return n_rows * self._row_height + 8
@@ -248,16 +262,13 @@ class NodeController(NodeInterfaceBase):
         return info_box
 
     def draw(self) -> None:
-        self.clear_output()
+        self.clear()
         if self.node is not None:
             self.input_box = self.draw_input_box()
             self.input_widget = self.draw_input_widget()
             self.info_box = self.draw_info_box()
-            with self.output:
-                display(
-                    widgets.VBox([self.input_box, self.input_widget, self.info_box])
-                )
-                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
+            self.box.children = [self.input_box, self.input_widget, self.info_box]
+            self.box.layout.border = self._border
 
     def draw_for_node(self, node: Node | None) -> None:
         self.node = node
@@ -272,8 +283,9 @@ class NodeController(NodeInterfaceBase):
                 self._close_widget(c)
         w.close()
 
-    def clear_output(self) -> None:
-        self.output.clear_output()
+    def clear(self) -> None:
+        self.box.children = []
+        self.box.layout.border = ""
         for w in [self.input_widget, self.input_box, self.info_box]:
             if w is not None:
                 self._close_widget(w)

@@ -112,7 +112,7 @@ class WorkflowsGUI(Screen):
 
     def close_node_control(self) -> None:
         self.node_controller.node = None
-        self.node_controller.clear_output()
+        self.node_controller.clear()
 
     def ensure_node_not_controlled(self, node: Node) -> None:
         if self.node_controller.node == node:
