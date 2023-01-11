@@ -66,10 +66,8 @@ class NodeController:
     def draw_input_widget(self) -> widgets.Widget:
         try:
             widget = self.node.input_widget(self.screen, self.node).widget
-            widget.layout = widgets.Layout(
-                height="70px",
-                border="solid 1px blue",
-            )
+            widget.layout.height = "70px"
+            widget.layout.border = "solid 1px blue"
             return widget
         except AttributeError:
             return widgets.Output()
@@ -254,10 +252,12 @@ class NodeController:
             layout=widgets.Layout(height=f"{self._row_height}px"),
         )
 
-        info_box = widgets.VBox([title, global_id])
-        info_box.layout = widgets.Layout(
-            height=f"{self._box_height(2)}px",
-            border="solid 1px red",
+        info_box = widgets.VBox(
+            [title, global_id],
+            layout=widgets.Layout(
+                height=f"{self._box_height(2)}px",
+                border="solid 1px red",
+            )
         )
         return info_box
 
