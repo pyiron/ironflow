@@ -38,8 +38,6 @@ class NodePresenter:
         self.clear()
         self.node_widget = node_widget
         if node_widget is not None:
-            self._widgets = self._build_widgets(node_widget.node.representations)
-            self._toggles = self._build_toggles(node_widget.node.representations)
             self.draw()
 
     @staticmethod
@@ -72,8 +70,6 @@ class NodePresenter:
             w.clear_output()
             self._close_widget(w)
         self._widgets = []
-        for t in self._toggles:
-            self._close_widget(t)
         self._toggles = []
 
         self.box.layout.border = ""
@@ -89,6 +85,11 @@ class NodePresenter:
 
     def draw(self):
         representations_dict = self.node_widget.node.representations
+
+        if len(representations_dict) != len(self._widgets):
+            self._widgets = self._build_widgets(representations_dict)
+            self._toggles = self._build_toggles(representations_dict)
+
         for (toggle, widget, representation) in zip(
             self._toggles, self._widgets, representations_dict.values()
         ):
