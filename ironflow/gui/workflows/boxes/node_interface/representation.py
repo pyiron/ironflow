@@ -34,6 +34,8 @@ class NodePresenter:
             layout={"width": "100%", "border": ""}
         )
 
+        self._drawn_widgets = []
+
     def draw_for_node_widget(self, node_widget: NodeWidget):
         self.clear()
         self.node_widget = node_widget
@@ -66,9 +68,10 @@ class NodePresenter:
             self.node_widget.represent_button.draw()  # Re-draw it as un-pressed
         self.node_widget = None
 
-        for w in self._widgets:
-            w.clear_output()
-            self._close_widget(w)
+        for w in self._drawn_widgets:
+            w.close()
+        self._drawn_widgets = []
+
         self._widgets = []
         self._toggles = []
 
@@ -84,6 +87,7 @@ class NodePresenter:
             self.draw()
 
     def draw(self):
+        n_start = len(widgets.Widget.widgets)
         representations_dict = self.node_widget.node.representations
 
         if len(representations_dict) != len(self._widgets):
@@ -104,17 +108,8 @@ class NodePresenter:
         self._representation_box.children = self._widgets
 
         self.node_widget.node.representation_updated = False
+        n_fin = len(widgets.Widget.widgets)
+        self._drawn_widgets += list(widgets.Widget.widgets.values())[n_start:n_fin]
 
     def close(self) -> None:
         self.draw_for_node_widget(None)
-
-    def _close_widget(self, w):
-        if hasattr(w, "children"):
-            for c in w.children:
-                self._close_widget(c)
-        w.layout.close()
-        try:
-            w.style.close()
-        except AttributeError:
-            pass
-        w.close()
