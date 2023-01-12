@@ -93,7 +93,9 @@ class NodePresenter:
             self._toggles, self._widgets, representations_dict.values()
         ):
             widget.clear_output()
+            widget.layout.border = ""
             if toggle.value:
+                widget.layout.border = self._border
                 with widget:
                     display(representation)
 
