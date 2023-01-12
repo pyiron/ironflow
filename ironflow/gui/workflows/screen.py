@@ -108,10 +108,9 @@ class WorkflowsGUI(Screen):
         self.node_controller.draw_for_node(node)
 
     def update_node_control(self) -> None:
-        self.node_controller.draw()
+        self.node_controller.update()
 
     def close_node_control(self) -> None:
-        self.node_controller.node = None
         self.node_controller.clear()
 
     def ensure_node_not_controlled(self, node: Node) -> None:
