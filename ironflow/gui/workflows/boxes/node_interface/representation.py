@@ -89,7 +89,6 @@ class NodePresenter:
 
     def draw(self):
         representations_dict = self.node_widget.node.representations
-        representations = []
         for (toggle, widget, representation) in zip(
             self._toggles, self._widgets, representations_dict.values()
         ):
@@ -97,10 +96,9 @@ class NodePresenter:
             if toggle.value:
                 with widget:
                     display(representation)
-                representations.append(widget)
 
         self._toggle_box.children = self._toggles
-        self._representation_box.children = representations
+        self._representation_box.children = self._widgets
 
         self.node_widget.node.representation_updated = False
 
