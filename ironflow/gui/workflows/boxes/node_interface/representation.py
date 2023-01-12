@@ -12,11 +12,13 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from IPython.display import display
 
+from ironflow.gui.draws_widgets import DrawsWidgets
+
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets import NodeWidget
 
 
-class NodePresenter:
+class NodePresenter(DrawsWidgets):
     """Handles the display of nodes with a representation."""
 
     def __init__(self):
@@ -33,8 +35,6 @@ class NodePresenter:
             [self._toggle_box, self._representation_box],
             layout={"width": "100%", "border": ""}
         )
-
-        self._drawn_widgets = []
 
     def draw_for_node_widget(self, node_widget: NodeWidget):
         self.clear()
@@ -62,15 +62,11 @@ class NodePresenter:
         if change["name"] == "value":
             self.draw()
 
-    def clear(self):
+    def _clear(self):
         if self.node_widget is not None:
             self.node_widget.represent_button.pressed = False
             self.node_widget.represent_button.draw()  # Re-draw it as un-pressed
         self.node_widget = None
-
-        for w in self._drawn_widgets:
-            w.close()
-        self._drawn_widgets = []
 
         self._widgets = []
         self._toggles = []
@@ -86,8 +82,7 @@ class NodePresenter:
         ):
             self.draw()
 
-    def draw(self):
-        n_start = len(widgets.Widget.widgets)
+    def _draw(self):
         representations_dict = self.node_widget.node.representations
 
         if len(representations_dict) != len(self._widgets):
@@ -108,8 +103,3 @@ class NodePresenter:
         self._representation_box.children = self._widgets
 
         self.node_widget.node.representation_updated = False
-        n_fin = len(widgets.Widget.widgets)
-        self._drawn_widgets += list(widgets.Widget.widgets.values())[n_start:n_fin]
-
-    def close(self) -> None:
-        self.draw_for_node_widget(None)

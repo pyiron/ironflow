@@ -116,7 +116,7 @@ class WorkflowsGUI(Screen):
 
     def ensure_node_not_controlled(self, node: Node) -> None:
         if self.node_controller.node == node:
-            self.node_controller.draw_for_node(None)
+            self.node_controller.clear()
 
     def open_node_presenter(self, node_widget: NodeWidget):
         self.node_presenter.draw_for_node_widget(node_widget)
@@ -125,11 +125,11 @@ class WorkflowsGUI(Screen):
         self.node_presenter.update()
 
     def close_node_presenter(self):
-        self.node_presenter.draw_for_node_widget(None)
+        self.node_presenter.clear()
 
     def ensure_node_not_presented(self, node_widget: NodeWidget) -> None:
         if self.node_presenter.node_widget == node_widget:
-            self.node_presenter.draw_for_node_widget(None)
+            self.node_presenter.clear()
 
     def redraw_active_flow_canvas(self):
         self.flow_canvas.redraw()
@@ -143,7 +143,7 @@ class WorkflowsGUI(Screen):
     def delete_flow(self, i: int):
         self.flow_canvases.pop(i)
         self.node_controller.close()
-        self.node_presenter.close()
+        self.node_presenter.clear()
 
     @property
     def screen(self):
