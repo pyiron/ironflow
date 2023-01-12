@@ -55,8 +55,23 @@ class NodeController(DrawsWidgets):
             )
         )
 
-    def _box_height(self, n_rows: int) -> int:
-        return n_rows * self._row_height + 8
+    def draw_for_node(self, node: Node | None) -> None:
+        self.clear()
+        self.node = node
+        if self.node is not None:
+            self.draw()
+
+    def update(self):
+        if self.node is not None:
+            self.draw()
+
+    def _draw(self) -> None:
+        self.box.children = [
+            self._draw_input_box(),
+            self._draw_input_widget(),
+            self._draw_info_box()
+        ]
+        self.box.layout.border = self._border
 
     def _draw_input_widget(self) -> widgets.Widget:
         try:
@@ -229,6 +244,9 @@ class NodeController(DrawsWidgets):
         else:
             return widgets.Output()
 
+    def _box_height(self, n_rows: int) -> int:
+        return n_rows * self._row_height + 8
+
     def _draw_info_box(self) -> widgets.VBox:
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
@@ -256,25 +274,7 @@ class NodeController(DrawsWidgets):
         )
         return info_box
 
-    def _draw(self) -> None:
-        self.box.children = [
-            self._draw_input_box(),
-            self._draw_input_widget(),
-            self._draw_info_box()
-        ]
-        self.box.layout.border = self._border
-
-    def draw_for_node(self, node: Node | None) -> None:
-        self.clear()
-        self.node = node
-        if self.node is not None:
-            self.draw()
-
     def _clear(self) -> None:
         self.node = None
         self.box.children = []
         self.box.layout.border = ""
-
-    def update(self):
-        if self.node is not None:
-            self.draw()

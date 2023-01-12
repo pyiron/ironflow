@@ -42,6 +42,35 @@ class NodePresenter(DrawsWidgets):
         if node_widget is not None:
             self.draw()
 
+    def update(self) -> None:
+        if (
+                self.node_widget is not None and
+                self.node_widget.node.representation_updated
+        ):
+            self.draw()
+
+    def _draw(self):
+        representations_dict = self.node_widget.node.representations
+
+        if len(representations_dict) != len(self._widgets):
+            self._widgets = self._build_widgets(representations_dict)
+            self._toggles = self._build_toggles(representations_dict)
+
+        for (toggle, widget, representation) in zip(
+            self._toggles, self._widgets, representations_dict.values()
+        ):
+            widget.clear_output()
+            widget.layout.border = ""
+            if toggle.value:
+                widget.layout.border = self._border
+                with widget:
+                    display(representation)
+
+        self._toggle_box.children = self._toggles
+        self._representation_box.children = self._widgets
+
+        self.node_widget.node.representation_updated = False
+
     @staticmethod
     def _build_widgets(representations: dict) -> list[widgets.Output]:
         return [
@@ -74,32 +103,3 @@ class NodePresenter(DrawsWidgets):
         self.box.layout.border = ""
         self._toggle_box.children = []
         self._representation_box.children = []
-
-    def update(self) -> None:
-        if (
-                self.node_widget is not None and
-                self.node_widget.node.representation_updated
-        ):
-            self.draw()
-
-    def _draw(self):
-        representations_dict = self.node_widget.node.representations
-
-        if len(representations_dict) != len(self._widgets):
-            self._widgets = self._build_widgets(representations_dict)
-            self._toggles = self._build_toggles(representations_dict)
-
-        for (toggle, widget, representation) in zip(
-            self._toggles, self._widgets, representations_dict.values()
-        ):
-            widget.clear_output()
-            widget.layout.border = ""
-            if toggle.value:
-                widget.layout.border = self._border
-                with widget:
-                    display(representation)
-
-        self._toggle_box.children = self._toggles
-        self._representation_box.children = self._widgets
-
-        self.node_widget.node.representation_updated = False
