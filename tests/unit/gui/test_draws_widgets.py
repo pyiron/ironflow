@@ -6,7 +6,7 @@ from unittest import TestCase
 
 import ipywidgets as widgets
 
-from ironflow.gui.widget_makers import DrawsWidgets, draws_widgets
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 
 
 class Child(DrawsWidgets):

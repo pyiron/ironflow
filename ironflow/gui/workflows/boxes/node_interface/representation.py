@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from IPython.display import display
 
-from ironflow.gui.widget_makers import DrawsWidgets
+from ironflow.gui.draws_widgets import DrawsWidgets
 
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets import NodeWidget

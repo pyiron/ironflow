@@ -16,7 +16,7 @@ import numpy as np
 from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
-from ironflow.gui.widget_makers import DrawsWidgets
+from ironflow.gui.draws_widgets import DrawsWidgets
 from ironflow.model.node import BatchingNode
 
 
