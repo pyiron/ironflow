@@ -102,4 +102,3 @@ class UserInput(DrawsWidgets):
 
     def _click_clear(self, change: None):
         self.clear()
-

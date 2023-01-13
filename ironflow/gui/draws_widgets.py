@@ -37,6 +37,7 @@ def draws_widgets(fnc: Callable) -> Callable:
     """
     A decorator for any class methods that instantiate new widgets outside init.
     """
+
     def wrapper(self, *args, **kwargs):
         n_widgets_i = len(widgets.Widget.widgets)
         result = fnc(self, *args, **kwargs)

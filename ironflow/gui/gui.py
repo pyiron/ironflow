@@ -29,17 +29,18 @@ class GUI(HasSession, DrawsWidgets):
         draw: Build the ipywidget to interact with.
         register_user_node: Register with ironflow a new node from the current python process.
     """
+
     main_widget_class = widgets.Tab
 
     def __new__(
-            cls,
-            session_title: str,
-            *args,
-            extra_nodes_packages: Optional[list] = None,
-            script_title: Optional[str] = None,
-            enable_ryven_log: bool = True,
-            log_to_display: bool = True,
-            **kwargs
+        cls,
+        session_title: str,
+        *args,
+        extra_nodes_packages: Optional[list] = None,
+        script_title: Optional[str] = None,
+        enable_ryven_log: bool = True,
+        log_to_display: bool = True,
+        **kwargs,
     ):
         return super().__new__(cls, *args, **kwargs)
 
@@ -81,7 +82,7 @@ class GUI(HasSession, DrawsWidgets):
             session_title=session_title,
             extra_nodes_packages=extra_nodes_packages,
             enable_ryven_log=enable_ryven_log,
-            **kwargs
+            **kwargs,
         )
 
         self.workflows = WorkflowsGUI(model=self)
@@ -98,7 +99,9 @@ class GUI(HasSession, DrawsWidgets):
         self.workflows.update_tabs()
 
         self.widget.children = [
-            self.workflows.widget, self.browser.widget, self.log.widget
+            self.workflows.widget,
+            self.browser.widget,
+            self.log.widget,
         ]
         self.widget.set_title(0, "Workflows")
         self.widget.set_title(1, "Browser")

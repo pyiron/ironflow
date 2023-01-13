@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 class NodePresenter(DrawsWidgets):
     """Handles the display of nodes with a representation."""
+
     main_widget_class = widgets.VBox
 
     def __init__(self):
@@ -44,8 +45,8 @@ class NodePresenter(DrawsWidgets):
 
     def update(self) -> None:
         if (
-                self.node_widget is not None and
-                self.node_widget.node.representation_updated
+            self.node_widget is not None
+            and self.node_widget.node.representation_updated
         ):
             self.draw()
 

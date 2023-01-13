@@ -60,18 +60,19 @@ class LogGUI(DrawsWidgets):
     A class that can redirect stdout and stderr to a widget, and gives controls for both this and toggling the
     Ryven logger.
     """
+
     main_widget_class = widgets.VBox
 
     def __new__(cls, model, enable_ryven_log, log_to_display, *args, **kwargs):
         return super().__new__(cls, *args, **kwargs)
 
     def __init__(
-            self,
-            model: HasSession,
-            enable_ryven_log: bool,
-            log_to_display: bool,
-            *args,
-            **kwargs
+        self,
+        model: HasSession,
+        enable_ryven_log: bool,
+        log_to_display: bool,
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.widget = self.main_widget_class([])

@@ -34,6 +34,7 @@ class NodeController(DrawsWidgets):
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
+
     main_widget_class = widgets.VBox
 
     def __new__(cls, screen: WorkflowsGUI, *args, **kwargs):
@@ -69,7 +70,7 @@ class NodeController(DrawsWidgets):
         self.widget.children = [
             self._draw_input_box(),
             self._draw_input_widget(),
-            self._draw_info_box()
+            self._draw_info_box(),
         ]
         self.widget.layout.border = self._border
         return self.widget
@@ -271,7 +272,7 @@ class NodeController(DrawsWidgets):
             layout=widgets.Layout(
                 height=f"{self._box_height(2)}px",
                 border="solid 1px red",
-            )
+            ),
         )
         return info_box
 
