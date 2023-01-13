@@ -109,14 +109,14 @@ class Node(NodeCore):
     Children should specify a title and some combination of initial input, output, and what to do when updated, e.g.:
 
     >>> class My_Node(Node):
-    >>> title = "MyUserNode"
-    >>> init_inputs = [
-    >>>     NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
-    >>> ]
-    >>> init_outputs = [
-    >>>    NodeOutputBP(label="bar")
-    >>> ]
-    >>> color = 'cyan'
+    >>>     title = "MyUserNode"
+    >>>     init_inputs = [
+    >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
+    >>>     ]
+    >>>     init_outputs = [
+    >>>        NodeOutputBP(label="bar")
+    >>>     ]
+    >>>     color = 'cyan'
     >>>
     >>> def update_event(self, inp=-1):
     >>>     self.set_output_val(0, self.input(0) + 42)
