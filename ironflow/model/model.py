@@ -28,9 +28,12 @@ class HasSession(ABC):
     def __init__(
         self,
         session_title: str,
+        *args,
         extra_nodes_packages: Optional[list] = None,
         enable_ryven_log: bool = True,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self._session = Session()
         self.session_title = session_title
         self._active_script_index = 0

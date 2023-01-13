@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Optional, Type
 
 import ipywidgets as widgets
 
-from ironflow.gui.base import Screen
 from ironflow.gui.browser import BrowserGUI
+from ironflow.gui.draws_widgets import DrawsWidgets
 from ironflow.gui.log import LogGUI
 from ironflow.gui.workflows.screen import WorkflowsGUI
 from ironflow.model.model import HasSession
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class GUI(HasSession, Screen):
+class GUI(HasSession, DrawsWidgets):
     """
     The main ironflow object, connecting a ryven backend with a jupyter-friendly ipywidgets+ipycanvas frontend.
 
@@ -30,13 +30,29 @@ class GUI(HasSession, Screen):
         register_user_node: Register with ironflow a new node from the current python process.
     """
 
-    def __init__(
-        self,
+    main_widget_class = widgets.Tab
+
+    def __new__(
+        cls,
         session_title: str,
+        *args,
         extra_nodes_packages: Optional[list] = None,
         script_title: Optional[str] = None,
         enable_ryven_log: bool = True,
         log_to_display: bool = True,
+        **kwargs,
+    ):
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(
+        self,
+        session_title: str,
+        *args,
+        extra_nodes_packages: Optional[list] = None,
+        script_title: Optional[str] = None,
+        enable_ryven_log: bool = True,
+        log_to_display: bool = True,
+        **kwargs,
     ):
         """
         Create a new gui instance.
@@ -62,9 +78,11 @@ class GUI(HasSession, Screen):
         # as we boot
 
         super().__init__(
+            *args,
             session_title=session_title,
             extra_nodes_packages=extra_nodes_packages,
             enable_ryven_log=enable_ryven_log,
+            **kwargs,
         )
 
         self.workflows = WorkflowsGUI(model=self)
@@ -80,14 +98,16 @@ class GUI(HasSession, Screen):
             self.create_script(script_title)
         self.workflows.update_tabs()
 
-        self._screen = widgets.Tab(
-            [self.workflows.screen, self.browser.screen, self.log.screen]
-        )
-        self._screen.set_title(0, "Workflows")
-        self._screen.set_title(1, "Browser")
-        self._screen.set_title(2, "Log")
+        self.widget.children = [
+            self.workflows.widget,
+            self.browser.widget,
+            self.log.widget,
+        ]
+        self.widget.set_title(0, "Workflows")
+        self.widget.set_title(1, "Browser")
+        self.widget.set_title(2, "Log")
 
-        self._screen.observe(self._change_screen_tabs)
+        self.widget.observe(self._change_screen_tabs)
 
     def create_script(
         self,
@@ -138,9 +158,8 @@ class GUI(HasSession, Screen):
     def log_to_stdout(self):
         self.log.log_to_stdout()
 
-    @property
-    def screen(self) -> widgets.Tab:
-        return self._screen
+    def draw(self):
+        return self.widget
 
     # Type hinting for unused `change` argument in callbacks taken from ipywidgets docs:
     # https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Events.html#Traitlet-events
@@ -148,3 +167,9 @@ class GUI(HasSession, Screen):
     def _change_screen_tabs(self, change: dict):
         if change["name"] == "selected_index" and change["new"] == 1:
             self.browser.project_browser.refresh()
+
+    def close(self):
+        self.log.close()
+        self.browser.close()
+        self.workflows.close()
+        super().close()

@@ -9,14 +9,17 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 
-from ironflow.gui.workflows.boxes.base import Box
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 
 
-class NodeSelector(Box):
-    box_class = widgets.VBox
+class NodeSelector(DrawsWidgets):
+    main_widget_class = widgets.VBox
 
-    def __init__(self, nodes_dictionary):
-        super().__init__()
+    def __new__(cls, nodes_dictionary, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(self, nodes_dictionary, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nodes_dictionary = nodes_dictionary
 
         self.modules_dropdown = widgets.Dropdown(
@@ -34,7 +37,7 @@ class NodeSelector(Box):
 
         self.modules_dropdown.observe(self.change_modules_dropdown, names="value")
 
-        self.box.children = [self.modules_dropdown, self.node_selector]
+        self.widget.children = [self.modules_dropdown, self.node_selector]
 
     def change_modules_dropdown(self, change: dict) -> None:
         self.node_selector.options = sorted(
@@ -60,36 +63,48 @@ class NodeSelector(Box):
         self.modules_dropdown.options = self.module_options
 
 
-class FlowBox(Box):
-    box_class = widgets.HBox
+class FlowBox(DrawsWidgets):
+    def __new__(cls, nodes_dictionary, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
 
-    def __init__(self, nodes_dictionary: dict):
-        super().__init__()
+    def __init__(self, nodes_dictionary: dict, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.node_selector = NodeSelector(nodes_dictionary=nodes_dictionary)
         self.script_tabs = widgets.Tab([])
 
-        self.node_selector.box.layout.width = "15%"
+        self.node_selector.widget.layout.width = "15%"
         self.script_tabs.layout.width = "85%"
 
-        self.box.children = [self.node_selector.box, self.script_tabs]
-
-    def update_nodes(self, nodes_dictionary: dict):
-        self.node_selector.update(nodes_dictionary=nodes_dictionary)
+        self.widget.children = [self.node_selector.widget, self.script_tabs]
 
     def update_tabs(
         self, outputs: list[widgets.Output], titles: list[str], active_index: int
     ):
+        self._outputs = outputs
+        self._titles = titles
+        self._active_index = active_index
+        self.draw()
+
+    @draws_widgets
+    def draw(self):
         self.script_tabs.selected_index = None
         # ^ To circumvent a bug where the index gets set to 0 on child changes
         # https://github.com/jupyter-widgets/ipywidgets/issues/2988
-        self.script_tabs.children = outputs
-        for i, title in enumerate(titles):
+        self.script_tabs.children = self._outputs
+        for i, title in enumerate(self._titles):
             self.script_tabs.set_title(i, title)
         self._add_new_script_tab()
-        self.script_tabs.selected_index = active_index
+        self.script_tabs.selected_index = self._active_index
+
+    def update_nodes(self, nodes_dictionary: dict):
+        self.node_selector.update(nodes_dictionary=nodes_dictionary)
 
     def _add_new_script_tab(self):
         self.script_tabs.children += (
             widgets.Output(layout={"border": "1px solid black"}),
         )
         self.script_tabs.set_title(len(self.script_tabs.children) - 1, "+")
+
+    def close(self):
+        self.node_selector.close()
+        super().close()

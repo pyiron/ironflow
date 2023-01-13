@@ -13,15 +13,15 @@ from typing import TYPE_CHECKING, Callable
 
 import ipywidgets as widgets
 import numpy as np
-from IPython.display import display
 from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
-from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 from ironflow.model.node import BatchingNode
 
 
 if TYPE_CHECKING:
+    from ipywidgets import DOMWidget
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.node import Node
 
@@ -30,33 +30,61 @@ def deserialize(data):
     return pickle.loads(base64.b64decode(data))
 
 
-class NodeController(NodeInterfaceBase):
+class NodeController(DrawsWidgets):
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
 
-    def __init__(self, screen: WorkflowsGUI):
-        super().__init__()
+    main_widget_class = widgets.VBox
+
+    def __new__(cls, screen: WorkflowsGUI, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(self, screen: WorkflowsGUI, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.screen = screen
         self.node = None
         self._row_height = 30  # px
 
-    def _box_height(self, n_rows: int) -> int:
-        return n_rows * self._row_height + 8
+        self._border = "1px solid black"
+        self.widget.layout = widgets.Layout(
+            width="50%",
+            border="",
+            max_height="360px",
+            margin="10px",
+            padding="5px",
+        )
 
-    @property
-    def input_widget(self) -> widgets.Widget:
+    def draw_for_node(self, node: Node | None) -> None:
+        self.clear()
+        self.node = node
+        if self.node is not None:
+            self.draw()
+
+    def update(self):
+        if self.node is not None:
+            self.draw()
+
+    @draws_widgets
+    def draw(self) -> None:
+        self.widget.children = [
+            self._draw_input_box(),
+            self._draw_input_widget(),
+            self._draw_info_box(),
+        ]
+        self.widget.layout.border = self._border
+        return self.widget
+
+    def _draw_input_widget(self) -> widgets.Widget:
         try:
             widget = self.node.input_widget(self.screen, self.node).widget
-            widget.layout = widgets.Layout(
-                height="70px",
-                border="solid 1px blue",
-            )
+            widget.layout.height = "70px"
+            widget.layout.border = "solid 1px blue"
             return widget
         except AttributeError:
             return widgets.Output()
 
-    def input_field_list(self) -> list[list[widgets.Widget]]:
+    def _input_field_list(self) -> list[list[widgets.Widget]]:
         input = []
         if hasattr(self.node, "inputs"):
             for i_c, inp in enumerate(self.node.inputs[:]):
@@ -128,7 +156,7 @@ class NodeController(NodeInterfaceBase):
 
                 description = inp.label_str if inp.label_str != "" else inp.type_
                 inp_widget.layout.width = "100px"
-                inp_widget.observe(self.input_change_i(i_c), names="value")
+                inp_widget.observe(self._input_change_i(i_c), names="value")
 
                 batch_button = widgets.ToggleButton(
                     description="Batched",
@@ -139,7 +167,7 @@ class NodeController(NodeInterfaceBase):
                     or not isinstance(inp.node, BatchingNode),
                     value=inp.dtype.batched if hasattr(inp, "dtype") else False,
                 )
-                batch_button.observe(self.toggle_batching_i(i_c), names="value")
+                batch_button.observe(self._toggle_batching_i(i_c), names="value")
 
                 reset_button = widgets.Button(
                     tooltip="Reset to default",
@@ -147,14 +175,14 @@ class NodeController(NodeInterfaceBase):
                     layout=widgets.Layout(width="30px"),
                     disabled=len(inp.connections) > 0,
                 )
-                reset_button.on_click(self.input_reset_i(i_c, inp_widget))
+                reset_button.on_click(self._input_reset_i(i_c, inp_widget))
 
                 input.append(
                     [widgets.Label(description), inp_widget, batch_button, reset_button]
                 )
         return input
 
-    def input_change_i(self, i_c) -> Callable:
+    def _input_change_i(self, i_c) -> Callable:
         def input_change(change: dict) -> None:
             # Todo: Test this in exec mode
             self.node.inputs[i_c].val = change["new"]
@@ -163,7 +191,7 @@ class NodeController(NodeInterfaceBase):
 
         return input_change
 
-    def toggle_batching_i(self, i_c) -> Callable:
+    def _toggle_batching_i(self, i_c) -> Callable:
         def toggle_batching(change: dict) -> None:
             try:
                 InfoMsgs.write(
@@ -181,7 +209,7 @@ class NodeController(NodeInterfaceBase):
 
         return toggle_batching
 
-    def input_reset_i(self, i_c, associated_input_field) -> Callable:
+    def _input_reset_i(self, i_c, associated_input_field) -> Callable:
         def input_reset(button: widgets.Button) -> None:
             default = self.node.inputs[i_c].dtype.default
             self.node.inputs[i_c].val = default
@@ -200,9 +228,8 @@ class NodeController(NodeInterfaceBase):
 
         return input_reset
 
-    @property
-    def input_box(self) -> widgets.GridBox | widgets.Output:
-        input_fields = self.input_field_list()
+    def _draw_input_box(self) -> widgets.GridBox | widgets.Output:
+        input_fields = self._input_field_list()
         n_fields = len(input_fields)
         if n_fields > 0:
             return widgets.GridBox(
@@ -219,8 +246,10 @@ class NodeController(NodeInterfaceBase):
         else:
             return widgets.Output()
 
-    @property
-    def info_box(self) -> widgets.VBox:
+    def _box_height(self, n_rows: int) -> int:
+        return n_rows * self._row_height + 8
+
+    def _draw_info_box(self) -> widgets.VBox:
         glob_id_val = None
         if hasattr(self.node, "GLOBAL_ID"):
             glob_id_val = self.node.GLOBAL_ID
@@ -238,25 +267,17 @@ class NodeController(NodeInterfaceBase):
             layout=widgets.Layout(height=f"{self._row_height}px"),
         )
 
-        info_box = widgets.VBox([title, global_id])
-        info_box.layout = widgets.Layout(
-            height=f"{self._box_height(2)}px",
-            border="solid 1px red",
+        info_box = widgets.VBox(
+            [title, global_id],
+            layout=widgets.Layout(
+                height=f"{self._box_height(2)}px",
+                border="solid 1px red",
+            ),
         )
         return info_box
 
-    def draw(self) -> None:
-        self.clear_output()
-        if self.node is not None:
-            with self.output:
-                display(
-                    widgets.VBox([self.input_box, self.input_widget, self.info_box])
-                )
-                # PyCharm nit is invalid, display takes *args is why it claims to want a tuple
-
-    def draw_for_node(self, node: Node | None) -> None:
-        self.node = node
-        self.draw()
-
-    def close(self) -> None:
-        self.draw_for_node(None)
+    def clear(self) -> None:
+        self.node = None
+        self.widget.children = []
+        self.widget.layout.border = ""
+        super().clear()

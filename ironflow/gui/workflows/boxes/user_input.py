@@ -11,14 +11,14 @@ from typing import Any, Optional
 
 import ipywidgets as widgets
 
-from ironflow.gui.workflows.boxes.base import Box
+from ironflow.gui.draws_widgets import DrawsWidgets
 
 
-class UserInput(Box):
-    box_class = widgets.HBox
+class UserInput(DrawsWidgets):
+    main_widget_class = widgets.HBox
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.input_field = widgets.Text(value="INIT VALUE", description="DESCRIPTION")
         self.decision_info = widgets.Label(value="INIT VALUE")
         button_layout = widgets.Layout(width="50px")
@@ -30,11 +30,12 @@ class UserInput(Box):
             tooltip="Cancel", icon="ban", layout=button_layout
         )
         # Todo: Use xmark once this is available
-        self.cancel_button.on_click(self.close)
+        self.cancel_button.on_click(self._click_clear)
 
     def clear(self):
-        super().clear()
         self._clear_callback()
+        self.widget.children = []
+        super().clear()
 
     @property
     def text(self):
@@ -67,7 +68,7 @@ class UserInput(Box):
         ok_tooltip: str,
         cancel_tooltip: str,
     ):
-        self._box.children = [widget, self.ok_button, self.cancel_button]
+        self.widget.children = [widget, self.ok_button, self.cancel_button]
         self.ok_button.tooltip = ok_tooltip
         self.cancel_button.tooltip = cancel_tooltip
         self._set_callback(callback)
@@ -99,5 +100,5 @@ class UserInput(Box):
         self.decision_info.value = description
         self._open(self.decision_info, callback, ok_tooltip, cancel_tooltip)
 
-    def close(self, change: None):
+    def _click_clear(self, change: None):
         self.clear()

@@ -12,41 +12,67 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from IPython.display import display
 
-from ironflow.gui.workflows.boxes.node_interface.base import NodeInterfaceBase
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets import NodeWidget
 
 
-class NodePresenter(NodeInterfaceBase):
+class NodePresenter(DrawsWidgets):
     """Handles the display of nodes with a representation."""
+
+    main_widget_class = widgets.VBox
 
     def __init__(self):
         super().__init__()
-        self._node_widget = None
+        self.node_widget = None
         self._widgets = []
         self._toggles = []
 
-    @property
-    def node_widget(self) -> NodeWidget | None:
-        return self._node_widget
+        self._toggle_box = widgets.HBox([], layout={"flex_flow": "row wrap"})
+        self._representation_box = widgets.VBox([], layout={"max_height": "325px"})
 
-    @node_widget.setter
-    def node_widget(self, new_node_widget: NodeWidget | None):
-        if self._node_widget is not None:
-            self.clear_output()
-            self._node_widget.represent_button.pressed = False
-            self._node_widget.represent_button.draw()  # Re-draw it as un-pressed
+        self._border = "1px solid black"
+        self.widget.children = [self._toggle_box, self._representation_box]
+        self.widget.layout.width = "100%"
+        self.widget.layout.border = ""
 
-        if new_node_widget is not None:
-            new_node_widget.node.representation_updated = True
-            self._node_widget = new_node_widget
-            self._widgets = self._build_widgets(new_node_widget.node.representations)
-            self._toggles = self._build_toggles(new_node_widget.node.representations)
-        else:
-            self._node_widget = None
-            self._widgets = []
-            self._toggles = []
+    def draw_for_node_widget(self, node_widget: NodeWidget):
+        self.clear()
+        self.node_widget = node_widget
+        if node_widget is not None:
+            self.draw()
+
+    def update(self) -> None:
+        if (
+            self.node_widget is not None
+            and self.node_widget.node.representation_updated
+        ):
+            self.draw()
+
+    @draws_widgets
+    def draw(self):
+        representations_dict = self.node_widget.node.representations
+
+        if len(representations_dict) != len(self._widgets):
+            self._widgets = self._build_widgets(representations_dict)
+            self._toggles = self._build_toggles(representations_dict)
+
+        for (toggle, widget, representation) in zip(
+            self._toggles, self._widgets, representations_dict.values()
+        ):
+            widget.clear_output()
+            widget.layout.border = ""
+            if toggle.value:
+                widget.layout.border = self._border
+                with widget:
+                    display(representation)
+
+        self._toggle_box.children = self._toggles
+        self._representation_box.children = self._widgets
+
+        self.node_widget.node.representation_updated = False
+        return self.widget
 
     @staticmethod
     def _build_widgets(representations: dict) -> list[widgets.Output]:
@@ -66,48 +92,18 @@ class NodePresenter(NodeInterfaceBase):
 
     def _on_toggle(self, change: dict) -> None:
         if change["name"] == "value":
-            self._draw()
+            self.draw()
 
-    def _draw(self):
-        self.clear_output()
-
-        representations_dict = self.node_widget.node.representations
-        if len(representations_dict) != len(self._widgets):
-            self._widgets = self._build_widgets(representations_dict)
-            self._toggles = self._build_toggles(representations_dict)
-
-        representations = []
-        for (toggle, widget, representation) in zip(
-            self._toggles, self._widgets, representations_dict.values()
-        ):
-            if toggle.value:
-                with widget:
-                    display(representation)
-                representations.append(widget)
-
-        with self.output:
-            display(
-                widgets.VBox(
-                    [
-                        widgets.HBox(self._toggles, layout={"flex_flow": "row wrap"}),
-                        widgets.VBox(representations, layout={"max_height": "325px"}),
-                    ]
-                )
-            )
-
-    def draw(self) -> None:
-        if (
-            self.node_widget is not None
-            and self.node_widget.node.representation_updated
-        ):
-            self._draw()
-            self.node_widget.node.representation_updated = False
-
-    def clear_output(self) -> None:
-        for w in self._widgets:
-            w.clear_output()
-        super().clear_output()
-
-    def close(self) -> None:
+    def clear(self):
+        if self.node_widget is not None:
+            self.node_widget.represent_button.pressed = False
+            self.node_widget.represent_button.draw()  # Re-draw it as un-pressed
         self.node_widget = None
-        self.clear_output()
+
+        self._widgets = []
+        self._toggles = []
+
+        self.widget.layout.border = ""
+        self._toggle_box.children = []
+        self._representation_box.children = []
+        super().clear()

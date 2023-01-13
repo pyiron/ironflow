@@ -12,16 +12,16 @@ import ipywidgets as widgets
 from pyiron_atomistics import Project
 from pyiron_gui import ProjectBrowser
 
-from ironflow.gui.base import Screen
+from ironflow.gui.draws_widgets import DrawsWidgets
 
 
-class BrowserGUI(Screen):
-    def __init__(self):
+class BrowserGUI(DrawsWidgets):
+    main_widget_class = widgets.VBox
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.widget = self.main_widget_class([])
         self.top_level_project = Project(".")
-        self._screen = widgets.VBox([], layout=widgets.Layout(height="470px"))
-        self.project_browser = ProjectBrowser(self.top_level_project, Vbox=self._screen)
+        self.widget.layout.height = "470px"
+        self.project_browser = ProjectBrowser(self.top_level_project, Vbox=self.widget)
         self.project_browser.refresh()
-
-    @property
-    def screen(self):
-        return self._screen

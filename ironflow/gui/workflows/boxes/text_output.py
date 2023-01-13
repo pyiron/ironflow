@@ -10,14 +10,16 @@ from __future__ import annotations
 import ipywidgets as widgets
 from IPython.display import display
 
-from ironflow.gui.workflows.boxes.base import Box
+from ironflow.gui.draws_widgets import DrawsWidgets
 
 
-class TextOut(Box):
-    box_class = widgets.VBox
+class TextOut(DrawsWidgets):
+    main_widget_class = widgets.VBox
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.widget.width = "100%"
+        self.widget.border = "1px solid black"
         self._output = widgets.Output()
         self._button = widgets.Button(
             tooltip="Clear output",
@@ -26,16 +28,10 @@ class TextOut(Box):
         )
         self._button.on_click(self._click_button)
 
-    @property
-    def layout(self):
-        return widgets.Layout(
-            width="100%",
-            border="1px solid black",
-        )
-
     def clear(self):
-        super().clear()
         self._output.clear_output()
+        self.widget.children = []
+        super().clear()
 
     def _click_button(self, change: dict) -> None:
         self.clear()
@@ -44,4 +40,4 @@ class TextOut(Box):
         self._output.clear_output()
         with self._output:
             display(msg)
-        self.box.children = [self._output, self._button]
+        self.widget.children = [self._output, self._button]

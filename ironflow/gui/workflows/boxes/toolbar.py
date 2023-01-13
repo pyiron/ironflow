@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import ipywidgets as widgets
 
-from ironflow.gui.workflows.boxes.base import Box
+from ironflow.gui.draws_widgets import DrawsWidgets
 
 
 class Buttons:
@@ -72,11 +72,11 @@ class Buttons:
         return self.__dict__.values().__iter__()
 
 
-class Toolbar(Box):
-    box_class = widgets.HBox
+class Toolbar(DrawsWidgets):
+    main_widget_class = widgets.HBox
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         alg_modes = ["data", "exec"]
         self.alg_mode_dropdown = widgets.Dropdown(
             options=alg_modes,
@@ -85,4 +85,4 @@ class Toolbar(Box):
             layout=widgets.Layout(width="80px"),
         )
         self.buttons = Buttons()
-        self.box.children = [self.alg_mode_dropdown, *self.buttons]
+        self.widget.children = [self.alg_mode_dropdown, *self.buttons]

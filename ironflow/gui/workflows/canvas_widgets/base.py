@@ -10,15 +10,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Union
 
-from ipycanvas import Canvas
-
-from ironflow.gui.workflows.canvas_widgets.layouts import Layout
-
 Number = Union[int, float]
 if TYPE_CHECKING:
+    from ipycanvas import Canvas
     from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.flow import Flow
+    from ironflow.gui.workflows.canvas_widgets.layouts import Layout
 
 
 class CanvasWidget(ABC):
