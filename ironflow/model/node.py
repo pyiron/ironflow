@@ -109,14 +109,14 @@ class Node(NodeCore):
     Children should specify a title and some combination of initial input, output, and what to do when updated, e.g.:
 
     >>> class My_Node(Node):
-    >>> title = "MyUserNode"
-    >>> init_inputs = [
-    >>>     NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
-    >>> ]
-    >>> init_outputs = [
-    >>>    NodeOutputBP(label="bar")
-    >>> ]
-    >>> color = 'cyan'
+    >>>     title = "MyUserNode"
+    >>>     init_inputs = [
+    >>>         NodeInputBP(dtype=dtypes.Integer(default=1), label="foo")
+    >>>     ]
+    >>>     init_outputs = [
+    >>>        NodeOutputBP(label="bar")
+    >>>     ]
+    >>>     color = 'cyan'
     >>>
     >>> def update_event(self, inp=-1):
     >>>     self.set_output_val(0, self.input(0) + 42)
@@ -403,16 +403,16 @@ class BatchingNode(Node, ABC):
             (dict): The representation(s).
 
         Examples:
-            > def extra_representations(self):
-            >     return {
-            >         **self.batched_representation(
-            >             "bigger", self._add5, self.outputs.values.n
-            >        )
-            >     }
-            >
-            > @staticmethod
-            > def _add5(n: int):
-            >     return n + 5
+            >>> def extra_representations(self):
+            >>>     return {
+            >>>         **self.batched_representation(
+            >>>             "bigger", self._add5, self.outputs.values.n
+            >>>        )
+            >>>     }
+            >>>
+            >>> @staticmethod
+            >>> def _add5(n: int):
+            >>>     return n + 5
         """
         try:
             if self.batched:
@@ -478,8 +478,8 @@ class JobNode(BatchingNode, ABC):
     `name` input, and `ran` output. Therefore, when defining additional ports, use this
     format:
 
-    > init_inputs = JobNode.init_inputs + [WHATEVER_ELSE_YOU_WANT]
-    > init_outputs = JobNode.init_outputs + [OTHER_STUFF]
+    >>> init_inputs = JobNode.init_inputs + [WHATEVER_ELSE_YOU_WANT]
+    >>> init_outputs = JobNode.init_outputs + [OTHER_STUFF]
     """
 
     color = "#c4473f"
@@ -581,8 +581,8 @@ class JobMaker(JobNode, ABC):
     and `project` input, and `ran` output. Therefore, when defining additional ports,
     use this format:
 
-    > init_inputs = JobMaker.init_inputs + [WHATEVER_ELSE_YOU_WANT]
-    > init_outputs = JobMaker.init_outputs + [OTHER_STUFF]
+    >>> init_inputs = JobMaker.init_inputs + [WHATEVER_ELSE_YOU_WANT]
+    >>> init_outputs = JobMaker.init_outputs + [OTHER_STUFF]
     """
 
     init_inputs = JobNode.init_inputs + [
@@ -602,8 +602,8 @@ class JobTaker(JobNode, ABC):
     and `job` input, and `ran` output. Therefore, when defining additional ports, use
     this format:
 
-    > init_inputs = JobTaker.init_inputs + [WHATEVER_ELSE_YOU_WANT]
-    > init_outputs = JobTaker.init_outputs + [OTHER_STUFF]
+    >>> init_inputs = JobTaker.init_inputs + [WHATEVER_ELSE_YOU_WANT]
+    >>> init_outputs = JobTaker.init_outputs + [OTHER_STUFF]
     """
 
     init_inputs = JobNode.init_inputs + [
