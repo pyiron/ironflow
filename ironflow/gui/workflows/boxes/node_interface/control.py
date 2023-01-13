@@ -16,7 +16,7 @@ import numpy as np
 from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
-from ironflow.gui.draws_widgets import DrawsWidgets
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 from ironflow.model.node import BatchingNode
 
 
@@ -69,13 +69,15 @@ class NodeController(DrawsWidgets):
         if self.node is not None:
             self.draw()
 
-    def _draw(self) -> None:
+    @draws_widgets
+    def draw(self) -> None:
         self.widget.children = [
             self._draw_input_box(),
             self._draw_input_widget(),
             self._draw_info_box()
         ]
         self.widget.layout.border = self._border
+        return self.widget
 
     def _draw_input_widget(self) -> widgets.Widget:
         try:
@@ -278,7 +280,8 @@ class NodeController(DrawsWidgets):
         )
         return info_box
 
-    def _clear(self) -> None:
+    def clear(self) -> None:
         self.node = None
         self.widget.children = []
         self.widget.layout.border = ""
+        super().clear()

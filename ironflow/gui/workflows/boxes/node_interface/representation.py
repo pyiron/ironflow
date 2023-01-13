@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from IPython.display import display
 
-from ironflow.gui.draws_widgets import DrawsWidgets
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets import NodeWidget
@@ -54,7 +54,8 @@ class NodePresenter(DrawsWidgets):
         ):
             self.draw()
 
-    def _draw(self):
+    @draws_widgets
+    def draw(self):
         representations_dict = self.node_widget.node.representations
 
         if len(representations_dict) != len(self._widgets):
@@ -75,6 +76,7 @@ class NodePresenter(DrawsWidgets):
         self._representation_box.children = self._widgets
 
         self.node_widget.node.representation_updated = False
+        return self.widget
 
     @staticmethod
     def _build_widgets(representations: dict) -> list[widgets.Output]:
@@ -96,7 +98,7 @@ class NodePresenter(DrawsWidgets):
         if change["name"] == "value":
             self.draw()
 
-    def _clear(self):
+    def clear(self):
         if self.node_widget is not None:
             self.node_widget.represent_button.pressed = False
             self.node_widget.represent_button.draw()  # Re-draw it as un-pressed
@@ -108,3 +110,4 @@ class NodePresenter(DrawsWidgets):
         self.widget.layout.border = ""
         self._toggle_box.children = []
         self._representation_box.children = []
+        super().clear()
