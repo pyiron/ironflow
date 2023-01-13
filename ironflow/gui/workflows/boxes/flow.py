@@ -105,5 +105,6 @@ class FlowBox(DrawsWidgets):
         )
         self.script_tabs.set_title(len(self.script_tabs.children) - 1, "+")
 
-    def _clear(self):
-        pass
+    def close(self):
+        self.node_selector.close()
+        super().close()

@@ -164,3 +164,9 @@ class GUI(HasSession, DrawsWidgets):
     def _change_screen_tabs(self, change: dict):
         if change["name"] == "selected_index" and change["new"] == 1:
             self.browser.project_browser.refresh()
+
+    def close(self):
+        self.log.close()
+        self.browser.close()
+        self.workflows.close()
+        super().close()

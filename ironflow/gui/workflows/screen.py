@@ -268,3 +268,12 @@ class WorkflowsGUI(DrawsWidgets):
                 self.model.active_script_index = (
                     self.flow_box.script_tabs.selected_index
                 )
+
+    def close(self):
+        self.toolbar.close()
+        self.node_controller.close()
+        self.node_presenter.close()
+        self.text_out.close()
+        self.input.close()
+        self.flow_box.close()
+        super().close()

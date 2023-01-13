@@ -30,7 +30,7 @@ class UserInput(DrawsWidgets):
             tooltip="Cancel", icon="ban", layout=button_layout
         )
         # Todo: Use xmark once this is available
-        self.cancel_button.on_click(self.close)
+        self.cancel_button.on_click(self._click_clear)
 
     def clear(self):
         self._clear_callback()
@@ -100,5 +100,6 @@ class UserInput(DrawsWidgets):
         self.decision_info.value = description
         self._open(self.decision_info, callback, ok_tooltip, cancel_tooltip)
 
-    def close(self, change: None):
+    def _click_clear(self, change: None):
         self.clear()
+
