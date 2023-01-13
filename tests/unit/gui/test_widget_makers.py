@@ -6,7 +6,7 @@ from unittest import TestCase
 
 import ipywidgets as widgets
 
-from ironflow.gui.widget_makers import DrawsWidgets
+from ironflow.gui.widget_makers import DrawsWidgets, draws_widgets
 
 
 class Child(DrawsWidgets):
@@ -20,17 +20,20 @@ class Child(DrawsWidgets):
         self.hbox = widgets.HBox([])
         self.widget.children = [self.hbox]
 
-    def _draw(self):
+    @draws_widgets
+    def draw(self):
         self.widget.children = [self.hbox, widgets.FloatSlider(value=self.some_float)]
         self.hbox.children = [
             widgets.Label(self.some_string),
             widgets.Button(icon="compress"),
             widgets.Text()
         ]
+        return self.widget
 
-    def _clear(self):
+    def clear(self):
         self.widget.children = [self.hbox]
         self.hbox.children = []
+        super().clear()
 
 
 class TestDrawsWidgets(TestCase):
