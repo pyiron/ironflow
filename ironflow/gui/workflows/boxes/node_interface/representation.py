@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from IPython.display import display
 
-from ironflow.gui.draws_widgets import DrawsWidgets
+from ironflow.gui.widget_makers import DrawsWidgets
 
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets import NodeWidget
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 class NodePresenter(DrawsWidgets):
     """Handles the display of nodes with a representation."""
+    main_widget_class = widgets.VBox
 
     def __init__(self):
         super().__init__()
@@ -31,10 +32,14 @@ class NodePresenter(DrawsWidgets):
         self._representation_box = widgets.VBox([], layout={"max_height": "325px"})
 
         self._border = "1px solid black"
-        self.box = widgets.VBox(
-            [self._toggle_box, self._representation_box],
-            layout={"width": "100%", "border": ""}
-        )
+        self.widget.children = [self._toggle_box, self._representation_box]
+        self.widget.layout.width = "100%"
+        self.widget.layout.border = ""
+
+    @property
+    def box(self):
+        # Temporary interface
+        return self.widget
 
     def draw_for_node_widget(self, node_widget: NodeWidget):
         self.clear()
@@ -100,6 +105,6 @@ class NodePresenter(DrawsWidgets):
         self._widgets = []
         self._toggles = []
 
-        self.box.layout.border = ""
+        self.widget.layout.border = ""
         self._toggle_box.children = []
         self._representation_box.children = []

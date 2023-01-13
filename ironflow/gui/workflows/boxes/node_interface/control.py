@@ -16,7 +16,7 @@ import numpy as np
 from ryvencore.InfoMsgs import InfoMsgs
 from traitlets import TraitError
 
-from ironflow.gui.draws_widgets import DrawsWidgets
+from ironflow.gui.widget_makers import DrawsWidgets
 from ironflow.model.node import BatchingNode
 
 
@@ -34,6 +34,8 @@ class NodeController(DrawsWidgets):
     """
     Handles the creation of widgets for manually adjusting node input and viewing node info.
     """
+    main_widget_class = widgets.VBox
+
     def __new__(cls, screen: WorkflowsGUI, *args, **kwargs):
         return super().__new__(cls, *args, **kwargs)
 
@@ -44,16 +46,18 @@ class NodeController(DrawsWidgets):
         self._row_height = 30  # px
 
         self._border = "1px solid black"
-        self.box = widgets.VBox(
-            [],
-            layout=widgets.Layout(
-                width="50%",
-                border="",
-                max_height="360px",
-                margin="10px",
-                padding="5px",
-            )
+        self.widget.layout = widgets.Layout(
+            width="50%",
+            border="",
+            max_height="360px",
+            margin="10px",
+            padding="5px",
         )
+
+    @property
+    def box(self):
+        # Temporary interface
+        return self.widget
 
     def draw_for_node(self, node: Node | None) -> None:
         self.clear()
@@ -66,12 +70,12 @@ class NodeController(DrawsWidgets):
             self.draw()
 
     def _draw(self) -> None:
-        self.box.children = [
+        self.widget.children = [
             self._draw_input_box(),
             self._draw_input_widget(),
             self._draw_info_box()
         ]
-        self.box.layout.border = self._border
+        self.widget.layout.border = self._border
 
     def _draw_input_widget(self) -> widgets.Widget:
         try:
@@ -276,5 +280,5 @@ class NodeController(DrawsWidgets):
 
     def _clear(self) -> None:
         self.node = None
-        self.box.children = []
-        self.box.layout.border = ""
+        self.widget.children = []
+        self.widget.layout.border = ""
