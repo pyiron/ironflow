@@ -101,9 +101,10 @@ class DrawsWidgets(HasWidgets):
 
     def draw(self):
         n_widgets_i = len(widgets.Widget.widgets)
-        self._draw()
+        drawn = self._draw()
         n_widgets_drawn = len(widgets.Widget.widgets) - n_widgets_i
         self._drawn_widgets += list(widgets.Widget.widgets.values())[-n_widgets_drawn:]
+        return drawn
 
     @abstractmethod
     def _draw(self):
