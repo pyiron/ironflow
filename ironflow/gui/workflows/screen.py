@@ -68,7 +68,7 @@ class WorkflowsGUI(DrawsWidgets):
             self.input.widget,
             self.flow_box.widget,
             self.text_out.widget,
-            widgets.HBox([self.node_controller.box, self.node_presenter.box]),
+            widgets.HBox([self.node_controller.widget, self.node_presenter.widget]),
         ]
 
     @property

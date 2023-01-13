@@ -54,11 +54,6 @@ class NodeController(DrawsWidgets):
             padding="5px",
         )
 
-    @property
-    def box(self):
-        # Temporary interface
-        return self.widget
-
     def draw_for_node(self, node: Node | None) -> None:
         self.clear()
         self.node = node

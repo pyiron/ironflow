@@ -36,11 +36,6 @@ class NodePresenter(DrawsWidgets):
         self.widget.layout.width = "100%"
         self.widget.layout.border = ""
 
-    @property
-    def box(self):
-        # Temporary interface
-        return self.widget
-
     def draw_for_node_widget(self, node_widget: NodeWidget):
         self.clear()
         self.node_widget = node_widget
