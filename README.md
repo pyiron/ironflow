@@ -42,6 +42,8 @@ In addition to manipulating the gui with buttons in the toolbar (hover the curso
 - Add a new node of the selected type by double-clicking on empty space
 - Delete a node by double-clicking on it
 - Collapse or expand a node by clicking on the little triangle on its body (has no effect on functionality, just makes it take less space)
+- Reset an (unconnected) input port's value to its default by clicking the refresh button in the node controller window.
+- Change an input port to "batched" mode by clicking the corresponding button in the node controller window.
 
 In the default `data` execution mode (we don't currently do anything with the `exec` mode, so don't worry about it), nodes will update their output whenever their input data changes.
 You'll see the node body change color when it's performing this update.
@@ -50,9 +52,43 @@ These can be triggered by a signal from another node's exec-type output port, or
 
 In addition to the workflows screen, ironflow also incorporates the browser from [`pyiron_gui`](https://github.com/pyiron/pyiron_gui), as well as a log tab that allows you to turn the underlying ryven logger on/off and choose whether stdout gets routed to ironflow or its original context.
 
-### Adding custom nodes
+## Differences to Ryven
 
-The tools needed for extending your graphs with new custom nodes can be imported from `ironflow.custom_nodes`.
+Ironflow is built on top of ryvencore 0.3.1.1.
+There are a number of minor differences between ryven nodes and ironflow nodes discussed in the next section, but at a 
+high level there are two significant differences:
+
+### Typing
+
+All node ports are typed, and connection perform type-checking to ensure validity prior to establishing a connection.
+By default, a special `Untyped` data type is used, which performs *all* validity checks by value, and thus does not allow pre-wiring of a graph without full data.
+Further, the validity of the current value for each IO port is indicated by the port color: green for valid, red for invalid.
+
+You can read the full spec for the typing rules the `ironflow.model.dtypes` module, but at a high level each port has 
+one or more classes whose instances are valid input.
+An output port can be connected to an input port as long as its valid classes are a strict subset of the input port's valid classes, and as long as the output port won't allow the the input port to be surprised by a `None` value.
+
+This type checking is still under development and may be somewhat brittle.
+Our goal is to extend this system to be dynamically informed by an ontology on top of the graph: instead of statically insisting that input be of type `float`, we instead demand that the ontological type of the energy be `surface energy` _dynamically_ because the output value of that port is used, e.g., to calculate a grain boundary interface energy.
+
+### Batching
+
+Many ports can be "batched" by selecting them to open the node controller window and pressing the "batched" button.
+This changes the expected input for the port from a single value to a list of values.
+The node operation is then iterated over the entire list, and output values are correspondingly also turned to a list.
+
+You can quickly see which ports are batched in the graph because their labels are converted to `ALL_CAPS` while unbatched ports are `all_lower_case`.
+
+Any number of input ports can be batched on the same node as long as _all batches are of the same length_.
+
+Batching impacts the type checking in a (hopefully) intuitive way: a batched output port of type `float` can be fed to a batched input port of type `float` but *not* to an _unbatched_ input port of type `float`.
+Similarly, an unbatched port of type `list[float]` can be passed to an input port of type `float` only if that port is batched.
+Only single values and 1D lists are supported right now, although support for higher order matrices of data is planned.
+
+
+## Adding custom nodes
+
+The tools needed for extending your graphs with new custom nodes can be imported as `from ironflow import node_tools`.
 New nodes can be registered either from a list of nodes, or from a python module or .py file.
 In the latter two cases, only those nodes that inherit from `Node` *and* have a class name ending in `_Node` will be registered (this allows you to have your own node class templates and avoid loading the template itself by simply using regular python CamelCase naming conventions and avoiding ending in `_Node`). 
 
@@ -86,8 +122,22 @@ Ironflow nodes differ from standard ryven (version 0.3.1.1) nodes in four ways:
 - Input/output ports and the port values are directly accessible as attributes *if* those ports were labeled, e.g. `node.inputs.ports.foo` or `node.outputs.values.bar`.
 - They have a `representation` dictionary, which is used by the IPython gui front-end to give a richer look at nodes. By default, this includes all the outputs and the source code for the node, but you can append to or overwrite these values by specifying an `extra_representations` dictionary on your custom nodes.
 - They have two new events: `before_update` and `after_update`, to which you can connect (e.g. `node.after_update.connect`) or disconnect (`...disconnect`) methods to fire before and/or after updates occur -- such methods must take the node instance itself as the first argument, and the canonical input integer (specifying which input value it is that's updating) as the second argument. (You can see an example of this in our base `Node` class, where we use it to force an update of the `representation` attribute after each node update.)
+- It is strongly advised to specify a `dtype` for each of your nodes from among `node_tools.dtypes`.
 
 Otherwise, they are just standard ryven nodes, and all the ryven documentation applies.
+
+### Special nodes
+
+We also have a number of special parent node classes available based of the meta-parent `BatchingNode`.
+Instead of specifying the `update_event`, children of `BatchingNode` specify other functions so that the update can be automatically batched over.
+
+The simples of these is `DataNode`, for which children specify the `node_function` method, which must take arguments based on the labels of input ports and returns a dictionary with keys based on the labels of output ports. 
+Nodes of this type attempt to update themselves on placement, and will automatically update or clear (set to `None` their output ports based on whether or not all of their input ports report valid input values.
+
+The others are `TakesJob` and `MakesJob`, children of which must specify `_modify_job` or `_generate_job` methods, respectively.
+These nodes are designed to interact with pyiron's `GenericJob` objects in a functional way.
+They also support batching, and will automatically populate `run` and `remove` buttons on the node widget, and lock the input after their owned job(s) are `run`.
+
 
 ## Structure
 
@@ -96,10 +146,9 @@ The code is broken into three main submodules:
 - `gui`, which has all the code for driving the back-end from the IPython visual interface
 - `nodes`, which stores all the nodes that get included by default when you instantiate the gui/model
 
-There is also a `custom_nodes` submodule, but this just exposes other parts of the code base in one easy-to-improt-from spot.
+The `node_tools` submodule is just a wrapper to expose other parts of the code base in one easy-to-import-from spot.
 
 The model itself, `HasSession`, is just a driver for a single ryven `Session`, with some helpful tools like the ability to easily register new nodes.
-The only ryven element we currently extend is the `Node` class, as discussed above; other components are just imported directly from `ryvencore` in `ironflow.model.__init__`.
 
 The gui inherits from and drives the model, and is broken down into three screens: workflows (which allow you to manipulate the model), browser (which wraps the project browser from `pyiron_gui`), and a log.
 Inside the workflows screen, visual elements of the gui are broken down into subcomponents like the toolbar, a panel with a visual representation of the graph, a place to show the node representations, etc.
