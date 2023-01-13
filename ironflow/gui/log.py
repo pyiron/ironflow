@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import ipywidgets as widgets
 from pyiron_base.interfaces.singleton import Singleton
 
-from ironflow.gui.base import Screen
+from ironflow.gui.draws_widgets import DrawsWidgets
 
 if TYPE_CHECKING:
     from ironflow.model.model import HasSession
@@ -55,13 +55,26 @@ class LogController(metaclass=Singleton):
         sys.stderr = self._standard_stderr
 
 
-class LogGUI(Screen):
+class LogGUI(DrawsWidgets):
     """
     A class that can redirect stdout and stderr to a widget, and gives controls for both this and toggling the
     Ryven logger.
     """
+    main_widget_class = widgets.VBox
 
-    def __init__(self, model: HasSession, enable_ryven_log: bool, log_to_display: bool):
+    def __new__(cls, model, enable_ryven_log, log_to_display, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(
+            self,
+            model: HasSession,
+            enable_ryven_log: bool,
+            log_to_display: bool,
+            *args,
+            **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.widget = self.main_widget_class([])
         self.model = model
         self._log_controller = LogController()
 
@@ -82,19 +95,13 @@ class LogGUI(Screen):
         self.display_log_button.observe(self._toggle_display_log)
         self.clear_button.on_click(self._click_clear)
 
-        self._screen = widgets.VBox(
-            [
-                widgets.HBox(
-                    [self.display_log_button, self.ryven_log_button, self.clear_button],
-                    layout=widgets.Layout(min_height="35px"),
-                ),
-                widgets.HBox([self.output], layout=widgets.Layout(height="435px")),
-            ],
-        )
-
-    @property
-    def screen(self):
-        return self._screen
+        self.widget.children = [
+            widgets.HBox(
+                [self.display_log_button, self.ryven_log_button, self.clear_button],
+                layout=widgets.Layout(min_height="35px"),
+            ),
+            widgets.HBox([self.output], layout=widgets.Layout(height="435px")),
+        ]
 
     @property
     def output(self):

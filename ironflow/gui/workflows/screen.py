@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import ipywidgets as widgets
 
-from ironflow.gui.base import Screen
+from ironflow.gui.draws_widgets import DrawsWidgets, draws_widgets
 from ironflow.gui.workflows.boxes.flow import FlowBox
 from ironflow.gui.workflows.boxes.node_interface.control import NodeController
 from ironflow.gui.workflows.boxes.node_interface.representation import NodePresenter
@@ -28,8 +28,15 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class WorkflowsGUI(Screen):
-    def __init__(self, model: HasSession):
+class WorkflowsGUI(DrawsWidgets):
+    main_widget_class = widgets.VBox
+
+    def __new__(cls, model, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(self, model: HasSession, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.model = model
         self.flow_canvases = []
 
@@ -56,15 +63,13 @@ class WorkflowsGUI(Screen):
         self.toolbar.buttons.zoom_out.on_click(self._click_zoom_out)
         self.flow_box.script_tabs.observe(self._change_script_tabs)
 
-        self._screen = widgets.VBox(
-            [
-                self.toolbar.box,
-                self.input.box,
-                self.flow_box.box,
-                self.text_out.box,
-                widgets.HBox([self.node_controller.box, self.node_presenter.box]),
-            ]
-        )
+        self.widget.children = [
+            self.toolbar.widget,
+            self.input.widget,
+            self.flow_box.widget,
+            self.text_out.widget,
+            widgets.HBox([self.node_controller.box, self.node_presenter.box]),
+        ]
 
     @property
     def new_node_class(self):
@@ -88,9 +93,11 @@ class WorkflowsGUI(Screen):
         for fc in self.flow_canvases:
             fc.display()
 
+    @draws_widgets
     def add_flow(self, flow: Flow):
         self.flow_canvases.append(FlowCanvas(screen=self, flow=flow))
 
+    @draws_widgets
     def load_from_data(self, data: dict):
         self.flow_canvases = []
         for i_script, script in enumerate(self.model.session.scripts):
@@ -143,10 +150,6 @@ class WorkflowsGUI(Screen):
         self.flow_canvases.pop(i)
         self.node_controller.close()
         self.node_presenter.clear()
-
-    @property
-    def screen(self):
-        return self._screen
 
     def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
