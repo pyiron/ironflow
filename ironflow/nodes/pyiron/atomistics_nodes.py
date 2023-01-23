@@ -25,6 +25,7 @@ from ryvencore.InfoMsgs import InfoMsgs
 
 import pyiron_base
 from pyiron_atomistics import Project, Atoms
+import pyiron_atomistics.atomistics.master.murnaghan
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
 from pyiron_atomistics.atomistics.job.atomistic import (
     AtomisticGenericJob,
@@ -434,6 +435,77 @@ class CalcMD_Node(AtomisticTaker):
             langevin=dynamics == "langevin",
         )
         return copied_job
+
+
+class CalcMurnaghan_Node(JobMaker):
+    title = "CalcMurnaghan"
+    valid_job_classes = [pyiron_atomistics.atomistics.master.murnaghan.Murnaghan]
+
+    init_inputs = list(JobMaker.init_inputs) + [
+        NodeInputBP(
+            label="engine", dtype=dtypes.Data(valid_classes=AtomisticGenericJob)
+        ),
+        NodeInputBP(label="num_points", dtype=dtypes.Integer(default=11)),
+        NodeInputBP(
+            label="fit_type",
+            dtype=dtypes.Choice(
+                default="polynomial",
+                items=[
+                    "polynomial",
+                    "birch",
+                    "birchmurnaghan",
+                    "murnaghan",
+                    "pouriertarantola",
+                    "vinet",
+                ],
+            ),
+        ),
+        NodeInputBP(label="fit_order", dtype=dtypes.Integer(default=3)),
+        NodeInputBP(label="vol_range_fraction", dtype=dtypes.Float(default=0.1)),
+        # NodeInputBP(label="axes", dtype=dtypes),
+        # NodeInputBP(label="strains", dtype=dtypes),
+    ]
+    init_outputs = list(JobMaker.init_outputs) + [
+        NodeOutputBP(label="eq_energy", dtype=dtypes.Float()),
+        NodeOutputBP(label="eq_volume", dtype=dtypes.Float()),
+        NodeOutputBP(label="eq_bulk_modulus", dtype=dtypes.Float()),
+        NodeOutputBP(label="eq_b_prime", dtype=dtypes.Float()),
+        NodeOutputBP(label="volumes", dtype=dtypes.List(valid_classes=float)),
+        NodeOutputBP(label="energies", dtype=dtypes.List(valid_classes=float)),
+    ]
+
+    def _generate_job(
+        self,
+        name,
+        project,
+        engine,
+        num_points,
+        fit_type,
+        fit_order,
+        vol_range_fraction,
+        **kwargs,
+    ) -> pyiron_atomistics.atomistics.master.murnaghan.Murnaghan:
+        job = project.atomistics.job.Murnaghan(name)
+        job.ref_job = engine
+        job.input["num_points"] = num_points
+        job.input["fit_type"] = fit_type
+        job.input["fit_order"] = fit_order
+        job.input["vol_range"] = vol_range_fraction
+        return job
+
+    def _get_output_from_job(
+        self,
+        finished_job: pyiron_atomistics.atomistics.master.murnaghan.Murnaghan,
+        **kwargs,
+    ):
+        return {
+            "eq_energy": finished_job["output/equilibrium_energy"],
+            "eq_volume": finished_job["output/equilibrium_volume"],
+            "eq_bulk_modulus": finished_job["output/equilibrium_bulk_modulus"],
+            "eq_b_prime": finished_job["output/equilibrium_b_prime"],
+            "volumes": finished_job["output/volume"],
+            "energies": finished_job["output/energy"],
+        }
 
 
 class PyironTable_Node(JobMaker):
