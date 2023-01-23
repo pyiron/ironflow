@@ -449,10 +449,16 @@ class CalcMurnaghan_Node(JobMaker):
         NodeInputBP(
             label="fit_type",
             dtype=dtypes.Choice(
-                default="polynomial", items=[
-                    "polynomial", "birch", "birchmurnaghan", "murnaghan", "pouriertarantola", "vinet",
-                ]
-            )
+                default="polynomial",
+                items=[
+                    "polynomial",
+                    "birch",
+                    "birchmurnaghan",
+                    "murnaghan",
+                    "pouriertarantola",
+                    "vinet",
+                ],
+            ),
         ),
         NodeInputBP(label="fit_order", dtype=dtypes.Integer(default=3)),
         NodeInputBP(label="vol_range_fraction", dtype=dtypes.Float(default=0.1)),
@@ -469,15 +475,15 @@ class CalcMurnaghan_Node(JobMaker):
     ]
 
     def _generate_job(
-            self,
-            name,
-            project,
-            engine,
-            num_points,
-            fit_type,
-            fit_order,
-            vol_range_fraction,
-            **kwargs
+        self,
+        name,
+        project,
+        engine,
+        num_points,
+        fit_type,
+        fit_order,
+        vol_range_fraction,
+        **kwargs,
     ) -> pyiron_atomistics.atomistics.master.murnaghan.Murnaghan:
         job = project.atomistics.job.Murnaghan(name)
         job.ref_job = engine
@@ -488,9 +494,9 @@ class CalcMurnaghan_Node(JobMaker):
         return job
 
     def _get_output_from_job(
-            self,
-            finished_job: pyiron_atomistics.atomistics.master.murnaghan.Murnaghan,
-            **kwargs
+        self,
+        finished_job: pyiron_atomistics.atomistics.master.murnaghan.Murnaghan,
+        **kwargs,
     ):
         return {
             "eq_energy": finished_job["output/equilibrium_energy"],
