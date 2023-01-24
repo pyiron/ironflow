@@ -35,6 +35,7 @@ from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
 from pyiron_base.jobs.job.util import _get_safe_job_name
+from pyiron_ontology import AtomisticsReasoner, atomistics_onto as onto
 
 from ironflow.node_tools import (
     DataNode,
@@ -54,6 +55,7 @@ if TYPE_CHECKING:
 
 STRUCTURE_FACTORY = StructureFactory()
 NUMERIC_TYPES = [int, float, np.number]
+REASONER = AtomisticsReasoner(onto)
 
 
 class BeautifulHasGroups:
@@ -1156,6 +1158,41 @@ class Click_Node(Node):
 
     def update_event(self, inp=-1):
         self.exec_output(0)
+
+
+class Property_Node(DataNode):
+    title = "MaterialProperty"
+
+    init_inputs = [
+        NodeInputBP(
+            label="property",
+            dtype=dtypes.Choice(
+                items=[o.name.split(".")[0] for o in onto.MaterialProperty.has_objects],
+                valid_classes=str
+            )
+        ),
+        NodeInputBP(label="source", dtype=dtypes.Float(default=None), otype=None)
+    ]
+
+    init_outputs = [
+        NodeOutputBP(label="value", dtype=dtypes.Float(), otype=None)
+    ]
+
+    def _update_otypes(self):
+        otype = getattr(onto, self.inputs.values.property)
+        self.inputs.ports.source.otype = otype
+        self.outputs.ports.value.otype = otype
+
+    def update_event(self, inp=-1):
+        if inp == 0:
+            self._update_otypes()
+        super().update_event(inp=inp)
+
+    def node_function(self, property, source, *args, **kwargs) -> dict:
+        upstream_otype = self.inputs.ports.source.connections[0].out.otype
+        # TODO: Use the most recently updated connection, not the zeroth
+        conversion = REASONER.convert_unit(upstream_otype)
+        return {"value": source * conversion if source is not None else None}
 
 
 nodes = [
