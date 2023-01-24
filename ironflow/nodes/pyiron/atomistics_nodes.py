@@ -445,7 +445,9 @@ class CalcMurnaghan_Node(JobMaker):
 
     init_inputs = list(JobMaker.init_inputs) + [
         NodeInputBP(
-            label="engine", dtype=dtypes.Data(valid_classes=AtomisticGenericJob)
+            label="engine",
+            dtype=dtypes.Data(valid_classes=AtomisticGenericJob),
+            otype=onto["Murnaghan/ref_job"]
         ),
         NodeInputBP(label="num_points", dtype=dtypes.Integer(default=11)),
         NodeInputBP(
@@ -470,8 +472,16 @@ class CalcMurnaghan_Node(JobMaker):
     init_outputs = list(JobMaker.init_outputs) + [
         NodeOutputBP(label="eq_energy", dtype=dtypes.Float()),
         NodeOutputBP(label="eq_volume", dtype=dtypes.Float()),
-        NodeOutputBP(label="eq_bulk_modulus", dtype=dtypes.Float()),
-        NodeOutputBP(label="eq_b_prime", dtype=dtypes.Float()),
+        NodeOutputBP(
+            label="eq_bulk_modulus",
+            dtype=dtypes.Float(),
+            otype=onto["Murnaghan/output/equilibrium_bulk_modulus"],
+        ),
+        NodeOutputBP(
+            label="eq_b_prime",
+            dtype=dtypes.Float(),
+            otype=onto["Murnaghan/output/equilibrium_b_prime"]
+        ),
         NodeOutputBP(label="volumes", dtype=dtypes.List(valid_classes=float)),
         NodeOutputBP(label="energies", dtype=dtypes.List(valid_classes=float)),
     ]
