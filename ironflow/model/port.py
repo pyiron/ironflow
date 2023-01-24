@@ -10,8 +10,11 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Optional, TYPE_CHECKING
 
+from owlready2 import Thing
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
-from ryvencore.NodePortBP import NodeOutputBP as NodeOutputBPCore
+from ryvencore.NodePortBP import (
+    NodeOutputBP as NodeOutputBPCore, NodeInputBP as NodeInputBPCore
+)
 from ryvencore.utils import serialize
 
 from ironflow.model.dtypes import DType, Untyped
@@ -42,6 +45,7 @@ class NodeInput(NodeInputCore, HasDType):
         label_str: str = "",
         add_data: Optional[dict] = None,
         dtype: Optional[DType] = None,
+        otype: Optional[Thing] = None,
     ):
         super().__init__(
             node=node,
@@ -50,6 +54,7 @@ class NodeInput(NodeInputCore, HasDType):
             add_data=add_data if add_data is not None else {},
             dtype=Untyped() if dtype is None else deepcopy(dtype),
         )
+        self.otype = otype
 
     def _update_node(self):
         self.node.update(self.node.inputs.index(self))
@@ -70,9 +75,17 @@ class NodeInput(NodeInputCore, HasDType):
 
 
 class NodeOutput(NodeOutputCore, HasDType):
-    def __init__(self, node, type_="data", label_str="", dtype: Optional[DType] = None):
+    def __init__(
+            self,
+            node,
+            type_="data",
+            label_str="",
+            dtype: Optional[DType] = None,
+            otype: Optional[Thing] = None
+    ):
         super().__init__(node=node, type_=type_, label_str=label_str)
         self.dtype = Untyped() if dtype is None else deepcopy(dtype)
+        self.otype = otype
 
     def data(self) -> dict:
         data = super().data()
@@ -84,9 +97,28 @@ class NodeOutput(NodeOutputCore, HasDType):
         return data
 
 
+class NodeInputBP(NodeInputBPCore):
+    def __init__(
+            self,
+            label: str = "",
+            type_: str = "data",
+            dtype: DType = None,
+            add_data={},
+            otype: Optional[Thing] = None,
+    ):
+        super().__init__(label=label, type_=type_, dtype=dtype, add_data=add_data)
+        self.otype = otype
+
+
 class NodeOutputBP(NodeOutputBPCore):
     def __init__(
-        self, label: str = "", type_: str = "data", dtype: Optional[DType] = None
+            self,
+            label: str = "",
+            type_: str = "data",
+            dtype: Optional[DType] = None,
+            otype: Optional[Thing] = None,
     ):
         super().__init__(label=label, type_=type_)
         self.dtype = dtype
+        print(f"{label} received otype argument {otype}")
+        self.otype = otype

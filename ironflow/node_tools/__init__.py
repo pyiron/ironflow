@@ -27,7 +27,7 @@ Example:
 
 import ironflow.node_tools.input_widgets
 import ironflow.node_tools.main_widgets
-from ironflow.model import dtypes, NodeInputBP
+from ironflow.model import dtypes
 from ironflow.model.node import (
     Node,
     PlaceholderWidgetsContainer,
@@ -36,4 +36,4 @@ from ironflow.model.node import (
     JobMaker,
     JobTaker,
 )
-from ironflow.model.port import NodeOutputBP
+from ironflow.model.port import NodeInputBP, NodeOutputBP
