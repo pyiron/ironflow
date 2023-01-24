@@ -1177,7 +1177,7 @@ class Property_Node(DataNode):
         NodeInputBP(
             label="property",
             dtype=dtypes.Choice(
-                items=[o.name.split(".")[0] for o in onto.MaterialProperty.has_objects],
+                items=[o.name for o in onto.MaterialProperty.has_objects],
                 valid_classes=str
             )
         ),
@@ -1201,6 +1201,8 @@ class Property_Node(DataNode):
     def node_function(self, property, source, *args, **kwargs) -> dict:
         upstream_otype = self.inputs.ports.source.connections[0].out.otype
         # TODO: Use the most recently updated connection, not the zeroth
+
+
         conversion = REASONER.convert_unit(upstream_otype)
         return {"value": source * conversion if source is not None else None}
 
