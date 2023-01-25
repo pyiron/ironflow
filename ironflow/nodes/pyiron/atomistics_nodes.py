@@ -190,7 +190,11 @@ class BulkStructure_Node(OutputsOnlyAtoms):
 
     title = "BulkStructure"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.String(default="Fe"), label="element"),
+        NodeInputBP(
+            label="element",
+            dtype=dtypes.String(default="Fe"),
+            otype=onto["CreateStructureBulk/input/element"]
+        ),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default=None,
@@ -219,6 +223,14 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="u"),
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="orthorhombic"),
         NodeInputBP(dtype=dtypes.Boolean(default=False), label="cubic"),
+    ]
+
+    init_outputs = [
+        NodeOutputBP(
+            label="structure",
+            dtype=dtypes.Data(valid_classes=Atoms),
+            otype=onto["CreateStructureBulk/output/structure"]
+        ),
     ]
 
     def node_function(
@@ -578,7 +590,11 @@ class Lammps_Node(Engine):
     version = "v0.2"
     init_inputs = [
         NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Atoms), label="structure"),
+        NodeInputBP(
+            label="structure",
+            dtype=dtypes.Data(valid_classes=Atoms),
+            otype=onto["LAMMPS/input/structure"]
+        ),
         NodeInputBP(
             dtype=dtypes.Choice(
                 default=None,
@@ -589,7 +605,11 @@ class Lammps_Node(Engine):
         ),
     ]
     init_outputs = [
-        NodeOutputBP(label="engine", dtype=dtypes.Data(valid_classes=Lammps)),
+        NodeOutputBP(
+            label="engine",
+            dtype=dtypes.Data(valid_classes=Lammps),
+            otype=onto.LAMMPS
+        ),
     ]
 
     def _get_potentials(self):
