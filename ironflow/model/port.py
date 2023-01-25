@@ -70,7 +70,7 @@ class HasOType:
         else:
             return other_type_checks
 
-    def _is_valid_input_to(self, incoming: Thing, recieving: Thing):
+    def _is_valid_input_to(self, incoming: Thing, receiving: Thing):
         return True  # TODO
 
 
