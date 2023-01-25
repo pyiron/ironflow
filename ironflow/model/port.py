@@ -73,6 +73,15 @@ class NodeInput(NodeInputCore, HasDType):
                 self.val = self.val[-1]
             self._update_node()
 
+    def data(self) -> dict:
+        data = super().data()
+
+        if self.otype is not None:
+            data["otype_namespace"] = self.otype.namespace.name
+            data["otype_name"] = self.otype.name
+
+        return data
+
 
 class NodeOutput(NodeOutputCore, HasDType):
     def __init__(
@@ -93,6 +102,10 @@ class NodeOutput(NodeOutputCore, HasDType):
         if self.dtype is not None:
             data["dtype"] = str(self.dtype)
             data["dtype state"] = serialize(self.dtype.get_state())
+
+        if self.otype is not None:
+            data["otype_namespace"] = self.otype.namespace.name
+            data["otype_name"] = self.otype.name
 
         return data
 

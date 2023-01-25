@@ -19,6 +19,7 @@ from ryvencore.utils import deserialize
 
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.model import dtypes
+from ironflow.model.otypes import otype_from_str
 from ironflow.model.port import NodeInput, NodeInputBP, NodeOutput, NodeOutputBP
 from ironflow.utils import display_string
 
@@ -196,6 +197,12 @@ class Node(NodeCore):
         )
         self._add_io(self.outputs, out, insert=insert)
 
+    def _load_otype(self, data: dict):
+        try:
+            return otype_from_str(data["otype_namespace"], data["otype_name"])
+        except KeyError:
+            return None
+
     def setup_ports(self, inputs_data=None, outputs_data=None):
         # A streamlined version of the ryvencore method which exploits our NodeInput
         # and NodeOutput classes instead, and for which all ports have a dtype
@@ -229,7 +236,11 @@ class Node(NodeCore):
                     _load_state=deserialize(inp["dtype state"])
                 )
                 self.create_input(
-                    type_=inp["type"], label=inp["label"], add_data=inp, dtype=dtype
+                    type_=inp["type"],
+                    label=inp["label"],
+                    add_data=inp,
+                    dtype=dtype,
+                    otype=self._load_otype(inp)
                 )
 
                 if "val" in inp:
@@ -243,7 +254,12 @@ class Node(NodeCore):
                 dtype = dtypes.DType.from_str(out["dtype"])(
                     _load_state=deserialize(out["dtype state"])
                 )
-                self.create_output(type_=out["type"], label=out["label"], dtype=dtype)
+                self.create_output(
+                    type_=out["type"],
+                    label=out["label"],
+                    dtype=dtype,
+                    otype=self._load_otype(out),
+                )
 
     @property
     def all_input_is_valid(self):
