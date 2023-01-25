@@ -46,11 +46,12 @@ class HasDType(TypeHaver):
         other_type_checks = super().valid_val
         if self.dtype is not None:
             if self.val is not None:
-                return self.dtype.valid_val(self.val) and other_type_checks
+                dtype_ok = self.dtype.valid_val(self.val)
             else:
-                return self.dtype.allow_none and other_type_checks
+                dtype_ok = self.dtype.allow_none
         else:
-            return True
+            dtype_ok = True
+        return dtype_ok and other_type_checks
 
 
 class HasOType:
@@ -66,9 +67,9 @@ class HasOType:
                 otype_ok = self._is_valid_input_to(upstream_otype, self.otype)
             else:
                 otype_ok = True
-            return otype_ok and other_type_checks
         else:
-            return other_type_checks
+            otype_ok = True
+        return otype_ok and other_type_checks
 
     def _is_valid_input_to(self, incoming: Thing, receiving: Thing):
         return True  # TODO
