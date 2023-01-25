@@ -23,21 +23,58 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class HasDType:
+class TypeHaver:
+    """
+    A parent class for the has-type classes to facilitate super calls, regardless of
+    the order these havers appear as mixins to other classes.
+    """
+
+    @property
+    def valid_val(self):
+        try:
+            other_type_checks = super().valid_val
+        except AttributeError:
+            other_type_checks = True
+        return other_type_checks
+
+
+class HasDType(TypeHaver):
     """A mixin to add the valid value check property"""
 
     @property
     def valid_val(self):
+        other_type_checks = super().valid_val
         if self.dtype is not None:
             if self.val is not None:
-                return self.dtype.valid_val(self.val)
+                return self.dtype.valid_val(self.val) and other_type_checks
             else:
-                return self.dtype.allow_none
+                return self.dtype.allow_none and other_type_checks
         else:
             return True
 
 
-class NodeInput(NodeInputCore, HasDType):
+class HasOType:
+    """A mixin to add the valid value check to properties with an ontology type"""
+
+    @property
+    def valid_val(self):
+        other_type_checks = super().valid_val
+        if self.otype is not None and len(self.connections) > 0:
+            upstream_otype = self.connections[0].out.otype
+            # TODO: Catch the connection in use (most recently updated?) not the zeroth
+            if upstream_otype is not None:
+                otype_ok = self._is_valid_input_to(upstream_otype, self.otype)
+            else:
+                otype_ok = True
+            return otype_ok and other_type_checks
+        else:
+            return other_type_checks
+
+    def _is_valid_input_to(self, incoming: Thing, recieving: Thing):
+        return True  # TODO
+
+
+class NodeInput(NodeInputCore, HasDType, HasOType):
     def __init__(
         self,
         node: Node,
@@ -83,7 +120,7 @@ class NodeInput(NodeInputCore, HasDType):
         return data
 
 
-class NodeOutput(NodeOutputCore, HasDType):
+class NodeOutput(NodeOutputCore, HasDType, HasOType):
     def __init__(
             self,
             node,

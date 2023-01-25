@@ -1200,9 +1200,6 @@ class Property_Node(DataNode):
 
     def node_function(self, property, source, *args, **kwargs) -> dict:
         upstream_otype = self.inputs.ports.source.connections[0].out.otype
-        # TODO: Use the most recently updated connection, not the zeroth
-
-
         conversion = REASONER.convert_unit(upstream_otype)
         return {"value": source * conversion if source is not None else None}
 
