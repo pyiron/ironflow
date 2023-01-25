@@ -72,7 +72,13 @@ class HasOType(TypeHaver):
         return otype_ok and other_type_checks
 
     def _is_valid_input_to(self, incoming: Thing, receiving: Thing):
-        return True  # TODO
+        downstream_conditions = self._get_downstream_conditions()
+        return incoming in receiving.get_sources(downstream_conditions)
+
+    def _get_downstream_conditions(self):
+        # TODO: Walk down the graph to see where output of parent node is used and
+        #       what conditions any otyped ports there impose
+        return None
 
 
 class NodeInput(NodeInputCore, HasDType, HasOType):
