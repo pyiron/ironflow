@@ -60,7 +60,7 @@ class HasOType(TypeHaver):
     @property
     def valid_val(self):
         other_type_checks = super().valid_val
-        if self.otype is not None and len(self.connections) > 0:
+        if isinstance(self, NodeInput) and self.otype is not None and len(self.connections) > 0:
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
