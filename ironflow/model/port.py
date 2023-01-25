@@ -120,5 +120,4 @@ class NodeOutputBP(NodeOutputBPCore):
     ):
         super().__init__(label=label, type_=type_)
         self.dtype = dtype
-        print(f"{label} received otype argument {otype}")
         self.otype = otype
