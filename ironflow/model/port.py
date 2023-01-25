@@ -54,7 +54,7 @@ class HasDType(TypeHaver):
         return dtype_ok and other_type_checks
 
 
-class HasOType:
+class HasOType(TypeHaver):
     """A mixin to add the valid value check to properties with an ontology type"""
 
     @property
