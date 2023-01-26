@@ -161,11 +161,11 @@ class GUI(HasSession, DrawsWidgets):
 
     def build_recommendations(self, port: NodeInput | NodeOutput):
         self.recommend_nodes(port)
-        # self.workflows.flow_box.update_nodes(self.nodes_dictionary)
+        self.workflows.flow_box.update_nodes(self.nodes_dictionary)
 
     def clear_recommendations(self):
         self.clear_recommended_nodes()
-        # self.workflows.flow_box.update_nodes(self.nodes_dictionary)
+        self.workflows.flow_box.update_nodes(self.nodes_dictionary)
 
     def draw(self):
         return self.widget

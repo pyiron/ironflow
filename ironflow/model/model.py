@@ -267,7 +267,7 @@ class HasSession(ABC):
                 self.register_node(node_class, node_group=node_group)
 
     def recommend_nodes(self, port: NodeInput | NodeOutput):
-        raise NotImplementedError
+        self.nodes_dictionary['recommended'] = {}
 
-    def clear_recommendations(self):
-        raise NotImplementedError
+    def clear_recommended_nodes(self):
+        self.nodes_dictionary['recommended'] = {}
