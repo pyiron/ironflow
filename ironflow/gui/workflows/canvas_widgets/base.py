@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.flow import Flow
+    from ironflow.model.model import HasSession
     from ironflow.gui.workflows.canvas_widgets.layouts import Layout
 
 
@@ -73,6 +74,10 @@ class CanvasWidget(ABC):
     @property
     def canvas(self) -> Canvas:
         return self.parent.canvas
+
+    @property
+    def model(self) -> HasSession:
+        return self.parent.model
 
     @property
     def screen(self) -> WorkflowsGUI:
