@@ -100,7 +100,7 @@ class FlowCanvas:
 
     @property
     def gui(self) -> GUI:
-        return self.screen.model
+        return self.screen.gui
 
     @property
     def title(self) -> str:

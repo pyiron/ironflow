@@ -76,8 +76,8 @@ class CanvasWidget(ABC):
         return self.parent.canvas
 
     @property
-    def model(self) -> HasSession:
-        return self.parent.model
+    def gui(self) -> HasSession:
+        return self.parent.gui
 
     @property
     def screen(self) -> WorkflowsGUI:

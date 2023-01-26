@@ -108,8 +108,8 @@ class PortWidget(HideableWidget):
 
     def select(self) -> None:
         super().select()
-        self.model.build_node_recommendations(self.port)
+        self.gui.build_node_recommendations(self.port)
 
     def deselect(self) -> None:
         super().deselect()
-        self.model.clear_node_recommendations()
+        self.gui.clear_node_recommendations()

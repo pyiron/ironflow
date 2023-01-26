@@ -38,7 +38,7 @@ class WorkflowsGUI(DrawsWidgets):
     def __init__(self, gui: GUI, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.model = gui
+        self.gui = gui
         self.flow_canvases = []
 
         self.toolbar = Toolbar()
@@ -46,7 +46,7 @@ class WorkflowsGUI(DrawsWidgets):
         self.node_presenter = NodePresenter()
         self.text_out = TextOut()
         self.input = UserInput()
-        self.flow_box = FlowBox(self.model.nodes_dictionary)
+        self.flow_box = FlowBox(self.gui.nodes_dictionary)
 
         self.toolbar.alg_mode_dropdown.observe(
             self._change_alg_mode_dropdown, names="value"
@@ -78,7 +78,7 @@ class WorkflowsGUI(DrawsWidgets):
 
     @property
     def flow_canvas(self):
-        return self.flow_canvases[self.model.active_script_index]
+        return self.flow_canvases[self.gui.active_script_index]
 
     @property
     def selected_node(self) -> Node | None:
@@ -89,7 +89,7 @@ class WorkflowsGUI(DrawsWidgets):
         self.flow_box.update_tabs(
             outputs=[fc.output for fc in self.flow_canvases],
             titles=[fc.title for fc in self.flow_canvases],
-            active_index=self.model.active_script_index,
+            active_index=self.gui.active_script_index,
         )
         for fc in self.flow_canvases:
             fc.display()
@@ -101,7 +101,7 @@ class WorkflowsGUI(DrawsWidgets):
     @draws_widgets
     def load_from_data(self, data: dict):
         self.flow_canvases = []
-        for i_script, script in enumerate(self.model.session.scripts):
+        for i_script, script in enumerate(self.gui.session.scripts):
             flow_canvas = FlowCanvas(screen=self, flow=script.flow)
             all_data = data["scripts"][i_script]["flow"]["nodes"]
             for i_node, node in enumerate(script.flow.nodes):
@@ -155,21 +155,21 @@ class WorkflowsGUI(DrawsWidgets):
     def _change_alg_mode_dropdown(self, change: dict) -> None:
         # Current behaviour: Updates the flow mode for all scripts
         # Todo: Change only for the active script, and update the dropdown on tab (script) switching
-        for script in self.model.session.scripts:
+        for script in self.gui.session.scripts:
             script.flow.set_algorithm_mode(self.toolbar.alg_mode_dropdown.value)
 
     def _click_save(self, change: dict) -> None:
         self.input.open_text(
             "Save file",
             self._click_confirm_save,
-            self.model.session_title,
+            self.gui.session_title,
             description_tooltip="Save to file name (omit the file extension, .json)",
         )
         self.print("Choose a file name to save to (omit the file extension, .json)")
 
     def _click_confirm_save(self, change: dict) -> None:
         file_name = self.input.text
-        self.model.save(f"{file_name}.json")
+        self.gui.save(f"{file_name}.json")
         self.print(f"Session saved to {file_name}.json")
         self.input.clear()
 
@@ -177,14 +177,14 @@ class WorkflowsGUI(DrawsWidgets):
         self.input.open_text(
             "Load file",
             self._click_confirm_load,
-            self.model.session_title,
+            self.gui.session_title,
             description_tooltip="Load from file name (omit the file extension, .json).",
         )
         self.print("Choose a file name to load (omit the file extension, .json)")
 
     def _click_confirm_load(self, change: dict) -> None:
         file_name = self.input.text
-        self.model.load(f"{file_name}.json")
+        self.gui.load(f"{file_name}.json")
         self.update_tabs()
         self.node_presenter.clear()
         self.print(f"Session loaded from {file_name}.json")
@@ -204,42 +204,42 @@ class WorkflowsGUI(DrawsWidgets):
         self.flow_canvas.delete_selected()
 
     def _click_create_script(self, change: dict) -> None:
-        self.model.create_script()
+        self.gui.create_script()
         self.update_tabs()
 
     def _click_rename_script(self, change: dict) -> None:
         self.input.open_text(
             "New name",
             self._click_confirm_rename,
-            self.model.script.title,
+            self.gui.script.title,
             description_tooltip="New script name",
         )
         self.print("Choose a new name for the current script")
 
     def _click_confirm_rename(self, change: dict) -> None:
         new_name = self.input.text
-        old_name = self.model.script.title
-        rename_success = self.model.rename_script(new_name)
+        old_name = self.gui.script.title
+        rename_success = self.gui.rename_script(new_name)
         if rename_success:
             self.flow_box.script_tabs.set_title(
-                self.model.active_script_index, new_name
+                self.gui.active_script_index, new_name
             )
             self.print(f"Script '{old_name}' renamed '{new_name}'")
         else:
             self.print(
-                f"INVALID NAME: Failed to rename script '{self.model.script.title}' to '{new_name}'."
+                f"INVALID NAME: Failed to rename script '{self.gui.script.title}' to '{new_name}'."
             )
 
     def _click_delete_script(self, change: dict) -> None:
         self.input.open_bool(
-            f"Delete the entire script {self.model.script.title}?",
+            f"Delete the entire script {self.gui.script.title}?",
             self._click_confirm_delete_script,
         )
 
     def _click_confirm_delete_script(self, change: dict) -> None:
-        script_name = self.model.script.title
-        self.delete_flow(self.model.active_script_index)
-        self.model.delete_script()
+        script_name = self.gui.script.title
+        self.delete_flow(self.gui.active_script_index)
+        self.gui.delete_script()
         self.update_tabs()
         self.print(f"Script {script_name} deleted")
 
@@ -262,11 +262,11 @@ class WorkflowsGUI(DrawsWidgets):
         if change["name"] == "selected_index" and change["new"] is not None:
             self.input.clear()
             self.flow_canvas.deselect_all()
-            if self.flow_box.script_tabs.selected_index == self.model.n_scripts:
-                self.model.create_script()
+            if self.flow_box.script_tabs.selected_index == self.gui.n_scripts:
+                self.gui.create_script()
                 self.update_tabs()
             else:
-                self.model.active_script_index = (
+                self.gui.active_script_index = (
                     self.flow_box.script_tabs.selected_index
                 )
 
