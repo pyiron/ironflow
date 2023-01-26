@@ -10,7 +10,6 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Optional, TYPE_CHECKING
 
-from owlready2 import Thing
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
 from ryvencore.NodePortBP import (
     NodeOutputBP as NodeOutputBPCore, NodeInputBP as NodeInputBPCore
@@ -71,7 +70,7 @@ class HasOType(TypeHaver):
             otype_ok = True
         return otype_ok and other_type_checks
 
-    def _is_valid_input_to(self, incoming: Thing, receiving: Thing):
+    def _is_valid_input_to(self, incoming, receiving):
         downstream_conditions = self.get_downstream_conditions()
         return incoming in receiving.get_sources(downstream_conditions)
 
@@ -96,7 +95,7 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
         label_str: str = "",
         add_data: Optional[dict] = None,
         dtype: Optional[DType] = None,
-        otype: Optional[Thing] = None,
+        otype=None,
     ):
         super().__init__(
             node=node,
@@ -141,7 +140,7 @@ class NodeOutput(NodeOutputCore, HasDType, HasOType):
             type_="data",
             label_str="",
             dtype: Optional[DType] = None,
-            otype: Optional[Thing] = None
+            otype=None
     ):
         super().__init__(node=node, type_=type_, label_str=label_str)
         self.dtype = Untyped() if dtype is None else deepcopy(dtype)
@@ -168,7 +167,7 @@ class NodeInputBP(NodeInputBPCore):
             type_: str = "data",
             dtype: DType = None,
             add_data={},
-            otype: Optional[Thing] = None,
+            otype=None,
     ):
         super().__init__(label=label, type_=type_, dtype=dtype, add_data=add_data)
         self.otype = otype
@@ -180,7 +179,7 @@ class NodeOutputBP(NodeOutputBPCore):
             label: str = "",
             type_: str = "data",
             dtype: Optional[DType] = None,
-            otype: Optional[Thing] = None,
+            otype=None,
     ):
         super().__init__(label=label, type_=type_)
         self.dtype = dtype
