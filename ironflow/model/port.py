@@ -80,7 +80,7 @@ class HasOType(TypeHaver):
             if out.otype is not None:
                 for downstream_inp in [conn.inp for conn in out.connections]:
                     downstream_conditions += downstream_inp.get_downstream_conditions()
-        return self.otype.get_all_conditions(list(set(downstream_conditions)))
+        return self.otype.get_conditions(list(set(downstream_conditions)))
 
 
 class NodeInput(NodeInputCore, HasDType, HasOType):
