@@ -105,3 +105,11 @@ class PortWidget(HideableWidget):
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         return (x_in - self.x) ** 2 + (y_in - self.y) ** 2 < self.radius**2
+
+    def select(self) -> None:
+        super().select()
+        self.model.build_node_recommendations(self.port)
+
+    def deselect(self) -> None:
+        super().deselect()
+        self.model.clear_node_recommendations()
