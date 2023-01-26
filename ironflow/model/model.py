@@ -266,8 +266,8 @@ class HasSession(ABC):
             for node_class in source:
                 self.register_node(node_class, node_group=node_group)
 
-    def build_node_recommendations(self, port: NodeInput | NodeOutput):
+    def recommend_nodes(self, port: NodeInput | NodeOutput):
         raise NotImplementedError
 
-    def clear_node_recommendations(self):
+    def clear_recommendations(self):
         raise NotImplementedError
