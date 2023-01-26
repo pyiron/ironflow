@@ -78,11 +78,7 @@ class HasOType(TypeHaver):
         downstream_conditions = []
         for out in self.node.outputs:
             if out.otype is not None:
-                for downstream_inp in [
-                    input_port for connections in out.connections
-                    for input_port in connections
-                    if isinstance(input_port, NodeInput)
-                ]:
+                for downstream_inp in [conn.inp for conn in out.connections]:
                     downstream_conditions += downstream_inp.get_downstream_conditions()
         return self.otype.get_all_conditions(list(set(downstream_conditions)))
 
