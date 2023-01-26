@@ -20,6 +20,7 @@ from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
+    from ironflow.gui.gui import GUI
     from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.flow import Flow
@@ -96,6 +97,10 @@ class FlowCanvas:
     @property
     def flow_canvas(self) -> FlowCanvas:
         return self
+
+    @property
+    def gui(self) -> GUI:
+        return self.screen.model
 
     @property
     def title(self) -> str:
