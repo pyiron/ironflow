@@ -267,7 +267,18 @@ class HasSession(ABC):
                 self.register_node(node_class, node_group=node_group)
 
     def recommend_nodes(self, port: NodeInput | NodeOutput):
-        self.nodes_dictionary['recommended'] = {}
+        recommendations = {}
+        if port.otype is not None:
+            if isinstance(port, NodeInput):
+                conditions = port.get_downstream_conditions()
+                sources = port.otype.get_sources(conditions)
+                recommendations = {
+                    node.title: node for node in self.session.nodes
+                    if any([out.otype in sources for out in node.init_outputs])
+                }
+            elif isinstance(port, NodeOutput):
+                pass
+        self.nodes_dictionary['recommended'] = recommendations
 
     def clear_recommended_nodes(self):
         self.nodes_dictionary['recommended'] = {}
