@@ -17,6 +17,7 @@ from types import ModuleType
 from typing import Optional, Type
 
 from ironflow.model.node import Node
+from ironflow.model.port import NodeInput, NodeOutput
 from ironflow.model.session import Session
 from ironflow.model.flow import Flow
 from ironflow.model.script import Script
@@ -264,3 +265,9 @@ class HasSession(ABC):
         ):
             for node_class in source:
                 self.register_node(node_class, node_group=node_group)
+
+    def build_node_recommendations(self, port: NodeInput | NodeOutput):
+        raise NotImplementedError
+
+    def clear_node_recommendations(self):
+        raise NotImplementedError
