@@ -24,6 +24,7 @@ from pandas import DataFrame
 from ryvencore.InfoMsgs import InfoMsgs
 
 import pyiron_base
+import pyiron_ontology
 from pyiron_atomistics import Project, Atoms
 import pyiron_atomistics.atomistics.master.murnaghan
 from pyiron_atomistics.atomistics.structure.factory import StructureFactory
@@ -35,7 +36,6 @@ from pyiron_atomistics.lammps import list_potentials
 from pyiron_atomistics.lammps.lammps import Lammps
 from pyiron_atomistics.table.datamining import TableJob  # Triggers the function list
 from pyiron_base.jobs.job.util import _get_safe_job_name
-from pyiron_ontology import AtomisticsReasoner, atomistics_onto as onto
 
 from ironflow.node_tools import (
     DataNode,
@@ -55,7 +55,8 @@ if TYPE_CHECKING:
 
 STRUCTURE_FACTORY = StructureFactory()
 NUMERIC_TYPES = [int, float, np.number]
-REASONER = AtomisticsReasoner(onto)
+ONTO = pyiron_ontology.dynamic.atomistics()
+REASONER = pyiron_ontology.AtomisticsReasoner(ONTO)
 
 
 class BeautifulHasGroups:
@@ -193,7 +194,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(
             label="element",
             dtype=dtypes.String(default="Fe"),
-            otype=onto["CreateStructureBulk/input/element"]
+            otype=ONTO["CreateStructureBulk/input/element"]
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
@@ -229,7 +230,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeOutputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=onto["CreateStructureBulk/output/structure"]
+            otype=ONTO["CreateStructureBulk/output/structure"]
         ),
     ]
 
@@ -459,7 +460,7 @@ class CalcMurnaghan_Node(JobMaker):
         NodeInputBP(
             label="engine",
             dtype=dtypes.Data(valid_classes=AtomisticGenericJob),
-            otype=onto["Murnaghan/ref_job"]
+            otype=ONTO["Murnaghan/ref_job"]
         ),
         NodeInputBP(label="num_points", dtype=dtypes.Integer(default=11)),
         NodeInputBP(
@@ -487,12 +488,12 @@ class CalcMurnaghan_Node(JobMaker):
         NodeOutputBP(
             label="eq_bulk_modulus",
             dtype=dtypes.Float(),
-            otype=onto["Murnaghan/output/equilibrium_bulk_modulus"],
+            otype=ONTO["Murnaghan/output/equilibrium_bulk_modulus"],
         ),
         NodeOutputBP(
             label="eq_b_prime",
             dtype=dtypes.Float(),
-            otype=onto["Murnaghan/output/equilibrium_b_prime"]
+            otype=ONTO["Murnaghan/output/equilibrium_b_prime"]
         ),
         NodeOutputBP(label="volumes", dtype=dtypes.List(valid_classes=float)),
         NodeOutputBP(label="energies", dtype=dtypes.List(valid_classes=float)),
@@ -593,7 +594,7 @@ class Lammps_Node(Engine):
         NodeInputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=onto["LAMMPS/input/structure"]
+            otype=ONTO["LAMMPS/input/structure"]
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
@@ -608,7 +609,7 @@ class Lammps_Node(Engine):
         NodeOutputBP(
             label="engine",
             dtype=dtypes.Data(valid_classes=Lammps),
-            otype=onto.LAMMPS
+            otype=ONTO.LAMMPS
         ),
     ]
 
@@ -1197,7 +1198,7 @@ class Property_Node(DataNode):
         NodeInputBP(
             label="property",
             dtype=dtypes.Choice(
-                items=[o.name for o in onto.MaterialProperty.has_objects],
+                items=[o.name for o in ONTO.MaterialProperty.has_objects],
                 valid_classes=str
             )
         ),
@@ -1209,7 +1210,7 @@ class Property_Node(DataNode):
     ]
 
     def _update_otypes(self):
-        otype = getattr(onto, self.inputs.values.property)
+        otype = getattr(ONTO, self.inputs.values.property)
         self.inputs.ports.source.otype = otype
         self.outputs.ports.value.otype = otype
 
