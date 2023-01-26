@@ -85,7 +85,7 @@ class GUI(HasSession, DrawsWidgets):
             **kwargs,
         )
 
-        self.workflows = WorkflowsGUI(model=self)
+        self.workflows = WorkflowsGUI(gui=self)
         self.browser = BrowserGUI()
 
         try:

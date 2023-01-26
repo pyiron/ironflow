@@ -22,22 +22,23 @@ from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
 from ironflow.utils import display_string
 
 if TYPE_CHECKING:
-    from ironflow.model.model import HasSession
+    from ironflow.gui.gui import GUI
     from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
     from ironflow.model.flow import Flow
     from ironflow.model.node import Node
+    from ironflow.model.port import NodeInput, NodeOutput
 
 
 class WorkflowsGUI(DrawsWidgets):
     main_widget_class = widgets.VBox
 
-    def __new__(cls, model, *args, **kwargs):
+    def __new__(cls, gui, *args, **kwargs):
         return super().__new__(cls, *args, **kwargs)
 
-    def __init__(self, model: HasSession, *args, **kwargs):
+    def __init__(self, gui: GUI, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.model = model
+        self.model = gui
         self.flow_canvases = []
 
         self.toolbar = Toolbar()
