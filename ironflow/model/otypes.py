@@ -9,17 +9,18 @@ TODO: This is not easily extensible; it needs a system for users to register the
       modules of their own custom nodes.
 """
 
+import pyiron_ontology
+
 
 class OTypeLoader:
 
-    _pyiron_atomistics = None
+    _atomistics = None
 
     @classmethod
-    def pyiron_atomistics(cls, item):
-        if cls._pyiron_atomistics is None:
-            from pyiron_ontology import atomistics_onto
-            cls._pyiron_atomistics = atomistics_onto
-        return cls._pyiron_atomistics[item]
+    def atomistics(cls, item):
+        if cls._atomistics is None:
+            cls._atomistics = pyiron_ontology.dynamic.atomistics()
+        return cls._atomistics[item]
 
 
 def otype_from_str(namespace, item):
