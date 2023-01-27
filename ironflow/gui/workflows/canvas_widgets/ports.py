@@ -112,10 +112,12 @@ class PortWidget(HideableWidget):
     def select(self) -> None:
         super().select()
         self.gui.build_recommendations(self.port)
+        self.flow_canvas.highlight_compatible_ports(self)
 
     def deselect(self) -> None:
         super().deselect()
         self.gui.clear_recommendations()
+        self.flow_canvas.clear_port_highlighting()
 
     def highlight(self):
         self.highlighted = True
