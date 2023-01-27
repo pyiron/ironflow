@@ -63,14 +63,14 @@ class HasOType(TypeHaver):
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
-                otype_ok = self._is_valid_input_to(upstream_otype, self.otype)
+                otype_ok = self.is_valid_otype_for(upstream_otype, self.otype)
             else:
                 otype_ok = True
         else:
             otype_ok = True
         return otype_ok and other_type_checks
 
-    def _is_valid_input_to(self, incoming, receiving):
+    def is_valid_otype_for(self, incoming, receiving):
         downstream_conditions = self.get_downstream_conditions()
         return incoming in receiving.get_sources(downstream_conditions)
 
