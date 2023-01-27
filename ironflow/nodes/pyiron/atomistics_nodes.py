@@ -194,7 +194,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(
             label="element",
             dtype=dtypes.String(default="Fe"),
-            otype=ONTO["CreateStructureBulk/input/element"]
+            otype=ONTO["CreateStructureBulk/input/element"],
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
@@ -230,7 +230,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeOutputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=ONTO["CreateStructureBulk/output/structure"]
+            otype=ONTO["CreateStructureBulk/output/structure"],
         ),
     ]
 
@@ -460,7 +460,7 @@ class CalcMurnaghan_Node(JobMaker):
         NodeInputBP(
             label="engine",
             dtype=dtypes.Data(valid_classes=AtomisticGenericJob),
-            otype=ONTO["Murnaghan/ref_job"]
+            otype=ONTO["Murnaghan/ref_job"],
         ),
         NodeInputBP(label="num_points", dtype=dtypes.Integer(default=11)),
         NodeInputBP(
@@ -493,7 +493,7 @@ class CalcMurnaghan_Node(JobMaker):
         NodeOutputBP(
             label="eq_b_prime",
             dtype=dtypes.Float(),
-            otype=ONTO["Murnaghan/output/equilibrium_b_prime"]
+            otype=ONTO["Murnaghan/output/equilibrium_b_prime"],
         ),
         NodeOutputBP(label="volumes", dtype=dtypes.List(valid_classes=float)),
         NodeOutputBP(label="energies", dtype=dtypes.List(valid_classes=float)),
@@ -594,7 +594,7 @@ class Lammps_Node(Engine):
         NodeInputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=ONTO["LAMMPS/input/structure"]
+            otype=ONTO["LAMMPS/input/structure"],
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
@@ -607,9 +607,7 @@ class Lammps_Node(Engine):
     ]
     init_outputs = [
         NodeOutputBP(
-            label="engine",
-            dtype=dtypes.Data(valid_classes=Lammps),
-            otype=ONTO.LAMMPS
+            label="engine", dtype=dtypes.Data(valid_classes=Lammps), otype=ONTO.LAMMPS
         ),
     ]
 
@@ -1199,15 +1197,13 @@ class Property_Node(DataNode):
             label="property",
             dtype=dtypes.Choice(
                 items=[o.name for o in ONTO.MaterialProperty.has_objects],
-                valid_classes=str
-            )
+                valid_classes=str,
+            ),
         ),
-        NodeInputBP(label="source", dtype=dtypes.Float(default=None), otype=None)
+        NodeInputBP(label="source", dtype=dtypes.Float(default=None), otype=None),
     ]
 
-    init_outputs = [
-        NodeOutputBP(label="value", dtype=dtypes.Float(), otype=None)
-    ]
+    init_outputs = [NodeOutputBP(label="value", dtype=dtypes.Float(), otype=None)]
 
     def _update_otypes(self):
         otype = getattr(ONTO, self.inputs.values.property)

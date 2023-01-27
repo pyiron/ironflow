@@ -221,9 +221,7 @@ class WorkflowsGUI(DrawsWidgets):
         old_name = self.gui.script.title
         rename_success = self.gui.rename_script(new_name)
         if rename_success:
-            self.flow_box.script_tabs.set_title(
-                self.gui.active_script_index, new_name
-            )
+            self.flow_box.script_tabs.set_title(self.gui.active_script_index, new_name)
             self.print(f"Script '{old_name}' renamed '{new_name}'")
         else:
             self.print(
@@ -266,9 +264,7 @@ class WorkflowsGUI(DrawsWidgets):
                 self.gui.create_script()
                 self.update_tabs()
             else:
-                self.gui.active_script_index = (
-                    self.flow_box.script_tabs.selected_index
-                )
+                self.gui.active_script_index = self.flow_box.script_tabs.selected_index
 
     def close(self):
         self.toolbar.close()

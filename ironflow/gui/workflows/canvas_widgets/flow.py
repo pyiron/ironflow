@@ -264,7 +264,10 @@ class FlowCanvas:
     def highlight_compatible_ports(self, selected: PortWidget):
         for node_widget in self.objects_to_draw:
             for subwidget in node_widget.objects_to_draw:
-                if isinstance(subwidget, PortWidget) and subwidget.port.otype is not None:
+                if (
+                    isinstance(subwidget, PortWidget)
+                    and subwidget.port.otype is not None
+                ):
                     if isinstance(selected.port, NodeInput):
                         if selected.port.can_receive_otype(subwidget.port.otype):
                             subwidget.highlight()

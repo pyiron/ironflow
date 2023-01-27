@@ -12,7 +12,8 @@ from typing import Optional, TYPE_CHECKING
 
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
 from ryvencore.NodePortBP import (
-    NodeOutputBP as NodeOutputBPCore, NodeInputBP as NodeInputBPCore
+    NodeOutputBP as NodeOutputBPCore,
+    NodeInputBP as NodeInputBPCore,
 )
 from ryvencore.utils import serialize
 
@@ -59,7 +60,11 @@ class HasOType(TypeHaver):
     @property
     def valid_val(self):
         other_type_checks = super().valid_val
-        if isinstance(self, NodeInput) and self.otype is not None and len(self.connections) > 0:
+        if (
+            isinstance(self, NodeInput)
+            and self.otype is not None
+            and len(self.connections) > 0
+        ):
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
@@ -131,12 +136,12 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
 
 class NodeOutput(NodeOutputCore, HasDType, HasOType):
     def __init__(
-            self,
-            node,
-            type_="data",
-            label_str="",
-            dtype: Optional[DType] = None,
-            otype=None
+        self,
+        node,
+        type_="data",
+        label_str="",
+        dtype: Optional[DType] = None,
+        otype=None,
     ):
         super().__init__(node=node, type_=type_, label_str=label_str)
         self.dtype = Untyped() if dtype is None else deepcopy(dtype)
@@ -158,12 +163,12 @@ class NodeOutput(NodeOutputCore, HasDType, HasOType):
 
 class NodeInputBP(NodeInputBPCore):
     def __init__(
-            self,
-            label: str = "",
-            type_: str = "data",
-            dtype: DType = None,
-            add_data={},
-            otype=None,
+        self,
+        label: str = "",
+        type_: str = "data",
+        dtype: DType = None,
+        add_data={},
+        otype=None,
     ):
         super().__init__(label=label, type_=type_, dtype=dtype, add_data=add_data)
         self.otype = otype
@@ -171,11 +176,11 @@ class NodeInputBP(NodeInputBPCore):
 
 class NodeOutputBP(NodeOutputBPCore):
     def __init__(
-            self,
-            label: str = "",
-            type_: str = "data",
-            dtype: Optional[DType] = None,
-            otype=None,
+        self,
+        label: str = "",
+        type_: str = "data",
+        dtype: Optional[DType] = None,
+        otype=None,
     ):
         super().__init__(label=label, type_=type_)
         self.dtype = dtype

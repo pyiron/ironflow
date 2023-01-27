@@ -240,7 +240,7 @@ class Node(NodeCore):
                     label=inp["label"],
                     add_data=inp,
                     dtype=dtype,
-                    otype=self._load_otype(inp)
+                    otype=self._load_otype(inp),
                 )
 
                 if "val" in inp:

@@ -273,26 +273,29 @@ class HasSession(ABC):
                 recommendations = self._get_nodes_giving_matching_output(port)
             elif isinstance(port, NodeOutput):
                 recommendations = self._get_nodes_taking_matching_input(port)
-        self.nodes_dictionary['recommended'] = recommendations
+        self.nodes_dictionary["recommended"] = recommendations
 
     def _get_nodes_giving_matching_output(self, port: NodeInput):
         conditions = port.get_downstream_conditions()
         sources = port.otype.get_sources(conditions)
         return {
-            node.title: node for node in self.session.nodes
+            node.title: node
+            for node in self.session.nodes
             if any([out.otype in sources for out in node.init_outputs])
         }
 
     def _get_nodes_taking_matching_input(self, port: NodeOutput):
         return {
-            node.title: node for node in self.session.nodes
+            node.title: node
+            for node in self.session.nodes
             if any(
                 [
                     port.otype in inp.otype.get_sources()
-                    for inp in node.init_inputs if inp.otype is not None
+                    for inp in node.init_inputs
+                    if inp.otype is not None
                 ]
             )
         }
 
     def clear_recommended_nodes(self):
-        self.nodes_dictionary['recommended'] = {}
+        self.nodes_dictionary["recommended"] = {}
