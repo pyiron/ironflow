@@ -266,16 +266,12 @@ class FlowCanvas:
             for subwidget in node_widget.objects_to_draw:
                 if isinstance(subwidget, PortWidget) and subwidget.port.otype is not None:
                     if isinstance(selected.port, NodeInput):
-                        if selected.port.is_valid_otype_for(
-                                subwidget.port.otype, selected.port.otype
-                        ):
+                        if selected.port.is_valid_otype_for(subwidget.port.otype):
                             subwidget.highlight()
                             self._highlighted_ports.append(subwidget)
                     elif isinstance(selected.port, NodeOutput):
                         if selected.port.otype in subwidget.port.otype.get_sources():
-                            if subwidget.port.is_valid_otype_for(
-                                    selected.port.otype, subwidget.port.otype
-                            ):
+                            if subwidget.port.is_valid_otype_for(selected.port.otype):
                                 subwidget.highlight()
                                 self._highlighted_ports.append(subwidget)
 
