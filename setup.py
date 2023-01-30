@@ -38,7 +38,7 @@ setup(
         'pyiron_base',
         'pyiron_atomistics',
         'pyiron_gui >= 0.0.8',
-        'pyiron_ontology',
+        'pyiron_ontology == 0.0.2',
         'ryvencore',
         'seaborn',
         'traitlets',
