@@ -1196,8 +1196,9 @@ class MaterialProperty_Node(DataNode):
         NodeInputBP(
             label="property",
             dtype=dtypes.Choice(
-                items=[o.name for o in ONTO.MaterialProperty.has_objects],
-                valid_classes=str,
+                items=[None] + [o.name for o in ONTO.MaterialProperty.has_objects],
+                valid_classes=[str, type(None)],
+                default=None,
             ),
         ),
         NodeInputBP(label="source", dtype=dtypes.Float(default=None), otype=None),
@@ -1206,7 +1207,10 @@ class MaterialProperty_Node(DataNode):
     init_outputs = [NodeOutputBP(label="value", dtype=dtypes.Float(), otype=None)]
 
     def _update_otypes(self):
-        otype = getattr(ONTO, self.inputs.values.property)
+        if self.inputs.values.property is not None:
+            otype = getattr(ONTO, self.inputs.values.property)
+        else:
+            otype = None
         self.inputs.ports.source.otype = otype
         self.outputs.ports.value.otype = otype
 
