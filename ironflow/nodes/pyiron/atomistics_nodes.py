@@ -1189,7 +1189,7 @@ class Click_Node(Node):
         self.exec_output(0)
 
 
-class Property_Node(DataNode):
+class MaterialProperty_Node(DataNode):
     title = "MaterialProperty"
 
     init_inputs = [
