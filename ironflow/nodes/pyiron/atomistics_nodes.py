@@ -41,6 +41,7 @@ from ironflow.node_tools import (
     DataNode,
     dtypes,
     JobMaker,
+    JobNode,
     JobTaker,
     main_widgets,
     Node,
@@ -107,7 +108,11 @@ class Project_Node(DataNode):
         NodeInputBP(dtype=dtypes.String(default="."), label="name"),
     ]
     init_outputs = [
-        NodeOutputBP(label="project", dtype=dtypes.Data(valid_classes=Project)),
+        NodeOutputBP(
+            label="project",
+            dtype=dtypes.Data(valid_classes=Project),
+            otype=ONTO.Project,
+        ),
     ]
     color = "#aabb44"
 
@@ -132,7 +137,11 @@ class JobTable_Node(Node):
     title = "JobTable"
     init_inputs = [
         NodeInputBP(type_="exec", label="refresh"),
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Project),
+            label="project",
+            # otype=ONTO.Project,  # Needs a specific onto input type, not the code
+        ),
     ]
     init_outputs = [NodeOutputBP(label="Table")]
     color = "#aabb44"
@@ -452,11 +461,16 @@ class CalcMD_Node(AtomisticTaker):
         return copied_job
 
 
-class CalcMurnaghan_Node(JobMaker):
+class CalcMurnaghan_Node(JobNode):
     title = "CalcMurnaghan"
     valid_job_classes = [pyiron_atomistics.atomistics.master.murnaghan.Murnaghan]
 
-    init_inputs = list(JobMaker.init_inputs) + [
+    init_inputs = list(JobNode.init_inputs) + [
+        NodeInputBP(
+            label="project",
+            dtype=dtypes.Data(valid_classes=Project),
+            otype=ONTO["Murnaghan/input/project"],
+        ),
         NodeInputBP(
             label="engine",
             dtype=dtypes.Data(valid_classes=AtomisticGenericJob),
@@ -590,7 +604,11 @@ class Lammps_Node(Engine):
     title = "Lammps"
     version = "v0.2"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Project),
+            label="project",
+            otype=ONTO["LAMMPS/input/project"],
+        ),
         NodeInputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
