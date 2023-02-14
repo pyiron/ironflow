@@ -37,8 +37,8 @@ class PortList(list):
         (i.e. when `running_with_executor`).
     """
 
-    def __init__(self, seq=()):
-        super().__init__(self, seq=seq)
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
         self._port_finder = PortFinder(self)
         self._value_finder = ValueFinder(self)
         # This additional mis-direction is necessary so that ports can have the same labels as list class methods
