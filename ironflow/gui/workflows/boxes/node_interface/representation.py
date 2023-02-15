@@ -58,7 +58,7 @@ class NodePresenter(DrawsWidgets):
             self._widgets = self._build_widgets(representations_dict)
             self._toggles = self._build_toggles(representations_dict)
 
-        for (toggle, widget, representation) in zip(
+        for toggle, widget, representation in zip(
             self._toggles, self._widgets, representations_dict.values()
         ):
             widget.clear_output()
