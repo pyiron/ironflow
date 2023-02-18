@@ -13,7 +13,6 @@ import pyiron_ontology
 
 
 class OTypeLoader:
-
     _atomistics = None
 
     @classmethod

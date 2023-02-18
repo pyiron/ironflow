@@ -207,7 +207,6 @@ class Node(NodeCore):
         # A streamlined version of the ryvencore method which exploits our NodeInput
         # and NodeOutput classes instead, and for which all ports have a dtype
         if not inputs_data and not outputs_data:
-
             for i in range(len(self.init_inputs)):
                 inp = self.init_inputs[i]
                 self.create_input(

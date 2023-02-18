@@ -281,7 +281,6 @@ class Clock_Node(NodeBase):
         self.actions["stop"] = {"method": self.stop}
 
         if self.session.gui:
-
             from qtpy.QtCore import QTimer
 
             self.timer = QTimer(self)
@@ -353,7 +352,6 @@ class Slider_Node(NodeBase):
         self.update()
 
     def update_event(self, inp=-1):
-
         v = self.input(0) * self.val
         if self.input(1):
             v = round(v)

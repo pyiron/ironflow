@@ -39,7 +39,6 @@ class GetVar_Node(NodeBase):
 
     def update_event(self, input_called=-1):
         if self.input(0) != self.var_name:
-
             if self.var_name != "":  # disconnect old var val update connection
                 self.unregister_var_receiver(self.var_name, self.var_val_changed)
 
@@ -133,7 +132,6 @@ class Val_Node(NodeBase):
         self.val = data["val"]
 
         if version is None:
-
             self.display_title = ""
 
             self.create_input_dt(dtype=dtypes.Data(size="s"))
@@ -171,15 +169,12 @@ class SetVar_Node(NodeBase):
         self.num_vars = 1
 
     def update_event(self, input_called=-1):
-
         if self.active and input_called == 0:
-
             if self.set_var_val(self.input(1), self.input(2)):
                 self.set_output_val(1, self.input(2))
             self.exec_output(0)
 
         elif not self.active:
-
             self.var_name = self.input(0)
             if self.set_var_val(self.input(0), self.input(1)):
                 self.set_output_val(0, self.get_var_val(self.var_name))
@@ -244,7 +239,6 @@ class SetVarsPassive_Node(NodeBase):
         self.rebuild_remove_actions()
 
     def rebuild_remove_actions(self):
-
         remove_keys = []
         for k, v in self.actions.items():
             if k.startswith("remove var"):
@@ -260,7 +254,6 @@ class SetVarsPassive_Node(NodeBase):
             }
 
     def update_event(self, input_called=-1):
-
         var_names = [self.input(i) for i in range(0, len(self.inputs), 2)]
         values = [self.input(i) for i in range(1, len(self.inputs), 2)]
 

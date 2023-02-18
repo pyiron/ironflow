@@ -2,7 +2,6 @@ from ironflow.node_tools import dtypes, Node, NodeInputBP, NodeOutputBP
 
 
 class OperatorNodeBase(Node):
-
     version = "v0.0"
 
     init_inputs = [
@@ -46,7 +45,6 @@ class OperatorNodeBase(Node):
         self.num_inputs += 1
 
     def rebuild_remove_actions(self):
-
         remove_keys = []
         for k, v in self.actions.items():
             if k.startswith("remove input"):
