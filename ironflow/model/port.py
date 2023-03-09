@@ -63,24 +63,24 @@ class HasOType(TypeHaver):
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
-                otype_ok = self._is_valid_input_to(upstream_otype, self.otype)
+                otype_ok = self._accepts_otype(upstream_otype)
             else:
                 otype_ok = True
         else:
             otype_ok = True
         return otype_ok and other_type_checks
 
-    def _is_valid_input_to(self, incoming, receiving):
-        downstream_conditions = self.get_downstream_conditions()
-        return incoming in receiving.get_sources(downstream_conditions)
+    def _accepts_otype(self, other_otype):
+        downstream_requirements = self.get_downstream_requirements()
+        return other_otype in self.otype.get_sources(downstream_requirements)
 
-    def get_downstream_conditions(self):
-        downstream_conditions = []
+    def get_downstream_requirements(self):
+        downstream_requirements = []
         for out in self.node.outputs:
             if out.otype is not None:
                 for downstream_inp in [conn.inp for conn in out.connections]:
-                    downstream_conditions += downstream_inp.get_downstream_conditions()
-        return self.otype.get_conditions(list(set(downstream_conditions)))
+                    downstream_requirements += downstream_inp.get_downstream_requirements()
+        return self.otype.get_conditions(list(set(downstream_requirements)))
 
 
 class NodeInput(NodeInputCore, HasDType, HasOType):
