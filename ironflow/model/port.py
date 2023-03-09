@@ -42,15 +42,17 @@ class HasDType(TypeHaver):
 
     @property
     def valid_val(self):
-        other_type_checks = super().valid_val
+        return self._dtype_ok and super().valid_val
+
+    @property
+    def _dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
-                dtype_ok = self.dtype.valid_val(self.val)
+                return self.dtype.valid_val(self.val)
             else:
-                dtype_ok = self.dtype.allow_none
+                return self.dtype.allow_none
         else:
-            dtype_ok = True
-        return dtype_ok and other_type_checks
+            return True
 
 
 class HasOType(TypeHaver):
@@ -58,17 +60,19 @@ class HasOType(TypeHaver):
 
     @property
     def valid_val(self):
-        other_type_checks = super().valid_val
+        return self._otype_ok and super().valid_val
+
+    @property
+    def _otype_ok(self):
         if isinstance(self, NodeInput) and self.otype is not None and len(self.connections) > 0:
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
-                otype_ok = self._accepts_otype(upstream_otype)
+                return self._accepts_otype(upstream_otype)
             else:
-                otype_ok = True
+                return True
         else:
-            otype_ok = True
-        return otype_ok and other_type_checks
+            return True
 
     def _accepts_otype(self, other_otype):
         downstream_requirements = self.get_downstream_requirements()
