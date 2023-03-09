@@ -17,8 +17,8 @@ class OTypeLoader:
     @classmethod
     def pyiron_atomistics(cls, item):
         if cls._pyiron_atomistics is None:
-            from pyiron_ontology import atomistics_onto
-            cls._pyiron_atomistics = atomistics_onto
+            from pyiron_ontology import AtomisticsOntology
+            cls._pyiron_atomistics = AtomisticsOntology().onto
         return cls._pyiron_atomistics[item]
 
 
