@@ -307,7 +307,6 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
 
 class AtomisticTaker(JobTaker, ABC):
-
     valid_job_classes = [Lammps]
     init_outputs = JobTaker.init_outputs + [
         NodeOutputBP(

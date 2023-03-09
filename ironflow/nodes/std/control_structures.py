@@ -78,7 +78,6 @@ class ForLoop_Node(CSNodeBase):
         self.rebuild_remove_actions()
 
     def rebuild_remove_actions(self):
-
         remove_keys = []
         for k, v in self.actions.items():
             if k.startswith("remove dimension"):
@@ -105,14 +104,12 @@ class ForLoop_Node(CSNodeBase):
             self.exec_output(len(self.outputs) - 1)
 
     def iterate(self, dim):
-
         inp_index = self.input_from_dim(dim)
 
         exec_out_index = self.output_from_dim(dim)
         data_out_index = exec_out_index + 1
 
         for i in range(self.input(inp_index), self.input(inp_index + 1)):
-
             self.set_output_val(data_out_index, i)
             self.exec_output(exec_out_index)
 
