@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import pickle
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from io import BytesIO
 from typing import Type, TYPE_CHECKING
 
@@ -419,13 +420,19 @@ class AtomisticTaker(JobTaker, ABC):
     valid_job_classes = [Lammps]
     init_outputs = JobTaker.init_outputs + [
         NodeOutputBP(
-            dtype=dtypes.Float(), label="energy_pot"
+            label="energy_pot",
+            dtype=dtypes.Float(),
+            otype=ONTO.atomistic_taker_output_energy_pot
         ),
         NodeOutputBP(
-            dtype=dtypes.List(valid_classes=[float, np.floating]), label="forces"
+            label="forces",
+            dtype=dtypes.List(valid_classes=[float, np.floating]),
             # Still not working because it's an nx3 matrix, not an n-long list
+            otype=ONTO.atomistic_taker_output_forces
         ),
     ]
+    init_inputs = deepcopy(JobTaker.init_inputs)
+    init_inputs[3].otype = ONTO.atomistic_taker_job
 
     def _get_output_from_job(self, finished_job: Lammps, **kwargs):
         return {
