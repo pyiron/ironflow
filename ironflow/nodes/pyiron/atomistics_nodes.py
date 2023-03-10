@@ -111,7 +111,7 @@ class Project_Node(DataNode):
         NodeOutputBP(
             label="project",
             dtype=dtypes.Data(valid_classes=Project),
-            otype=ONTO.Project,
+            otype=ONTO.project_output_atomistics_project,
         ),
     ]
     color = "#aabb44"
@@ -140,7 +140,7 @@ class JobTable_Node(Node):
         NodeInputBP(
             dtype=dtypes.Data(valid_classes=Project),
             label="project",
-            # otype=ONTO.Project,  # Needs a specific onto input type, not the code
+            # otype=ONTO...  # Needs an individual of type Input with generic Project
         ),
     ]
     init_outputs = [NodeOutputBP(label="Table")]
@@ -286,7 +286,7 @@ class SlabStructure_Node(OutputsOnlyAtoms):
         a (float | None): Lattice constant.
 
     Returns:
-        pyiron_atomistics.atomistics.structure.atoms.Atoms instance: Required surface
+        pyiron_atomistics.atomistics.structure.atoms.Atoms instance: Requested surface
     """
 
     # this __doc__ string will be displayed as tooltip in the editor
@@ -303,8 +303,8 @@ class SlabStructure_Node(OutputsOnlyAtoms):
             dtype=dtypes.Choice(
                 default="bcc100",
                 items=[
-                    "add_adsorbate",
-                    "add_vacuum",
+                    # "add_adsorbate",
+                    # "add_vacuum",
                     "bcc100",
                     "bcc110",
                     "bcc111",
@@ -317,12 +317,12 @@ class SlabStructure_Node(OutputsOnlyAtoms):
                     "hcp0001",
                     "hcp10m10",
                     "mx2",
-                    "hcp0001_root",
-                    "fcc111_root",
-                    "bcc111_root",
-                    "root_surface",
-                    "root_surface_analysis",
-                    "ase_surf",
+                    # "hcp0001_root",
+                    # "fcc111_root",
+                    # "bcc111_root",
+                    # "root_surface",
+                    # "root_surface_analysis",
+                    # "ase_surf",
                 ],
                 allow_none=True,
             ),
@@ -341,7 +341,7 @@ class SlabStructure_Node(OutputsOnlyAtoms):
         NodeOutputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=ONTO["CreateSurface/output/structure"],
+            otype=ONTO.surface_structure_output_structure,
         ),
     ]
 
@@ -567,7 +567,7 @@ class CalcMurnaghan_Node(JobNode):
         NodeInputBP(
             label="project",
             dtype=dtypes.Data(valid_classes=Project),
-            otype=ONTO["Murnaghan/input/project"],
+            otype=ONTO.murnaghan_input_project,
         ),
         NodeInputBP(
             label="engine",
@@ -705,7 +705,7 @@ class Lammps_Node(Engine):
         NodeInputBP(
             dtype=dtypes.Data(valid_classes=Project),
             label="project",
-            otype=ONTO["LAMMPS/input/project"],
+            otype=ONTO.lammps_input_project,
         ),
         NodeInputBP(
             label="structure",
