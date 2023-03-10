@@ -11,7 +11,6 @@ TODO: This is not easily extensible; it needs a system for users to register the
 
 
 class OTypeLoader:
-
     _atomistics = None
 
     @classmethod
@@ -19,6 +18,7 @@ class OTypeLoader:
         # Note: public attribute name must match saved ontology namespace
         if cls._atomistics is None:
             from pyiron_ontology import AtomisticsOntology
+
             cls._atomistics = AtomisticsOntology().onto
         return cls._atomistics[item]
 
