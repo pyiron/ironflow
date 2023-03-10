@@ -83,8 +83,12 @@ class HasOType(TypeHaver):
         for out in self.node.outputs:
             if out.otype is not None:
                 for downstream_inp in [conn.inp for conn in out.connections]:
-                    downstream_requirements += downstream_inp.get_downstream_requirements()
-        return self.otype.get_conditions(list(set(downstream_requirements)))
+                    if downstream_inp.otype is not None:
+                        downstream_requirements += downstream_inp.get_downstream_requirements()
+        try:
+            return self.otype.get_requirements(list(set(downstream_requirements)))
+        except AttributeError:
+            return list(set(downstream_requirements))
 
 
 class NodeInput(NodeInputCore, HasDType, HasOType):
