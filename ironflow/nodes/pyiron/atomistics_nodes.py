@@ -330,7 +330,7 @@ class SlabStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(label="size_a", dtype=dtypes.Integer(default=1)),
         NodeInputBP(label="size_b", dtype=dtypes.Integer(default=1)),
         NodeInputBP(label="size_c", dtype=dtypes.Integer(default=1)),
-        NodeInputBP(label="vacuum", dtype=dtypes.Float(1.0)),
+        NodeInputBP(label="vacuum", dtype=dtypes.Float(10.0)),
         NodeInputBP(label="center", dtype=dtypes.Boolean(default=False)),
         NodeInputBP(label="orthogonal", dtype=dtypes.Boolean(default=True)),
         NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="a"),
