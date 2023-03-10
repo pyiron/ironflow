@@ -56,7 +56,7 @@ if TYPE_CHECKING:
 
 STRUCTURE_FACTORY = StructureFactory()
 NUMERIC_TYPES = [int, float, np.number]
-ONTO = pyiron_ontology.dynamic.atomistics()
+ONTO = pyiron_ontology.AtomisticsOntology().onto
 REASONER = pyiron_ontology.AtomisticsReasoner(ONTO)
 
 
@@ -203,7 +203,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeInputBP(
             label="element",
             dtype=dtypes.String(default="Fe"),
-            otype=ONTO["CreateStructureBulk/input/element"],
+            otype=ONTO.bulk_structure_input_element,
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
@@ -239,7 +239,7 @@ class BulkStructure_Node(OutputsOnlyAtoms):
         NodeOutputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=ONTO["CreateStructureBulk/output/structure"],
+            otype=ONTO.bulk_structure_output_structure,
         ),
     ]
 
@@ -415,7 +415,6 @@ class ApplyStrain_Node(OutputsOnlyAtoms):
 
 
 class AtomisticTaker(JobTaker, ABC):
-
     valid_job_classes = [Lammps]
     init_outputs = JobTaker.init_outputs + [
         NodeOutputBP(
@@ -573,7 +572,7 @@ class CalcMurnaghan_Node(JobNode):
         NodeInputBP(
             label="engine",
             dtype=dtypes.Data(valid_classes=AtomisticGenericJob),
-            otype=ONTO["Murnaghan/ref_job"],
+            otype=ONTO.murnaghan_input_job,
         ),
         NodeInputBP(label="num_points", dtype=dtypes.Integer(default=11)),
         NodeInputBP(
@@ -601,12 +600,12 @@ class CalcMurnaghan_Node(JobNode):
         NodeOutputBP(
             label="eq_bulk_modulus",
             dtype=dtypes.Float(),
-            otype=ONTO["Murnaghan/output/equilibrium_bulk_modulus"],
+            otype=ONTO.murnaghan_output_bulk_modulus,
         ),
         NodeOutputBP(
             label="eq_b_prime",
             dtype=dtypes.Float(),
-            otype=ONTO["Murnaghan/output/equilibrium_b_prime"],
+            otype=ONTO.murnaghan_output_b_prime,
         ),
         NodeOutputBP(label="volumes", dtype=dtypes.List(valid_classes=float)),
         NodeOutputBP(label="energies", dtype=dtypes.List(valid_classes=float)),
@@ -711,7 +710,7 @@ class Lammps_Node(Engine):
         NodeInputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
-            otype=ONTO["LAMMPS/input/structure"],
+            otype=ONTO.lammps_input_structure,
         ),
         NodeInputBP(
             dtype=dtypes.Choice(
@@ -724,7 +723,9 @@ class Lammps_Node(Engine):
     ]
     init_outputs = [
         NodeOutputBP(
-            label="engine", dtype=dtypes.Data(valid_classes=Lammps), otype=ONTO.LAMMPS
+            label="engine",
+            dtype=dtypes.Data(valid_classes=Lammps),
+            otype=ONTO.lammps_output_job,
         ),
     ]
 
@@ -1313,9 +1314,9 @@ class MaterialProperty_Node(DataNode):
         NodeInputBP(
             label="property",
             dtype=dtypes.Choice(
-                items=[None] + [o.name for o in ONTO.MaterialProperty.has_objects],
-                valid_classes=[str, type(None)],
-                default=None,
+                items=[o.name for o in ONTO.MaterialProperty.descendants()],
+                valid_classes=str,
+                default="MaterialProperty",
             ),
         ),
         NodeInputBP(label="source", dtype=dtypes.Float(default=None), otype=None),
@@ -1324,12 +1325,9 @@ class MaterialProperty_Node(DataNode):
     init_outputs = [NodeOutputBP(label="value", dtype=dtypes.Float(), otype=None)]
 
     def _update_otypes(self):
-        if self.inputs.values.property is not None:
-            otype = getattr(ONTO, self.inputs.values.property)
-        else:
-            otype = None
-        self.inputs.ports.source.otype = otype
-        self.outputs.ports.value.otype = otype
+        otype = getattr(ONTO, self.inputs.values.property)
+        self.inputs.ports.source.otype = otype()
+        self.outputs.ports.value.otype = otype()
 
     def update_event(self, inp=-1):
         if inp == 0:
@@ -1337,9 +1335,9 @@ class MaterialProperty_Node(DataNode):
         super().update_event(inp=inp)
 
     def node_function(self, property, source, *args, **kwargs) -> dict:
-        upstream_otype = self.inputs.ports.source.connections[0].out.otype
-        conversion = REASONER.convert_unit(upstream_otype)
-        return {"value": source * conversion if source is not None else None}
+        # upstream_otype = self.inputs.ports.source.connections[0].out.otype
+        # conversion = REASONER.convert_unit(upstream_otype)
+        return {"value": source}  # * conversion if source is not None else None}
 
 
 nodes = [
