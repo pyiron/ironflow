@@ -12,14 +12,15 @@ TODO: This is not easily extensible; it needs a system for users to register the
 
 class OTypeLoader:
 
-    _pyiron_atomistics = None
+    _atomistics = None
 
     @classmethod
-    def pyiron_atomistics(cls, item):
-        if cls._pyiron_atomistics is None:
+    def atomistics(cls, item):
+        # Note: public attribute name must match saved ontology namespace
+        if cls._atomistics is None:
             from pyiron_ontology import AtomisticsOntology
-            cls._pyiron_atomistics = AtomisticsOntology().onto
-        return cls._pyiron_atomistics[item]
+            cls._atomistics = AtomisticsOntology().onto
+        return cls._atomistics[item]
 
 
 def otype_from_str(namespace, item):
