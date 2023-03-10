@@ -14,12 +14,14 @@ import ipywidgets as widgets
 from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 
+from ironflow.model.port import NodeInput, NodeOutput
 from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget
 from ironflow.gui.workflows.canvas_widgets.layouts import NodeLayout
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
+    from ironflow.gui.gui import GUI
     from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.flow import Flow
@@ -88,6 +90,7 @@ class FlowCanvas:
         )
 
         self._object_to_gui_dict = {}
+        self._highlighted_ports: list[PortWidget] = []
 
     @property
     def canvas(self):
@@ -96,6 +99,10 @@ class FlowCanvas:
     @property
     def flow_canvas(self) -> FlowCanvas:
         return self
+
+    @property
+    def gui(self) -> GUI:
+        return self.screen.gui
 
     @property
     def title(self) -> str:
@@ -253,3 +260,27 @@ class FlowCanvas:
 
     def zoom_out(self) -> None:
         self._zoom(min(self._zoom_index + 1, len(self._zoom_factors) - 1))
+
+    def highlight_compatible_ports(self, selected: PortWidget):
+        if selected.port.otype is None:
+            return
+
+        for node_widget in self.objects_to_draw:
+            for subwidget in node_widget.objects_to_draw:
+                if (
+                    isinstance(subwidget, PortWidget)
+                    and subwidget.port.otype is not None
+                ):
+                    if isinstance(selected.port, NodeInput):
+                        if selected.port.can_receive_otype(subwidget.port.otype):
+                            subwidget.highlight()
+                            self._highlighted_ports.append(subwidget)
+                    elif isinstance(selected.port, NodeOutput):
+                        if selected.port.otype in subwidget.port.otype.get_sources():
+                            if subwidget.port.can_receive_otype(selected.port.otype):
+                                subwidget.highlight()
+                                self._highlighted_ports.append(subwidget)
+
+    def clear_port_highlighting(self):
+        for port_widget in self._highlighted_ports:
+            port_widget.dehighlight()

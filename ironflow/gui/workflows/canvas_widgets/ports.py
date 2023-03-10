@@ -47,6 +47,7 @@ class PortWidget(HideableWidget):
         self.radius = radius
         self.port = port
         self.title_alignment = title_alignment
+        self.highlighted = False
 
     def on_click(
         self, last_selected_object: Optional[CanvasWidget]
@@ -66,7 +67,9 @@ class PortWidget(HideableWidget):
 
     @property
     def _current_color(self):
-        if self.port.valid_val:
+        if self.highlighted:
+            color = self.layout.highlight_color
+        elif self.port.valid_val:
             if self.selected:
                 color = self.layout.valid_selected_color
             else:
@@ -105,3 +108,18 @@ class PortWidget(HideableWidget):
 
     def _is_at_xy(self, x_in: Number, y_in: Number) -> bool:
         return (x_in - self.x) ** 2 + (y_in - self.y) ** 2 < self.radius**2
+
+    def select(self) -> None:
+        super().select()
+        self.gui.build_recommendations(self.port)
+        self.flow_canvas.highlight_compatible_ports(self)
+
+    def deselect(self) -> None:
+        super().deselect()
+        self.flow_canvas.clear_port_highlighting()
+
+    def highlight(self):
+        self.highlighted = True
+
+    def dehighlight(self):
+        self.highlighted = False

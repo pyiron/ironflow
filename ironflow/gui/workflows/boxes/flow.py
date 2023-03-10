@@ -61,6 +61,7 @@ class NodeSelector(DrawsWidgets):
     def update(self, nodes_dictionary: dict) -> None:
         self._nodes_dictionary = nodes_dictionary
         self.modules_dropdown.options = self.module_options
+        self.node_selector.options = self.nodes_options
 
 
 class FlowBox(DrawsWidgets):

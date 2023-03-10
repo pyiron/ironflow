@@ -143,6 +143,9 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
 
         return data
 
+    def can_receive_otype(self, other_otype):
+        return self._accepts_otype(other_otype)
+
 
 class NodeOutput(NodeOutputCore, HasDType, HasOType):
     def __init__(
