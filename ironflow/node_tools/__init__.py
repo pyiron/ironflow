@@ -32,8 +32,10 @@ from ironflow.model.node import (
     Node,
     PlaceholderWidgetsContainer,
     PortList,
+    BatchingNode,
     DataNode,
     JobMaker,
+    JobNode,
     JobTaker,
 )
 from ironflow.model.port import NodeInputBP, NodeOutputBP
