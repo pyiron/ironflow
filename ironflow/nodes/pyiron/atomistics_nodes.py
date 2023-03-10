@@ -316,7 +316,7 @@ class SlabStructure_Node(OutputsOnlyAtoms):
                     "fcc211",
                     "hcp0001",
                     "hcp10m10",
-                    "mx2",
+                    # "mx2",
                     # "hcp0001_root",
                     # "fcc111_root",
                     # "bcc111_root",
