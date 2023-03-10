@@ -43,15 +43,17 @@ class HasDType(TypeHaver):
 
     @property
     def valid_val(self):
-        other_type_checks = super().valid_val
+        return self._dtype_ok and super().valid_val
+
+    @property
+    def _dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
-                dtype_ok = self.dtype.valid_val(self.val)
+                return self.dtype.valid_val(self.val)
             else:
-                dtype_ok = self.dtype.allow_none
+                return self.dtype.allow_none
         else:
-            dtype_ok = True
-        return dtype_ok and other_type_checks
+            return True
 
 
 class HasOType(TypeHaver):
@@ -59,7 +61,10 @@ class HasOType(TypeHaver):
 
     @property
     def valid_val(self):
-        other_type_checks = super().valid_val
+        return self._otype_ok and super().valid_val
+
+    @property
+    def _otype_ok(self):
         if (
             isinstance(self, NodeInput)
             and self.otype is not None
@@ -68,24 +73,29 @@ class HasOType(TypeHaver):
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
-                otype_ok = self.can_receive_otype(upstream_otype)
+                return self._accepts_otype(upstream_otype)
             else:
-                otype_ok = True
+                return True
         else:
-            otype_ok = True
-        return otype_ok and other_type_checks
+            return True
 
-    def can_receive_otype(self, incoming):
-        downstream_conditions = self.get_downstream_conditions()
-        return incoming in self.otype.get_sources(downstream_conditions)
+    def _accepts_otype(self, other_otype):
+        downstream_requirements = self.get_downstream_requirements()
+        return other_otype in self.otype.get_sources(downstream_requirements)
 
-    def get_downstream_conditions(self):
-        downstream_conditions = []
+    def get_downstream_requirements(self):
+        downstream_requirements = []
         for out in self.node.outputs:
             if out.otype is not None:
                 for downstream_inp in [conn.inp for conn in out.connections]:
-                    downstream_conditions += downstream_inp.get_downstream_conditions()
-        return self.otype.get_conditions(list(set(downstream_conditions)))
+                    if downstream_inp.otype is not None:
+                        downstream_requirements += (
+                            downstream_inp.get_downstream_requirements()
+                        )
+        try:
+            return self.otype.get_requirements(list(set(downstream_requirements)))
+        except AttributeError:
+            return list(set(downstream_requirements))
 
 
 class NodeInput(NodeInputCore, HasDType, HasOType):
