@@ -38,8 +38,8 @@ class PortList(list):
         (i.e. when `running_with_executor`).
     """
 
-    def __init__(self, seq=()):
-        super().__init__(self, seq=seq)
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
         self._port_finder = PortFinder(self)
         self._value_finder = ValueFinder(self)
         # This additional mis-direction is necessary so that ports can have the same labels as list class methods
@@ -207,7 +207,6 @@ class Node(NodeCore):
         # A streamlined version of the ryvencore method which exploits our NodeInput
         # and NodeOutput classes instead, and for which all ports have a dtype
         if not inputs_data and not outputs_data:
-
             for i in range(len(self.init_inputs)):
                 inp = self.init_inputs[i]
                 self.create_input(
@@ -240,7 +239,7 @@ class Node(NodeCore):
                     label=inp["label"],
                     add_data=inp,
                     dtype=dtype,
-                    otype=self._load_otype(inp)
+                    otype=self._load_otype(inp),
                 )
 
                 if "val" in inp:

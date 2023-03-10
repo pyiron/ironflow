@@ -12,7 +12,8 @@ from typing import Optional, TYPE_CHECKING
 
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
 from ryvencore.NodePortBP import (
-    NodeOutputBP as NodeOutputBPCore, NodeInputBP as NodeInputBPCore
+    NodeOutputBP as NodeOutputBPCore,
+    NodeInputBP as NodeInputBPCore,
 )
 from ryvencore.utils import serialize
 
@@ -42,15 +43,17 @@ class HasDType(TypeHaver):
 
     @property
     def valid_val(self):
-        other_type_checks = super().valid_val
+        return self._dtype_ok and super().valid_val
+
+    @property
+    def _dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
-                dtype_ok = self.dtype.valid_val(self.val)
+                return self.dtype.valid_val(self.val)
             else:
-                dtype_ok = self.dtype.allow_none
+                return self.dtype.allow_none
         else:
-            dtype_ok = True
-        return dtype_ok and other_type_checks
+            return True
 
 
 class HasOType(TypeHaver):
@@ -58,29 +61,41 @@ class HasOType(TypeHaver):
 
     @property
     def valid_val(self):
-        other_type_checks = super().valid_val
-        if isinstance(self, NodeInput) and self.otype is not None and len(self.connections) > 0:
+        return self._otype_ok and super().valid_val
+
+    @property
+    def _otype_ok(self):
+        if (
+            isinstance(self, NodeInput)
+            and self.otype is not None
+            and len(self.connections) > 0
+        ):
             upstream_otype = self.connections[0].out.otype
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
             if upstream_otype is not None:
-                otype_ok = self._is_valid_input_to(upstream_otype, self.otype)
+                return self._accepts_otype(upstream_otype)
             else:
-                otype_ok = True
+                return True
         else:
-            otype_ok = True
-        return otype_ok and other_type_checks
+            return True
 
-    def _is_valid_input_to(self, incoming, receiving):
-        downstream_conditions = self.get_downstream_conditions()
-        return incoming in receiving.get_sources(downstream_conditions)
+    def _accepts_otype(self, other_otype):
+        downstream_requirements = self.get_downstream_requirements()
+        return other_otype in self.otype.get_sources(downstream_requirements)
 
-    def get_downstream_conditions(self):
-        downstream_conditions = []
+    def get_downstream_requirements(self):
+        downstream_requirements = []
         for out in self.node.outputs:
             if out.otype is not None:
                 for downstream_inp in [conn.inp for conn in out.connections]:
-                    downstream_conditions += downstream_inp.get_downstream_conditions()
-        return self.otype.get_conditions(list(set(downstream_conditions)))
+                    if downstream_inp.otype is not None:
+                        downstream_requirements += (
+                            downstream_inp.get_downstream_requirements()
+                        )
+        try:
+            return self.otype.get_requirements(list(set(downstream_requirements)))
+        except AttributeError:
+            return list(set(downstream_requirements))
 
 
 class NodeInput(NodeInputCore, HasDType, HasOType):
@@ -131,12 +146,12 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
 
 class NodeOutput(NodeOutputCore, HasDType, HasOType):
     def __init__(
-            self,
-            node,
-            type_="data",
-            label_str="",
-            dtype: Optional[DType] = None,
-            otype=None
+        self,
+        node,
+        type_="data",
+        label_str="",
+        dtype: Optional[DType] = None,
+        otype=None,
     ):
         super().__init__(node=node, type_=type_, label_str=label_str)
         self.dtype = Untyped() if dtype is None else deepcopy(dtype)
@@ -158,12 +173,12 @@ class NodeOutput(NodeOutputCore, HasDType, HasOType):
 
 class NodeInputBP(NodeInputBPCore):
     def __init__(
-            self,
-            label: str = "",
-            type_: str = "data",
-            dtype: DType = None,
-            add_data={},
-            otype=None,
+        self,
+        label: str = "",
+        type_: str = "data",
+        dtype: DType = None,
+        add_data={},
+        otype=None,
     ):
         super().__init__(label=label, type_=type_, dtype=dtype, add_data=add_data)
         self.otype = otype
@@ -171,11 +186,11 @@ class NodeInputBP(NodeInputBPCore):
 
 class NodeOutputBP(NodeOutputBPCore):
     def __init__(
-            self,
-            label: str = "",
-            type_: str = "data",
-            dtype: Optional[DType] = None,
-            otype=None,
+        self,
+        label: str = "",
+        type_: str = "data",
+        dtype: Optional[DType] = None,
+        otype=None,
     ):
         super().__init__(label=label, type_=type_)
         self.dtype = dtype
