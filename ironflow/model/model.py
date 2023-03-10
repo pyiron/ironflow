@@ -276,8 +276,8 @@ class HasSession(ABC):
         self.nodes_dictionary['recommended'] = recommendations
 
     def _get_nodes_giving_matching_output(self, port: NodeInput):
-        conditions = port.get_downstream_requirements()
-        sources = port.otype.get_sources(conditions)
+        requirements = port.get_downstream_requirements()
+        sources = port.otype.get_sources(requirements)
         return {
             node.title: node for node in self.session.nodes
             if any([out.otype in sources for out in node.init_outputs])
