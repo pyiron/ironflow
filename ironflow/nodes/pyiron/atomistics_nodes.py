@@ -419,17 +419,18 @@ class AtomisticTaker(JobTaker, ABC):
     valid_job_classes = [Lammps]
     init_outputs = JobTaker.init_outputs + [
         NodeOutputBP(
-            dtype=dtypes.List(valid_classes=[float, np.floating]), label="energy_pot"
+            dtype=dtypes.Float(), label="energy_pot"
         ),
         NodeOutputBP(
             dtype=dtypes.List(valid_classes=[float, np.floating]), label="forces"
+            # Still not working because it's an nx3 matrix, not an n-long list
         ),
     ]
 
     def _get_output_from_job(self, finished_job: Lammps, **kwargs):
         return {
-            "energy_pot": finished_job.output.energy_pot,
-            "forces": finished_job.output.forces,
+            "energy_pot": finished_job.output.energy_pot[-1],
+            "forces": finished_job.output.forces[-1],
         }
 
     @property
