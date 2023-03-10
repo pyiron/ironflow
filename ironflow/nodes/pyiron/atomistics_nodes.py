@@ -654,6 +654,57 @@ class CalcMurnaghan_Node(JobNode):
         }
 
 
+class SurfaceEnergy_Node(DataNode):
+    title = "SurfaceEnergy"
+
+    init_inputs = [
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Atoms),
+            label="bulk_structure",
+            otype=ONTO.surface_energy_input_bulk_structure,
+        ),
+        NodeInputBP(
+            dtype=dtypes.Float(),
+            label="bulk_energy",
+            otype=ONTO.surface_energy_input_bulk_energy,
+        ),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Atoms),
+            label="surface_structure",
+            otype=ONTO.surface_energy_input_slab_structure,
+        ),
+        NodeInputBP(
+            dtype=dtypes.Float(),
+            label="surface_energy",
+            otype=ONTO.surface_energy_input_slab_energy,
+        ),
+    ]
+    init_outputs = [
+        NodeOutputBP(
+            label="surface_energy",
+            dtype=dtypes.Float(),
+            otype=ONTO.surface_energy_output_surface_energy,
+        ),
+    ]
+
+    def node_function(
+            self,
+            bulk_structure,
+            bulk_energy,
+            surface_structure,
+            surface_energy,
+            **kwargs
+    ) -> dict:
+        n_bulk = len(bulk_structure)
+        n_surface = len(surface_structure)
+        energy_difference = surface_energy - (n_surface / n_bulk) * bulk_energy
+        a, b, c = surface_structure.cell.array
+        area = np.dot(np.cross(a, b), c / np.linalg.norm(c))
+        return {
+            "surface_energy": energy_difference / (2 * area)
+        }
+
+
 class PyironTable_Node(JobMaker):
     title = "PyironTable"
     valid_job_classes = [pyiron_base.TableJob]
