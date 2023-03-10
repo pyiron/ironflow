@@ -42,7 +42,7 @@ class HasSession(ABC):
         if enable_ryven_log:
             self.session.info_messenger().enable()
 
-        self.nodes_dictionary = {}
+        self.nodes_dictionary = {'recommended': {}}
         from ironflow.nodes import built_in
         from ironflow.nodes.pyiron import atomistics_nodes
         from ironflow.nodes.std import (
@@ -273,26 +273,29 @@ class HasSession(ABC):
                 recommendations = self._get_nodes_giving_matching_output(port)
             elif isinstance(port, NodeOutput):
                 recommendations = self._get_nodes_taking_matching_input(port)
-        self.nodes_dictionary['recommended'] = recommendations
+        self.nodes_dictionary["recommended"] = recommendations
 
     def _get_nodes_giving_matching_output(self, port: NodeInput):
         requirements = port.get_downstream_requirements()
         sources = port.otype.get_sources(requirements)
         return {
-            node.title: node for node in self.session.nodes
+            node.title: node
+            for node in self.session.nodes
             if any([out.otype in sources for out in node.init_outputs])
         }
 
     def _get_nodes_taking_matching_input(self, port: NodeOutput):
         return {
-            node.title: node for node in self.session.nodes
+            node.title: node
+            for node in self.session.nodes
             if any(
                 [
                     port.otype in inp.otype.get_sources()
-                    for inp in node.init_inputs if inp.otype is not None
+                    for inp in node.init_inputs
+                    if inp.otype is not None
                 ]
             )
         }
 
     def clear_recommended_nodes(self):
-        self.nodes_dictionary['recommended'] = {}
+        self.nodes_dictionary["recommended"] = {}
