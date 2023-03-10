@@ -116,7 +116,6 @@ class PortWidget(HideableWidget):
 
     def deselect(self) -> None:
         super().deselect()
-        self.gui.clear_recommendations()
         self.flow_canvas.clear_port_highlighting()
 
     def highlight(self):

@@ -1,0 +1,398 @@
+{
+    "scripts": [
+        {
+            "title": "ontologically_designed",
+            "variables": {},
+            "flow": {
+                "algorithm mode": "data",
+                "nodes": [
+                    {
+                        "identifier": "MaterialProperty_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "property",
+                                "GID": 9,
+                                "val": "gASVCwAAAAAAAACMB0JfcHJpbWWULg==",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVoAAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjANzdHKUk5RoCIwEdHlwZZSTlE6FlFKUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBWl0ZW1zlF2UKE6MDEJ1bGtfbW9kdWx1c5SMB0JfcHJpbWWUZXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "source",
+                                "GID": 10,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4=",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "B_prime"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "value",
+                                "GID": 11,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "B_prime"
+                            }
+                        ],
+                        "GID": 8,
+                        "pos x": 1242.829286943223,
+                        "pos y": 223.4159779614325
+                    },
+                    {
+                        "identifier": "CalcMurnaghan_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "run",
+                                "GID": 13,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "exec",
+                                "label": "remove",
+                                "GID": 14,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 15,
+                                "val": "gASVCAAAAAAAAACMBGNhbGOULg==",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVjQAAAAAAAAB9lCiMB2RlZmF1bHSUjARjYWxjlIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwDc3RylJOUjAVudW1weZSMBHN0cl+Uk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 16,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASViQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "engine",
+                                "GID": 17,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVpgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCpweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLmpvYi5hdG9taXN0aWOUjBNBdG9taXN0aWNHZW5lcmljSm9ilJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "Murnaghan/ref_job"
+                            },
+                            {
+                                "type": "data",
+                                "label": "num_points",
+                                "GID": 18,
+                                "val": "gARLCy4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwuMA3ZhbJRLC4wDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "fit_type",
+                                "GID": 19,
+                                "val": "gASVDgAAAAAAAACMCnBvbHlub21pYWyULg==",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVsAAAAAAAAAB9lCiMB2RlZmF1bHSUjApwb2x5bm9taWFslIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlIwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBWl0ZW1zlF2UKGgCjAViaXJjaJSMDmJpcmNobXVybmFnaGFulIwJbXVybmFnaGFulIwQcG91cmllcnRhcmFudG9sYZSMBXZpbmV0lGV1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "fit_order",
+                                "GID": 20,
+                                "val": "gARLAy4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwOMA3ZhbJRLA4wDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "vol_range_fraction",
+                                "GID": 21,
+                                "val": "gASVCgAAAAAAAABHP7mZmZmZmZou",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURz+5mZmZmZmajAN2YWyURz+5mZmZmZmajANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "ran",
+                                "GID": 22,
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 23,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVnwAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjC1weWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLm1hc3Rlci5tdXJuYWdoYW6UjAlNdXJuYWdoYW6Uk5RhjAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "eq_energy",
+                                "GID": 24,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "eq_volume",
+                                "GID": 25,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "eq_bulk_modulus",
+                                "GID": 26,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "Murnaghan/output/equilibrium_bulk_modulus"
+                            },
+                            {
+                                "type": "data",
+                                "label": "eq_b_prime",
+                                "GID": 27,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "Murnaghan/output/equilibrium_b_prime"
+                            },
+                            {
+                                "type": "data",
+                                "label": "volumes",
+                                "GID": 28,
+                                "dtype": "DType.List",
+                                "dtype state": "gASVawAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAhidWlsdGluc5SMBWZsb2F0lJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "energies",
+                                "GID": 29,
+                                "dtype": "DType.List",
+                                "dtype state": "gASVawAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAhidWlsdGluc5SMBWZsb2F0lJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
+                            }
+                        ],
+                        "GID": 12,
+                        "pos x": 943.3225004779201,
+                        "pos y": 185.9504132231405
+                    },
+                    {
+                        "identifier": "Lammps_Node",
+                        "version": "v0.2",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 32,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASViQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZR1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 33,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "LAMMPS/input/structure"
+                            },
+                            {
+                                "type": "data",
+                                "label": "potential",
+                                "GID": 34,
+                                "val": "gASVJwAAAAAAAACMIzE5OTctLUFja2xhbmQtRy1KLS1GZS0tTEFNTVBTLS1pcHIxlC4=",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVWBcAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAhidWlsdGluc5SMA3N0cpSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjAVpdGVtc5RdlCiMIzE5OTctLUFja2xhbmQtRy1KLS1GZS0tTEFNTVBTLS1pcHIxlIwfMTk5OC0tTWV5ZXItUi0tRmUtLUxBTU1QUy0taXByMZSMHzIwMDEtLUxlZS1CLUotLUZlLS1MQU1NUFMtLWlwcjGUjCIyMDAxLS1MZWUtQi1KLS1GZS1Dci0tTEFNTVBTLS1pcHIxlIwmMjAwMy0tTWVuZGVsZXYtTS1JLS1GZS0yLS1MQU1NUFMtLWlwcjOUjCYyMDAzLS1NZW5kZWxldi1NLUktLUZlLTUtLUxBTU1QUy0taXByMZSMJTIwMDQtLUFja2xhbmQtRy1KLS1GZS1QLS1MQU1NUFMtLWlwcjGUjCAyMDA0LS1aaG91LVgtVy0tRmUtLUxBTU1QUy0taXByMpSMIjIwMDUtLUxlZS1CLUotLUZlLUN1LS1MQU1NUFMtLWlwcjGUjCcyMDA1LS1NZW5kZWxldi1NLUktLUFsLUZlLS1MQU1NUFMtLWlwcjGUjCEyMDA2LS1DaGFtYXRpLUgtLUZlLS1MQU1NUFMtLWlwcjGUjCAyMDA2LS1LaW0tSi0tRmUtUHQtLUxBTU1QUy0taXByMZSMITIwMDYtLUxlZS1CLUotLUZlLUMtLUxBTU1QUy0taXByMZSMITIwMDYtLUxlZS1CLUotLUZlLU4tLUxBTU1QUy0taXByMZSMITIwMDctLUxlZS1CLUotLUZlLUgtLUxBTU1QUy0taXByMZSMJjIwMDctLU1lbmRlbGV2LU0tSS0tVi1GZS0tTEFNTVBTLS1pcHIxlIwlMjAwOC0tSGVwYnVybi1ELUotLUZlLUMtLUxBTU1QUy0taXByMZSMHzIwMDgtLVNhLUktLUZlLU5iLS1MQU1NUFMtLWlwcjGUjB8yMDA4LS1TYS1JLS1GZS1UaS0tTEFNTVBTLS1pcHIxlIwlMjAwOS0tQm9ubnktRy0tRmUtQ3UtTmktLUxBTU1QUy0taXByMZSMIjIwMDktLUJvbm55LUctLUZlLU5pLS1MQU1NUFMtLWlwcjGUjCQyMDA5LS1LaW0tSC1LLS1GZS1UaS1DLS1MQU1NUFMtLWlwcjKUjCIyMDA5LS1LaW0tWS1NLS1GZS1Nbi0tTEFNTVBTLS1pcHIxlIwkMjAwOS0tT2xzc29uLVAtQS1ULS1GZS0tTEFNTVBTLS1pcHIxlIwmMjAwOS0tU3R1a293c2tpLUEtLUZlLUNyLS1MQU1NUFMtLWlwcjGUjCQyMDEwLS1LaW0tSC1LLS1GZS1OYi1DLS1MQU1NUFMtLWlwcjGUjCAyMDEwLS1MZWUtRS0tRmUtQWwtLUxBTU1QUy0taXByMZSMITIwMTAtLU1hbGVyYmEtTC0tRmUtLUxBTU1QUy0taXByMZSMIjIwMTEtLUJvbm55LUctLUZlLUNyLS1MQU1NUFMtLWlwcjKUjCUyMDExLS1Cb25ueS1HLS1GZS1OaS1Dci0tTEFNTVBTLS1pcHIxlIwjMjAxMS0tQ2hpZXNhLVMtLUZlLTMzLS1MQU1NUFMtLWlwcjGUjC0yMDEyLS1KZWxpbmVrLUItLUFsLVNpLU1nLUN1LUZlLS1MQU1NUFMtLWlwcjKUjCAyMDEyLS1Lby1XLVMtLUZlLVAtLUxBTU1QUy0taXByMZSMIjIwMTItLVByb3ZpbGxlLUwtLUZlLS1MQU1NUFMtLWlwcjGUjCQyMDEzLS1Cb25ueS1HLS1GZS1Dci1XLS1MQU1NUFMtLWlwcjKUjCUyMDEzLS1Cb25ueS1HLS1GZS1OaS1Dci0tTEFNTVBTLS1pcHIxlIwhMjAxMy0tQm9ubnktRy0tRmUtVy0tTEFNTVBTLS1pcHIxlIwqMjAxMy0tSGVucmlrc3Nvbi1LLU8tRS0tRmUtQy0tTEFNTVBTLS1pcHIxlIwoMjAxNC0tTGl5YW5hZ2UtTC1TLUktLUZlLUMtLUxBTU1QUy0taXByMpSMHzIwMTUtLUFzYWRpLUUtLUZlLS1MQU1NUFMtLWlwcjGUjCgyMDE3LS1CZWxhbmQtTC1LLS1GZS1OaS1Dci0tTEFNTVBTLS1pcHIxlIwjMjAxNy0tQ2hvaS1XLU0tLUNvLUZlLS1MQU1NUFMtLWlwcjGUjCIyMDE3LS1XdS1DLS1OaS1Dci1GZS0tTEFNTVBTLS1pcHIxlIwfMjAxNy0tV3UtQy0tTmktRmUtLUxBTU1QUy0taXByMZSMLDIwMTgtLUNob2ktVy1NLS1Dby1OaS1Dci1GZS1Nbi0tTEFNTVBTLS1pcHIxlIwjMjAxOC0tRXRlc2FtaS1TLUEtLUZlLS1MQU1NUFMtLWlwcjGUjCwyMDE4LS1GYXJrYXMtRC0tRmUtTmktQ3ItQ28tQ3UtLUxBTU1QUy0taXByMpSMJDIwMTgtLUplb25nLUctVS0tUGQtRmUtLUxBTU1QUy0taXByMZSMJjIwMTgtLVpob3UtWC1XLS1GZS1OaS1Dci0tTEFNTVBTLS1pcHIxlIwmMjAxOC0tWmhvdS1YLVctLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjKUjCcyMDE5LS1Bc2xhbS1JLS1GZS1Nbi1TaS1DLS1MQU1NUFMtLWlwcjGUjCYyMDE5LS1CeWdnbWFzdGFyLUotLUZlLU8tLUxBTU1QUy0taXByMZSMKjIwMTktLU1lbmRlbGV2LU0tSS0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMJDIwMjAtLUJ5Z2dtYXN0YXItSi0tRmUtLUxBTU1QUy0taXByMZSMLDIwMjAtLUZhcmthcy1ELS1GZS1OaS1Dci1Dby1BbC0tTEFNTVBTLS1pcHIxlIweMjAyMC0tTW9yaS1ILS1GZS0tTEFNTVBTLS1pcHIxlIw6RUFNX0R5bmFtb19BY2tsYW5kQmFjb25DYWxkZXJfMTk5N19GZV9fTU9fMTQyNzk5NzE3NTE2XzAwNZSMQUVBTV9EeW5hbW9fQWNrbGFuZE1lbmRlbGV2U3JvbG92aXR6XzIwMDRfRmVQX19NT184ODQzNDMxNDYzMTBfMDA1lIw7RUFNX0R5bmFtb19Cb25ueUNhc3RpbkJ1bGxlbnNfMjAxM19GZVdfX01PXzczNzU2NzI0MjYzMV8wMDCUjEBFQU1fRHluYW1vX0Jvbm55Q2FzdGluVGVyZW50eWV2XzIwMTNfRmVOaUNyX19NT183NjMxOTc5NDEwMzlfMDAwlIw/RUFNX0R5bmFtb19Cb25ueVBhc2lhbm90Q2FzdGluXzIwMDlfRmVDdU5pX19NT180NjkzNDM5NzMxNzFfMDA1lIw+RUFNX0R5bmFtb19Cb25ueVBhc2lhbm90TWFsZXJiYV8yMDA5X0ZlTmlfX01PXzI2NzcyMTQwODkzNF8wMDWUjEFFQU1fRHluYW1vX0NoYW1hdGlQYXBhbmljb2xhb3VNaXNoaW5fMjAwNl9GZV9fTU9fOTYwNjk5NTEzNDI0XzAwMJSMN0VBTV9EeW5hbW9fSGVwYnVybkFja2xhbmRfMjAwOF9GZUNfX01PXzE0Mzk3NzE1MjcyOF8wMDWUjDBFQU1fRHluYW1vX01hcmluaWNhXzIwMDdfRmVfX01PXzQ2NjgwODg3NzEzMF8wMDCUjDBFQU1fRHluYW1vX01hcmluaWNhXzIwMTFfRmVfX01PXzI1NTMxNTQwNzkxMF8wMDCUjD1FQU1fRHluYW1vX01lbmRlbGV2Qm9yb3Zpa292XzIwMjBfRmVOaUNyX19NT185MjIzNjMzNDA1NzBfMDAwlIw3RUFNX0R5bmFtb19NZW5kZWxldkhhblNvbl8yMDA3X1ZGZV9fTU9fMjQ5NzA2ODEwNTI3XzAwNZSMRkVBTV9EeW5hbW9fTWVuZGVsZXZIYW5Tcm9sb3ZpdHpfMjAwM1BvdGVudGlhbDJfRmVfX01PXzc2OTU4MjM2MzQzOV8wMDWUjEZFQU1fRHluYW1vX01lbmRlbGV2SGFuU3JvbG92aXR6XzIwMDNQb3RlbnRpYWw1X0ZlX19NT185NDI0MjA3MDY4NThfMDA1lIw8RUFNX0R5bmFtb19NZW5kZWxldkhhblNyb2xvdml0el8yMDAzX0ZlX19NT184MDc5OTc4MjY0NDlfMDAwlIxCRUFNX0R5bmFtb19NZW5kZWxldlNyb2xvdml0ekFja2xhbmRfMjAwNV9BbEZlX19NT181Nzc0NTM4OTE5NDFfMDA1lIwwRUFNX0R5bmFtb19NZW5kZWxldl8yMDAzX0ZlX19NT181NDY2NzM1NDkwODVfMDAwlIxJRUFNX0R5bmFtb19aaG91Sm9obnNvbldhZGxleV8yMDA0TklTVHJldGFidWxhdGlvbl9GZV9fTU9fNjgxMDg4Mjk4MjA4XzAwMJSMOUVBTV9EeW5hbW9fWmhvdUpvaG5zb25XYWRsZXlfMjAwNF9GZV9fTU9fNjUwMjc5OTA1MjMwXzAwNZSMRkVBTV9NYWduZXRpYzJHUXVpbnRpY19DaGllc2FEZXJsZXREdWRhcmV2XzIwMTFfRmVfX01PXzE0MDQ0NDMyMTYwN18wMDKUjDxFQU1fTWFnbmV0aWNDdWJpY19EdWRhcmV2RGVybGV0XzIwMDVfRmVfX01PXzEzNTAzNDIyOTI4Ml8wMDKUjENFQU1fTWFnbmV0aWNDdWJpY19NZW5kZWxldkhhblNyb2xvdml0el8yMDAzX0ZlX19NT184NTYyOTU5NTI0MjVfMDAylIw8TUVBTV9MQU1NUFNfQXNhZGlaYWVlbU5vdXJhbmlhbl8yMDE1X0ZlX19NT180OTIzMTA4OTg3NzlfMDAwlIw7TUVBTV9MQU1NUFNfQ2hvaUpvU29obl8yMDE4X0NvTmlDckZlTW5fX01PXzExNTQ1NDc0NzUwM18wMDCUjDZNRUFNX0xBTU1QU19DaG9pS2ltU2VvbF8yMDE3X0NvRmVfX01PXzE3OTE1ODI1NzE4MF8wMDCUjDVNRUFNX0xBTU1QU19FdGVzYW1pQXNhZGlfMjAxOF9GZV9fTU9fNTQ5OTAwMjg3NDIxXzAwMJSMR01FQU1fTEFNTVBTX0plbGluZWtHcm9oSG9yc3RlbWV5ZXJfMjAxMl9BbFNpTWdDdUZlX19NT18yNjI1MTk1MjA2NzhfMDAwlIw2TUVBTV9MQU1NUFNfSmVvbmdQYXJrRG9fMjAxOF9QZEZlX19NT185MjQ3MzY2MjIyMDNfMDAwlIw2TUVBTV9MQU1NUFNfS2ltSnVuZ0xlZV8yMDA5X0ZlVGlDX19NT18xMTAxMTkyMDQ3MjNfMDAwlIw2TUVBTV9MQU1NUFNfS2ltSnVuZ0xlZV8yMDEwX0ZlTmJDX19NT18wNzI2ODk3MTg2MTZfMDAwlIwxTUVBTV9MQU1NUFNfS2ltTGVlXzIwMDZfUHRGZV9fTU9fMzQzMTY4MTAxNDkwXzAwMJSMNU1FQU1fTEFNTVBTX0tpbVNoaW5MZWVfMjAwOV9GZU1uX19NT18wNTg3MzU0MDA0NjJfMDAwlIwyTUVBTV9MQU1NUFNfS29KaW1MZWVfMjAxMl9GZVBfX01PXzE3OTQyMDM2Mzk0NF8wMDCUjDFNRUFNX0xBTU1QU19MZWVKYW5nXzIwMDdfRmVIX19NT18wOTU2MTA5NTE5NTdfMDAwlIwzTUVBTV9MQU1NUFNfTGVlTGVlS2ltXzIwMDZfRmVOX19NT180MzI4NjE3NjY3MzhfMDAwlIwxTUVBTV9MQU1NUFNfTGVlTGVlXzIwMTBfRmVBbF9fTU9fMzMyMjExNTIyMDUwXzAwMJSMN01FQU1fTEFNTVBTX0xlZVdpcnRoU2hpbV8yMDA1X0ZlQ3VfX01PXzA2MzYyNjA2NTQzN18wMDCUjC1NRUFNX0xBTU1QU19MZWVfMjAwNl9GZUNfX01PXzg1Njk1NjE3ODY2OV8wMDCUjDpNRUFNX0xBTU1QU19MaXlhbmFnZUtpbUhvdXplXzIwMTRfRmVDX19NT18wNzUyNzk4MDAxOTVfMDAwlIwwTUVBTV9MQU1NUFNfU2FMZWVfMjAwOF9GZVRpX19NT18yNjA1NDY5Njc3OTNfMDAwlIwwTUVBTV9MQU1NUFNfU2FMZWVfMjAwOF9OYkZlX19NT18xNjIwMzYxNDEyNjFfMDAwlIw0TUVBTV9MQU1NUFNfV3VMZWVTdV8yMDE3X05pQ3JGZV9fTU9fOTEyNjM2MTA3MTA4XzAwMJSMMk1FQU1fTEFNTVBTX1d1TGVlU3VfMjAxN19OaUZlX19NT18zMjEyMzMxNzY0OThfMDAwlIwxTUpfTW9ycmlzQWdhTGV2YXNob3ZfMjAwOF9GZV9fTU9fODU3MjgyNzU0MzA3XzAwM5SMRE1vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlIaWdoQ3V0b2ZmX0ZlX19NT18xNDc2MDMxMjg0MzdfMDA0lIxDTW9yc2VfU2hpZnRlZF9HaXJpZmFsY29XZWl6ZXJfMTk1OUxvd0N1dG9mZl9GZV9fTU9fMzMxMjg1NDk1NjE3XzAwNJSMQ01vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlNZWRDdXRvZmZfRmVfX01PXzk4NDM1ODM0NDE5Nl8wMDSUjD1UZXJzb2ZmX0xBTU1QU19NdWVsbGVyRXJoYXJ0QWxiZV8yMDA3X0ZlX19NT18xMzc5NjQzMTA3MDJfMDAzlIxFU2ltX0xBTU1QU19FQU1DRF9TdHVrb3dza2lTYWRpZ2hFcmhhcnRfMjAwOV9GZUNyX19TTV83NzU1NjQ0OTk1MTNfMDAwlIxBU2ltX0xBTU1QU19FQU1fQm9ubnlDYXN0aW5CdWxsZW5zXzIwMTNfRmVDcldfX1NNXzY5OTI1NzM1MDcwNF8wMDCUjERTaW1fTEFNTVBTX0VBTV9Cb25ueVBhc2lhbm90VGVyZW50eWV2XzIwMTFfRmVDcl9fU01fMjM3MDg5Mjk4NDYzXzAwMJSMQFNpbV9MQU1NUFNfTUVBTV9Bc2FkaVphZWVtTm91cmFuaWFuXzIwMTVfRmVfX1NNXzA0MjYzMDY4MDk5M18wMDCUjDlTaW1fTEFNTVBTX01FQU1fRXRlc2FtaUFzYWRpXzIwMThfRmVfX1NNXzI2NzAxNjYwODc1NV8wMDCUjEtTaW1fTEFNTVBTX01FQU1fSmVsaW5la0dyb2hIb3JzdGVtZXllcl8yMDEyX0FsU2lNZ0N1RmVfX1NNXzY1NjUxNzM1MjQ4NV8wMDCUjDpTaW1fTEFNTVBTX01FQU1fS2ltSnVuZ0xlZV8yMDA5X0ZlVGlDX19TTV81MzEwMzgyNzQ0NzFfMDAwlIw+U2ltX0xBTU1QU19NRUFNX0xpeWFuYWdlS2ltSG91emVfMjAxNF9GZUNfX1NNXzY1MjQyNTc3NzgwOF8wMDCUjEhTaW1fTEFNTVBTX1JlYXhGRl9BcnlhbnBvdXJWYW5EdWluS3ViaWNraV8yMDEwX0ZlSE9fX1NNXzIyMjk2NDIxNjAwMV8wMDGUjEVTaW1fTEFNTVBTX1RlcnNvZmZaQkxfQnlnZ21hc3RhckdyYW5iZXJnXzIwMjBfRmVfX1NNXzk1ODg2Mzg5NTIzNF8wMDCUjE1TaW1fTEFNTVBTX1RlcnNvZmZaQkxfSGVucmlrc3NvbkJqb3JrYXNOb3JkbHVuZF8yMDEzX0ZlQ19fU01fNDczNDYzNDk4MjY5XzAwMJRldS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "engine",
+                                "GID": 35,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "LAMMPS"
+                            }
+                        ],
+                        "GID": 31,
+                        "pos x": 615.1863888357866,
+                        "pos y": 278.5123966942149
+                    },
+                    {
+                        "identifier": "BulkStructure_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "element",
+                                "GID": 38,
+                                "val": "gASVBgAAAAAAAACMAkZllC4=",
+                                "dtype": "DType.String",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJGZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA3N0cpSTlIwFbnVtcHmUjARzdHJflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "CreateStructureBulk/input/element"
+                            },
+                            {
+                                "type": "data",
+                                "label": "crystal_structure",
+                                "GID": 39,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVwgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiYwFaXRlbXOUXZQoTowCc2OUjANmY2OUjANiY2OUjANoY3CUjAdkaWFtb25klIwKemluY2JsZW5kZZSMCHJvY2tzYWx0lIwOY2VzaXVtY2hsb3JpZGWUjAhmbHVvcml0ZZSMCHd1cnR6aXRllGV1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "a",
+                                "GID": 40,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "c",
+                                "GID": 41,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "c_over_a",
+                                "GID": 42,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "u",
+                                "GID": 43,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "orthorhombic",
+                                "GID": 44,
+                                "val": "gASJLg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "cubic",
+                                "GID": 45,
+                                "val": "gASJLg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 46,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "CreateStructureBulk/output/structure"
+                            }
+                        ],
+                        "GID": 37,
+                        "pos x": 256.2186962339897,
+                        "pos y": 278.5123966942149
+                    },
+                    {
+                        "identifier": "Project_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 49,
+                                "val": "gASVGAAAAAAAAACMFHByZW1hZGVfYnVsa19tb2R1bHVzlC4=",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVigAAAAAAAAB9lCiMB2RlZmF1bHSUjAEulIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwDc3RylJOUjAVudW1weZSMBHN0cl+Uk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 50,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASViQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZR1Lg=="
+                            }
+                        ],
+                        "GID": 48,
+                        "pos x": 170.33072070349837,
+                        "pos y": 102.2038567493113
+                    }
+                ],
+                "connections": [
+                    {
+                        "GID": 53,
+                        "parent node index": 1,
+                        "output port index": 5,
+                        "connected node": 0,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 36,
+                        "parent node index": 2,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 4
+                    },
+                    {
+                        "GID": 47,
+                        "parent node index": 3,
+                        "output port index": 0,
+                        "connected node": 2,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 51,
+                        "parent node index": 4,
+                        "output port index": 0,
+                        "connected node": 2,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 52,
+                        "parent node index": 4,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 3
+                    }
+                ],
+                "GID": 7
+            },
+            "GID": 1
+        }
+    ]
+}

@@ -41,6 +41,7 @@ from ironflow.node_tools import (
     DataNode,
     dtypes,
     JobMaker,
+    JobNode,
     JobTaker,
     main_widgets,
     Node,
@@ -107,7 +108,11 @@ class Project_Node(DataNode):
         NodeInputBP(dtype=dtypes.String(default="."), label="name"),
     ]
     init_outputs = [
-        NodeOutputBP(label="project", dtype=dtypes.Data(valid_classes=Project)),
+        NodeOutputBP(
+            label="project",
+            dtype=dtypes.Data(valid_classes=Project),
+            otype=ONTO.project_output_atomistics_project,
+        ),
     ]
     color = "#aabb44"
 
@@ -132,7 +137,11 @@ class JobTable_Node(Node):
     title = "JobTable"
     init_inputs = [
         NodeInputBP(type_="exec", label="refresh"),
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Project),
+            label="project",
+            # otype=ONTO...  # Needs an individual of type Input with generic Project
+        ),
     ]
     init_outputs = [NodeOutputBP(label="Table")]
     color = "#aabb44"
@@ -256,6 +265,105 @@ class BulkStructure_Node(OutputsOnlyAtoms):
                 u=u,
                 orthorhombic=orthorhombic,
                 cubic=cubic,
+            )
+        }
+
+
+class SlabStructure_Node(OutputsOnlyAtoms):
+    """
+    Generate a surface based on the ase.build.surface module.
+
+    Args:
+        element (str): The atomic symbol for the desired atoms. (Default is "Fe".)
+        surface_type (str): The string specifying the surface type generators available
+            through ase (fcc111, hcp0001 etc.)
+        size (tuple): Three-tuple of integers to give size (repetitions) of the surface
+        vacuum (float): Length of vacuum layer added to the surface along the z
+            direction
+        center (bool): Tells if the surface layers have to be at the center or at one
+            end along the z-direction.
+        orthogonal (bool): Construct orthogonal cell.
+        a (float | None): Lattice constant.
+
+    Returns:
+        pyiron_atomistics.atomistics.structure.atoms.Atoms instance: Requested surface
+    """
+
+    # this __doc__ string will be displayed as tooltip in the editor
+
+    title = "SlabStructure"
+    init_inputs = [
+        NodeInputBP(
+            label="element",
+            dtype=dtypes.String(default="Fe"),
+            otype=ONTO["CreateStructureBulk/input/element"],
+        ),
+        NodeInputBP(
+            label="surface_type",
+            dtype=dtypes.Choice(
+                default="bcc100",
+                items=[
+                    # "add_adsorbate",
+                    # "add_vacuum",
+                    "bcc100",
+                    "bcc110",
+                    "bcc111",
+                    "diamond100",
+                    "diamond111",
+                    "fcc100",
+                    "fcc110",
+                    "fcc111",
+                    "fcc211",
+                    "hcp0001",
+                    "hcp10m10",
+                    "mx2",
+                    # "hcp0001_root",
+                    # "fcc111_root",
+                    # "bcc111_root",
+                    # "root_surface",
+                    # "root_surface_analysis",
+                    # "ase_surf",
+                ],
+                allow_none=True,
+            ),
+        ),
+        NodeInputBP(
+            label="size",
+            dtype=dtypes.List(default=(1, 1, 1), valid_classes=[int, np.int_]),
+        ),
+        NodeInputBP(label="vacuum", dtype=dtypes.Float(1.0)),
+        NodeInputBP(label="center", dtype=dtypes.Boolean(default=False)),
+        NodeInputBP(label="orthogonal", dtype=dtypes.Boolean(default=True)),
+        NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="a"),
+    ]
+
+    init_outputs = [
+        NodeOutputBP(
+            label="structure",
+            dtype=dtypes.Data(valid_classes=Atoms),
+            otype=ONTO.surface_structure_output_structure,
+        ),
+    ]
+
+    def node_function(
+        self,
+        element,
+        surface_type,
+        size,
+        vacuum,
+        center,
+        orthogonal,
+        a,
+    ) -> dict:
+        return {
+            "structure": STRUCTURE_FACTORY.surface(
+                element=element,
+                surface_type=surface_type,
+                size=size,
+                vacuum=vacuum,
+                center=center,
+                orthogonal=orthogonal,
+                a=a,
             )
         }
 
@@ -451,11 +559,16 @@ class CalcMD_Node(AtomisticTaker):
         return copied_job
 
 
-class CalcMurnaghan_Node(JobMaker):
+class CalcMurnaghan_Node(JobNode):
     title = "CalcMurnaghan"
     valid_job_classes = [pyiron_atomistics.atomistics.master.murnaghan.Murnaghan]
 
-    init_inputs = list(JobMaker.init_inputs) + [
+    init_inputs = list(JobNode.init_inputs) + [
+        NodeInputBP(
+            label="project",
+            dtype=dtypes.Data(valid_classes=Project),
+            otype=ONTO.murnaghan_input_project,
+        ),
         NodeInputBP(
             label="engine",
             dtype=dtypes.Data(valid_classes=AtomisticGenericJob),
@@ -589,7 +702,11 @@ class Lammps_Node(Engine):
     title = "Lammps"
     version = "v0.2"
     init_inputs = [
-        NodeInputBP(dtype=dtypes.Data(valid_classes=Project), label="project"),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Project),
+            label="project",
+            otype=ONTO.lammps_input_project,
+        ),
         NodeInputBP(
             label="structure",
             dtype=dtypes.Data(valid_classes=Atoms),
@@ -1190,7 +1307,7 @@ class Click_Node(Node):
         self.exec_output(0)
 
 
-class Property_Node(DataNode):
+class MaterialProperty_Node(DataNode):
     title = "MaterialProperty"
 
     init_inputs = [

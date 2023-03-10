@@ -262,6 +262,9 @@ class FlowCanvas:
         self._zoom(min(self._zoom_index + 1, len(self._zoom_factors) - 1))
 
     def highlight_compatible_ports(self, selected: PortWidget):
+        if selected.port.otype is None:
+            return
+
         for node_widget in self.objects_to_draw:
             for subwidget in node_widget.objects_to_draw:
                 if (
