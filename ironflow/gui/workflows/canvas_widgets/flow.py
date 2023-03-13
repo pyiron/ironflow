@@ -265,21 +265,36 @@ class FlowCanvas:
         if selected.port.otype is None:
             return
 
-        for node_widget in self.objects_to_draw:
-            for subwidget in node_widget.objects_to_draw:
-                if (
-                    isinstance(subwidget, PortWidget)
-                    and subwidget.port.otype is not None
-                ):
-                    if isinstance(selected.port, NodeInput):
-                        if selected.port.can_receive_otype(subwidget.port.otype):
-                            subwidget.highlight()
-                            self._highlighted_ports.append(subwidget)
-                    elif isinstance(selected.port, NodeOutput):
-                        if selected.port.otype in subwidget.port.otype.get_sources():
-                            if subwidget.port.can_receive_otype(selected.port.otype):
-                                subwidget.highlight()
-                                self._highlighted_ports.append(subwidget)
+        compatible_port_widgets = self._get_ontologically_compatible_ports(selected.port)
+
+        for port_widget in compatible_port_widgets:
+            port_widget.highlight()
+        self._highlighted_ports = compatible_port_widgets
+
+    def _get_ontologically_compatible_ports(self, compatible_with):
+        compatible_port_widgets = []
+        for subwidget in self._port_widgets:
+            if (
+                isinstance(subwidget, PortWidget)
+                and subwidget.port.otype is not None
+            ):
+                if isinstance(compatible_with, NodeInput):
+                    if compatible_with.can_receive_otype(subwidget.port.otype):
+                        compatible_port_widgets.append(subwidget)
+                elif isinstance(compatible_with, NodeOutput):
+                    if compatible_with.otype in subwidget.port.otype.get_sources():
+                        if subwidget.port.can_receive_otype(compatible_with.otype):
+                            compatible_port_widgets.append(subwidget)
+        return compatible_port_widgets
+
+    @property
+    def _port_widgets(self):
+        return [
+            subwidget
+            for node_widget in self.objects_to_draw
+            for subwidget in node_widget.objects_to_draw
+            if isinstance(subwidget, PortWidget)
+        ]
 
     def clear_port_highlighting(self):
         for port_widget in self._highlighted_ports:
