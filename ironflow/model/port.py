@@ -76,6 +76,16 @@ class HasOType(TypeHaver):
                 return self._accepts_other_with_otype(upstream)
             else:
                 return True
+        elif (
+                isinstance(self, NodeOutput)
+                and self.otype is not None
+                and len(self.connections) > 0
+        ):
+            downstream = self.connections[0].inp
+            if downstream.otype is not None:
+                return downstream._accepts_other_with_otype(self)
+            else:
+                return True
         else:
             return True
 
