@@ -70,18 +70,19 @@ class HasOType(TypeHaver):
             and self.otype is not None
             and len(self.connections) > 0
         ):
-            upstream_otype = self.connections[0].out.otype
+            upstream = self.connections[0].out
             # TODO: Catch the connection in use (most recently updated?) not the zeroth
-            if upstream_otype is not None:
-                return self._accepts_otype(upstream_otype)
+            if upstream.otype is not None:
+                return self._accepts_other_with_otype(upstream)
             else:
                 return True
         else:
             return True
 
-    def _accepts_otype(self, other_otype):
+    def _accepts_other_with_otype(self, other):
         downstream_requirements = self.get_downstream_requirements()
-        return other_otype in self.otype.get_sources(downstream_requirements)
+        return other.otype in self.otype.get_sources(downstream_requirements)
+        # And the other's sources need to recursively be OK with these requirments
 
     def get_downstream_requirements(self):
         downstream_requirements = []
@@ -143,8 +144,8 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
 
         return data
 
-    def can_receive_otype(self, other_otype):
-        return self._accepts_otype(other_otype)
+    def can_receive_other_with_otype(self, other):
+        return self._accepts_other_with_otype(other)
 
 
 class NodeOutput(NodeOutputCore, HasDType, HasOType):

@@ -279,11 +279,11 @@ class FlowCanvas:
                 and subwidget.port.otype is not None
             ):
                 if isinstance(compatible_with, NodeInput):
-                    if compatible_with.can_receive_otype(subwidget.port.otype):
+                    if compatible_with.can_receive_other_with_otype(subwidget.port):
                         compatible_port_widgets.append(subwidget)
                 elif isinstance(compatible_with, NodeOutput):
                     if compatible_with.otype in subwidget.port.otype.get_sources():
-                        if subwidget.port.can_receive_otype(compatible_with.otype):
+                        if subwidget.port.can_receive_other_with_otype(compatible_with):
                             compatible_port_widgets.append(subwidget)
         return compatible_port_widgets
 
