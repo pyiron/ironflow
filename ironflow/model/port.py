@@ -81,8 +81,15 @@ class HasOType(TypeHaver):
 
     def _accepts_other_with_otype(self, other):
         downstream_requirements = self.get_downstream_requirements()
-        return other.otype in self.otype.get_sources(downstream_requirements)
-        # And the other's sources need to recursively be OK with these requirments
+        this_level_ok = other.otype in self.otype.get_sources(downstream_requirements)
+        upstream_ok = all(
+            [
+                upstream._accepts_other_with_otype(upstream.connections[0].out)
+                for upstream in other.node.inputs.ports
+                if len(upstream.connections) > 0
+            ]
+        )
+        return this_level_ok and upstream_ok
 
     def get_downstream_requirements(self):
         downstream_requirements = []
