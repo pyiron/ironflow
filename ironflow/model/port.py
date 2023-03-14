@@ -68,19 +68,22 @@ class HasOType(TypeHaver):
     def _otype_ok(self):
         if self.otype is not None:
             if isinstance(self, NodeInput):
+                input_tree = self.otype.get_source_tree(
+                    additional_requirements=self.get_downstream_requirements()
+                )
                 return all(
                     [
-                        self.can_make_ontologically_valid_connection(other.out)
-                        for other in self.connections
-                        if other.out.otype is not None
+                        con.out.all_connections_found_in(input_tree)
+                        for con in self.connections
+                        if con.out.otype is not None
                     ]
                 )
             else:
                 return all(
                     [
-                        self.can_make_ontologically_valid_connection(other.inp)
-                        for other in self.connections
-                        if other.inp.otype is not None
+                        con.inp.workflow_tree_contains_connections_of(self)
+                        for con in self.connections
+                        if con.inp.otype is not None
                     ]
                 )
         else:
@@ -189,6 +192,12 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
             data["otype_name"] = self.otype.name
 
         return data
+
+    def workflow_tree_contains_connections_of(self, port: NodeOutput):
+        tree = self.otype.get_source_tree(
+            additional_requirements=self.get_downstream_requirements()
+        )
+        return self._output_graph_is_represented_in_workflow_tree(port, tree)
 
 
 class NodeOutput(NodeOutputCore, HasDType, HasOType):
