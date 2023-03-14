@@ -274,10 +274,24 @@ class FlowCanvas:
         self._highlighted_ports = compatible_port_widgets
 
     def _get_port_widgets_ontologically_compatible_with(self, port):
-        return [
-            subwidget for subwidget in self._port_widgets
-            if port.can_make_ontologically_valid_connection(subwidget.port)
-        ]
+        if isinstance(port, NodeInput):
+            input_tree = input_tree = port.otype.get_source_tree(
+                additional_requirements=port.get_downstream_requirements()
+            )
+            return [
+                subwidget for subwidget in self._port_widgets
+                if isinstance(subwidget.port, NodeOutput)
+                and subwidget.port.all_connections_found_in(input_tree)
+            ]
+        elif isinstance(port, NodeOutput):
+            return [
+                subwidget for subwidget in self._port_widgets
+                if port.can_make_ontologically_valid_connection(subwidget.port)
+            ]
+        else:
+            raise TypeError(
+                f"Expected a {NodeInput} or {NodeOutput} but got {type(port)}"
+            )
 
     @property
     def _port_widgets(self):

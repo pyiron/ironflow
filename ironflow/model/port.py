@@ -217,6 +217,13 @@ class NodeOutput(NodeOutputCore, HasDType, HasOType):
 
         return data
 
+    def all_connections_found_in(self, tree):
+        """
+        Checks to see if actual ontologically typed connections match with all
+        ontologically possible workflows for an input port.
+        """
+        return self._output_graph_is_represented_in_workflow_tree(self, tree)
+
 
 class NodeInputBP(NodeInputBPCore):
     def __init__(
