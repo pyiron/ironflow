@@ -286,7 +286,9 @@ class FlowCanvas:
         elif isinstance(port, NodeOutput):
             return [
                 subwidget for subwidget in self._port_widgets
-                if port.can_make_ontologically_valid_connection(subwidget.port)
+                if subwidget.port.otype is not None  # Progressively expensive checks
+                and port.otype in subwidget.port.otype.get_sources()
+                and subwidget.port.workflow_tree_contains_connections_of(port)
             ]
         else:
             raise TypeError(
