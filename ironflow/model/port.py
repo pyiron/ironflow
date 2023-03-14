@@ -89,20 +89,6 @@ class HasOType(TypeHaver):
         else:
             return True
 
-    def can_make_ontologically_valid_connection(self, other: HasOType):
-        if isinstance(self, NodeInput) and isinstance(other, NodeOutput):
-            inp, out = self, other
-        elif isinstance(self, NodeOutput) and isinstance(other, NodeInput):
-            out, inp = self, other
-        else:
-            return False
-        return self.upstream_graph_is_a_valid_workflow_representation(out, inp)
-
-    def upstream_graph_is_a_valid_workflow_representation(self, output_port, input_port):
-        input_tree = input_port.otype.get_source_tree(
-            additional_requirements=input_port.get_downstream_requirements())
-        return self._output_graph_is_represented_in_workflow_tree(output_port, input_tree)
-
     def _output_graph_is_represented_in_workflow_tree(self, output_port, input_tree):
         try:
             output_index = argwhere(
