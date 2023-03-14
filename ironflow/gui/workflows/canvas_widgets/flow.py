@@ -275,7 +275,7 @@ class FlowCanvas:
 
     def _get_port_widgets_ontologically_compatible_with(self, port):
         if isinstance(port, NodeInput):
-            input_tree = input_tree = port.otype.get_source_tree(
+            input_tree = port.otype.get_source_tree(
                 additional_requirements=port.get_downstream_requirements()
             )
             return [
