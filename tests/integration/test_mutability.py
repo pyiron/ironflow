@@ -4,9 +4,10 @@
 
 from unittest import TestCase
 
-from ironflow.model import dtypes, NodeInputBP
+from ironflow.model import dtypes
 from ironflow.model.model import HasSession
 from ironflow.model.node import Node
+from ironflow.model.port import NodeInputBP
 
 
 class Choice_Node(Node):
