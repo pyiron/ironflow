@@ -36,7 +36,7 @@ def isiterable(obj):
 
 
 def other_classes_are_subset(other, reference):
-    return all([any([issubclass(o, ref) for ref in reference]) for o in other])
+    return all(any(issubclass(o, ref) for ref in reference) for o in other)
 
 
 class DType(DTypeCore, ABC):
@@ -233,11 +233,11 @@ class Data(DType):
             return False
 
     def _accepts_non_none_instance(self, val: Any):
-        return any([isinstance(val, c) for c in self.valid_classes])
+        return any(isinstance(val, c) for c in self.valid_classes)
 
     def _batch_accepts_instance(self, val: Any):
         if hasattr(val, "__iter__"):
-            if any([v is None for v in val]) and not self.allow_none:
+            if any(v is None for v in val) and not self.allow_none:
                 return False
             else:
                 return self._classes_are_subset(
@@ -409,7 +409,7 @@ class Choice(DType):
 
     def _batch_accepts_instance(self, val: Any):
         return isinstance(val, (list, np.ndarray)) and all(
-            [self._accepts_non_none_instance(v) for v in val]
+            self._accepts_non_none_instance(v) for v in val
         )
 
 
@@ -475,10 +475,10 @@ class List(DType):
 
     def _accepts_non_none_instance(self, val: Any):
         return isiterable(val) and all(
-            [any([isinstance(v, c) for c in self.valid_classes]) for v in val]
+            any(isinstance(v, c) for c in self.valid_classes) for v in val
         )
 
     def _batch_accepts_instance(self, val: Any):
         return isiterable(val) and all(
-            [self._accepts_none(v) or self._accepts_non_none_instance(v) for v in val]
+            self._accepts_none(v) or self._accepts_non_none_instance(v) for v in val
         )

@@ -72,19 +72,15 @@ class HasOType(TypeHaver):
                     additional_requirements=self.get_downstream_requirements()
                 )
                 return all(
-                    [
-                        con.out.all_connections_found_in(input_tree)
-                        for con in self.connections
-                        if con.out.otype is not None
-                    ]
+                    con.out.all_connections_found_in(input_tree)
+                    for con in self.connections
+                    if con.out.otype is not None
                 )
             else:
                 return all(
-                    [
-                        con.inp.workflow_tree_contains_connections_of(self)
-                        for con in self.connections
-                        if con.inp.otype is not None
-                    ]
+                    con.inp.workflow_tree_contains_connections_of(self)
+                    for con in self.connections
+                    if con.inp.otype is not None
                 )
         else:
             return True

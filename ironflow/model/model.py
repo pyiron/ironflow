@@ -261,7 +261,7 @@ class HasSession(ABC):
         elif isinstance(source, types.ModuleType):
             self.register_nodes_from_module(source, node_group=node_group)
         elif isinstance(source, (list, tuple)) and all(
-            [issubclass(item, Node) for item in source]
+            issubclass(item, Node) for item in source
         ):
             for node_class in source:
                 self.register_node(node_class, node_group=node_group)
@@ -281,7 +281,7 @@ class HasSession(ABC):
         return {
             node.title: node
             for node in self.session.nodes
-            if any([out.otype in sources for out in node.init_outputs])
+            if any(out.otype in sources for out in node.init_outputs)
         }
 
     def _get_nodes_taking_matching_input(self, port: NodeOutput):
@@ -289,11 +289,9 @@ class HasSession(ABC):
             node.title: node
             for node in self.session.nodes
             if any(
-                [
-                    port.otype in inp.otype.get_sources()
-                    for inp in node.init_inputs
-                    if inp.otype is not None
-                ]
+                port.otype in inp.otype.get_sources()
+                for inp in node.init_inputs
+                if inp.otype is not None
             )
         }
 
