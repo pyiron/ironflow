@@ -30,7 +30,7 @@ from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 if TYPE_CHECKING:
     from ironflow.gui.workflows.canvas_widgets.flow import FlowCanvas
     from ironflow.gui.workflows.canvas_widgets.base import Number
-    from ironflow.model import NodeInputBP, NodeOutputBP
+    from ironflow.model.port import NodeInputBP, NodeOutputBP
     from ironflow.model.node import Node
 
 
