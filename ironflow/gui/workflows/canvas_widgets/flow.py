@@ -265,21 +265,44 @@ class FlowCanvas:
         if selected.port.otype is None:
             return
 
-        for node_widget in self.objects_to_draw:
-            for subwidget in node_widget.objects_to_draw:
-                if (
-                    isinstance(subwidget, PortWidget)
-                    and subwidget.port.otype is not None
-                ):
-                    if isinstance(selected.port, NodeInput):
-                        if selected.port.can_receive_otype(subwidget.port.otype):
-                            subwidget.highlight()
-                            self._highlighted_ports.append(subwidget)
-                    elif isinstance(selected.port, NodeOutput):
-                        if selected.port.otype in subwidget.port.otype.get_sources():
-                            if subwidget.port.can_receive_otype(selected.port.otype):
-                                subwidget.highlight()
-                                self._highlighted_ports.append(subwidget)
+        compatible_port_widgets = self._get_port_widgets_ontologically_compatible_with(
+            selected.port
+        )
+
+        for port_widget in compatible_port_widgets:
+            port_widget.highlight()
+        self._highlighted_ports = compatible_port_widgets
+
+    def _get_port_widgets_ontologically_compatible_with(self, port):
+        if isinstance(port, NodeInput):
+            input_tree = port.otype.get_source_tree(
+                additional_requirements=port.get_downstream_requirements()
+            )
+            return [
+                subwidget for subwidget in self._port_widgets
+                if isinstance(subwidget.port, NodeOutput)
+                and subwidget.port.all_connections_found_in(input_tree)
+            ]
+        elif isinstance(port, NodeOutput):
+            return [
+                subwidget for subwidget in self._port_widgets
+                if subwidget.port.otype is not None  # Progressively expensive checks
+                and port.otype in subwidget.port.otype.get_sources()
+                and subwidget.port.workflow_tree_contains_connections_of(port)
+            ]
+        else:
+            raise TypeError(
+                f"Expected a {NodeInput} or {NodeOutput} but got {type(port)}"
+            )
+
+    @property
+    def _port_widgets(self):
+        return [
+            subwidget
+            for node_widget in self.objects_to_draw
+            for subwidget in node_widget.objects_to_draw
+            if isinstance(subwidget, PortWidget)
+        ]
 
     def clear_port_highlighting(self):
         for port_widget in self._highlighted_ports:

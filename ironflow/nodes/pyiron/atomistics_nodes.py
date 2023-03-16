@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import pickle
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from io import BytesIO
 from typing import Type, TYPE_CHECKING
 
@@ -316,7 +317,7 @@ class SlabStructure_Node(OutputsOnlyAtoms):
                     "fcc211",
                     "hcp0001",
                     "hcp10m10",
-                    "mx2",
+                    # "mx2",
                     # "hcp0001_root",
                     # "fcc111_root",
                     # "bcc111_root",
@@ -327,11 +328,10 @@ class SlabStructure_Node(OutputsOnlyAtoms):
                 allow_none=True,
             ),
         ),
-        NodeInputBP(
-            label="size",
-            dtype=dtypes.List(default=(1, 1, 1), valid_classes=[int, np.int_]),
-        ),
-        NodeInputBP(label="vacuum", dtype=dtypes.Float(1.0)),
+        NodeInputBP(label="size_a", dtype=dtypes.Integer(default=1)),
+        NodeInputBP(label="size_b", dtype=dtypes.Integer(default=1)),
+        NodeInputBP(label="size_c", dtype=dtypes.Integer(default=1)),
+        NodeInputBP(label="vacuum", dtype=dtypes.Float(10.0)),
         NodeInputBP(label="center", dtype=dtypes.Boolean(default=False)),
         NodeInputBP(label="orthogonal", dtype=dtypes.Boolean(default=True)),
         NodeInputBP(dtype=dtypes.Float(default=None, allow_none=True), label="a"),
@@ -349,7 +349,9 @@ class SlabStructure_Node(OutputsOnlyAtoms):
         self,
         element,
         surface_type,
-        size,
+        size_a,
+        size_b,
+        size_c,
         vacuum,
         center,
         orthogonal,
@@ -359,7 +361,7 @@ class SlabStructure_Node(OutputsOnlyAtoms):
             "structure": STRUCTURE_FACTORY.surface(
                 element=element,
                 surface_type=surface_type,
-                size=size,
+                size=(size_a, size_b, size_c),
                 vacuum=vacuum,
                 center=center,
                 orthogonal=orthogonal,
@@ -418,17 +420,24 @@ class AtomisticTaker(JobTaker, ABC):
     valid_job_classes = [Lammps]
     init_outputs = JobTaker.init_outputs + [
         NodeOutputBP(
-            dtype=dtypes.List(valid_classes=[float, np.floating]), label="energy_pot"
+            label="energy_pot",
+            dtype=dtypes.Float(),
+            otype=ONTO.atomistic_taker_output_energy_pot
         ),
         NodeOutputBP(
-            dtype=dtypes.List(valid_classes=[float, np.floating]), label="forces"
+            label="forces",
+            dtype=dtypes.List(valid_classes=[float, np.floating]),
+            # Still not working because it's an nx3 matrix, not an n-long list
+            otype=ONTO.atomistic_taker_output_forces
         ),
     ]
+    init_inputs = deepcopy(JobTaker.init_inputs)
+    init_inputs[3].otype = ONTO.atomistic_taker_job
 
     def _get_output_from_job(self, finished_job: Lammps, **kwargs):
         return {
-            "energy_pot": finished_job.output.energy_pot,
-            "forces": finished_job.output.forces,
+            "energy_pot": finished_job.output.energy_pot[-1],
+            "forces": finished_job.output.forces[-1],
         }
 
     @property
@@ -642,6 +651,57 @@ class CalcMurnaghan_Node(JobNode):
             "eq_b_prime": finished_job["output/equilibrium_b_prime"],
             "volumes": finished_job["output/volume"],
             "energies": finished_job["output/energy"],
+        }
+
+
+class SurfaceEnergy_Node(DataNode):
+    title = "SurfaceEnergy"
+
+    init_inputs = [
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Atoms),
+            label="bulk_structure",
+            otype=ONTO.surface_energy_input_bulk_structure,
+        ),
+        NodeInputBP(
+            dtype=dtypes.Float(),
+            label="bulk_energy",
+            otype=ONTO.surface_energy_input_bulk_energy,
+        ),
+        NodeInputBP(
+            dtype=dtypes.Data(valid_classes=Atoms),
+            label="surface_structure",
+            otype=ONTO.surface_energy_input_slab_structure,
+        ),
+        NodeInputBP(
+            dtype=dtypes.Float(),
+            label="surface_energy",
+            otype=ONTO.surface_energy_input_slab_energy,
+        ),
+    ]
+    init_outputs = [
+        NodeOutputBP(
+            label="surface_energy",
+            dtype=dtypes.Float(),
+            otype=ONTO.surface_energy_output_surface_energy,
+        ),
+    ]
+
+    def node_function(
+            self,
+            bulk_structure,
+            bulk_energy,
+            surface_structure,
+            surface_energy,
+            **kwargs
+    ) -> dict:
+        n_bulk = len(bulk_structure)
+        n_surface = len(surface_structure)
+        energy_difference = surface_energy - (n_surface / n_bulk) * bulk_energy
+        a, b, c = surface_structure.cell.array
+        area = np.dot(np.cross(a, b), c / np.linalg.norm(c))
+        return {
+            "surface_energy": energy_difference / (2 * area)
         }
 
 
