@@ -265,27 +265,35 @@ class FlowCanvas:
         if selected.port.otype is None:
             return
 
-        compatible_port_widgets = self._get_ontologically_compatible_ports(selected.port)
+        compatible_port_widgets = self._get_port_widgets_ontologically_compatible_with(
+            selected.port
+        )
 
         for port_widget in compatible_port_widgets:
             port_widget.highlight()
         self._highlighted_ports = compatible_port_widgets
 
-    def _get_ontologically_compatible_ports(self, compatible_with):
-        compatible_port_widgets = []
-        for subwidget in self._port_widgets:
-            if (
-                isinstance(subwidget, PortWidget)
-                and subwidget.port.otype is not None
-            ):
-                if isinstance(compatible_with, NodeInput):
-                    if compatible_with.can_receive_other_with_otype(subwidget.port):
-                        compatible_port_widgets.append(subwidget)
-                elif isinstance(compatible_with, NodeOutput):
-                    if compatible_with.otype in subwidget.port.otype.get_sources():
-                        if subwidget.port.can_receive_other_with_otype(compatible_with):
-                            compatible_port_widgets.append(subwidget)
-        return compatible_port_widgets
+    def _get_port_widgets_ontologically_compatible_with(self, port):
+        if isinstance(port, NodeInput):
+            input_tree = port.otype.get_source_tree(
+                additional_requirements=port.get_downstream_requirements()
+            )
+            return [
+                subwidget for subwidget in self._port_widgets
+                if isinstance(subwidget.port, NodeOutput)
+                and subwidget.port.all_connections_found_in(input_tree)
+            ]
+        elif isinstance(port, NodeOutput):
+            return [
+                subwidget for subwidget in self._port_widgets
+                if subwidget.port.otype is not None  # Progressively expensive checks
+                and port.otype in subwidget.port.otype.get_sources()
+                and subwidget.port.workflow_tree_contains_connections_of(port)
+            ]
+        else:
+            raise TypeError(
+                f"Expected a {NodeInput} or {NodeOutput} but got {type(port)}"
+            )
 
     @property
     def _port_widgets(self):

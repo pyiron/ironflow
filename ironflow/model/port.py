@@ -10,6 +10,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Optional, TYPE_CHECKING
 
+from numpy import argwhere
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
 from ryvencore.NodePortBP import (
     NodeOutputBP as NodeOutputBPCore,
@@ -65,41 +66,54 @@ class HasOType(TypeHaver):
 
     @property
     def _otype_ok(self):
-        if (
-            isinstance(self, NodeInput)
-            and self.otype is not None
-            and len(self.connections) > 0
-        ):
-            upstream = self.connections[0].out
-            # TODO: Catch the connection in use (most recently updated?) not the zeroth
-            if upstream.otype is not None:
-                return self._accepts_other_with_otype(upstream)
+        if self.otype is not None:
+            if isinstance(self, NodeInput):
+                input_tree = self.otype.get_source_tree(
+                    additional_requirements=self.get_downstream_requirements()
+                )
+                return all(
+                    con.out.all_connections_found_in(input_tree)
+                    for con in self.connections
+                    if con.out.otype is not None
+                )
             else:
-                return True
-        elif (
-                isinstance(self, NodeOutput)
-                and self.otype is not None
-                and len(self.connections) > 0
-        ):
-            downstream = self.connections[0].inp
-            if downstream.otype is not None:
-                return downstream._accepts_other_with_otype(self)
-            else:
-                return True
+                return all(
+                    con.inp.workflow_tree_contains_connections_of(self)
+                    for con in self.connections
+                    if con.inp.otype is not None
+                )
         else:
             return True
 
-    def _accepts_other_with_otype(self, other):
-        downstream_requirements = self.get_downstream_requirements()
-        this_level_ok = other.otype in self.otype.get_sources(downstream_requirements)
-        upstream_ok = all(
-            [
-                upstream._accepts_other_with_otype(upstream.connections[0].out)
-                for upstream in other.node.inputs.ports
-                if len(upstream.connections) > 0
+    def _output_graph_is_represented_in_workflow_tree(self, output_port, input_tree):
+        try:
+            output_index = argwhere(
+                [output_port.otype == source.value for source in input_tree.children]
+            )[0][0]
+            upstream_inputs = [
+                inp for inp in output_port.node.inputs
+                if inp.otype is not None and len(inp.connections) > 0
             ]
-        )
-        return this_level_ok and upstream_ok
+            for usi in upstream_inputs:
+                input_branches = input_tree.children[output_index].children[0].children
+                # input/generic->outputs->function->inputs
+
+                input_index = argwhere(
+                    [
+                        usi.otype == source.value
+                        for source in input_branches
+                    ]
+                )[0][0]
+
+                for con in usi.connections:
+                    if con.out.otype is not None \
+                            and not self._output_graph_is_represented_in_workflow_tree(
+                            con.out, input_branches[input_index]):
+                        return False
+            return True
+        except IndexError:
+            # Can't slice argwhere if it finds nothing
+            return False
 
     def get_downstream_requirements(self):
         downstream_requirements = []
@@ -161,8 +175,11 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
 
         return data
 
-    def can_receive_other_with_otype(self, other):
-        return self._accepts_other_with_otype(other)
+    def workflow_tree_contains_connections_of(self, port: NodeOutput):
+        tree = self.otype.get_source_tree(
+            additional_requirements=self.get_downstream_requirements()
+        )
+        return self._output_graph_is_represented_in_workflow_tree(port, tree)
 
 
 class NodeOutput(NodeOutputCore, HasDType, HasOType):
@@ -190,6 +207,13 @@ class NodeOutput(NodeOutputCore, HasDType, HasOType):
             data["otype_name"] = self.otype.name
 
         return data
+
+    def all_connections_found_in(self, tree):
+        """
+        Checks to see if actual ontologically typed connections match with all
+        ontologically possible workflows for an input port.
+        """
+        return self._output_graph_is_represented_in_workflow_tree(self, tree)
 
 
 class NodeInputBP(NodeInputBPCore):
