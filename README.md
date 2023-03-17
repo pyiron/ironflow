@@ -93,7 +93,7 @@ Finally, we see the real power of otypes -- by connecting the two `engine` ports
 In particular, `CalcMurnaghan` produces _bulk moduli_ and thus only works for calculations on _bulk structures_.
 After these are connected, when we once again select the `Lammps.structure` input, _only_ the `BulkStructure` node gets highlighted, and _only_ `BulkStructure` appears in the recommended nodes window.
 
-![ironflow_ontology.mov](https://github.com/pyiron/ironflow/docs/_static/ironflow_ontology.mov)
+![ironflow_ontology.mov](docs/_static/ironflow_ontology.mov)
 
 Of course, not all ports in ironflow are otyped, and indeed not all should be -- e.g. it doesn't make sense to ontologically-type the output of the `Linspace` node, as it is just providing numbers which may be useful in many contexts.
 However, for nodes which specifically produce and require physically-/ontologically-meaningful data, otyping is a powerful tool for understanding workflows and guiding their design.
