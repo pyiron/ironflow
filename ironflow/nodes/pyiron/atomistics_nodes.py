@@ -422,13 +422,13 @@ class AtomisticTaker(JobTaker, ABC):
         NodeOutputBP(
             label="energy_pot",
             dtype=dtypes.Float(),
-            otype=ONTO.atomistic_taker_output_energy_pot
+            otype=ONTO.atomistic_taker_output_energy_pot,
         ),
         NodeOutputBP(
             label="forces",
             dtype=dtypes.List(valid_classes=[float, np.floating]),
             # Still not working because it's an nx3 matrix, not an n-long list
-            otype=ONTO.atomistic_taker_output_forces
+            otype=ONTO.atomistic_taker_output_forces,
         ),
     ]
     init_inputs = deepcopy(JobTaker.init_inputs)
@@ -688,21 +688,14 @@ class SurfaceEnergy_Node(DataNode):
     ]
 
     def node_function(
-            self,
-            bulk_structure,
-            bulk_energy,
-            surface_structure,
-            surface_energy,
-            **kwargs
+        self, bulk_structure, bulk_energy, surface_structure, surface_energy, **kwargs
     ) -> dict:
         n_bulk = len(bulk_structure)
         n_surface = len(surface_structure)
         energy_difference = surface_energy - (n_surface / n_bulk) * bulk_energy
         a, b, c = surface_structure.cell.array
         area = np.dot(np.cross(a, b), c / np.linalg.norm(c))
-        return {
-            "surface_energy": energy_difference / (2 * area)
-        }
+        return {"surface_energy": energy_difference / (2 * area)}
 
 
 class PyironTable_Node(JobMaker):

@@ -279,13 +279,15 @@ class FlowCanvas:
                 additional_requirements=port.get_downstream_requirements()
             )
             return [
-                subwidget for subwidget in self._port_widgets
+                subwidget
+                for subwidget in self._port_widgets
                 if isinstance(subwidget.port, NodeOutput)
                 and subwidget.port.all_connections_found_in(input_tree)
             ]
         elif isinstance(port, NodeOutput):
             return [
-                subwidget for subwidget in self._port_widgets
+                subwidget
+                for subwidget in self._port_widgets
                 if subwidget.port.otype is not None  # Progressively expensive checks
                 and port.otype in subwidget.port.otype.get_sources()
                 and subwidget.port.workflow_tree_contains_connections_of(port)

@@ -91,7 +91,8 @@ class HasOType(TypeHaver):
                 [output_port.otype == source.value for source in input_tree.children]
             )[0][0]
             upstream_inputs = [
-                inp for inp in output_port.node.inputs
+                inp
+                for inp in output_port.node.inputs
                 if inp.otype is not None and len(inp.connections) > 0
             ]
             for usi in upstream_inputs:
@@ -99,16 +100,16 @@ class HasOType(TypeHaver):
                 # input/generic->outputs->function->inputs
 
                 input_index = argwhere(
-                    [
-                        usi.otype == source.value
-                        for source in input_branches
-                    ]
+                    [usi.otype == source.value for source in input_branches]
                 )[0][0]
 
                 for con in usi.connections:
-                    if con.out.otype is not None \
-                            and not self._output_graph_is_represented_in_workflow_tree(
-                            con.out, input_branches[input_index]):
+                    if (
+                        con.out.otype is not None
+                        and not self._output_graph_is_represented_in_workflow_tree(
+                            con.out, input_branches[input_index]
+                        )
+                    ):
                         return False
             return True
         except IndexError:

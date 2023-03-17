@@ -42,7 +42,7 @@ class HasSession(ABC):
         if enable_ryven_log:
             self.session.info_messenger().enable()
 
-        self.nodes_dictionary = {'recommended': {}}
+        self.nodes_dictionary = {"recommended": {}}
         from ironflow.nodes import built_in
         from ironflow.nodes.pyiron import atomistics_nodes
         from ironflow.nodes.std import (
