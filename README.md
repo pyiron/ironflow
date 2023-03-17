@@ -16,6 +16,10 @@ Ironflow combines [ryven](https://ryven.org), [ipycanvas](https://ipycanvas.read
 This project is under active development, and in particular the set of nodes available for the workflow graphs is still limited. 
 If there is a particular use-case you'd like to see, or if one of our nodes is not working as expected, please raise an issue!
 
+In its current form, ironflow has some UI performance issues, especially when placing new nodes with many ports, or moving nodes around in a big graph.
+(You can look at the movie demonstrating ontological typing below to get a sense of the delay for placing larger nodes.)
+This is a [known issue](https://github.com/pyiron/ironflow/issues/143) and performance enhancements are currently our top priority -- both in terms of UI performance and underlying computations, e.g. we would like to exploit the latest pyiron developments for [running lammps without writing any files](https://github.com/pyiron/pyiron_lammps) in calculation nodes.
+
 ![](docs/_static/screenshot.png)
 
 ## Usage
