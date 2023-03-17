@@ -62,7 +62,7 @@ Ironflow is built on top of ryvencore 0.3.1.1.
 There are a number of minor differences between ryven nodes and ironflow nodes discussed in the next section, but at a 
 high level there are two significant differences:
 
-### Typing
+### Data typing
 
 All node ports are typed, and connection perform type-checking to ensure validity prior to establishing a connection.
 By default, a special `Untyped` data type is used, which performs *all* validity checks by value, and thus does not allow pre-wiring of a graph without full data.
@@ -74,6 +74,29 @@ An output port can be connected to an input port as long as its valid classes ar
 
 This type checking is still under development and may be somewhat brittle.
 Our goal is to extend this system to be dynamically informed by an ontology on top of the graph: instead of statically insisting that input be of type `float`, we instead demand that the ontological type of the energy be `surface energy` _dynamically_ because the output value of that port is used, e.g., to calculate a grain boundary interface energy.
+
+### Ontological typing
+
+Nodes can also optionally carry an "ontological type" (otype). 
+Leaning on the [pyiron_ontology](https://github.com/pyiron/pyiron_ontology) library for representing knowledge in computational workflows, otypes give a rich _graph dependent_ representation of the data and facilitate guided workflow design.
+This is fully demonstrated in the `bulk_modulus.ipynb` and `surface_energy.ipynb` notebooks, but a quick demo is also provided in the video below.
+
+We see that there is a "recommended" tab for nodes.
+After selecting this menu, clicking on the `CalcMurnaghan.engine` port populates the tab with nodes that have valid output for this port.
+We can double-click to place the new node (`Lammps`) and repeat the process, e.g. for the `Lammps.structure` input.
+Here we see there are two possibilities -- `BulkStructure` and `SlabStructure` -- and place both.
+(Note, as mentioned at the head of the readme, there is some lag in ironflow right now; you can see this in the delay between the double-click and the placement of these larger nodes.)
+Not only do we get recommendations for nodes to place in the graph, but we also get specific recommendations of which ports make valid connections!
+Below we again select the `Lammps.structure` input port, and see that the output ports on both the structure nodes is highlighted.
+Similarly, if we click the `Lammps.engine` output port, we see that all the valid input ports on our graph get highlighted; in this case, `CalcMurnaghan.input`.
+Finally, we see the real power of otypes -- by connecting the two `engine` ports, the `Lammps` node now has access to the _ontological requirements_ of the `CalcMurnaghan` node!
+In particular, `CalcMurnaghan` produces _bulk moduli_ and thus only works for calculations on _bulk structures_.
+After these are connected, when we once again select the `Lammps.structure` input, _only_ the `BulkStructure` node gets highlighted, and _only_ `BulkStructure` appears in the recommended nodes window.
+
+![ironflow_ontology.mov](https://github.com/pyiron/ironflow/docs/_static/ironflow_ontology.mov)
+
+Of course, not all ports in ironflow are otyped, and indeed not all should be -- e.g. it doesn't make sense to ontologically-type the output of the `Linspace` node, as it is just providing numbers which may be useful in many contexts.
+However, for nodes which specifically produce and require physically-/ontologically-meaningful data, otyping is a powerful tool for understanding workflows and guiding their design.
 
 ### Batching
 
@@ -121,12 +144,13 @@ class My_Node(Node):
 gui.register_node(My_Node)
 ```
 
-Ironflow nodes differ from standard ryven (version 0.3.1.1) nodes in four ways:
+Ironflow nodes differ from standard ryven (version 0.3.1.1) nodes in five ways:
 - There is a new helper method `output` analogous to the existing `input` method that lets you more easily access output values, i.e. just a quality-of-life difference.
 - Input/output ports and the port values are directly accessible as attributes *if* those ports were labeled, e.g. `node.inputs.ports.foo` or `node.outputs.values.bar`.
 - They have a `representation` dictionary, which is used by the IPython gui front-end to give a richer look at nodes. By default, this includes all the outputs and the source code for the node, but you can append to or overwrite these values by specifying an `extra_representations` dictionary on your custom nodes.
 - They have two new events: `before_update` and `after_update`, to which you can connect (e.g. `node.after_update.connect`) or disconnect (`...disconnect`) methods to fire before and/or after updates occur -- such methods must take the node instance itself as the first argument, and the canonical input integer (specifying which input value it is that's updating) as the second argument. (You can see an example of this in our base `Node` class, where we use it to force an update of the `representation` attribute after each node update.)
 - It is strongly advised to specify a `dtype` for each of your nodes from among `node_tools.dtypes`.
+- Ports have an additional `otype` field to facilitate ontologically-informed port and node suggestions.
 
 Otherwise, they are just standard ryven nodes, and all the ryven documentation applies.
 
