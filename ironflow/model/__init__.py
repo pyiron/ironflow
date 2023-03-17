@@ -11,5 +11,4 @@ un-typed ports) and that these dtypes can be used for meaningful type checking w
 making connections.
 """
 
-from ryvencore import NodeInputBP
 from ryvencore.NodePort import NodePort

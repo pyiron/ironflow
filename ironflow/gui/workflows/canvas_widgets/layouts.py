@@ -41,6 +41,7 @@ class PortLayout(Layout, ABC):
     width: int = 20
     height: int = 20
     max_title_chars: int = 10
+    highlight_color = "white"
 
 
 @dataclass

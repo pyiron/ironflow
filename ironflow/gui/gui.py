@@ -19,6 +19,7 @@ from ironflow.model.model import HasSession
 
 if TYPE_CHECKING:
     from ironflow.model.node import Node
+    from ironflow.model.port import NodeInput, NodeOutput
 
 
 class GUI(HasSession, DrawsWidgets):
@@ -85,7 +86,7 @@ class GUI(HasSession, DrawsWidgets):
             **kwargs,
         )
 
-        self.workflows = WorkflowsGUI(model=self)
+        self.workflows = WorkflowsGUI(gui=self)
         self.browser = BrowserGUI()
 
         try:
@@ -157,6 +158,14 @@ class GUI(HasSession, DrawsWidgets):
 
     def log_to_stdout(self):
         self.log.log_to_stdout()
+
+    def build_recommendations(self, port: NodeInput | NodeOutput):
+        self.recommend_nodes(port)
+        self.workflows.flow_box.update_nodes(self.nodes_dictionary)
+
+    def clear_recommendations(self):
+        self.clear_recommended_nodes()
+        self.workflows.flow_box.update_nodes(self.nodes_dictionary)
 
     def draw(self):
         return self.widget

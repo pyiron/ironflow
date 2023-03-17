@@ -14,12 +14,14 @@ import ipywidgets as widgets
 from ipycanvas import Canvas, hold_canvas
 from IPython.display import display
 
+from ironflow.model.port import NodeInput, NodeOutput
 from ironflow.gui.workflows.canvas_widgets.base import CanvasWidget
 from ironflow.gui.workflows.canvas_widgets.layouts import NodeLayout
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.gui.workflows.canvas_widgets.ports import PortWidget
 
 if TYPE_CHECKING:
+    from ironflow.gui.gui import GUI
     from ironflow.gui.workflows.canvas_widgets.base import Number
     from ironflow.gui.workflows.screen import WorkflowsGUI
     from ironflow.model.flow import Flow
@@ -88,6 +90,7 @@ class FlowCanvas:
         )
 
         self._object_to_gui_dict = {}
+        self._highlighted_ports: list[PortWidget] = []
 
     @property
     def canvas(self):
@@ -96,6 +99,10 @@ class FlowCanvas:
     @property
     def flow_canvas(self) -> FlowCanvas:
         return self
+
+    @property
+    def gui(self) -> GUI:
+        return self.screen.gui
 
     @property
     def title(self) -> str:
@@ -253,3 +260,52 @@ class FlowCanvas:
 
     def zoom_out(self) -> None:
         self._zoom(min(self._zoom_index + 1, len(self._zoom_factors) - 1))
+
+    def highlight_compatible_ports(self, selected: PortWidget):
+        if selected.port.otype is None:
+            return
+
+        compatible_port_widgets = self._get_port_widgets_ontologically_compatible_with(
+            selected.port
+        )
+
+        for port_widget in compatible_port_widgets:
+            port_widget.highlight()
+        self._highlighted_ports = compatible_port_widgets
+
+    def _get_port_widgets_ontologically_compatible_with(self, port):
+        if isinstance(port, NodeInput):
+            input_tree = port.otype.get_source_tree(
+                additional_requirements=port.get_downstream_requirements()
+            )
+            return [
+                subwidget
+                for subwidget in self._port_widgets
+                if isinstance(subwidget.port, NodeOutput)
+                and subwidget.port.all_connections_found_in(input_tree)
+            ]
+        elif isinstance(port, NodeOutput):
+            return [
+                subwidget
+                for subwidget in self._port_widgets
+                if subwidget.port.otype is not None  # Progressively expensive checks
+                and port.otype in subwidget.port.otype.get_sources()
+                and subwidget.port.workflow_tree_contains_connections_of(port)
+            ]
+        else:
+            raise TypeError(
+                f"Expected a {NodeInput} or {NodeOutput} but got {type(port)}"
+            )
+
+    @property
+    def _port_widgets(self):
+        return [
+            subwidget
+            for node_widget in self.objects_to_draw
+            for subwidget in node_widget.objects_to_draw
+            if isinstance(subwidget, PortWidget)
+        ]
+
+    def clear_port_highlighting(self):
+        for port_widget in self._highlighted_ports:
+            port_widget.dehighlight()

@@ -8,18 +8,19 @@ from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
 import numpy as np
+from owlready2 import Thing
 from pyiron_atomistics import Project
 from pyiron_base import GenericJob
 from ryvencore import Node as NodeCore
 from ryvencore.Base import Event
 from ryvencore.InfoMsgs import InfoMsgs
 from ryvencore.NodePort import NodePort
-from ryvencore.NodePortBP import NodeInputBP
 from ryvencore.utils import deserialize
 
 from ironflow.gui.workflows.canvas_widgets.nodes import NodeWidget
 from ironflow.model import dtypes
-from ironflow.model.port import NodeInput, NodeOutput, NodeOutputBP
+from ironflow.model.otypes import otype_from_str
+from ironflow.model.port import NodeInput, NodeInputBP, NodeOutput, NodeOutputBP
 from ironflow.utils import display_string
 
 
@@ -156,11 +157,17 @@ class Node(NodeCore):
         label: str = "",
         add_data: Optional[dict] = None,
         dtype: Optional[dtypes.DType] = None,
+        otype: Optional[Thing] = None,
         insert: Optional[int] = None,
     ):
         """Creates and add a new input port"""
         inp = NodeInput(
-            node=self, type_=type_, label_str=label, add_data=add_data, dtype=dtype
+            node=self,
+            type_=type_,
+            label_str=label,
+            add_data=add_data,
+            dtype=dtype,
+            otype=otype,
         )
         self._add_io(self.inputs, inp, insert=insert)
 
@@ -177,11 +184,24 @@ class Node(NodeCore):
         type_: str = "data",
         label: str = "",
         dtype: Optional[dtypes.DType] = None,
+        otype: Optional[Thing] = None,
         insert: Optional[int] = None,
     ):
         """Create and add a new output port"""
-        out = NodeOutput(node=self, type_=type_, label_str=label, dtype=dtype)
+        out = NodeOutput(
+            node=self,
+            type_=type_,
+            label_str=label,
+            dtype=dtype,
+            otype=otype,
+        )
         self._add_io(self.outputs, out, insert=insert)
+
+    def _load_otype(self, data: dict):
+        try:
+            return otype_from_str(data["otype_namespace"], data["otype_name"])
+        except KeyError:
+            return None
 
     def setup_ports(self, inputs_data=None, outputs_data=None):
         # A streamlined version of the ryvencore method which exploits our NodeInput
@@ -194,11 +214,17 @@ class Node(NodeCore):
                     label=inp.label,
                     add_data=inp.add_data,
                     dtype=inp.dtype,
+                    otype=inp.otype,
                 )
 
             for o in range(len(self.init_outputs)):
                 out = self.init_outputs[o]
-                self.create_output(type_=out.type_, label=out.label, dtype=out.dtype)
+                self.create_output(
+                    type_=out.type_,
+                    label=out.label,
+                    dtype=out.dtype,
+                    otype=out.otype,
+                )
 
         else:
             # load from data
@@ -209,7 +235,11 @@ class Node(NodeCore):
                     _load_state=deserialize(inp["dtype state"])
                 )
                 self.create_input(
-                    type_=inp["type"], label=inp["label"], add_data=inp, dtype=dtype
+                    type_=inp["type"],
+                    label=inp["label"],
+                    add_data=inp,
+                    dtype=dtype,
+                    otype=self._load_otype(inp),
                 )
 
                 if "val" in inp:
@@ -223,11 +253,16 @@ class Node(NodeCore):
                 dtype = dtypes.DType.from_str(out["dtype"])(
                     _load_state=deserialize(out["dtype state"])
                 )
-                self.create_output(type_=out["type"], label=out["label"], dtype=dtype)
+                self.create_output(
+                    type_=out["type"],
+                    label=out["label"],
+                    dtype=dtype,
+                    otype=self._load_otype(out),
+                )
 
     @property
     def all_input_is_valid(self):
-        return all([p.valid_val for p in self.inputs.ports])
+        return all(p.valid_val for p in self.inputs.ports)
 
     def place_event(self):
         # place_event() is executed *before* the connections are built

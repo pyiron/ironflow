@@ -17,6 +17,7 @@ from types import ModuleType
 from typing import Optional, Type
 
 from ironflow.model.node import Node
+from ironflow.model.port import NodeInput, NodeOutput
 from ironflow.model.session import Session
 from ironflow.model.flow import Flow
 from ironflow.model.script import Script
@@ -41,7 +42,7 @@ class HasSession(ABC):
         if enable_ryven_log:
             self.session.info_messenger().enable()
 
-        self.nodes_dictionary = {}
+        self.nodes_dictionary = {"recommended": {}}
         from ironflow.nodes import built_in
         from ironflow.nodes.pyiron import atomistics_nodes
         from ironflow.nodes.std import (
@@ -170,7 +171,7 @@ class HasSession(ABC):
 
         Example:
             >>> from ironflow import GUI
-            >>> from ironflow.custom_nodes import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
+            >>> from ironflow.node_tools import Node, NodeInputBP, NodeOutputBP, dtypes, input_widgets
             >>> gui = GUI(script_title='foo')
             >>>
             >>> class MyNode(Node):
@@ -260,7 +261,39 @@ class HasSession(ABC):
         elif isinstance(source, types.ModuleType):
             self.register_nodes_from_module(source, node_group=node_group)
         elif isinstance(source, (list, tuple)) and all(
-            [issubclass(item, Node) for item in source]
+            issubclass(item, Node) for item in source
         ):
             for node_class in source:
                 self.register_node(node_class, node_group=node_group)
+
+    def recommend_nodes(self, port: NodeInput | NodeOutput):
+        recommendations = {}
+        if port.otype is not None:
+            if isinstance(port, NodeInput):
+                recommendations = self._get_nodes_giving_matching_output(port)
+            elif isinstance(port, NodeOutput):
+                recommendations = self._get_nodes_taking_matching_input(port)
+        self.nodes_dictionary["recommended"] = recommendations
+
+    def _get_nodes_giving_matching_output(self, port: NodeInput):
+        requirements = port.get_downstream_requirements()
+        sources = port.otype.get_sources(requirements)
+        return {
+            node.title: node
+            for node in self.session.nodes
+            if any(out.otype in sources for out in node.init_outputs)
+        }
+
+    def _get_nodes_taking_matching_input(self, port: NodeOutput):
+        return {
+            node.title: node
+            for node in self.session.nodes
+            if any(
+                port.otype in inp.otype.get_sources()
+                for inp in node.init_inputs
+                if inp.otype is not None
+            )
+        }
+
+    def clear_recommended_nodes(self):
+        self.nodes_dictionary["recommended"] = {}

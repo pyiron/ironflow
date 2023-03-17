@@ -1,0 +1,751 @@
+{
+    "scripts": [
+        {
+            "title": "surface_ontology",
+            "variables": {},
+            "flow": {
+                "algorithm mode": "data",
+                "nodes": [
+                    {
+                        "identifier": "MaterialProperty_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "property",
+                                "GID": 9,
+                                "val": "gASVEQAAAAAAAACMDVN1cmZhY2VFbmVyZ3mULg==",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVsQAAAAAAAAB9lCiMB2RlZmF1bHSUjBBNYXRlcmlhbFByb3BlcnR5lIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlIwIYnVpbHRpbnOUjANzdHKUk5RhjAphbGxvd19ub25llImMB2JhdGNoZWSUiYwFaXRlbXOUXZQojAtCdWxrTW9kdWx1c5SMDVN1cmZhY2VFbmVyZ3mUaAKMBkJQcmltZZRldS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "source",
+                                "GID": 10,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4=",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surfaceenergy2"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "value",
+                                "GID": 11,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surfaceenergy3"
+                            }
+                        ],
+                        "GID": 8,
+                        "pos x": 1375.848451897213,
+                        "pos y": 301.0989010989011
+                    },
+                    {
+                        "identifier": "SurfaceEnergy_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "bulk_structure",
+                                "GID": 13,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surface_energy_input_bulk_structure"
+                            },
+                            {
+                                "type": "data",
+                                "label": "bulk_energy",
+                                "GID": 14,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surface_energy_input_bulk_energy"
+                            },
+                            {
+                                "type": "data",
+                                "label": "surface_structure",
+                                "GID": 15,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surface_energy_input_slab_structure"
+                            },
+                            {
+                                "type": "data",
+                                "label": "surface_energy",
+                                "GID": 16,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surface_energy_input_slab_energy"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "surface_energy",
+                                "GID": 17,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surface_energy_output_surface_energy"
+                            }
+                        ],
+                        "GID": 12,
+                        "pos x": 1085.755165111887,
+                        "pos y": 281.31868131868134
+                    },
+                    {
+                        "identifier": "CalcMinimize_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "run",
+                                "GID": 19,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "exec",
+                                "label": "remove",
+                                "GID": 20,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 21,
+                                "val": "gASVCAAAAAAAAACMBGJ1bGuULg==",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVjQAAAAAAAAB9lCiMB2RlZmF1bHSUjARjYWxjlIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwDc3RylJOUjAVudW1weZSMBHN0cl+Uk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 22,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "atomistic_taker_job"
+                            },
+                            {
+                                "type": "data",
+                                "label": "ionic_energy_tolerance",
+                                "GID": 23,
+                                "val": "gASVCgAAAAAAAABHAAAAAAAAAAAu",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "ionic_force_tolerance",
+                                "GID": 24,
+                                "val": "gASVCgAAAAAAAABHPxo24uscQy0u",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURz8aNuLrHEMtjAN2YWyURz8aNuLrHEMtjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "max_iter",
+                                "GID": 25,
+                                "val": "gASVBgAAAAAAAABKoIYBAC4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVkQAAAAAAAAB9lCiMB2RlZmF1bHSUSqCGAQCMA3ZhbJRKoIYBAIwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "pressure",
+                                "GID": 26,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVlgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlGgIjARsaXN0lJOUjAVudW1weZSMB25kYXJyYXmUk5RljAphbGxvd19ub25llIiMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "n_print",
+                                "GID": 27,
+                                "val": "gARLZC4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUS2SMA3ZhbJRLZIwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "style",
+                                "GID": 28,
+                                "val": "gASVBgAAAAAAAACMAmNnlC4=",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVZwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJjZ5SMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZSMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjAVpdGVtc5RdlGgCYXUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "ran",
+                                "GID": 29,
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 30,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "energy_pot",
+                                "GID": 31,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "atomistic_taker_output_energy_pot"
+                            },
+                            {
+                                "type": "data",
+                                "label": "forces",
+                                "GID": 32,
+                                "dtype": "DType.List",
+                                "dtype state": "gASVgQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJdS4=",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "atomistic_taker_output_forces"
+                            }
+                        ],
+                        "GID": 18,
+                        "pos x": 742.9176443655927,
+                        "pos y": 92.3076923076923
+                    },
+                    {
+                        "identifier": "CalcMinimize_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "exec",
+                                "label": "run",
+                                "GID": 35,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "exec",
+                                "label": "remove",
+                                "GID": 36,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 37,
+                                "val": "gASVCAAAAAAAAACMBHN1cmaULg==",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVjQAAAAAAAAB9lCiMB2RlZmF1bHSUjARjYWxjlIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwDc3RylJOUjAVudW1weZSMBHN0cl+Uk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 38,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "atomistic_taker_job"
+                            },
+                            {
+                                "type": "data",
+                                "label": "ionic_energy_tolerance",
+                                "GID": 39,
+                                "val": "gASVCgAAAAAAAABHAAAAAAAAAAAu",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "ionic_force_tolerance",
+                                "GID": 40,
+                                "val": "gASVCgAAAAAAAABHPxo24uscQy0u",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURz8aNuLrHEMtjAN2YWyURz8aNuLrHEMtjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "max_iter",
+                                "GID": 41,
+                                "val": "gASVBgAAAAAAAABKoIYBAC4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASVkQAAAAAAAAB9lCiMB2RlZmF1bHSUSqCGAQCMA3ZhbJRKoIYBAIwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "pressure",
+                                "GID": 42,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVlgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlGgIjARsaXN0lJOUjAVudW1weZSMB25kYXJyYXmUk5RljAphbGxvd19ub25llIiMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "n_print",
+                                "GID": 43,
+                                "val": "gARLZC4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUS2SMA3ZhbJRLZIwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "style",
+                                "GID": 44,
+                                "val": "gASVBgAAAAAAAACMAmNnlC4=",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVZwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJjZ5SMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZSMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjAVpdGVtc5RdlGgCYXUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "exec",
+                                "label": "ran",
+                                "GID": 45,
+                                "dtype": "DType.Untyped",
+                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "job",
+                                "GID": 46,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "energy_pot",
+                                "GID": 47,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "atomistic_taker_output_energy_pot"
+                            },
+                            {
+                                "type": "data",
+                                "label": "forces",
+                                "GID": 48,
+                                "dtype": "DType.List",
+                                "dtype state": "gASVgQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJdS4=",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "atomistic_taker_output_forces"
+                            }
+                        ],
+                        "GID": 34,
+                        "pos x": 747.3129971956733,
+                        "pos y": 493.13186813186815
+                    },
+                    {
+                        "identifier": "Lammps_Node",
+                        "version": "v0.2",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 51,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASViQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZR1Lg==",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "lammps_input_project"
+                            },
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 52,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "lammps_input_structure"
+                            },
+                            {
+                                "type": "data",
+                                "label": "potential",
+                                "GID": 53,
+                                "val": "gASVJwAAAAAAAACMIzE5OTctLUFja2xhbmQtRy1KLS1GZS0tTEFNTVBTLS1pcHIxlC4=",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVLxkAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAhidWlsdGluc5SMA3N0cpSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjAVpdGVtc5RdlCiMIzE5OTctLUFja2xhbmQtRy1KLS1GZS0tTEFNTVBTLS1pcHIxlIwfMTk5OC0tTWV5ZXItUi0tRmUtLUxBTU1QUy0taXByMZSMHzIwMDEtLUxlZS1CLUotLUZlLS1MQU1NUFMtLWlwcjGUjCIyMDAxLS1MZWUtQi1KLS1GZS1Dci0tTEFNTVBTLS1pcHIxlIwmMjAwMy0tTWVuZGVsZXYtTS1JLS1GZS0yLS1MQU1NUFMtLWlwcjOUjCYyMDAzLS1NZW5kZWxldi1NLUktLUZlLTUtLUxBTU1QUy0taXByMZSMJTIwMDQtLUFja2xhbmQtRy1KLS1GZS1QLS1MQU1NUFMtLWlwcjGUjCAyMDA0LS1aaG91LVgtVy0tRmUtLUxBTU1QUy0taXByMpSMIjIwMDUtLUxlZS1CLUotLUZlLUN1LS1MQU1NUFMtLWlwcjGUjCcyMDA1LS1NZW5kZWxldi1NLUktLUFsLUZlLS1MQU1NUFMtLWlwcjGUjCEyMDA2LS1DaGFtYXRpLUgtLUZlLS1MQU1NUFMtLWlwcjGUjCAyMDA2LS1LaW0tSi0tRmUtUHQtLUxBTU1QUy0taXByMZSMITIwMDYtLUxlZS1CLUotLUZlLUMtLUxBTU1QUy0taXByMZSMITIwMDYtLUxlZS1CLUotLUZlLU4tLUxBTU1QUy0taXByMZSMITIwMDctLUxlZS1CLUotLUZlLUgtLUxBTU1QUy0taXByMZSMJjIwMDctLU1lbmRlbGV2LU0tSS0tVi1GZS0tTEFNTVBTLS1pcHIxlIwlMjAwOC0tSGVwYnVybi1ELUotLUZlLUMtLUxBTU1QUy0taXByMZSMHzIwMDgtLVNhLUktLUZlLU5iLS1MQU1NUFMtLWlwcjGUjB8yMDA4LS1TYS1JLS1GZS1UaS0tTEFNTVBTLS1pcHIxlIwlMjAwOS0tQm9ubnktRy0tRmUtQ3UtTmktLUxBTU1QUy0taXByMZSMIjIwMDktLUJvbm55LUctLUZlLU5pLS1MQU1NUFMtLWlwcjGUjCQyMDA5LS1LaW0tSC1LLS1GZS1UaS1DLS1MQU1NUFMtLWlwcjKUjCIyMDA5LS1LaW0tWS1NLS1GZS1Nbi0tTEFNTVBTLS1pcHIxlIwkMjAwOS0tT2xzc29uLVAtQS1ULS1GZS0tTEFNTVBTLS1pcHIxlIwmMjAwOS0tU3R1a293c2tpLUEtLUZlLUNyLS1MQU1NUFMtLWlwcjGUjCQyMDEwLS1LaW0tSC1LLS1GZS1OYi1DLS1MQU1NUFMtLWlwcjGUjCAyMDEwLS1MZWUtRS0tRmUtQWwtLUxBTU1QUy0taXByMZSMITIwMTAtLU1hbGVyYmEtTC0tRmUtLUxBTU1QUy0taXByMZSMIjIwMTEtLUJvbm55LUctLUZlLUNyLS1MQU1NUFMtLWlwcjKUjCIyMDExLS1Cb25ueS1HLS1GZS1Dci0tTEFNTVBTLS1pcHIzlIwlMjAxMS0tQm9ubnktRy0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMJTIwMTEtLUJvbm55LUctLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjKUjCMyMDExLS1DaGllc2EtUy0tRmUtMzMtLUxBTU1QUy0taXByMZSMLTIwMTItLUplbGluZWstQi0tQWwtU2ktTWctQ3UtRmUtLUxBTU1QUy0taXByMpSMIDIwMTItLUtvLVctUy0tRmUtUC0tTEFNTVBTLS1pcHIxlIwiMjAxMi0tUHJvdmlsbGUtTC0tRmUtLUxBTU1QUy0taXByMZSMJDIwMTMtLUJvbm55LUctLUZlLUNyLVctLUxBTU1QUy0taXByMpSMJDIwMTMtLUJvbm55LUctLUZlLUNyLVctLUxBTU1QUy0taXByM5SMJTIwMTMtLUJvbm55LUctLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjGUjCEyMDEzLS1Cb25ueS1HLS1GZS1XLS1MQU1NUFMtLWlwcjGUjCoyMDEzLS1IZW5yaWtzc29uLUstTy1FLS1GZS1DLS1MQU1NUFMtLWlwcjGUjCgyMDE0LS1MaXlhbmFnZS1MLVMtSS0tRmUtQy0tTEFNTVBTLS1pcHIylIwfMjAxNS0tQXNhZGktRS0tRmUtLUxBTU1QUy0taXByMZSMIzIwMTUtLUVpY2gtUy1NLS1GZS1Dci0tTEFNTVBTLS1pcHIxlIwoMjAxNy0tQmVsYW5kLUwtSy0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMIzIwMTctLUNob2ktVy1NLS1Dby1GZS0tTEFNTVBTLS1pcHIxlIwiMjAxNy0tV3UtQy0tTmktQ3ItRmUtLUxBTU1QUy0taXByMZSMHzIwMTctLVd1LUMtLU5pLUZlLS1MQU1NUFMtLWlwcjGUjCwyMDE4LS1DaG9pLVctTS0tQ28tTmktQ3ItRmUtTW4tLUxBTU1QUy0taXByMZSMIzIwMTgtLUV0ZXNhbWktUy1BLS1GZS0tTEFNTVBTLS1pcHIxlIwsMjAxOC0tRmFya2FzLUQtLUZlLU5pLUNyLUNvLUN1LS1MQU1NUFMtLWlwcjKUjCQyMDE4LS1KZW9uZy1HLVUtLVBkLUZlLS1MQU1NUFMtLWlwcjGUjCYyMDE4LS1aaG91LVgtVy0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMJjIwMTgtLVpob3UtWC1XLS1GZS1OaS1Dci0tTEFNTVBTLS1pcHIylIwnMjAxOS0tQXNsYW0tSS0tRmUtTW4tU2ktQy0tTEFNTVBTLS1pcHIxlIwmMjAxOS0tQnlnZ21hc3Rhci1KLS1GZS1PLS1MQU1NUFMtLWlwcjGUjCoyMDE5LS1NZW5kZWxldi1NLUktLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjGUjCQyMDIwLS1CeWdnbWFzdGFyLUotLUZlLS1MQU1NUFMtLWlwcjGUjCwyMDIwLS1GYXJrYXMtRC0tRmUtTmktQ3ItQ28tQWwtLUxBTU1QUy0taXByMZSMLDIwMjAtLUdyb2dlci1SLS1Dby1Dci1GZS1Nbi1OaS0tTEFNTVBTLS1pcHIxlIweMjAyMC0tTW9yaS1ILS1GZS0tTEFNTVBTLS1pcHIxlIwvMjAyMS0tRGVsdWlnaS1PLVItLUZlLU5pLUNyLUNvLUN1LS1MQU1NUFMtLWlwcjGUjCIyMDIxLS1TdGFyaWtvdi1TLS1GZS0tTEFNTVBTLS1pcHIxlIwiMjAyMS0tU3Rhcmlrb3YtUy0tRmUtLUxBTU1QUy0taXByMpSMHzIwMjEtLVdlbi1NLS1GZS1ILS1MQU1NUFMtLWlwcjGUjCMyMDIyLS1NYWhhdGEtQS0tQWwtRmUtLUxBTU1QUy0taXByMZSMJzIwMjItLVN0YXJpa292LVMtLUZlLUNyLUgtLUxBTU1QUy0taXByMZSMHTIwMjItLVN1bi1ZLS1GZS0tTEFNTVBTLS1pcHIxlIw6RUFNX0R5bmFtb19BY2tsYW5kQmFjb25DYWxkZXJfMTk5N19GZV9fTU9fMTQyNzk5NzE3NTE2XzAwNZSMQUVBTV9EeW5hbW9fQWNrbGFuZE1lbmRlbGV2U3JvbG92aXR6XzIwMDRfRmVQX19NT184ODQzNDMxNDYzMTBfMDA1lIw7RUFNX0R5bmFtb19Cb25ueUNhc3RpbkJ1bGxlbnNfMjAxM19GZVdfX01PXzczNzU2NzI0MjYzMV8wMDCUjEBFQU1fRHluYW1vX0Jvbm55Q2FzdGluVGVyZW50eWV2XzIwMTNfRmVOaUNyX19NT183NjMxOTc5NDEwMzlfMDAwlIw/RUFNX0R5bmFtb19Cb25ueVBhc2lhbm90Q2FzdGluXzIwMDlfRmVDdU5pX19NT180NjkzNDM5NzMxNzFfMDA1lIw+RUFNX0R5bmFtb19Cb25ueVBhc2lhbm90TWFsZXJiYV8yMDA5X0ZlTmlfX01PXzI2NzcyMTQwODkzNF8wMDWUjEFFQU1fRHluYW1vX0NoYW1hdGlQYXBhbmljb2xhb3VNaXNoaW5fMjAwNl9GZV9fTU9fOTYwNjk5NTEzNDI0XzAwMJSMN0VBTV9EeW5hbW9fSGVwYnVybkFja2xhbmRfMjAwOF9GZUNfX01PXzE0Mzk3NzE1MjcyOF8wMDWUjDBFQU1fRHluYW1vX01hcmluaWNhXzIwMDdfRmVfX01PXzQ2NjgwODg3NzEzMF8wMDCUjDBFQU1fRHluYW1vX01hcmluaWNhXzIwMTFfRmVfX01PXzI1NTMxNTQwNzkxMF8wMDCUjD1FQU1fRHluYW1vX01lbmRlbGV2Qm9yb3Zpa292XzIwMjBfRmVOaUNyX19NT185MjIzNjMzNDA1NzBfMDAwlIw3RUFNX0R5bmFtb19NZW5kZWxldkhhblNvbl8yMDA3X1ZGZV9fTU9fMjQ5NzA2ODEwNTI3XzAwNZSMRkVBTV9EeW5hbW9fTWVuZGVsZXZIYW5Tcm9sb3ZpdHpfMjAwM1BvdGVudGlhbDJfRmVfX01PXzc2OTU4MjM2MzQzOV8wMDWUjEZFQU1fRHluYW1vX01lbmRlbGV2SGFuU3JvbG92aXR6XzIwMDNQb3RlbnRpYWw1X0ZlX19NT185NDI0MjA3MDY4NThfMDA1lIw8RUFNX0R5bmFtb19NZW5kZWxldkhhblNyb2xvdml0el8yMDAzX0ZlX19NT184MDc5OTc4MjY0NDlfMDAwlIxCRUFNX0R5bmFtb19NZW5kZWxldlNyb2xvdml0ekFja2xhbmRfMjAwNV9BbEZlX19NT181Nzc0NTM4OTE5NDFfMDA1lIwwRUFNX0R5bmFtb19NZW5kZWxldl8yMDAzX0ZlX19NT181NDY2NzM1NDkwODVfMDAwlIxJRUFNX0R5bmFtb19aaG91Sm9obnNvbldhZGxleV8yMDA0TklTVHJldGFidWxhdGlvbl9GZV9fTU9fNjgxMDg4Mjk4MjA4XzAwMJSMOUVBTV9EeW5hbW9fWmhvdUpvaG5zb25XYWRsZXlfMjAwNF9GZV9fTU9fNjUwMjc5OTA1MjMwXzAwNZSMRkVBTV9NYWduZXRpYzJHUXVpbnRpY19DaGllc2FEZXJsZXREdWRhcmV2XzIwMTFfRmVfX01PXzE0MDQ0NDMyMTYwN18wMDKUjDxFQU1fTWFnbmV0aWNDdWJpY19EdWRhcmV2RGVybGV0XzIwMDVfRmVfX01PXzEzNTAzNDIyOTI4Ml8wMDKUjENFQU1fTWFnbmV0aWNDdWJpY19NZW5kZWxldkhhblNyb2xvdml0el8yMDAzX0ZlX19NT184NTYyOTU5NTI0MjVfMDAylIw8TUVBTV9MQU1NUFNfQXNhZGlaYWVlbU5vdXJhbmlhbl8yMDE1X0ZlX19NT180OTIzMTA4OTg3NzlfMDAwlIw7TUVBTV9MQU1NUFNfQ2hvaUpvU29obl8yMDE4X0NvTmlDckZlTW5fX01PXzExNTQ1NDc0NzUwM18wMDCUjDZNRUFNX0xBTU1QU19DaG9pS2ltU2VvbF8yMDE3X0NvRmVfX01PXzE3OTE1ODI1NzE4MF8wMDCUjDVNRUFNX0xBTU1QU19FdGVzYW1pQXNhZGlfMjAxOF9GZV9fTU9fNTQ5OTAwMjg3NDIxXzAwMJSMR01FQU1fTEFNTVBTX0plbGluZWtHcm9oSG9yc3RlbWV5ZXJfMjAxMl9BbFNpTWdDdUZlX19NT18yNjI1MTk1MjA2NzhfMDAwlIw2TUVBTV9MQU1NUFNfSmVvbmdQYXJrRG9fMjAxOF9QZEZlX19NT185MjQ3MzY2MjIyMDNfMDAwlIw2TUVBTV9MQU1NUFNfS2ltSnVuZ0xlZV8yMDA5X0ZlVGlDX19NT18xMTAxMTkyMDQ3MjNfMDAwlIw2TUVBTV9MQU1NUFNfS2ltSnVuZ0xlZV8yMDEwX0ZlTmJDX19NT18wNzI2ODk3MTg2MTZfMDAwlIwxTUVBTV9MQU1NUFNfS2ltTGVlXzIwMDZfUHRGZV9fTU9fMzQzMTY4MTAxNDkwXzAwMJSMNU1FQU1fTEFNTVBTX0tpbVNoaW5MZWVfMjAwOV9GZU1uX19NT18wNTg3MzU0MDA0NjJfMDAwlIwyTUVBTV9MQU1NUFNfS29KaW1MZWVfMjAxMl9GZVBfX01PXzE3OTQyMDM2Mzk0NF8wMDCUjDFNRUFNX0xBTU1QU19MZWVKYW5nXzIwMDdfRmVIX19NT18wOTU2MTA5NTE5NTdfMDAwlIwzTUVBTV9MQU1NUFNfTGVlTGVlS2ltXzIwMDZfRmVOX19NT180MzI4NjE3NjY3MzhfMDAwlIwxTUVBTV9MQU1NUFNfTGVlTGVlXzIwMTBfRmVBbF9fTU9fMzMyMjExNTIyMDUwXzAwMJSMN01FQU1fTEFNTVBTX0xlZVdpcnRoU2hpbV8yMDA1X0ZlQ3VfX01PXzA2MzYyNjA2NTQzN18wMDCUjC1NRUFNX0xBTU1QU19MZWVfMjAwNl9GZUNfX01PXzg1Njk1NjE3ODY2OV8wMDCUjDpNRUFNX0xBTU1QU19MaXlhbmFnZUtpbUhvdXplXzIwMTRfRmVDX19NT18wNzUyNzk4MDAxOTVfMDAwlIwwTUVBTV9MQU1NUFNfU2FMZWVfMjAwOF9GZVRpX19NT18yNjA1NDY5Njc3OTNfMDAwlIwwTUVBTV9MQU1NUFNfU2FMZWVfMjAwOF9OYkZlX19NT18xNjIwMzYxNDEyNjFfMDAwlIw0TUVBTV9MQU1NUFNfV3VMZWVTdV8yMDE3X05pQ3JGZV9fTU9fOTEyNjM2MTA3MTA4XzAwMJSMMk1FQU1fTEFNTVBTX1d1TGVlU3VfMjAxN19OaUZlX19NT18zMjEyMzMxNzY0OThfMDAwlIwxTUpfTW9ycmlzQWdhTGV2YXNob3ZfMjAwOF9GZV9fTU9fODU3MjgyNzU0MzA3XzAwM5SMRE1vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlIaWdoQ3V0b2ZmX0ZlX19NT18xNDc2MDMxMjg0MzdfMDA0lIxDTW9yc2VfU2hpZnRlZF9HaXJpZmFsY29XZWl6ZXJfMTk1OUxvd0N1dG9mZl9GZV9fTU9fMzMxMjg1NDk1NjE3XzAwNJSMQ01vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlNZWRDdXRvZmZfRmVfX01PXzk4NDM1ODM0NDE5Nl8wMDSUjD1UZXJzb2ZmX0xBTU1QU19NdWVsbGVyRXJoYXJ0QWxiZV8yMDA3X0ZlX19NT18xMzc5NjQzMTA3MDJfMDAzlIxFU2ltX0xBTU1QU19FQU1DRF9TdHVrb3dza2lTYWRpZ2hFcmhhcnRfMjAwOV9GZUNyX19TTV83NzU1NjQ0OTk1MTNfMDAwlIxBU2ltX0xBTU1QU19FQU1fQm9ubnlDYXN0aW5CdWxsZW5zXzIwMTNfRmVDcldfX1NNXzY5OTI1NzM1MDcwNF8wMDCUjERTaW1fTEFNTVBTX0VBTV9Cb25ueVBhc2lhbm90VGVyZW50eWV2XzIwMTFfRmVDcl9fU01fMjM3MDg5Mjk4NDYzXzAwMJSMQFNpbV9MQU1NUFNfTUVBTV9Bc2FkaVphZWVtTm91cmFuaWFuXzIwMTVfRmVfX1NNXzA0MjYzMDY4MDk5M18wMDCUjDlTaW1fTEFNTVBTX01FQU1fRXRlc2FtaUFzYWRpXzIwMThfRmVfX1NNXzI2NzAxNjYwODc1NV8wMDCUjEtTaW1fTEFNTVBTX01FQU1fSmVsaW5la0dyb2hIb3JzdGVtZXllcl8yMDEyX0FsU2lNZ0N1RmVfX1NNXzY1NjUxNzM1MjQ4NV8wMDCUjDpTaW1fTEFNTVBTX01FQU1fS2ltSnVuZ0xlZV8yMDA5X0ZlVGlDX19TTV81MzEwMzgyNzQ0NzFfMDAwlIw+U2ltX0xBTU1QU19NRUFNX0xpeWFuYWdlS2ltSG91emVfMjAxNF9GZUNfX1NNXzY1MjQyNTc3NzgwOF8wMDCUjEhTaW1fTEFNTVBTX1JlYXhGRl9BcnlhbnBvdXJWYW5EdWluS3ViaWNraV8yMDEwX0ZlSE9fX1NNXzIyMjk2NDIxNjAwMV8wMDGUjEVTaW1fTEFNTVBTX1RlcnNvZmZaQkxfQnlnZ21hc3RhckdyYW5iZXJnXzIwMjBfRmVfX1NNXzk1ODg2Mzg5NTIzNF8wMDCUjE1TaW1fTEFNTVBTX1RlcnNvZmZaQkxfSGVucmlrc3NvbkJqb3JrYXNOb3JkbHVuZF8yMDEzX0ZlQ19fU01fNDczNDYzNDk4MjY5XzAwMJRldS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "engine",
+                                "GID": 54,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "lammps_output_job"
+                            }
+                        ],
+                        "GID": 50,
+                        "pos x": 444.0336519201053,
+                        "pos y": 82.14285714285714
+                    },
+                    {
+                        "identifier": "BulkStructure_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "element",
+                                "GID": 57,
+                                "val": "gASVBgAAAAAAAACMAkZllC4=",
+                                "dtype": "DType.String",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJGZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA3N0cpSTlIwFbnVtcHmUjARzdHJflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "bulk_structure_input_element"
+                            },
+                            {
+                                "type": "data",
+                                "label": "crystal_structure",
+                                "GID": 58,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVwgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiYwFaXRlbXOUXZQoTowCc2OUjANmY2OUjANiY2OUjANoY3CUjAdkaWFtb25klIwKemluY2JsZW5kZZSMCHJvY2tzYWx0lIwOY2VzaXVtY2hsb3JpZGWUjAhmbHVvcml0ZZSMCHd1cnR6aXRllGV1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "a",
+                                "GID": 59,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "c",
+                                "GID": 60,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "c_over_a",
+                                "GID": 61,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "u",
+                                "GID": 62,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            },
+                            {
+                                "type": "data",
+                                "label": "orthorhombic",
+                                "GID": 63,
+                                "val": "gASJLg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "cubic",
+                                "GID": 64,
+                                "val": "gASJLg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 65,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "bulk_structure_output_structure"
+                            }
+                        ],
+                        "GID": 56,
+                        "pos x": 107.78916041893207,
+                        "pos y": 128.2967032967033
+                    },
+                    {
+                        "identifier": "Lammps_Node",
+                        "version": "v0.2",
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 68,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASViQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZR1Lg==",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "lammps_input_project"
+                            },
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 69,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "lammps_input_structure"
+                            },
+                            {
+                                "type": "data",
+                                "label": "potential",
+                                "GID": 70,
+                                "val": "gASVJwAAAAAAAACMIzE5OTctLUFja2xhbmQtRy1KLS1GZS0tTEFNTVBTLS1pcHIxlC4=",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASVLxkAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAhidWlsdGluc5SMA3N0cpSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjAVpdGVtc5RdlCiMIzE5OTctLUFja2xhbmQtRy1KLS1GZS0tTEFNTVBTLS1pcHIxlIwfMTk5OC0tTWV5ZXItUi0tRmUtLUxBTU1QUy0taXByMZSMHzIwMDEtLUxlZS1CLUotLUZlLS1MQU1NUFMtLWlwcjGUjCIyMDAxLS1MZWUtQi1KLS1GZS1Dci0tTEFNTVBTLS1pcHIxlIwmMjAwMy0tTWVuZGVsZXYtTS1JLS1GZS0yLS1MQU1NUFMtLWlwcjOUjCYyMDAzLS1NZW5kZWxldi1NLUktLUZlLTUtLUxBTU1QUy0taXByMZSMJTIwMDQtLUFja2xhbmQtRy1KLS1GZS1QLS1MQU1NUFMtLWlwcjGUjCAyMDA0LS1aaG91LVgtVy0tRmUtLUxBTU1QUy0taXByMpSMIjIwMDUtLUxlZS1CLUotLUZlLUN1LS1MQU1NUFMtLWlwcjGUjCcyMDA1LS1NZW5kZWxldi1NLUktLUFsLUZlLS1MQU1NUFMtLWlwcjGUjCEyMDA2LS1DaGFtYXRpLUgtLUZlLS1MQU1NUFMtLWlwcjGUjCAyMDA2LS1LaW0tSi0tRmUtUHQtLUxBTU1QUy0taXByMZSMITIwMDYtLUxlZS1CLUotLUZlLUMtLUxBTU1QUy0taXByMZSMITIwMDYtLUxlZS1CLUotLUZlLU4tLUxBTU1QUy0taXByMZSMITIwMDctLUxlZS1CLUotLUZlLUgtLUxBTU1QUy0taXByMZSMJjIwMDctLU1lbmRlbGV2LU0tSS0tVi1GZS0tTEFNTVBTLS1pcHIxlIwlMjAwOC0tSGVwYnVybi1ELUotLUZlLUMtLUxBTU1QUy0taXByMZSMHzIwMDgtLVNhLUktLUZlLU5iLS1MQU1NUFMtLWlwcjGUjB8yMDA4LS1TYS1JLS1GZS1UaS0tTEFNTVBTLS1pcHIxlIwlMjAwOS0tQm9ubnktRy0tRmUtQ3UtTmktLUxBTU1QUy0taXByMZSMIjIwMDktLUJvbm55LUctLUZlLU5pLS1MQU1NUFMtLWlwcjGUjCQyMDA5LS1LaW0tSC1LLS1GZS1UaS1DLS1MQU1NUFMtLWlwcjKUjCIyMDA5LS1LaW0tWS1NLS1GZS1Nbi0tTEFNTVBTLS1pcHIxlIwkMjAwOS0tT2xzc29uLVAtQS1ULS1GZS0tTEFNTVBTLS1pcHIxlIwmMjAwOS0tU3R1a293c2tpLUEtLUZlLUNyLS1MQU1NUFMtLWlwcjGUjCQyMDEwLS1LaW0tSC1LLS1GZS1OYi1DLS1MQU1NUFMtLWlwcjGUjCAyMDEwLS1MZWUtRS0tRmUtQWwtLUxBTU1QUy0taXByMZSMITIwMTAtLU1hbGVyYmEtTC0tRmUtLUxBTU1QUy0taXByMZSMIjIwMTEtLUJvbm55LUctLUZlLUNyLS1MQU1NUFMtLWlwcjKUjCIyMDExLS1Cb25ueS1HLS1GZS1Dci0tTEFNTVBTLS1pcHIzlIwlMjAxMS0tQm9ubnktRy0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMJTIwMTEtLUJvbm55LUctLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjKUjCMyMDExLS1DaGllc2EtUy0tRmUtMzMtLUxBTU1QUy0taXByMZSMLTIwMTItLUplbGluZWstQi0tQWwtU2ktTWctQ3UtRmUtLUxBTU1QUy0taXByMpSMIDIwMTItLUtvLVctUy0tRmUtUC0tTEFNTVBTLS1pcHIxlIwiMjAxMi0tUHJvdmlsbGUtTC0tRmUtLUxBTU1QUy0taXByMZSMJDIwMTMtLUJvbm55LUctLUZlLUNyLVctLUxBTU1QUy0taXByMpSMJDIwMTMtLUJvbm55LUctLUZlLUNyLVctLUxBTU1QUy0taXByM5SMJTIwMTMtLUJvbm55LUctLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjGUjCEyMDEzLS1Cb25ueS1HLS1GZS1XLS1MQU1NUFMtLWlwcjGUjCoyMDEzLS1IZW5yaWtzc29uLUstTy1FLS1GZS1DLS1MQU1NUFMtLWlwcjGUjCgyMDE0LS1MaXlhbmFnZS1MLVMtSS0tRmUtQy0tTEFNTVBTLS1pcHIylIwfMjAxNS0tQXNhZGktRS0tRmUtLUxBTU1QUy0taXByMZSMIzIwMTUtLUVpY2gtUy1NLS1GZS1Dci0tTEFNTVBTLS1pcHIxlIwoMjAxNy0tQmVsYW5kLUwtSy0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMIzIwMTctLUNob2ktVy1NLS1Dby1GZS0tTEFNTVBTLS1pcHIxlIwiMjAxNy0tV3UtQy0tTmktQ3ItRmUtLUxBTU1QUy0taXByMZSMHzIwMTctLVd1LUMtLU5pLUZlLS1MQU1NUFMtLWlwcjGUjCwyMDE4LS1DaG9pLVctTS0tQ28tTmktQ3ItRmUtTW4tLUxBTU1QUy0taXByMZSMIzIwMTgtLUV0ZXNhbWktUy1BLS1GZS0tTEFNTVBTLS1pcHIxlIwsMjAxOC0tRmFya2FzLUQtLUZlLU5pLUNyLUNvLUN1LS1MQU1NUFMtLWlwcjKUjCQyMDE4LS1KZW9uZy1HLVUtLVBkLUZlLS1MQU1NUFMtLWlwcjGUjCYyMDE4LS1aaG91LVgtVy0tRmUtTmktQ3ItLUxBTU1QUy0taXByMZSMJjIwMTgtLVpob3UtWC1XLS1GZS1OaS1Dci0tTEFNTVBTLS1pcHIylIwnMjAxOS0tQXNsYW0tSS0tRmUtTW4tU2ktQy0tTEFNTVBTLS1pcHIxlIwmMjAxOS0tQnlnZ21hc3Rhci1KLS1GZS1PLS1MQU1NUFMtLWlwcjGUjCoyMDE5LS1NZW5kZWxldi1NLUktLUZlLU5pLUNyLS1MQU1NUFMtLWlwcjGUjCQyMDIwLS1CeWdnbWFzdGFyLUotLUZlLS1MQU1NUFMtLWlwcjGUjCwyMDIwLS1GYXJrYXMtRC0tRmUtTmktQ3ItQ28tQWwtLUxBTU1QUy0taXByMZSMLDIwMjAtLUdyb2dlci1SLS1Dby1Dci1GZS1Nbi1OaS0tTEFNTVBTLS1pcHIxlIweMjAyMC0tTW9yaS1ILS1GZS0tTEFNTVBTLS1pcHIxlIwvMjAyMS0tRGVsdWlnaS1PLVItLUZlLU5pLUNyLUNvLUN1LS1MQU1NUFMtLWlwcjGUjCIyMDIxLS1TdGFyaWtvdi1TLS1GZS0tTEFNTVBTLS1pcHIxlIwiMjAyMS0tU3Rhcmlrb3YtUy0tRmUtLUxBTU1QUy0taXByMpSMHzIwMjEtLVdlbi1NLS1GZS1ILS1MQU1NUFMtLWlwcjGUjCMyMDIyLS1NYWhhdGEtQS0tQWwtRmUtLUxBTU1QUy0taXByMZSMJzIwMjItLVN0YXJpa292LVMtLUZlLUNyLUgtLUxBTU1QUy0taXByMZSMHTIwMjItLVN1bi1ZLS1GZS0tTEFNTVBTLS1pcHIxlIw6RUFNX0R5bmFtb19BY2tsYW5kQmFjb25DYWxkZXJfMTk5N19GZV9fTU9fMTQyNzk5NzE3NTE2XzAwNZSMQUVBTV9EeW5hbW9fQWNrbGFuZE1lbmRlbGV2U3JvbG92aXR6XzIwMDRfRmVQX19NT184ODQzNDMxNDYzMTBfMDA1lIw7RUFNX0R5bmFtb19Cb25ueUNhc3RpbkJ1bGxlbnNfMjAxM19GZVdfX01PXzczNzU2NzI0MjYzMV8wMDCUjEBFQU1fRHluYW1vX0Jvbm55Q2FzdGluVGVyZW50eWV2XzIwMTNfRmVOaUNyX19NT183NjMxOTc5NDEwMzlfMDAwlIw/RUFNX0R5bmFtb19Cb25ueVBhc2lhbm90Q2FzdGluXzIwMDlfRmVDdU5pX19NT180NjkzNDM5NzMxNzFfMDA1lIw+RUFNX0R5bmFtb19Cb25ueVBhc2lhbm90TWFsZXJiYV8yMDA5X0ZlTmlfX01PXzI2NzcyMTQwODkzNF8wMDWUjEFFQU1fRHluYW1vX0NoYW1hdGlQYXBhbmljb2xhb3VNaXNoaW5fMjAwNl9GZV9fTU9fOTYwNjk5NTEzNDI0XzAwMJSMN0VBTV9EeW5hbW9fSGVwYnVybkFja2xhbmRfMjAwOF9GZUNfX01PXzE0Mzk3NzE1MjcyOF8wMDWUjDBFQU1fRHluYW1vX01hcmluaWNhXzIwMDdfRmVfX01PXzQ2NjgwODg3NzEzMF8wMDCUjDBFQU1fRHluYW1vX01hcmluaWNhXzIwMTFfRmVfX01PXzI1NTMxNTQwNzkxMF8wMDCUjD1FQU1fRHluYW1vX01lbmRlbGV2Qm9yb3Zpa292XzIwMjBfRmVOaUNyX19NT185MjIzNjMzNDA1NzBfMDAwlIw3RUFNX0R5bmFtb19NZW5kZWxldkhhblNvbl8yMDA3X1ZGZV9fTU9fMjQ5NzA2ODEwNTI3XzAwNZSMRkVBTV9EeW5hbW9fTWVuZGVsZXZIYW5Tcm9sb3ZpdHpfMjAwM1BvdGVudGlhbDJfRmVfX01PXzc2OTU4MjM2MzQzOV8wMDWUjEZFQU1fRHluYW1vX01lbmRlbGV2SGFuU3JvbG92aXR6XzIwMDNQb3RlbnRpYWw1X0ZlX19NT185NDI0MjA3MDY4NThfMDA1lIw8RUFNX0R5bmFtb19NZW5kZWxldkhhblNyb2xvdml0el8yMDAzX0ZlX19NT184MDc5OTc4MjY0NDlfMDAwlIxCRUFNX0R5bmFtb19NZW5kZWxldlNyb2xvdml0ekFja2xhbmRfMjAwNV9BbEZlX19NT181Nzc0NTM4OTE5NDFfMDA1lIwwRUFNX0R5bmFtb19NZW5kZWxldl8yMDAzX0ZlX19NT181NDY2NzM1NDkwODVfMDAwlIxJRUFNX0R5bmFtb19aaG91Sm9obnNvbldhZGxleV8yMDA0TklTVHJldGFidWxhdGlvbl9GZV9fTU9fNjgxMDg4Mjk4MjA4XzAwMJSMOUVBTV9EeW5hbW9fWmhvdUpvaG5zb25XYWRsZXlfMjAwNF9GZV9fTU9fNjUwMjc5OTA1MjMwXzAwNZSMRkVBTV9NYWduZXRpYzJHUXVpbnRpY19DaGllc2FEZXJsZXREdWRhcmV2XzIwMTFfRmVfX01PXzE0MDQ0NDMyMTYwN18wMDKUjDxFQU1fTWFnbmV0aWNDdWJpY19EdWRhcmV2RGVybGV0XzIwMDVfRmVfX01PXzEzNTAzNDIyOTI4Ml8wMDKUjENFQU1fTWFnbmV0aWNDdWJpY19NZW5kZWxldkhhblNyb2xvdml0el8yMDAzX0ZlX19NT184NTYyOTU5NTI0MjVfMDAylIw8TUVBTV9MQU1NUFNfQXNhZGlaYWVlbU5vdXJhbmlhbl8yMDE1X0ZlX19NT180OTIzMTA4OTg3NzlfMDAwlIw7TUVBTV9MQU1NUFNfQ2hvaUpvU29obl8yMDE4X0NvTmlDckZlTW5fX01PXzExNTQ1NDc0NzUwM18wMDCUjDZNRUFNX0xBTU1QU19DaG9pS2ltU2VvbF8yMDE3X0NvRmVfX01PXzE3OTE1ODI1NzE4MF8wMDCUjDVNRUFNX0xBTU1QU19FdGVzYW1pQXNhZGlfMjAxOF9GZV9fTU9fNTQ5OTAwMjg3NDIxXzAwMJSMR01FQU1fTEFNTVBTX0plbGluZWtHcm9oSG9yc3RlbWV5ZXJfMjAxMl9BbFNpTWdDdUZlX19NT18yNjI1MTk1MjA2NzhfMDAwlIw2TUVBTV9MQU1NUFNfSmVvbmdQYXJrRG9fMjAxOF9QZEZlX19NT185MjQ3MzY2MjIyMDNfMDAwlIw2TUVBTV9MQU1NUFNfS2ltSnVuZ0xlZV8yMDA5X0ZlVGlDX19NT18xMTAxMTkyMDQ3MjNfMDAwlIw2TUVBTV9MQU1NUFNfS2ltSnVuZ0xlZV8yMDEwX0ZlTmJDX19NT18wNzI2ODk3MTg2MTZfMDAwlIwxTUVBTV9MQU1NUFNfS2ltTGVlXzIwMDZfUHRGZV9fTU9fMzQzMTY4MTAxNDkwXzAwMJSMNU1FQU1fTEFNTVBTX0tpbVNoaW5MZWVfMjAwOV9GZU1uX19NT18wNTg3MzU0MDA0NjJfMDAwlIwyTUVBTV9MQU1NUFNfS29KaW1MZWVfMjAxMl9GZVBfX01PXzE3OTQyMDM2Mzk0NF8wMDCUjDFNRUFNX0xBTU1QU19MZWVKYW5nXzIwMDdfRmVIX19NT18wOTU2MTA5NTE5NTdfMDAwlIwzTUVBTV9MQU1NUFNfTGVlTGVlS2ltXzIwMDZfRmVOX19NT180MzI4NjE3NjY3MzhfMDAwlIwxTUVBTV9MQU1NUFNfTGVlTGVlXzIwMTBfRmVBbF9fTU9fMzMyMjExNTIyMDUwXzAwMJSMN01FQU1fTEFNTVBTX0xlZVdpcnRoU2hpbV8yMDA1X0ZlQ3VfX01PXzA2MzYyNjA2NTQzN18wMDCUjC1NRUFNX0xBTU1QU19MZWVfMjAwNl9GZUNfX01PXzg1Njk1NjE3ODY2OV8wMDCUjDpNRUFNX0xBTU1QU19MaXlhbmFnZUtpbUhvdXplXzIwMTRfRmVDX19NT18wNzUyNzk4MDAxOTVfMDAwlIwwTUVBTV9MQU1NUFNfU2FMZWVfMjAwOF9GZVRpX19NT18yNjA1NDY5Njc3OTNfMDAwlIwwTUVBTV9MQU1NUFNfU2FMZWVfMjAwOF9OYkZlX19NT18xNjIwMzYxNDEyNjFfMDAwlIw0TUVBTV9MQU1NUFNfV3VMZWVTdV8yMDE3X05pQ3JGZV9fTU9fOTEyNjM2MTA3MTA4XzAwMJSMMk1FQU1fTEFNTVBTX1d1TGVlU3VfMjAxN19OaUZlX19NT18zMjEyMzMxNzY0OThfMDAwlIwxTUpfTW9ycmlzQWdhTGV2YXNob3ZfMjAwOF9GZV9fTU9fODU3MjgyNzU0MzA3XzAwM5SMRE1vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlIaWdoQ3V0b2ZmX0ZlX19NT18xNDc2MDMxMjg0MzdfMDA0lIxDTW9yc2VfU2hpZnRlZF9HaXJpZmFsY29XZWl6ZXJfMTk1OUxvd0N1dG9mZl9GZV9fTU9fMzMxMjg1NDk1NjE3XzAwNJSMQ01vcnNlX1NoaWZ0ZWRfR2lyaWZhbGNvV2VpemVyXzE5NTlNZWRDdXRvZmZfRmVfX01PXzk4NDM1ODM0NDE5Nl8wMDSUjD1UZXJzb2ZmX0xBTU1QU19NdWVsbGVyRXJoYXJ0QWxiZV8yMDA3X0ZlX19NT18xMzc5NjQzMTA3MDJfMDAzlIxFU2ltX0xBTU1QU19FQU1DRF9TdHVrb3dza2lTYWRpZ2hFcmhhcnRfMjAwOV9GZUNyX19TTV83NzU1NjQ0OTk1MTNfMDAwlIxBU2ltX0xBTU1QU19FQU1fQm9ubnlDYXN0aW5CdWxsZW5zXzIwMTNfRmVDcldfX1NNXzY5OTI1NzM1MDcwNF8wMDCUjERTaW1fTEFNTVBTX0VBTV9Cb25ueVBhc2lhbm90VGVyZW50eWV2XzIwMTFfRmVDcl9fU01fMjM3MDg5Mjk4NDYzXzAwMJSMQFNpbV9MQU1NUFNfTUVBTV9Bc2FkaVphZWVtTm91cmFuaWFuXzIwMTVfRmVfX1NNXzA0MjYzMDY4MDk5M18wMDCUjDlTaW1fTEFNTVBTX01FQU1fRXRlc2FtaUFzYWRpXzIwMThfRmVfX1NNXzI2NzAxNjYwODc1NV8wMDCUjEtTaW1fTEFNTVBTX01FQU1fSmVsaW5la0dyb2hIb3JzdGVtZXllcl8yMDEyX0FsU2lNZ0N1RmVfX1NNXzY1NjUxNzM1MjQ4NV8wMDCUjDpTaW1fTEFNTVBTX01FQU1fS2ltSnVuZ0xlZV8yMDA5X0ZlVGlDX19TTV81MzEwMzgyNzQ0NzFfMDAwlIw+U2ltX0xBTU1QU19NRUFNX0xpeWFuYWdlS2ltSG91emVfMjAxNF9GZUNfX1NNXzY1MjQyNTc3NzgwOF8wMDCUjEhTaW1fTEFNTVBTX1JlYXhGRl9BcnlhbnBvdXJWYW5EdWluS3ViaWNraV8yMDEwX0ZlSE9fX1NNXzIyMjk2NDIxNjAwMV8wMDGUjEVTaW1fTEFNTVBTX1RlcnNvZmZaQkxfQnlnZ21hc3RhckdyYW5iZXJnXzIwMjBfRmVfX1NNXzk1ODg2Mzg5NTIzNF8wMDCUjE1TaW1fTEFNTVBTX1RlcnNvZmZaQkxfSGVucmlrc3NvbkJqb3JrYXNOb3JkbHVuZF8yMDEzX0ZlQ19fU01fNDczNDYzNDk4MjY5XzAwMJRldS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "engine",
+                                "GID": 71,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVjgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjB9weWlyb25fYXRvbWlzdGljcy5sYW1tcHMubGFtbXBzlIwGTGFtbXBzlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "lammps_output_job"
+                            }
+                        ],
+                        "GID": 67,
+                        "pos x": 450.62668116522633,
+                        "pos y": 519.5054945054945
+                    },
+                    {
+                        "identifier": "SlabStructure_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "element",
+                                "GID": 74,
+                                "val": "gASVBgAAAAAAAACMAkZllC4=",
+                                "dtype": "DType.String",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUjAJGZZSMA3ZhbJRoAowDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA3N0cpSTlIwFbnVtcHmUjARzdHJflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "surface_type",
+                                "GID": 75,
+                                "val": "gASVCgAAAAAAAACMBmJjYzEwMJQu",
+                                "dtype": "DType.Choice",
+                                "dtype state": "gASV0QAAAAAAAAB9lCiMB2RlZmF1bHSUjAZiY2MxMDCUjAN2YWyUaAKMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiYwFaXRlbXOUXZQoaAKMBmJjYzExMJSMBmJjYzExMZSMCmRpYW1vbmQxMDCUjApkaWFtb25kMTExlIwGZmNjMTAwlIwGZmNjMTEwlIwGZmNjMTExlIwGZmNjMjExlIwHaGNwMDAwMZSMCGhjcDEwbTEwlGV1Lg=="
+                            },
+                            {
+                                "type": "data",
+                                "label": "size_a",
+                                "GID": 76,
+                                "val": "gARLAS4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "size_b",
+                                "GID": 77,
+                                "val": "gARLAS4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "size_c",
+                                "GID": 78,
+                                "val": "gARLAS4=",
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "vacuum",
+                                "GID": 79,
+                                "val": "gASVCgAAAAAAAABHQCQAAAAAAAAu",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSUR0AkAAAAAAAAjAN2YWyUR0AkAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "center",
+                                "GID": 80,
+                                "val": "gASJLg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "orthogonal",
+                                "GID": 81,
+                                "val": "gASILg==",
+                                "dtype": "DType.Boolean",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUiIwDdmFslIiMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "a",
+                                "GID": 82,
+                                "val": "gAROLg==",
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVmQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjAVmbG9hdJSTlIwFbnVtcHmUjAhmbG9hdGluZ5STlGWMCmFsbG93X25vbmWUiIwHYmF0Y2hlZJSJjARzaXpllIwBbZSMCGRlY2ltYWxzlEsKdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "structure",
+                                "GID": 83,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASVmgAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjCxweWlyb25fYXRvbWlzdGljcy5hdG9taXN0aWNzLnN0cnVjdHVyZS5hdG9tc5SMBUF0b21zlJOUYYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "surface_structure_output_structure"
+                            }
+                        ],
+                        "GID": 73,
+                        "pos x": 114.38218966405312,
+                        "pos y": 482.14285714285717
+                    },
+                    {
+                        "identifier": "Project_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
+                        "additional data": {},
+                        "inputs": [
+                            {
+                                "type": "data",
+                                "label": "name",
+                                "GID": 86,
+                                "val": "gASVCwAAAAAAAACMB3N1cmZhY2WULg==",
+                                "dtype": "DType.String",
+                                "dtype state": "gASVigAAAAAAAAB9lCiMB2RlZmF1bHSUjAEulIwDdmFslGgCjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwDc3RylJOUjAVudW1weZSMBHN0cl+Uk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UdS4="
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "data",
+                                "label": "project",
+                                "GID": 87,
+                                "dtype": "DType.Data",
+                                "dtype state": "gASViQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjBlweWlyb25fYXRvbWlzdGljcy5wcm9qZWN0lIwHUHJvamVjdJSTlGGMCmFsbG93X25vbmWUiYwHYmF0Y2hlZJSJjARzaXpllIwBbZR1Lg==",
+                                "otype_namespace": "atomistics",
+                                "otype_name": "project_output_atomistics_project"
+                            }
+                        ],
+                        "GID": 85,
+                        "pos x": 120.97521890917416,
+                        "pos y": 22.802197802197803
+                    }
+                ],
+                "connections": [
+                    {
+                        "GID": 90,
+                        "parent node index": 1,
+                        "output port index": 0,
+                        "connected node": 0,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 33,
+                        "parent node index": 2,
+                        "output port index": 2,
+                        "connected node": 1,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 49,
+                        "parent node index": 3,
+                        "output port index": 2,
+                        "connected node": 1,
+                        "connected input port index": 3
+                    },
+                    {
+                        "GID": 55,
+                        "parent node index": 4,
+                        "output port index": 0,
+                        "connected node": 2,
+                        "connected input port index": 3
+                    },
+                    {
+                        "GID": 66,
+                        "parent node index": 5,
+                        "output port index": 0,
+                        "connected node": 4,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 91,
+                        "parent node index": 5,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 72,
+                        "parent node index": 6,
+                        "output port index": 0,
+                        "connected node": 3,
+                        "connected input port index": 3
+                    },
+                    {
+                        "GID": 84,
+                        "parent node index": 7,
+                        "output port index": 0,
+                        "connected node": 6,
+                        "connected input port index": 1
+                    },
+                    {
+                        "GID": 92,
+                        "parent node index": 7,
+                        "output port index": 0,
+                        "connected node": 1,
+                        "connected input port index": 2
+                    },
+                    {
+                        "GID": 88,
+                        "parent node index": 8,
+                        "output port index": 0,
+                        "connected node": 4,
+                        "connected input port index": 0
+                    },
+                    {
+                        "GID": 89,
+                        "parent node index": 8,
+                        "output port index": 0,
+                        "connected node": 6,
+                        "connected input port index": 0
+                    }
+                ],
+                "GID": 7
+            },
+            "GID": 1
+        }
+    ]
+}
