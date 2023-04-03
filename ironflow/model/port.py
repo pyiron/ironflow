@@ -56,6 +56,31 @@ class HasOType:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._otype_ok = None
+        self.set_otype_ok()
+
+    def recalculate_otype_checks(self, ignore=None):
+        self.set_otype_ok()
+        if self.otype is not None:
+
+            # Along connections
+            for con in self.connections:
+                if isinstance(self, NodeInput):
+                    other = con.out
+                else:
+                    other = con.inp
+
+                if other != ignore and other.otype is not None:
+                    other.recalculate_otype_checks(ignore=self)
+
+            # Across the node
+            if isinstance(self, NodeInput):
+                ports = self.node.outputs.ports
+            else:
+                ports = self.node.inputs.ports
+            if ignore not in ports:
+                for port in ports:
+                    if port.otype is not None:
+                        port.recalculate_otype_checks(ignore=self)
 
     def set_otype_ok(self):
         if self.otype is not None:
@@ -79,8 +104,11 @@ class HasOType:
 
     @property
     def otype_ok(self):
-        self.set_otype_ok()
-        return self._otype_ok
+        try:
+            return self._otype_ok
+        except AttributeError:
+            self.set_otype_ok()
+            return self._otype_ok
 
     def _output_graph_is_represented_in_workflow_tree(self, output_port, input_tree):
         try:
@@ -190,8 +218,16 @@ class NodeInput(NodeInputCore, HasTypes):
         self.set_dtype_ok()
 
     def connected(self):
+
         super().connected()
         self.set_dtype_ok()
+        self.recalculate_otype_checks()  # Note: Only need to call or one of input or
+        # output since Flow.add_connection calls .connected on both inp and out
+
+    def disconnected(self):
+        super().disconnected()
+        self.recalculate_otype_checks()  # Note: Only need to call or one of input or
+        # output since Flow.add_connection calls .connected on both inp and out
 
 
 class NodeOutput(NodeOutputCore, HasTypes):
