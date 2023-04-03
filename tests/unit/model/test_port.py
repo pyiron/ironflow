@@ -19,26 +19,26 @@ class TestPorts(TestCase):
         with self.subTest("Without dtype set"):
             p0 = NodeInput(node=None, dtype=None)
             p0.val = None
-            self.assertTrue(p0.valid_val)
+            self.assertTrue(p0.ready)
             p0.val = "foo"
-            self.assertTrue(p0.valid_val)
+            self.assertTrue(p0.ready)
             p0.val = 42
-            self.assertTrue(p0.valid_val)
+            self.assertTrue(p0.ready)
 
         with self.subTest("With allow none"):
             p0 = NodeInput(node=None, dtype=String(allow_none=True))
             p0.val = None
-            self.assertTrue(p0.valid_val)
+            self.assertTrue(p0.ready)
             p0.val = "foo"
-            self.assertTrue(p0.valid_val)
+            self.assertTrue(p0.ready)
             p0.val = 42
-            self.assertFalse(p0.valid_val, msg="Should be wrong type")
+            self.assertFalse(p0.ready, msg="Should be wrong type")
 
         with self.subTest("With allow none"):
             p0 = NodeInput(node=None, dtype=String(allow_none=False))
             p0.val = None
-            self.assertFalse(p0.valid_val, msg="None should be disallowed")
+            self.assertFalse(p0.ready, msg="None should be disallowed")
             p0.val = "foo"
-            self.assertTrue(p0.valid_val)
+            self.assertTrue(p0.ready)
             p0.val = 42
-            self.assertFalse(p0.valid_val, msg="Should be wrong type")
+            self.assertFalse(p0.ready, msg="Should be wrong type")

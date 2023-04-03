@@ -811,7 +811,7 @@ class Lammps_Node(Engine):
             self.inputs.ports.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
-        if inp == 1 and self.inputs.ports.structure.valid_val:
+        if inp == 1 and self.inputs.ports.structure.ready:
             self._update_potential_choices()
         super().update_event(inp=inp)
 

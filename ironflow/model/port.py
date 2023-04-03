@@ -110,7 +110,7 @@ class HasOType:
 
 class HasTypes(HasOType, HasDType):
     @property
-    def valid_val(self):
+    def ready(self):
         return self._dtype_ok and self._otype_ok
 
 
