@@ -11,6 +11,7 @@ from copy import deepcopy
 from typing import Optional, TYPE_CHECKING
 
 from numpy import argwhere
+from ryvencore.InfoMsgs import InfoMsgs
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
 from ryvencore.NodePortBP import (
     NodeOutputBP as NodeOutputBPCore,
@@ -202,8 +203,15 @@ class NodeInput(NodeInputCore, HasTypes):
         return self._output_graph_is_represented_in_workflow_tree(port, tree)
 
     def update(self, data=None):
-        super().update(data=data)
+        # super().update(data=data)
+        # We need to add the dtype update _between_ the val update and node update
+        if self.type_ == 'data':
+            self.val = data  # self.get_val()
+            InfoMsgs.write('Data in input set to', data)
+
         self.set_dtype_ok()
+
+        self.node.update(inp=self.node.inputs.index(self))
 
     def connected(self):
 
