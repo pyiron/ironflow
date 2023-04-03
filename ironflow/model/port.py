@@ -26,12 +26,6 @@ if TYPE_CHECKING:
 
 class HasDType:
     """A mixin to add the valid value check property"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._dtype_ok = None
-        self.set_dtype_ok()
-
     def set_dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
@@ -46,18 +40,12 @@ class HasDType:
         try:
             return self._dtype_ok
         except AttributeError:
-            # TODO: Figure out where the __init__ declaration is getting bypassed...
-            return True
+            self.set_dtype_ok()
+            return self._dtype_ok
 
 
 class HasOType:
     """A mixin to add the valid value check to properties with an ontology type"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._otype_ok = None
-        self.set_otype_ok()
-
     def recalculate_otype_checks(self, ignore=None):
         self.set_otype_ok()
         if self.otype is not None:
