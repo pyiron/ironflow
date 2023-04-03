@@ -250,7 +250,8 @@ class Node(NodeCore):
                     # so we saved its value which was probably represented by some
                     # widget in the front end which has probably overridden the
                     # Node.input() method
-                    self.inputs[-1].update(deserialize(inp["val"]))
+                    self.inputs[-1].val = deserialize(inp["val"])
+                    self.inputs[-1].set_dtype_ok()
 
             for out in outputs_data:
                 dtype = dtypes.DType.from_str(out["dtype"])(
