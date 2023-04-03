@@ -24,27 +24,8 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class TypeHaver:
-    """
-    A parent class for the has-type classes to facilitate super calls, regardless of
-    the order these havers appear as mixins to other classes.
-    """
-
-    @property
-    def valid_val(self):
-        try:
-            other_type_checks = super().valid_val
-        except AttributeError:
-            other_type_checks = True
-        return other_type_checks
-
-
-class HasDType(TypeHaver):
+class HasDType:
     """A mixin to add the valid value check property"""
-
-    @property
-    def valid_val(self):
-        return self._dtype_ok and super().valid_val
 
     @property
     def _dtype_ok(self):
@@ -57,12 +38,8 @@ class HasDType(TypeHaver):
             return True
 
 
-class HasOType(TypeHaver):
+class HasOType:
     """A mixin to add the valid value check to properties with an ontology type"""
-
-    @property
-    def valid_val(self):
-        return self._otype_ok and super().valid_val
 
     @property
     def _otype_ok(self):
@@ -131,7 +108,13 @@ class HasOType(TypeHaver):
             return list(set(downstream_requirements))
 
 
-class NodeInput(NodeInputCore, HasDType, HasOType):
+class HasTypes(HasOType, HasDType):
+    @property
+    def valid_val(self):
+        return self._dtype_ok and self._otype_ok
+
+
+class NodeInput(NodeInputCore, HasTypes):
     def __init__(
         self,
         node: Node,
@@ -183,7 +166,7 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
         return self._output_graph_is_represented_in_workflow_tree(port, tree)
 
 
-class NodeOutput(NodeOutputCore, HasDType, HasOType):
+class NodeOutput(NodeOutputCore, HasTypes):
     def __init__(
         self,
         node,
