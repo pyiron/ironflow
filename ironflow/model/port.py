@@ -28,7 +28,7 @@ class HasDType:
     """A mixin to add the valid value check property"""
 
     @property
-    def _dtype_ok(self):
+    def dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
                 return self.dtype.valid_val(self.val)
@@ -42,7 +42,7 @@ class HasOType:
     """A mixin to add the valid value check to properties with an ontology type"""
 
     @property
-    def _otype_ok(self):
+    def otype_ok(self):
         if self.otype is not None:
             if isinstance(self, NodeInput):
                 input_tree = self.otype.get_source_tree(
@@ -111,7 +111,7 @@ class HasOType:
 class HasTypes(HasOType, HasDType):
     @property
     def ready(self):
-        return self._dtype_ok and self._otype_ok
+        return self.dtype_ok and self.otype_ok
 
 
 class NodeInput(NodeInputCore, HasTypes):
