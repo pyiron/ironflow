@@ -27,40 +27,56 @@ if TYPE_CHECKING:
 class HasDType:
     """A mixin to add the valid value check property"""
 
-    @property
-    def dtype_ok(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._dtype_ok = None
+
+    def set_dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
-                return self.dtype.valid_val(self.val)
+                self._dtype_ok = self.dtype.valid_val(self.val)
             else:
-                return self.dtype.allow_none
+                self._dtype_ok = self.dtype.allow_none
         else:
-            return True
+            self._dtype_ok = True
+
+    @property
+    def dtype_ok(self):
+        self.set_dtype_ok()
+        return self._dtype_ok
 
 
 class HasOType:
     """A mixin to add the valid value check to properties with an ontology type"""
 
-    @property
-    def otype_ok(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._otype_ok = None
+
+    def set_otype_ok(self):
         if self.otype is not None:
             if isinstance(self, NodeInput):
                 input_tree = self.otype.get_source_tree(
                     additional_requirements=self.get_downstream_requirements()
                 )
-                return all(
+                self._otype_ok = all(
                     con.out.all_connections_found_in(input_tree)
                     for con in self.connections
                     if con.out.otype is not None
                 )
             else:
-                return all(
+                self._otype_ok = all(
                     con.inp.workflow_tree_contains_connections_of(self)
                     for con in self.connections
                     if con.inp.otype is not None
                 )
         else:
-            return True
+            self._otype_ok = True
+
+    @property
+    def otype_ok(self):
+        self.set_otype_ok()
+        return self._otype_ok
 
     def _output_graph_is_represented_in_workflow_tree(self, output_port, input_tree):
         try:
