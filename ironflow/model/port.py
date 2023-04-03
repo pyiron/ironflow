@@ -30,6 +30,7 @@ class HasDType:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._dtype_ok = None
+        self.set_dtype_ok()
 
     def set_dtype_ok(self):
         if self.dtype is not None:
@@ -42,8 +43,11 @@ class HasDType:
 
     @property
     def dtype_ok(self):
-        self.set_dtype_ok()
-        return self._dtype_ok
+        try:
+            return self._dtype_ok
+        except AttributeError:
+            # TODO: Figure out where the __init__ declaration is getting bypassed...
+            return True
 
 
 class HasOType:
@@ -156,14 +160,14 @@ class NodeInput(NodeInputCore, HasTypes):
         if self.dtype is not None and not self.dtype.batched:
             self.dtype.batched = True
             if len(self.connections) == 0:
-                self.val = [self.val]
+                self.update([self.val])
             self._update_node()
 
     def unbatch(self):
         if self.dtype is not None and self.dtype.batched:
             self.dtype.batched = False
             if len(self.connections) == 0:
-                self.val = self.val[-1]
+                self.update(self.val[-1])
             self._update_node()
 
     def data(self) -> dict:
@@ -180,6 +184,14 @@ class NodeInput(NodeInputCore, HasTypes):
             additional_requirements=self.get_downstream_requirements()
         )
         return self._output_graph_is_represented_in_workflow_tree(port, tree)
+
+    def update(self, data=None):
+        super().update(data=data)
+        self.set_dtype_ok()
+
+    def connected(self):
+        super().connected()
+        self.set_dtype_ok()
 
 
 class NodeOutput(NodeOutputCore, HasTypes):
@@ -214,6 +226,10 @@ class NodeOutput(NodeOutputCore, HasTypes):
         ontologically possible workflows for an input port.
         """
         return self._output_graph_is_represented_in_workflow_tree(self, tree)
+
+    def set_val(self, val):
+        super().set_val(val)
+        self.set_dtype_ok()
 
 
 class NodeInputBP(NodeInputBPCore):

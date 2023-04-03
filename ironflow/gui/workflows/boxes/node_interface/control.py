@@ -100,7 +100,7 @@ class NodeController(DrawsWidgets):
                         "val": "Serialization error -- please reconnect an input"
                     }
                 if inp.val is None:
-                    inp.val = dtype_state["val"]
+                    inp.update(dtype_state["val"])
 
                 try:
                     if dtype_state["batched"]:
@@ -185,8 +185,8 @@ class NodeController(DrawsWidgets):
     def _input_change_i(self, i_c) -> Callable:
         def input_change(change: dict) -> None:
             # Todo: Test this in exec mode
-            self.node.inputs[i_c].val = change["new"]
-            self.node.update(i_c)
+            self.node.inputs[i_c].update(change["new"])
+            # self.node.update(i_c)
             self.screen.redraw_active_flow_canvas()
 
         return input_change
@@ -212,7 +212,7 @@ class NodeController(DrawsWidgets):
     def _input_reset_i(self, i_c, associated_input_field) -> Callable:
         def input_reset(button: widgets.Button) -> None:
             default = self.node.inputs[i_c].dtype.default
-            self.node.inputs[i_c].val = default
+            self.node.inputs[i_c].update(default)
             InfoMsgs.write(
                 f"Value for {self.node.title}.{self.node.inputs[i_c].label_str} "
                 f"reset to {default}"

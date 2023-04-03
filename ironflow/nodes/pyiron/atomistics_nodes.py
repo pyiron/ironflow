@@ -797,7 +797,7 @@ class Lammps_Node(Engine):
         available_potentials = self._get_potentials()
 
         if len(available_potentials) == 0:
-            self.inputs.ports.potential.val = None
+            self.inputs.ports.potential.update(None)
             self.inputs.ports.potential.dtype.items = ["No valid potential"]
         else:
             if (
@@ -805,9 +805,9 @@ class Lammps_Node(Engine):
                 and len(self.inputs.ports.potential.connections) == 0
             ):
                 if self.inputs.ports.potential.dtype.batched:
-                    self.inputs.ports.potential.val = available_potentials
+                    self.inputs.ports.potential.update(available_potentials)
                 else:
-                    self.inputs.ports.potential.val = available_potentials[0]
+                    self.inputs.ports.potential.update(available_potentials[0])
             self.inputs.ports.potential.dtype.items = available_potentials
 
     def update_event(self, inp=-1):
