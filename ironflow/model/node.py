@@ -85,6 +85,9 @@ class PortFinder:
     def __iter__(self):
         return self._filtered_port_list.__iter__()
 
+    def __len__(self):
+        return len(self._port_list)
+
 
 class ValueFinder(PortFinder):
     def __getattr__(self, key):
