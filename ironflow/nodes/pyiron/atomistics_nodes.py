@@ -22,7 +22,6 @@ from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from nglview import NGLWidget
 from pandas import DataFrame
-from ryvencore.InfoMsgs import InfoMsgs
 
 import pyiron_base
 import pyiron_ontology
@@ -51,7 +50,7 @@ from ironflow.node_tools import (
     PortList,
 )
 from ironflow.nodes.std.special_nodes import DualNodeBase
-
+from ryvencore.InfoMsgs import InfoMsgs
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
 
@@ -809,10 +808,13 @@ class Lammps_Node(Engine):
                 else:
                     self.inputs.ports.potential.update(available_potentials[0])
             self.inputs.ports.potential.dtype.items = available_potentials
+        self.inputs.ports.potential.set_dtype_ok()
 
     def update_event(self, inp=-1):
-        if inp == 1 and self.inputs.ports.structure.ready:
-            self._update_potential_choices()
+        if inp == 1:
+            self.inputs.ports.structure.set_dtype_ok()
+            if self.inputs.ports.structure.ready:
+                self._update_potential_choices()
         super().update_event(inp=inp)
 
     def node_function(self, project, structure, potential, **kwargs) -> dict:
