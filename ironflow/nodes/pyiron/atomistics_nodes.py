@@ -51,6 +51,7 @@ from ironflow.node_tools import (
 )
 from ironflow.nodes.std.special_nodes import DualNodeBase
 from ryvencore.InfoMsgs import InfoMsgs
+
 if TYPE_CHECKING:
     from pyiron_base import HasGroups
 

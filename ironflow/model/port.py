@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 class HasDType:
     """A mixin to add the valid value check property"""
+
     def set_dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
@@ -47,10 +48,10 @@ class HasDType:
 
 class HasOType:
     """A mixin to add the valid value check to properties with an ontology type"""
+
     def recalculate_otype_checks(self, ignore=None):
         self.set_otype_ok()
         if self.otype is not None:
-
             # Along connections
             for con in self.connections:
                 if isinstance(self, NodeInput):
@@ -205,16 +206,15 @@ class NodeInput(NodeInputCore, HasTypes):
     def update(self, data=None):
         # super().update(data=data)
         # We need to add the dtype update _between_ the val update and node update
-        if self.type_ == 'data':
+        if self.type_ == "data":
             self.val = data  # self.get_val()
-            InfoMsgs.write('Data in input set to', data)
+            InfoMsgs.write("Data in input set to", data)
 
         self.set_dtype_ok()
 
         self.node.update(inp=self.node.inputs.index(self))
 
     def connected(self):
-
         super().connected()
         self.set_dtype_ok()
         self.recalculate_otype_checks()  # Note: Only need to call or one of input or
