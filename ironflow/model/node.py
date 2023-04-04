@@ -85,6 +85,9 @@ class PortFinder:
     def __iter__(self):
         return self._filtered_port_list.__iter__()
 
+    def __len__(self):
+        return len(self._port_list)
+
 
 class ValueFinder(PortFinder):
     def __getattr__(self, key):
@@ -248,6 +251,7 @@ class Node(NodeCore):
                     # widget in the front end which has probably overridden the
                     # Node.input() method
                     self.inputs[-1].val = deserialize(inp["val"])
+                    self.inputs[-1].set_dtype_ok()
 
             for out in outputs_data:
                 dtype = dtypes.DType.from_str(out["dtype"])(
@@ -262,7 +266,7 @@ class Node(NodeCore):
 
     @property
     def all_input_is_valid(self):
-        return all(p.valid_val for p in self.inputs.ports)
+        return all(p.ready for p in self.inputs.ports)
 
     def place_event(self):
         # place_event() is executed *before* the connections are built

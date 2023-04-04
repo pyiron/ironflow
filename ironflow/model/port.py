@@ -11,6 +11,7 @@ from copy import deepcopy
 from typing import Optional, TYPE_CHECKING
 
 from numpy import argwhere
+from ryvencore.InfoMsgs import InfoMsgs
 from ryvencore.NodePort import NodeInput as NodeInputCore, NodeOutput as NodeOutputCore
 from ryvencore.NodePortBP import (
     NodeOutputBP as NodeOutputBPCore,
@@ -24,66 +25,80 @@ if TYPE_CHECKING:
     from ironflow.model.node import Node
 
 
-class TypeHaver:
-    """
-    A parent class for the has-type classes to facilitate super calls, regardless of
-    the order these havers appear as mixins to other classes.
-    """
-
-    @property
-    def valid_val(self):
-        try:
-            other_type_checks = super().valid_val
-        except AttributeError:
-            other_type_checks = True
-        return other_type_checks
-
-
-class HasDType(TypeHaver):
+class HasDType:
     """A mixin to add the valid value check property"""
 
-    @property
-    def valid_val(self):
-        return self._dtype_ok and super().valid_val
-
-    @property
-    def _dtype_ok(self):
+    def set_dtype_ok(self):
         if self.dtype is not None:
             if self.val is not None:
-                return self.dtype.valid_val(self.val)
+                self._dtype_ok = self.dtype.valid_val(self.val)
             else:
-                return self.dtype.allow_none
+                self._dtype_ok = self.dtype.allow_none
         else:
-            return True
+            self._dtype_ok = True
+
+    @property
+    def dtype_ok(self):
+        try:
+            return self._dtype_ok
+        except AttributeError:
+            self.set_dtype_ok()
+            return self._dtype_ok
 
 
-class HasOType(TypeHaver):
+class HasOType:
     """A mixin to add the valid value check to properties with an ontology type"""
 
-    @property
-    def valid_val(self):
-        return self._otype_ok and super().valid_val
+    def recalculate_otype_checks(self, ignore=None):
+        self.set_otype_ok()
+        if self.otype is not None:
+            # Along connections
+            for con in self.connections:
+                if isinstance(self, NodeInput):
+                    other = con.out
+                else:
+                    other = con.inp
 
-    @property
-    def _otype_ok(self):
+                if other != ignore and other.otype is not None:
+                    other.recalculate_otype_checks(ignore=self)
+
+            # Across the node
+            if isinstance(self, NodeInput):
+                ports = self.node.outputs.ports
+            else:
+                ports = self.node.inputs.ports
+            if ignore not in ports:
+                for port in ports:
+                    if port.otype is not None:
+                        port.recalculate_otype_checks(ignore=self)
+
+    def set_otype_ok(self):
         if self.otype is not None:
             if isinstance(self, NodeInput):
                 input_tree = self.otype.get_source_tree(
                     additional_requirements=self.get_downstream_requirements()
                 )
-                return all(
+                self._otype_ok = all(
                     con.out.all_connections_found_in(input_tree)
                     for con in self.connections
                     if con.out.otype is not None
                 )
             else:
-                return all(
+                self._otype_ok = all(
                     con.inp.workflow_tree_contains_connections_of(self)
                     for con in self.connections
                     if con.inp.otype is not None
                 )
         else:
-            return True
+            self._otype_ok = True
+
+    @property
+    def otype_ok(self):
+        try:
+            return self._otype_ok
+        except AttributeError:
+            self.set_otype_ok()
+            return self._otype_ok
 
     def _output_graph_is_represented_in_workflow_tree(self, output_port, input_tree):
         try:
@@ -131,7 +146,13 @@ class HasOType(TypeHaver):
             return list(set(downstream_requirements))
 
 
-class NodeInput(NodeInputCore, HasDType, HasOType):
+class HasTypes(HasOType, HasDType):
+    @property
+    def ready(self):
+        return self.dtype_ok and self.otype_ok
+
+
+class NodeInput(NodeInputCore, HasTypes):
     def __init__(
         self,
         node: Node,
@@ -157,14 +178,14 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
         if self.dtype is not None and not self.dtype.batched:
             self.dtype.batched = True
             if len(self.connections) == 0:
-                self.val = [self.val]
+                self.update([self.val])
             self._update_node()
 
     def unbatch(self):
         if self.dtype is not None and self.dtype.batched:
             self.dtype.batched = False
             if len(self.connections) == 0:
-                self.val = self.val[-1]
+                self.update(self.val[-1])
             self._update_node()
 
     def data(self) -> dict:
@@ -182,8 +203,30 @@ class NodeInput(NodeInputCore, HasDType, HasOType):
         )
         return self._output_graph_is_represented_in_workflow_tree(port, tree)
 
+    def update(self, data=None):
+        # super().update(data=data)
+        # We need to add the dtype update _between_ the val update and node update
+        if self.type_ == "data":
+            self.val = data  # self.get_val()
+            InfoMsgs.write("Data in input set to", data)
 
-class NodeOutput(NodeOutputCore, HasDType, HasOType):
+        self.set_dtype_ok()
+
+        self.node.update(inp=self.node.inputs.index(self))
+
+    def connected(self):
+        super().connected()
+        self.set_dtype_ok()
+        self.recalculate_otype_checks()  # Note: Only need to call or one of input or
+        # output since Flow.add_connection calls .connected on both inp and out
+
+    def disconnected(self):
+        super().disconnected()
+        self.recalculate_otype_checks()  # Note: Only need to call or one of input or
+        # output since Flow.add_connection calls .connected on both inp and out
+
+
+class NodeOutput(NodeOutputCore, HasTypes):
     def __init__(
         self,
         node,
@@ -215,6 +258,10 @@ class NodeOutput(NodeOutputCore, HasDType, HasOType):
         ontologically possible workflows for an input port.
         """
         return self._output_graph_is_represented_in_workflow_tree(self, tree)
+
+    def set_val(self, val):
+        super().set_val(val)
+        self.set_dtype_ok()
 
 
 class NodeInputBP(NodeInputBPCore):

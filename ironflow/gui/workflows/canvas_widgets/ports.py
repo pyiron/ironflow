@@ -69,7 +69,7 @@ class PortWidget(HideableWidget):
     def _current_color(self):
         if self.highlighted:
             color = self.layout.highlight_color
-        elif self.port.valid_val:
+        elif self.port.ready:
             if self.selected:
                 color = self.layout.valid_selected_color
             else:
