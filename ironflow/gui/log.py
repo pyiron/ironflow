@@ -26,10 +26,19 @@ class StdOutPut(TextIOBase):
     """
 
     def __init__(self):
-        self.output = widgets.Output()
+        self.output = widgets.HTML()
+        self.messages = ""
 
     def write(self, s):
-        self.output.append_stdout(s)
+        self.messages += s
+        self.output.value = (
+            "<style>p{"
+            "word-wrap: break-word; "
+            "margin: 0px; "
+            "font-family: monospace;"
+            "white-space: pre"
+            "}</style> <p>" + self.messages + " </p>"
+        )
 
 
 class LogController(metaclass=Singleton):
@@ -53,6 +62,11 @@ class LogController(metaclass=Singleton):
     def log_to_stdout(self):
         sys.stdout = self._standard_stdout
         sys.stderr = self._standard_stderr
+
+    def clear_log(self):
+        self.stdoutput.messages = ""
+        self.stdoutput.output.value = ""
+        self.stdoutput.flush()
 
 
 class LogGUI(DrawsWidgets):
@@ -129,5 +143,4 @@ class LogGUI(DrawsWidgets):
                 self.log_to_stdout()
 
     def _click_clear(self, button: widgets.Button):
-        self.output.clear_output()
-        self._log_controller.stdoutput.flush()
+        self._log_controller.clear_log()
