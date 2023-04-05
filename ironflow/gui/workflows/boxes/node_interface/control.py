@@ -100,7 +100,7 @@ class NodeController(DrawsWidgets):
                         "val": "Serialization error -- please reconnect an input"
                     }
                 if inp.val is None:
-                    inp.update(dtype_state["val"])
+                    inp.val = dtype_state["val"]
 
                 try:
                     if dtype_state["batched"]:
