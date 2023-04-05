@@ -31,7 +31,7 @@ class HasSession(ABC):
         session_title: str,
         *args,
         extra_nodes_packages: Optional[list] = None,
-        enable_ryven_log: bool = True,
+        enable_ryven_log: bool = False,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
