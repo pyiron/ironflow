@@ -31,14 +31,14 @@ class StdOutPut(TextIOBase):
 
     def write(self, s):
         self.messages += s
-        self.output.value = "<style>p{" \
-                            "word-wrap: break-word; " \
-                            "margin: 0px; " \
-                            "font-family: monospace;" \
-                            "white-space: pre" \
-                            "}</style> <p>" \
-                            + self.messages \
-                            + " </p>"
+        self.output.value = (
+            "<style>p{"
+            "word-wrap: break-word; "
+            "margin: 0px; "
+            "font-family: monospace;"
+            "white-space: pre"
+            "}</style> <p>" + self.messages + " </p>"
+        )
 
 
 class LogController(metaclass=Singleton):
