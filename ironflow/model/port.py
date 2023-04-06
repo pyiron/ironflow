@@ -179,14 +179,18 @@ class NodeInput(NodeInputCore, HasTypes):
             self.dtype.batched = True
             if len(self.connections) == 0:
                 self.update([self.val])
-            self._update_node()
+            else:
+                self.set_dtype_ok()
+                self._update_node()
 
     def unbatch(self):
         if self.dtype is not None and self.dtype.batched:
             self.dtype.batched = False
             if len(self.connections) == 0:
                 self.update(self.val[-1])
-            self._update_node()
+            else:
+                self.set_dtype_ok()
+                self._update_node()
 
     def data(self) -> dict:
         data = super().data()
@@ -211,14 +215,16 @@ class NodeInput(NodeInputCore, HasTypes):
             InfoMsgs.write("Data in input set to", data)
 
         self.set_dtype_ok()
-
-        self.node.update(inp=self.node.inputs.index(self))
+        self._update_node()
 
     def connected(self):
         super().connected()
         self.set_dtype_ok()
         self.recalculate_otype_checks()  # Note: Only need to call or one of input or
         # output since Flow.add_connection calls .connected on both inp and out
+        if self.dtype is not None or self.otype is not None:
+            # Force a re-calculation in case the update had type-matching restrictions
+            self._update_node()
 
     def disconnected(self):
         super().disconnected()
