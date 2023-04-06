@@ -215,8 +215,7 @@ class NodeInput(NodeInputCore, HasTypes):
             InfoMsgs.write("Data in input set to", data)
 
         self.set_dtype_ok()
-
-        self.node.update(inp=self.node.inputs.index(self))
+        self._update_node()
 
     def connected(self):
         super().connected()
