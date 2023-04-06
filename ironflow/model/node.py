@@ -414,8 +414,8 @@ class BatchingNode(Node, ABC):
             self.clear_output()
             raise e
         for k, v in output.items():
-            self.outputs.ports[k].set_val(v)
             self.outputs.ports[k].dtype.batched = self.batched
+            self.outputs.ports[k].set_val(v)
 
     def clear_output(self):
         for p in self.outputs.ports:
