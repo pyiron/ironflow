@@ -56,6 +56,10 @@ These can be triggered by a signal from another node's exec-type output port, or
 
 In addition to the workflows screen, ironflow also incorporates the browser from [`pyiron_gui`](https://github.com/pyiron/pyiron_gui), as well as a log tab that allows you to turn the underlying ryven logger on/off and choose whether stdout gets routed to ironflow or its original context.
 
+Two notes on the logger:
+- The log re-routes pythons stdout to the log panel! This includes the output of `print` statements from any other cells in your notebook. To see these in their original context again, you'll need to go to the log panel and toggle off "Route stdout to ironflow", or initialize your gui with the kwarg `log_to_display=False`.
+- The underlying Ryvel model supports fairly detailed logging. Since handling IO is not the fastest operation in python, and the log is fairly dense, this is _turned off by default_. You will still get error messages etc. in the log, but to see info-level log messages you need to go to the log panel and toggle on "Use Ryven's InfoMsgs system" or initialize your gui with the kwarg `enable_ryven_log=True`. Note that this will induce a performance hit on most actions. Performance can be restored by turning the Ryven logging off again, and you may get a further (extremely marginal) improvement by clearing the existing log history with the "Clear" button in the log panel.
+
 ## Differences to Ryven
 
 Ironflow is built on top of ryvencore 0.3.1.1.
