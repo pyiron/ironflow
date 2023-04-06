@@ -222,6 +222,9 @@ class NodeInput(NodeInputCore, HasTypes):
         self.set_dtype_ok()
         self.recalculate_otype_checks()  # Note: Only need to call or one of input or
         # output since Flow.add_connection calls .connected on both inp and out
+        if self.dtype is not None or self.otype is not None:
+            # Force a re-calculation in case the update had type-matching restrictions
+            self._update_node()
 
     def disconnected(self):
         super().disconnected()
