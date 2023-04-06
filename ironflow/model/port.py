@@ -222,8 +222,7 @@ class NodeInput(NodeInputCore, HasTypes):
 
     def disconnected(self):
         super().disconnected()
-        self.recalculate_otype_checks()  # Note: Only need to call or one of input or
-        # output since Flow.add_connection calls .connected on both inp and out
+        self.recalculate_otype_checks()
 
 
 class NodeOutput(NodeOutputCore, HasTypes):
@@ -262,6 +261,12 @@ class NodeOutput(NodeOutputCore, HasTypes):
     def set_val(self, val):
         super().set_val(val)
         self.set_dtype_ok()
+
+    def disconnected(self):
+        super().disconnected()
+        self.recalculate_otype_checks()
+        # Unlike `connected`, we do need to explicitly recalculate on the disconnected
+        # output, because it is no longer part of the input's graph tree!
 
 
 class NodeInputBP(NodeInputBPCore):
