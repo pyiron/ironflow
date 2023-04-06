@@ -51,7 +51,7 @@ class GUI(HasSession, DrawsWidgets):
         *args,
         extra_nodes_packages: Optional[list] = None,
         script_title: Optional[str] = None,
-        enable_ryven_log: bool = True,
+        enable_ryven_log: bool = False,
         log_to_display: bool = True,
         **kwargs,
     ):
