@@ -181,7 +181,7 @@ class NodeInput(NodeInputCore, HasTypes):
                 self.update([self.val])
             else:
                 self.set_dtype_ok()
-            self._update_node()
+                self._update_node()
 
     def unbatch(self):
         if self.dtype is not None and self.dtype.batched:
@@ -190,7 +190,7 @@ class NodeInput(NodeInputCore, HasTypes):
                 self.update(self.val[-1])
             else:
                 self.set_dtype_ok()
-            self._update_node()
+                self._update_node()
 
     def data(self) -> dict:
         data = super().data()
