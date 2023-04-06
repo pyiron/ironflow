@@ -18,9 +18,9 @@ If there is a particular use-case you'd like to see, or if one of our nodes is n
 
 ![](docs/_static/screenshot.png)
 
-In its current form, ironflow has some UI performance issues, especially when placing new nodes with many ports, or moving nodes around in a big graph.
-(You can look at the movie demonstrating ontological typing below to get a sense of the delay for placing larger nodes.)
-This is a [known issue](https://github.com/pyiron/ironflow/issues/143) and performance enhancements are currently our top priority -- both in terms of UI performance and underlying computations, e.g. we would like to exploit the latest pyiron developments for [running lammps without writing any files](https://github.com/pyiron/pyiron_lammps) in calculation nodes.
+In its current form, ironflow has some UI performance issues when verifying the ontological status of ports. 
+For smaller graphs, e.g. those in the examples, things should still feel quite snappy -- so if you notice serious performance issues please raise an issue! -- but for larger graphs, e.g. many 10s of nodes, you may notice some delay when generating the "recommended" nodes and ports on selection of an ontologically-typed port, and on updating the otype status on making new connections.
+This is a [known issue](https://github.com/pyiron/ironflow/issues/182), but not top-priority to fix; If you are using ironflow regularly and bumping into this problem a lot, please let us know in the issue and we'll increase its priority.
 
 ## Usage
 
