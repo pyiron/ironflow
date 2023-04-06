@@ -179,6 +179,8 @@ class NodeInput(NodeInputCore, HasTypes):
             self.dtype.batched = True
             if len(self.connections) == 0:
                 self.update([self.val])
+            else:
+                self.set_dtype_ok()
             self._update_node()
 
     def unbatch(self):
@@ -186,6 +188,8 @@ class NodeInput(NodeInputCore, HasTypes):
             self.dtype.batched = False
             if len(self.connections) == 0:
                 self.update(self.val[-1])
+            else:
+                self.set_dtype_ok()
             self._update_node()
 
     def data(self) -> dict:
