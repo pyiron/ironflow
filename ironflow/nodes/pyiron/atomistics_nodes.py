@@ -959,7 +959,7 @@ class AtomisticOutput_Node(DataNode):
         NodeInputBP(
             label="index",
             dtype=dtypes.Integer(default=None, allow_none=True),
-        )
+        ),
     ]
     init_outputs = [
         NodeOutputBP(
