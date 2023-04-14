@@ -978,6 +978,11 @@ class AtomisticOutput_Node(DataNode):
             ),
             label="field",
         ),
+        NodeInputBP(label="transpose", dtype=dtypes.Boolean(default=False)),
+        NodeInputBP(
+            label="index",
+            dtype=dtypes.Integer(default=None, allow_none=True),
+        ),
     ]
     init_outputs = [
         NodeOutputBP(
@@ -986,8 +991,13 @@ class AtomisticOutput_Node(DataNode):
     ]
     color = "#c69a15"
 
-    def node_function(self, job, field, **kwargs) -> dict:
-        return {"output": job[f"output/generic/{field}"]}
+    def node_function(self, job, field, transpose, index, **kwargs) -> dict:
+        data = job[f"output/generic/{field}"]
+        if transpose:
+            data = data.T
+        if index is not None:
+            data = data[index]
+        return {"output": data}
 
 
 class IntRand_Node(DataNode):
