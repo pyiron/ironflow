@@ -134,6 +134,10 @@ class Project_Node(DataNode):
                     self.outputs.values.project.remove_job(
                         self.inputs.values.remove_name
                     )
+            else:
+                InfoMsgs.write(
+                    "`enable_remove` must be set to `True` before removing jobs."
+                )
         super().update_event(inp=inp)
 
     def node_function(self, name, **kwargs) -> dict:
