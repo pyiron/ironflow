@@ -43,9 +43,9 @@ def draws_widgets(fnc: Callable) -> Callable:
         result = fnc(self, *args, **kwargs)
         n_widgets_drawn = len(widgets.Widget.widgets) - n_widgets_i
         if n_widgets_drawn > 0:
-            self._drawn_widgets += list(
-                widgets.Widget.widgets.values()
-            )[-n_widgets_drawn:]
+            self._drawn_widgets += list(widgets.Widget.widgets.values())[
+                -n_widgets_drawn:
+            ]
         return result
 
     return wrapper
