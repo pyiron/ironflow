@@ -524,7 +524,7 @@ class JobNode(BatchingNode, ABC):
     valid_job_classes = None
     init_inputs = [
         NodeInputBP(type_="exec", label="run"),
-        NodeInputBP(type_="exec", label="remove"),
+        NodeInputBP(type_="exec", label="reset"),
         NodeInputBP(dtype=dtypes.String(default="calc"), label="name"),
     ]
     init_outputs = [

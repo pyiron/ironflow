@@ -107,6 +107,11 @@ class Project_Node(DataNode):
     title = "Project"
     init_inputs = [
         NodeInputBP(dtype=dtypes.String(default="."), label="name"),
+        NodeInputBP(label="remove", type_="exec"),
+        NodeInputBP(label="enable_remove", dtype=dtypes.Boolean(default=False)),
+        NodeInputBP(label="remove_name", dtype=dtypes.String()),
+        NodeInputBP(label="remove_all", dtype=dtypes.Boolean(default=False)),
+        NodeInputBP(label="recursive", dtype=dtypes.Boolean(default=True)),
     ]
     init_outputs = [
         NodeOutputBP(
@@ -116,6 +121,23 @@ class Project_Node(DataNode):
         ),
     ]
     color = "#aabb44"
+
+    def update_event(self, inp=-1):
+        if inp == 1:
+            if self.inputs.values.enable_remove:
+                if self.inputs.values.remove_all:
+                    self.outputs.values.project.remove_jobs(
+                        recursive=self.inputs.values.recursive, silently=True
+                    )
+                else:
+                    self.outputs.values.project.remove_job(
+                        self.inputs.values.remove_name
+                    )
+            else:
+                InfoMsgs.write(
+                    "`enable_remove` must be set to `True` before removing jobs."
+                )
+        super().update_event(inp=inp)
 
     def node_function(self, name, **kwargs) -> dict:
         return {"project": Project(name)}
