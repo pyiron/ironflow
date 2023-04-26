@@ -127,8 +127,7 @@ class Project_Node(DataNode):
             if self.inputs.values.enable_remove:
                 if self.inputs.values.remove_all:
                     self.outputs.values.project.remove_jobs(
-                        recursive=self.inputs.values.recursive,
-                        silently=True
+                        recursive=self.inputs.values.recursive, silently=True
                     )
                 else:
                     self.outputs.values.project.remove_job(
