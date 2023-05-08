@@ -1,6 +1,6 @@
 # Ironflow
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyiron/ironflow/HEAD?labpath=example.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyiron/ironflow/HEAD)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f21027e6a1fd40bd8ff93b0314a64725)](https://app.codacy.com/gh/pyiron/ironflow/dashboard)
 [![Coverage Status](https://coveralls.io/repos/github/pyiron/ironflow/badge.svg?branch=main)](https://coveralls.io/github/pyiron/ironflow?branch=main)
