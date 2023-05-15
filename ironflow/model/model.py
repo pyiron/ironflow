@@ -43,12 +43,7 @@ class HasSession(ABC):
             self.session.info_messenger().enable()
 
         self.nodes_dictionary = {"recommended": {}}
-        from ironflow.nodes import (
-            array,
-            plot,
-            pyiron_atomistics,
-            standard
-        )
+        from ironflow.nodes import array, plot, pyiron_atomistics, standard
 
         for module in [
             array,
