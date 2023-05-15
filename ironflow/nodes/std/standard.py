@@ -14,7 +14,7 @@ from ironflow.model import dtypes
 from ironflow.model.node import DataNode, Node
 from ironflow.model.port import NodeInputBP, NodeOutputBP
 from ironflow.node_tools import main_widgets
-from ironflow.nodes.std.special_nodes import DualNodeBase
+from ironflow.nodes.ryven.special_nodes import DualNodeBase
 from pyiron_atomistics import Atoms
 
 

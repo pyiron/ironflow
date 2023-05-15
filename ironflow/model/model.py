@@ -45,11 +45,9 @@ class HasSession(ABC):
         self.nodes_dictionary = {"recommended": {}}
         from ironflow.nodes import built_in
         from ironflow.nodes.pyiron import atomistics_nodes
-        from ironflow.nodes.std import (
-            basic_operators,
-            control_structures,
-            special_nodes,
-        )
+        from ironflow.nodes.ryven import special_nodes
+        from ironflow.nodes.ryven import control_structures
+        from ironflow.nodes.ryven import basic_operators
 
         for module in [
             built_in,
