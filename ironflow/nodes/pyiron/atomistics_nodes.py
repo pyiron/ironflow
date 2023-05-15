@@ -418,6 +418,7 @@ class GBStructure_Node(OutputsOnlyAtoms):
     Outputs:
         structure (pyiron_atomistics.Atoms): A GB based of the `initial_struct`.
     """
+
     title = "GBStructure"
     init_inputs = [
         NodeInputBP(
@@ -439,23 +440,23 @@ class GBStructure_Node(OutputsOnlyAtoms):
         ),
         NodeInputBP(label="to_primitive", dtype=dtypes.Boolean(default=False)),
         NodeInputBP(label="delete_layer", dtype=dtypes.String(default="0b0t0b0t")),
-        NodeInputBP(label="add_if_dist", dtype=dtypes.Float(default=0.)),
+        NodeInputBP(label="add_if_dist", dtype=dtypes.Float(default=0.0)),
         NodeInputBP(label="uc_a", dtype=dtypes.Integer(default=1)),
         NodeInputBP(label="uc_b", dtype=dtypes.Integer(default=1)),
     ]
 
     def node_function(
-            self,
-            initial_struct,
-            axis,
-            sigma,
-            plane,
-            to_primitive,
-            delete_layer,
-            add_if_dist,
-            uc_a,
-            uc_b,
-            **kwargs,
+        self,
+        initial_struct,
+        axis,
+        sigma,
+        plane,
+        to_primitive,
+        delete_layer,
+        add_if_dist,
+        uc_a,
+        uc_b,
+        **kwargs,
     ) -> dict:
         return {
             "structure": STRUCTURE_FACTORY.aimsgb.build(
@@ -574,7 +575,7 @@ def pressure_input():
                 np.ndarray,
                 np.floating,
                 np.integer,
-            ]
+            ],
         ),
         label="pressure",
     )
@@ -1523,9 +1524,7 @@ class Input_Node(DataNode):
 
     title = "Input"
 
-    init_inputs = [
-        NodeInputBP(label="input", dtype=dtypes.String())
-    ]
+    init_inputs = [NodeInputBP(label="input", dtype=dtypes.String())]
 
     init_outputs = [
         NodeOutputBP(label="as_str", dtype=dtypes.String()),
@@ -1556,9 +1555,7 @@ class InputArray_Node(DataNode):
 
     title = "InputArray"
 
-    init_inputs = [
-        NodeInputBP(label="input", dtype=dtypes.String())
-    ]
+    init_inputs = [NodeInputBP(label="input", dtype=dtypes.String())]
 
     init_outputs = [
         NodeOutputBP(label="as_str", dtype=dtypes.List(valid_classes=str)),
