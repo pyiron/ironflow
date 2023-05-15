@@ -392,6 +392,86 @@ class SlabStructure_Node(OutputsOnlyAtoms):
         }
 
 
+class GBStructure_Node(OutputsOnlyAtoms):
+    """
+    Generate a grain boundary structure based on the aimsgb.GrainBoundary module.
+
+    Inputs:
+        axis : Rotational axis for the GB you want to construct (for example, axis=[1,0,0])
+        sigma (int) : The sigma value of the GB you want to construct (for example, sigma=5)
+        plane: The grain boundary plane of the GB you want to construct (for example, plane=[2,1,0])
+        initial_struct : Initial bulk structure from which you want to construct the GB (a pyiron
+                        structure object).
+        delete_layer : To delete layers of the GB. For example, delete_layer='1b0t1b0t'. The first
+                       4 characters is for first grain and the other 4 is for second grain. b means
+                       bottom layer and t means top layer. Integer represents the number of layers
+                       to be deleted. The first t and second b from the left hand side represents
+                       the layers at the GB interface. Default value is delete_layer='0b0t0b0t', which
+                       means no deletion of layers.
+        add_if_dist : If you want to add extra interface distance, you can specify add_if_dist.
+                       Default value is add_if_dist=0.0
+        to_primitive : To generate primitive or non-primitive GB structure. Default value is
+                        to_primitive=False
+        uc_a (int): Number of unit cell of grain A. Default to 1.
+        uc_b (int): Number of unit cell of grain B. Default to 1.
+
+    Outputs:
+        structure (pyiron_atomistics.Atoms): A GB based of the `initial_struct`.
+    """
+    title = "GBStructure"
+    init_inputs = [
+        NodeInputBP(
+            label="initial_struct",
+            dtype=dtypes.Data(valid_classes=Atoms),
+            # otype=ONTO.gb_structure_input_structure
+        ),
+        NodeInputBP(
+            label="axis",
+            dtype=dtypes.List(valid_classes=[int, np.integer], default=[0, 0, 1]),
+        ),
+        NodeInputBP(
+            label="sigma",
+            dtype=dtypes.Integer(default=5),
+        ),
+        NodeInputBP(
+            label="plane",
+            dtype=dtypes.List(valid_classes=[int, np.integer], default=[1, 2, 0]),
+        ),
+        NodeInputBP(label="to_primitive", dtype=dtypes.Boolean(default=False)),
+        NodeInputBP(label="delete_layer", dtype=dtypes.String(default="0b0t0b0t")),
+        NodeInputBP(label="add_if_dist", dtype=dtypes.Float(default=0.)),
+        NodeInputBP(label="uc_a", dtype=dtypes.Integer(default=1)),
+        NodeInputBP(label="uc_b", dtype=dtypes.Integer(default=1)),
+    ]
+
+    def node_function(
+            self,
+            initial_struct,
+            axis,
+            sigma,
+            plane,
+            to_primitive,
+            delete_layer,
+            add_if_dist,
+            uc_a,
+            uc_b,
+            **kwargs,
+    ) -> dict:
+        return {
+            "structure": STRUCTURE_FACTORY.aimsgb.build(
+                axis,
+                sigma,
+                plane,
+                initial_struct,
+                to_primitive=to_primitive,
+                delete_layer=delete_layer,
+                add_if_dist=add_if_dist,
+                uc_a=uc_a,
+                uc_b=uc_b,
+            )
+        }
+
+
 class Repeat_Node(OutputsOnlyAtoms):
     """
     Repeat atomic structure supercell.
