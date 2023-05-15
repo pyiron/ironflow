@@ -87,6 +87,7 @@ class GUI(HasSession, DrawsWidgets):
         )
 
         self.workflows = WorkflowsGUI(gui=self)
+        self.workflows.flow_box.node_selector.select_module(self._starting_module)
         self.browser = BrowserGUI()
 
         try:

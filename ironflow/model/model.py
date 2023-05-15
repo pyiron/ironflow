@@ -57,6 +57,7 @@ class HasSession(ABC):
             standard,
         ]:
             self.register_nodes_from_module(module)
+        self._starting_module = pyiron_atomistics.__name__.split(".")[-1]
 
         if extra_nodes_packages is not None:
             for package in extra_nodes_packages:
