@@ -43,18 +43,12 @@ class HasSession(ABC):
             self.session.info_messenger().enable()
 
         self.nodes_dictionary = {"recommended": {}}
-        from ironflow.nodes.ryven import built_in
         from ironflow.nodes import pyiron_atomistics
-        from ironflow.nodes.ryven import special_nodes
-        from ironflow.nodes.ryven import control_structures
-        from ironflow.nodes.ryven import basic_operators
+        from ironflow.nodes import standard
 
         for module in [
-            built_in,
             pyiron_atomistics,
-            basic_operators,
-            control_structures,
-            special_nodes,
+            standard
         ]:
             self.register_nodes_from_module(module)
 
