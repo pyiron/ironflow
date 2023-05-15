@@ -566,7 +566,15 @@ class CalcStatic_Node(AtomisticTaker):
 def pressure_input():
     return NodeInputBP(
         dtype=dtypes.Data(
-            default=None, allow_none=True, valid_classes=[float, list, np.ndarray]
+            default=None,
+            allow_none=True,
+            valid_classes=[
+                float,
+                list,
+                np.ndarray,
+                np.floating,
+                np.integer,
+            ]
         ),
         label="pressure",
     )
