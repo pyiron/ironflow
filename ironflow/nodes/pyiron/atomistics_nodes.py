@@ -1508,6 +1508,73 @@ class MaterialProperty_Node(DataNode):
         return {"value": source}  # * conversion if source is not None else None}
 
 
+class Input_Node(DataNode):
+    """
+    Give data as a string and cast it to a specific type.
+    """
+
+    title = "Input"
+
+    init_inputs = [
+        NodeInputBP(label="input", dtype=dtypes.String())
+    ]
+
+    init_outputs = [
+        NodeOutputBP(label="as_str", dtype=dtypes.String()),
+        NodeOutputBP(label="as_int", dtype=dtypes.Integer()),
+        NodeOutputBP(label="as_float", dtype=dtypes.Float()),
+    ]
+
+    def node_function(self, input, **kwargs) -> dict:
+        try:
+            as_int = int(input)
+        except ValueError:
+            as_int = None
+        try:
+            as_float = float(input)
+        except ValueError:
+            as_float = None
+        return {
+            "as_str": str(input),
+            "as_int": as_int,
+            "as_float": as_float,
+        }
+
+
+class InputArray_Node(DataNode):
+    """
+    Give data as a comma-separated string and cast it to a specific type of array.
+    """
+
+    title = "InputArray"
+
+    init_inputs = [
+        NodeInputBP(label="input", dtype=dtypes.String())
+    ]
+
+    init_outputs = [
+        NodeOutputBP(label="as_str", dtype=dtypes.List(valid_classes=str)),
+        NodeOutputBP(label="as_int", dtype=dtypes.List(valid_classes=np.integer)),
+        NodeOutputBP(label="as_float", dtype=dtypes.List(valid_classes=np.floating)),
+    ]
+
+    def node_function(self, input, **kwargs) -> dict:
+        as_str = np.array(input.split(","))
+        try:
+            as_int = as_str.astype(int)
+        except ValueError:
+            as_int = None
+        try:
+            as_float = as_str.astype(float)
+        except ValueError:
+            as_float = None
+        return {
+            "as_str": as_str,
+            "as_int": as_int,
+            "as_float": as_float,
+        }
+
+
 nodes = [
     Project_Node,
     BulkStructure_Node,
