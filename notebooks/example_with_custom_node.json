@@ -15,73 +15,79 @@
                             {
                                 "type": "data",
                                 "label": "foo",
-                                "GID": 193,
+                                "GID": 266,
                                 "dtype": "DType.Integer",
-                                "dtype state": "gASVgAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
                                 "label": "bar",
-                                "GID": 194,
+                                "GID": 267,
                                 "dtype": "DType.Untyped",
                                 "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
                             }
                         ],
-                        "GID": 192,
-                        "pos x": 630.6273274133487,
-                        "pos y": 400.75824175824175
+                        "GID": 265,
+                        "pos x": 706.2913907284768,
+                        "pos y": 223.88059701492537
                     },
                     {
-                        "identifier": "Slider_Node",
-                        "version": "v0.1",
-                        "state data": "gASVEwAAAAAAAAB9lIwDdmFslEc/8zMzMzMzM3Mu",
+                        "identifier": "Input_Node",
+                        "version": null,
+                        "state data": "gAR9lC4=",
                         "additional data": {},
                         "inputs": [
                             {
                                 "type": "data",
-                                "label": "scl",
-                                "GID": 201,
-                                "val": "gARLAS4=",
-                                "dtype": "DType.Integer",
-                                "dtype state": "gASVgAAAAAAAAAB9lCiMB2RlZmF1bHSUSwGMA3ZhbJRLAYwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
-                            },
-                            {
-                                "type": "data",
-                                "label": "round",
-                                "GID": 202,
-                                "val": "gASILg==",
-                                "dtype": "DType.Boolean",
-                                "dtype state": "gASVfQAAAAAAAAB9lCiMB2RlZmF1bHSUiYwDdmFslImMA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UKIwIYnVpbHRpbnOUjARib29slJOUjAVudW1weZSMBWJvb2xflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklIl1Lg=="
+                                "label": "input",
+                                "GID": 269,
+                                "val": "gASVBgAAAAAAAACMAjEwlC4=",
+                                "dtype": "DType.String",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUjACUjAN2YWyUaAKMA2RvY5RoAowGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA3N0cpSTlIwFbnVtcHmUjARzdHJflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
                             }
                         ],
                         "outputs": [
                             {
                                 "type": "data",
-                                "label": "",
-                                "GID": 203,
-                                "dtype": "DType.Untyped",
-                                "dtype state": "gASVVQAAAAAAAAB9lCiMB2RlZmF1bHSUTowDdmFslE6MA2RvY5SMAJSMBmJvdW5kc5ROjA12YWxpZF9jbGFzc2VzlF2UjAphbGxvd19ub25llIiMB2JhdGNoZWSUiXUu"
+                                "label": "as_str",
+                                "GID": 270,
+                                "dtype": "DType.String",
+                                "dtype state": "gASViAAAAAAAAAB9lCiMB2RlZmF1bHSUjACUjAN2YWyUaAKMA2RvY5RoAowGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA3N0cpSTlIwFbnVtcHmUjARzdHJflJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "as_int",
+                                "GID": 271,
+                                "dtype": "DType.Integer",
+                                "dtype state": "gASViwAAAAAAAAB9lCiMB2RlZmF1bHSUSwCMA3ZhbJRLAIwDZG9jlIwAlIwGYm91bmRzlE6MDXZhbGlkX2NsYXNzZXOUXZQojAhidWlsdGluc5SMA2ludJSTlIwFbnVtcHmUjAdpbnRlZ2VylJOUZYwKYWxsb3dfbm9uZZSJjAdiYXRjaGVklImMBHNpemWUjAFtlHUu"
+                            },
+                            {
+                                "type": "data",
+                                "label": "as_float",
+                                "GID": 272,
+                                "dtype": "DType.Float",
+                                "dtype state": "gASVqQAAAAAAAAB9lCiMB2RlZmF1bHSURwAAAAAAAAAAjAN2YWyURwAAAAAAAAAAjANkb2OUjACUjAZib3VuZHOUTowNdmFsaWRfY2xhc3Nlc5RdlCiMCGJ1aWx0aW5zlIwFZmxvYXSUk5SMBW51bXB5lIwIZmxvYXRpbmeUk5RljAphbGxvd19ub25llImMB2JhdGNoZWSUiYwEc2l6ZZSMAW2UjAhkZWNpbWFsc5RLCnUu"
                             }
                         ],
-                        "GID": 200,
-                        "pos x": 260.0401031223145,
-                        "pos y": 426.37362637362634
+                        "GID": 268,
+                        "pos x": 342.71523178807945,
+                        "pos y": 200
                     }
                 ],
                 "connections": [
                     {
-                        "GID": 204,
+                        "GID": 273,
                         "parent node index": 1,
-                        "output port index": 0,
+                        "output port index": 1,
                         "connected node": 0,
                         "connected input port index": 0
                     }
                 ],
-                "GID": 191
+                "GID": 264
             },
-            "GID": 185
+            "GID": 258
         }
     ]
 }
