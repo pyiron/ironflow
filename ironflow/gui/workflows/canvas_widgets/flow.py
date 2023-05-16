@@ -193,7 +193,7 @@ class FlowCanvas:
             selected_objects = self.get_selected_objects()
             if len(selected_objects) > 0:
                 with hold_canvas(self._canvas):
-                    [o.set_x_y(x, y) for o in selected_objects]
+                    [o.set_x_y(x - self.x, y - self.y) for o in selected_objects]
                     self.redraw()
             else:
                 self.x += x - self._x_move_anchor
