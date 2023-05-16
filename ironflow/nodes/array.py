@@ -23,8 +23,9 @@ class Select_Node(DataNode):
     color = "#aabb44"
 
     def update_event(self, inp=-1):
-        self.outputs.ports.item.dtype.valid_classes = \
-            [type(self.inputs.values.array[self.inputs.values.i])]
+        self.outputs.ports.item.dtype.valid_classes = [
+            type(self.inputs.values.array[self.inputs.values.i])
+        ]
         super().update_event(inp=inp)
 
     def node_function(self, array, i, **kwargs) -> dict:
@@ -56,10 +57,11 @@ class Slice_Node(DataNode):
         self.outputs.ports.sliced.dtype = dtypes.List(
             valid_classes=list(
                 set(
-                    type(obj) for obj in self._slice(
+                    type(obj)
+                    for obj in self._slice(
                         self.inputs.values.array,
                         self.inputs.values.i,
-                        self.inputs.values.j
+                        self.inputs.values.j,
                     )
                 )
             )
