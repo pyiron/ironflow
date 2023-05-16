@@ -461,6 +461,23 @@ class GBStructure_Node(OutputsOnlyAtoms):
         }
 
 
+class ChangeSpecies_Node(OutputsOnlyAtoms):
+    title = "ChangeSpecies"
+    init_inputs = [
+        NodeInputBP(label="structure", dtype=dtypes.Data(valid_classes=Atoms)),
+        NodeInputBP(label="species", dtype=dtypes.String(default=None)),
+        NodeInputBP(
+            label="indices",
+            dtype=dtypes.List(valid_classes=[int, np.integer]),
+        ),
+    ]
+
+    def node_function(self, structure, species, indices, **kwargs):
+        structure = structure.copy()
+        structure[indices] = species
+        return {"structure": structure}
+
+
 class Repeat_Node(OutputsOnlyAtoms):
     """
     Repeat atomic structure supercell.

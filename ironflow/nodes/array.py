@@ -22,6 +22,12 @@ class Select_Node(DataNode):
     ]
     color = "#aabb44"
 
+    def update_event(self, inp=-1):
+        self.outputs.ports.item.dtype.valid_classes = [
+            type(self.inputs.values.array[self.inputs.values.i])
+        ]
+        super().update_event(inp=inp)
+
     def node_function(self, array, i, **kwargs) -> dict:
         return {"item": array[i]}
 
@@ -47,7 +53,23 @@ class Slice_Node(DataNode):
     ]
     color = "#aabb44"
 
-    def node_function(self, array, i, j, **kwargs) -> dict:
+    def update_event(self, inp=-1):
+        self.outputs.ports.sliced.dtype = dtypes.List(
+            valid_classes=list(
+                set(
+                    type(obj)
+                    for obj in self._slice(
+                        self.inputs.values.array,
+                        self.inputs.values.i,
+                        self.inputs.values.j,
+                    )
+                )
+            )
+        )
+        super().update_event(inp=inp)
+
+    @staticmethod
+    def _slice(array, i, j):
         converted = np.array(array)
         if i is None and j is None:
             sliced = converted
@@ -57,7 +79,10 @@ class Slice_Node(DataNode):
             sliced = converted[:j]
         else:
             sliced = converted[i:j]
-        return {"sliced": sliced}
+        return sliced
+
+    def node_function(self, array, i, j, **kwargs) -> dict:
+        return {"sliced": self._slice(array, i, j)}
 
 
 class Transpose_Node(DataNode):
