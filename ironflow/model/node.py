@@ -307,7 +307,12 @@ class Node(NodeCore):
             for i, o in enumerate(self.outputs)
             if o.type_ == "data"
         }
-        standard_reps["source code"] = display_string(self._source_code)
+        try:
+            standard_reps["source code"] = display_string(self._source_code)
+        except OSError:
+            # No source code can be found for user nodes defined in the nodebook
+            # But the source is available there anyhow
+            pass
         return standard_reps
 
     @property
