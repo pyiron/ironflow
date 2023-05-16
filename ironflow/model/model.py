@@ -43,22 +43,16 @@ class HasSession(ABC):
             self.session.info_messenger().enable()
 
         self.nodes_dictionary = {"recommended": {}}
-        from ironflow.nodes import built_in
-        from ironflow.nodes.pyiron import atomistics_nodes
-        from ironflow.nodes.std import (
-            basic_operators,
-            control_structures,
-            special_nodes,
-        )
+        from ironflow.nodes import array, plot, pyiron_atomistics, standard
 
         for module in [
-            built_in,
-            atomistics_nodes,
-            basic_operators,
-            control_structures,
-            special_nodes,
+            array,
+            plot,
+            pyiron_atomistics,
+            standard,
         ]:
             self.register_nodes_from_module(module)
+        self._starting_module = pyiron_atomistics.__name__.split(".")[-1]
 
         if extra_nodes_packages is not None:
             for package in extra_nodes_packages:

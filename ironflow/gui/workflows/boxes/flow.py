@@ -58,6 +58,9 @@ class NodeSelector(DrawsWidgets):
     def nodes_options(self) -> list[str]:
         return sorted(self._nodes_dictionary[self.modules_dropdown.value].keys())
 
+    def select_module(self, module_name):
+        self.modules_dropdown.value = module_name
+
     def update(self, nodes_dictionary: dict) -> None:
         self._nodes_dictionary = nodes_dictionary
         self.modules_dropdown.options = self.module_options
