@@ -6,6 +6,7 @@ dependencies:
 - ipycanvas
 - ipython
 - ipywidgets == 7.*
+- maggma >= 0.57.1
 - matplotlib
 - nglview
 - numpy
