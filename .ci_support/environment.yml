@@ -6,7 +6,7 @@ dependencies:
   - ipywidgets == 7.*
   - maggma >= 0.57.1
   - matplotlib
-  - nglview
+  - nglview <= 3.0.9
   - numpy
   - owlready2
   - pandas
