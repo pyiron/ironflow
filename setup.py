@@ -35,7 +35,7 @@ setup(
         'ipywidgets >= 7,< 8',
         'matplotlib',
         'maggma >= 0.57.1',
-        'nglview',
+        'nglview <= 3.0.9',
         'numpy',
         'owlready2',
         'pyiron_base',
