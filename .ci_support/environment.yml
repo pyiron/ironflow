@@ -1,6 +1,7 @@
 channels:
   - conda-forge
 dependencies:
+  - aimsgb =1.1.1
   - ipycanvas
   - ipython
   - ipywidgets == 7.*
