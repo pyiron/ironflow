@@ -288,9 +288,9 @@ class Float(Data):
             default=default,
             doc=doc,
             _load_state=_load_state,
-            valid_classes=[float, np.floating]
-            if valid_classes is None
-            else valid_classes,
+            valid_classes=(
+                [float, np.floating] if valid_classes is None else valid_classes
+            ),
             allow_none=allow_none,
             batched=batched,
         )

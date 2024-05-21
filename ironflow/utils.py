@@ -1,6 +1,7 @@
 """
 Stuff that doesn't fit anywhere yet.
 """
+
 from __future__ import annotations
 
 from IPython.core.display import HTML
