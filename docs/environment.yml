@@ -7,6 +7,7 @@ dependencies:
 - sphinx-gallery
 - sphinx-rtd-theme
 - versioneer
+- python >=3.9,<3.12
 - aimsgb =1.1.1
 - ipycanvas =0.13.2
 - ipython =8.24.0
