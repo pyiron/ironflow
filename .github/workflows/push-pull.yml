@@ -13,3 +13,5 @@ jobs:
     secrets: inherit
     with:
       notebooks-env-files: .ci_support/environment.yml .ci_support/environment-notebooks.yml
+      python-version: '3.11'
+      python-version-alt1: 'exclude'
