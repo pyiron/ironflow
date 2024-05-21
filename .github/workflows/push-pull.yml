@@ -1,6 +1,6 @@
 # This runs jobs which pyiron modules should run on pushes or PRs to main
 
-name: Push-Pull-main
+name: Push-Pull
 
 on:
   push:
