@@ -2,6 +2,7 @@ channels:
 - conda-forge
 dependencies:
 - python >=3.9,<3.12
+- atomistics =0.0.5
 - aimsgb =1.1.1
 - ipycanvas =0.13.2
 - ipython =8.24.0
@@ -13,6 +14,7 @@ dependencies:
 - openjdk =22.0.1
 - owlready2 =0.46
 - pandas =2.2.0
+- pyiron-data =0.0.27
 - pyiron_base =0.7.3
 - pyiron_atomistics = 0.3.3
 - pyiron_gui =0.0.8
