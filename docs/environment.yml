@@ -2,7 +2,11 @@ channels:
 - conda-forge
 dependencies:
 - ipykernel
+- myst-parser
 - nbsphinx
+- sphinx-gallery
+- sphinx-rtd-theme
+- versioneer
 - ipycanvas
 - ipython
 - ipywidgets == 7.*
