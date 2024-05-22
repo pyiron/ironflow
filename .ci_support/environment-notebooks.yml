@@ -1,5 +1,5 @@
 channels:
   - conda-forge
 dependencies:
-  - python >= 3.8
-  - lammps
+  - python >=3.10, <3.12
+  - lammps =2024.02.07
