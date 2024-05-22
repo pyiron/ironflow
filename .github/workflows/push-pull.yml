@@ -16,3 +16,4 @@ jobs:
       python-version: '3.11'
       python-version-alt1: 'exclude'  # 3.11 is the main one now
       python-version-alt3: 'exclude'  # Don't run on 3.8
+      unit-test-timeout-minutes: 20  # For windows, which seems a little slow
