@@ -8,7 +8,7 @@ dependencies:
 - sphinx-rtd-theme
 - versioneer
 - python >=3.10,<3.12
-- aimsgb =0.1.3
+- aimsgb =1.1.1
 - ipycanvas =0.13.2
 - ipython =8.24.0
 - ipywidgets =7.7.1
