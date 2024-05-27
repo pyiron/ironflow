@@ -34,7 +34,7 @@ setup(
         'ipython ==8.24.0',
         'ipywidgets ==7.7.1',
         'jupyterlab ==3.6.7',
-        'matplotlib ==3.8.4',
+        'matplotlib ==3.9.0',
         'nglview ==3.0.8',
         'numpy ==1.26.4',
         'owlready2 ==0.46',
