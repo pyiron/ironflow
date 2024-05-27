@@ -44,7 +44,7 @@ setup(
         'pyiron_gui <=0.0.8',
         'pyiron_ontology ==0.1.3',
         'pymatgen ==2023.5.10',
-        'ryvencore ==0.3.1.1',
+        'ryvencore ==0.5.0',
         'seaborn ==0.13.2',
         'traitlets ==5.14.3',
     ],
