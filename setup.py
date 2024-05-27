@@ -33,7 +33,7 @@ setup(
         'ipycanvas ==0.13.2',
         'ipython ==8.24.0',
         'ipywidgets ==7.7.1',
-        'jupyterlab ==3.6.7',
+        'jupyterlab ==4.2.1',
         'matplotlib ==3.8.4',
         'nglview ==3.0.8',
         'numpy ==1.26.4',
