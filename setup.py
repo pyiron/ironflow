@@ -29,7 +29,7 @@ setup(
     keywords='pyiron',
     packages=find_packages(exclude=["*tests*", "*docs*", "*binder*", "*conda*", "*notebooks*", "*.ci_support*"]),
     install_requires=[
-        'aimsgb ==0.1.3',
+        'aimsgb ==1.1.1',
         'ipycanvas ==0.13.2',
         'ipython ==8.24.0',
         'ipywidgets ==7.7.1',
