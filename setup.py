@@ -41,7 +41,7 @@ setup(
         'pandas ==1.5.3',
         'pyiron_atomistics == 0.2.63',
         'pyiron_base ==0.5.33',
-        'pyiron_gui <=0.0.8',
+        'pyiron_gui <=0.0.12',
         'pyiron_ontology ==0.1.3',
         'pymatgen ==2023.5.10',
         'ryvencore ==0.3.1.1',
