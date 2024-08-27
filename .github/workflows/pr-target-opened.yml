@@ -8,5 +8,5 @@ on:
 
 jobs:
   pyiron:
-    uses: pyiron/actions/.github/workflows/pr-target-opened.yml@actions-2.0.7
+    uses: pyiron/actions/.github/workflows/pr-target-opened.yml@actions-3.3.0
     secrets: inherit
