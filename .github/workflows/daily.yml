@@ -8,7 +8,7 @@ on:
 
 jobs:
   codeql:
-    uses: pyiron/actions/.github/workflows/tests-and-coverage.yml@actions-3.3.0
+    uses: pyiron/actions/.github/workflows/tests-and-coverage.yml@actions-3.3.3
     secrets: inherit
     with:
       python-version: '3.11'
