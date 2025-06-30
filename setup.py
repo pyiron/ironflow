@@ -35,7 +35,7 @@ setup(
         'ipywidgets ==7.7.1',
         'jupyterlab ==3.6.7',
         'matplotlib ==3.8.4',
-        'nglview ==3.0.8',
+        'nglview ==3.1.4',
         'numpy ==1.26.4',
         'owlready2 ==0.46',
         'pandas ==1.5.3',
