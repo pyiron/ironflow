@@ -37,7 +37,7 @@ setup(
         'matplotlib ==3.8.4',
         'nglview ==3.0.8',
         'numpy ==1.26.4',
-        'owlready2 ==0.46',
+        'owlready2 ==0.48',
         'pandas ==1.5.3',
         'pyiron_atomistics == 0.2.63',
         'pyiron_base ==0.5.33',
